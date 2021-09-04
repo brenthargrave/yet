@@ -11,7 +11,7 @@ mkcert -install
   mkcert \
   --cert-file localhost-cert.pem \
   --key-file localhost-key.pem \
-  localhost 127.0.0.1 ::1 $ipaddr.xip.io \
+  trawler.wip localhost 127.0.0.1 ::1 $ipaddr.xip.io \
   )
 
 ### on iOS Simulator
