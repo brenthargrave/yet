@@ -6,12 +6,12 @@
 
 # enable localhost SSL
 mkcert -install
-(ipaddr=$(ipconfig getifaddr en0) && \
+(ipaddr=$(ipconfig getifaddr en1) && \
   cd ./priv/cert/ && \
   mkcert \
   --cert-file localhost-cert.pem \
   --key-file localhost-key.pem \
-  lemon.wip localhost 127.0.0.1 ::1 $ipaddr.xip.io \
+  localhost 127.0.0.1 ::1 $ipaddr.xip.io \
   )
 
 ### on iOS Simulator
