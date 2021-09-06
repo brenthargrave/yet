@@ -5,12 +5,11 @@ config :app, AppWeb.Endpoint,
   code_reloader: true,
   check_origin: false,
   watchers: [
-    node: [
-      "node_modules/webpack/bin/webpack.js",
-      "--mode",
-      "development",
-      "--watch-stdin",
-      cd: Path.expand("../assets", __DIR__)
+    yarn: [
+      "snowpack",
+      "dev",
+      "--verbose",
+      cd: Path.expand("../ui", __DIR__)
     ]
   ],
   https: [
