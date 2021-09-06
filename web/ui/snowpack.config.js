@@ -8,7 +8,7 @@ const path = require("path");
 module.exports = {
   mount: {
     // public: { url: "/", static: true },
-    public: "/"
+    public: "/",
     // src: "/src",
   },
   plugins: [
@@ -27,7 +27,7 @@ module.exports = {
     /* ... */
   },
   buildOptions: {
-    /* ... */
+    sourcemap: true,
   },
   alias: {
     "~": "./src/~",
