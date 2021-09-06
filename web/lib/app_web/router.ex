@@ -9,14 +9,6 @@ defmodule AppWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
-  # pipeline :api do
-    # plug :accepts, ["json"]
-  # end
-
-  # scope "/api", AppWeb do
-    # pipe_through :api
-  # end
-
   # Enables LiveDashboard only for development
   #
   # If you want to use the LiveDashboard in production, you should put

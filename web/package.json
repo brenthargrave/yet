@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "create-snowpack-app": "1.10.0",
+    "global": "4.4.0"
+  }
+}
