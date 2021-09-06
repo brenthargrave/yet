@@ -1,0 +1,11 @@
+{
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "deploy": "snowpack build",
+    "watch": "snowpack build --no-bundle --watch"
+  },
+  "devDependencies": {
+    "snowpack": "3.8.8"
+  }
+}
