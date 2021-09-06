@@ -7,11 +7,12 @@ const path = require("path");
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
   mount: {
-    public: { url: "/", static: true },
+    // public: { url: "/", static: true },
+    public: "/"
     // src: "/src",
   },
   plugins: [
-    /* ... */
+    // '@snowpack/plugin-react-refresh'
   ],
   packageOptions: {
     source: "remote",
