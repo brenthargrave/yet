@@ -17,7 +17,7 @@ defmodule AppWeb.PageController do
     </head>
     <body>
     <div id="main" data-props='#{Jason.encode!(props)}' />
-    <script type="application/javascript" src="#{js_path}"></script>
+    <script type="module" src="#{js_path}"></script>
     </body>
     </html>
     """)
