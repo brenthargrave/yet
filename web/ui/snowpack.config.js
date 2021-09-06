@@ -1,8 +1,8 @@
 // Snowpack Configuration File
 // See all supported options: https://www.snowpack.dev/reference/configuration
 
-const fs = require("fs")
-const path = require("path")
+const fs = require("fs");
+const path = require("path");
 
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
@@ -31,4 +31,4 @@ module.exports = {
   alias: {
     "~": "./src/~",
   },
-}
+};
