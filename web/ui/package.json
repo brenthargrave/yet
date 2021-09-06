@@ -6,7 +6,8 @@
     "watch": "snowpack build --no-bundle --watch"
   },
   "devDependencies": {
-    "snowpack": "3.8.8"
+    "snowpack": "3.8.8",
+    "typescript": "4.4.2"
   },
   "dependencies": {
     "react": "17.0.2",

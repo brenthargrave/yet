@@ -7,7 +7,7 @@ const path = require("path");
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
   mount: {
-    public: "/",
+    public: { url: "/", static: true },
     // src: "/src",
   },
   plugins: [
