@@ -4,6 +4,15 @@
 const fs = require("fs");
 const path = require("path");
 
+let key;
+let cert;
+try {
+  key = fs.readFileSync(path.resolve("../priv/cert/localhost-key.pem"));
+  cert = fs.readFileSync(path.resolve("../priv/cert/localhost-cert.pem"));
+} catch (error) {
+  console.error(error);
+}
+
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
   mount: {
@@ -21,8 +30,8 @@ module.exports = {
   devOptions: {
     open: "none",
     secure: {
-      key: fs.readFileSync(path.resolve("../priv/cert/localhost-key.pem")),
-      cert: fs.readFileSync(path.resolve("../priv/cert/localhost-cert.pem")),
+      key: key,
+      cert: cert,
     },
     /* ... */
   },
