@@ -28,6 +28,6 @@ defmodule AppWeb.Router do
   scope "/", AppWeb do
     pipe_through(:browser)
 
-    get("/*path", PageController, :index, as: :root)
+    get("/", PageController, :index, as: :root)
   end
 end
