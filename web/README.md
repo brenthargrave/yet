@@ -29,17 +29,17 @@ heroku local:run -e .env.dev mix ecto.create
 heroku local:run -e .env.dev mix ecto.migrate
 heroku local -e .env.dev
 
-# optional: `https://lemon.wip` using `puma-dev`
+# optional: `https://yet.wip` using `puma-dev`
 sudo puma-dev -uninstall && puma-dev -setup
 echo 5000 > .port
-wd=$(pwd) && (cd ~/.puma-dev/ && ln -s $wd/.port lemon)
+wd=$(pwd) && (cd ~/.puma-dev/ && ln -s $wd/.port yet)
 puma-dev -install -debug -d test:wip:localhost -launchd
-open https://lemon.wip
+open https://yet.wip
 ```
 
 ## Deployment
 
 ```
-heroku git:remote -r prod -a lemon-prod
+heroku git:remote -r prod -a yet-prod
 (cd .. && git push prod --force `git subtree split --prefix web HEAD`:refs/heads/master)
 ```
