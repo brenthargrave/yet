@@ -23,8 +23,9 @@ defmodule AppWeb.Endpoint do
   # when deploying your static files in production.
   plug Plug.Static,
     at: "/",
-    from: :app,
-    gzip: false,
+    # from: :app,
+    from: {:app, "priv/static/app"},
+    gzip: true,
     only: ~w(css fonts images js favicon.ico robots.txt _snowpack)
 
   # Code reloading can be explicitly enabled under the

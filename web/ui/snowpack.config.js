@@ -36,7 +36,7 @@ module.exports = {
     /* ... */
   },
   buildOptions: {
-    out: "../priv/static/",
+    out: "../priv/static/app",
     sourcemap: true,
   },
   alias: {
