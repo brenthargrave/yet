@@ -4,14 +4,15 @@ config :app, AppWeb.Endpoint,
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
-  watchers: [
-    yarn: [
-      "snowpack",
-      "dev",
-      "--verbose",
-      cd: Path.expand("../ui", __DIR__)
-    ]
-  ],
+  # TODO: watcher orphans process: https://bit.ly/3tugRhN
+  # watchers: [
+  #   yarn: [
+  #     "snowpack",
+  #     "dev",
+  #     "--verbose",
+  #     cd: Path.expand("../ui", __DIR__)
+  #   ]
+  # ],
   https: [
     port: System.get_env("PORT_SSL"),
     cipher_suite: :strong,
