@@ -5,7 +5,7 @@ defmodule AppWeb.PageController do
     js_path =
       if Mix.env() != :prod,
         do: "https://localhost:#{System.get_env("PORT_SNOWPACK")}/main.js",
-        else: Routes.static_path(conn, "/main.js")
+        else: Routes.static_path(conn, "/app/main.js")
 
     props = %{location: conn.request_path}
 
