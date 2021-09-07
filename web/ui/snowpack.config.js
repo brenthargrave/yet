@@ -33,10 +33,9 @@ module.exports = {
       key: key,
       cert: cert,
     },
-    /* ... */
   },
   buildOptions: {
-    out: "../priv/static/app",
+    out: "../priv/static",
     sourcemap: true,
   },
   alias: {
