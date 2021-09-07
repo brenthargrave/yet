@@ -16,9 +16,9 @@ try {
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
   mount: {
-    // public: { url: "/", static: true },
-    public: "/",
     // src: "/src",
+    // public: "/",
+    static: { url: "/", static: true, resolve: false },
   },
   plugins: [
     // '@snowpack/plugin-react-refresh'
