@@ -36,7 +36,7 @@ module.exports = {
     out: "../priv/static",
     sourcemap: true,
   },
-  alias: {
-    "~": "./src/~",
-  },
+  //   alias: {
+  //     "~": "./src/~",
+  //   },
 };
