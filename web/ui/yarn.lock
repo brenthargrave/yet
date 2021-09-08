@@ -213,6 +213,21 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
+"@cycle/react-dom@2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@cycle/react-dom/-/react-dom-2.4.0.tgz#25843f10f2a0ce73c3a35a48a8a6e051aff00ada"
+  integrity sha512-T2KtsoZ3Z9tfGmCB8nYWd1fCMv1VirxaOLykHNu9g8K0K0gT5eWo/Sq+rpcWGuCyfCbkK9zJF9W/47RnRbHImg==
+
+"@cycle/react@2.9.0":
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/@cycle/react/-/react-2.9.0.tgz#9fa0ed4b01c809e61ab2049376ec935b78108daf"
+  integrity sha512-cqNNIXe5x+dTaNm5H1gckpd3IPS2rqu4uXSwwzkWaunH3PnjjvzeL+3BOI3sfb1xdMCIKY6nmKEOxmUqQgrOWQ==
+
+"@cycle/rxjs-run@10.5.0":
+  version "10.5.0"
+  resolved "https://registry.yarnpkg.com/@cycle/rxjs-run/-/rxjs-run-10.5.0.tgz#6e0d6effe96ec5c660e674306f88eff289b53cfd"
+  integrity sha512-SZ2jAHpwbO6L4ZKxoxOOKFo4LLJKjw94zbJ3B8G7t+IWmRg2bOknQikqlgVqdJeIQiGyKItKjVW4n07nAhYP0A==
+
 "@gar/promisify@^1.0.1":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.2.tgz#30aa825f11d438671d585bd44e7fd564535fc210"
@@ -2711,6 +2726,13 @@ rollup@~2.37.1:
   optionalDependencies:
     fsevents "~2.1.2"
 
+rxjs@7.3.0:
+  version "7.3.0"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.3.0.tgz#39fe4f3461dc1e50be1475b2b85a0a88c1e938c6"
+  integrity sha512-p2yuGIg9S1epc3vrjKf6iVb3RCaAYjYskkO+jHIaV0IjOPlJop4UnodOoFb2xeNwlguqLYvGw1b1McillYb5Gw==
+  dependencies:
+    tslib "~2.1.0"
+
 safe-buffer@^5.0.1, safe-buffer@^5.1.2:
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.2.1.tgz#1eaf9fa9bdb1fdd4ec75f58f9cdb4e6b7827eec6"
@@ -3022,6 +3044,11 @@ tslib@^2.2.0:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.1.tgz#e8a335add5ceae51aa261d32a490158ef042ef01"
   integrity sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==
+
+tslib@~2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.1.0.tgz#da60860f1c2ecaa5703ab7d39bc05b6bf988b97a"
+  integrity sha512-hcVC3wYEziELGGmEEXue7D75zbwIIVUMWAVbHItGPx0ziyXxrOMQx4rQEVEV45Ut/1IotuEvwqPopzIOkDMf0A==
 
 tunnel-agent@^0.6.0:
   version "0.6.0"
