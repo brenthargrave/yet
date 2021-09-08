@@ -16,15 +16,13 @@ try {
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
   mount: {
-    // src: "/src",
-    // public: "/",
     static: { url: "/" },
   },
   plugins: [
     // '@snowpack/plugin-react-refresh'
   ],
   packageOptions: {
-    source: "remote",
+    source: "local",
     types: true,
   },
   devOptions: {
