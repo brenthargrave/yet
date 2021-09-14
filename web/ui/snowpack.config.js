@@ -1,5 +1,4 @@
-// Snowpack Configuration File
-// See all supported options: https://www.snowpack.dev/reference/configuration
+// https://www.snowpack.dev/reference/configuration
 
 const fs = require("fs");
 const path = require("path");
@@ -34,7 +33,10 @@ module.exports = {
   },
   buildOptions: {
     out: "../priv/static",
-    sourcemap: true,
+    // TODO: restore sourcemap once working
+    // https://www.snowpack.dev/reference/configuration#buildoptionssourcemap
+    // > Experimental: Still in progress...
+    sourcemap: false,
   },
   //   alias: {
   //     "~": "./src/~",
