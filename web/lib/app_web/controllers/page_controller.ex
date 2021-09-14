@@ -12,13 +12,17 @@ defmodule AppWeb.PageController do
     conn
     |> put_layout(false)
     |> html("""
-    <html>
-    <head>
-    </head>
-    <body>
-    <div id="main" data-props='#{Jason.encode!(props)}' />
-    <script type="module" src="#{js_path}"></script>
-    </body>
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <link rel="icon" href="/favicon.ico" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
+      <body>
+        <div id="main" data-props='#{Jason.encode!(props)}' />
+        <script type="module" src="#{js_path}"></script>
+      </body>
     </html>
     """)
   end
