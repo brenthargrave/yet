@@ -28,6 +28,7 @@ module.exports = {
     types: true,
   },
   devOptions: {
+    hmr: false,
     open: "none",
     secure: {
       key,
