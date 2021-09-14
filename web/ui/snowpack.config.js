@@ -13,6 +13,7 @@ try {
 }
 
 const { MIX_ENV } = process.env;
+console.debug(MIX_ENV);
 
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
