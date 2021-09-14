@@ -22,7 +22,7 @@ module.exports = {
   mount: {
     static: { url: "/" },
   },
-  plugins: ["@snowpack/plugin-react-refresh"],
+  plugins: [],
   packageOptions: {
     source: "local",
     types: true,

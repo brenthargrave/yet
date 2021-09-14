@@ -1,5 +1,6 @@
 {
   "private": true,
+  "license": "MIT",
   "scripts": {
     "deploy": "bash ./scripts/deploy.sh"
   },
