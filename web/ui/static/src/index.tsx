@@ -14,3 +14,8 @@ import "@fontsource/roboto/700.css";
 import { Typography } from "@mui/material";
 
 ReactDOM.render(<div>"HELLO REACT"</div>, document.getElementById("main"));
+
+// TODO: HMR
+// if (import.meta.hot) {
+//   import.meta.hot.accept();
+// }
