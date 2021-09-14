@@ -13,7 +13,11 @@ import "@fontsource/roboto/700.css";
 
 import { Typography } from "@mui/material";
 
-ReactDOM.render(<div>"HELLO REACT"</div>, document.getElementById("main"));
+// ReactDOM.render(<div>"HELLO REACT"</div>, document.getElementById("main"));
+import { App } from "../src/components/app";
+import { h } from "@cycle/react";
+
+ReactDOM.render(h(App), document.getElementById("main"));
 
 // TODO: HMR
 // if (import.meta.hot) {
