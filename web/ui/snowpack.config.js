@@ -12,8 +12,13 @@ try {
   console.error(error);
 }
 
+const { MIX_ENV } = process.env;
+
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
+  env: {
+    MIX_ENV,
+  },
   mount: {
     static: { url: "/" },
   },
