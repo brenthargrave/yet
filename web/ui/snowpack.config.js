@@ -23,9 +23,7 @@ module.exports = {
   mount: {
     static: { url: "/" },
   },
-  plugins: [
-    // '@snowpack/plugin-react-refresh'
-  ],
+  plugins: ["@snowpack/plugin-react-refresh"],
   packageOptions: {
     source: "local",
     types: true,
@@ -39,7 +37,7 @@ module.exports = {
   },
   buildOptions: {
     out: "../priv/static",
-    // TODO: restore sourcemap once working
+    // TODO
     // https://www.snowpack.dev/reference/configuration#buildoptionssourcemap
     // > Experimental: Still in progress...
     sourcemap: false,
