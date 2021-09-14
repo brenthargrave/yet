@@ -33,8 +33,8 @@ module.exports = {
   devOptions: {
     open: "none",
     secure: {
-      key: key,
-      cert: cert,
+      key,
+      cert,
     },
   },
   buildOptions: {
