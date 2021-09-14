@@ -2,8 +2,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "deploy": "snowpack build",
-    "watch": "snowpack build --no-bundle --watch"
+    "deploy": "snowpack build"
   },
   "devDependencies": {
     "@snowpack/plugin-react-refresh": "2.5.0",
