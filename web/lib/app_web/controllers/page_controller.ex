@@ -4,8 +4,8 @@ defmodule AppWeb.PageController do
   def index(conn, _params) do
     js_path =
       if Mix.env() != :prod,
-        do: "https://localhost:#{System.get_env("PORT_SNOWPACK")}/src/main.js",
-        else: Routes.static_path(conn, "/main.js")
+        do: "https://localhost:#{System.get_env("PORT_SNOWPACK")}/src/index.js",
+        else: Routes.static_path(conn, "/index.js")
 
     props = %{location: conn.request_path}
 
