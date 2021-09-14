@@ -1,4 +1,13 @@
 {
   "extends": "../tsconfig.json",
   "exclude": ["node_modules", "build", "scripts"]
+  // TODO
+  // "baseUrl": ".",
+  // "paths": { "components/*": ["static/src/components/*"] }
+  /// ALT
+  // "include": ["./static/src/**/*.ts"],
+  // "compilerOptions": {
+  //   "rootDirs": ["./static/src"],
+  //   "baseUrl": "./static/src"
+  // }
 }
