@@ -4,8 +4,7 @@ module.exports = {
     es2021: true,
   },
   extends: [
-    // "standard",
-    // "airbnb",
+    "airbnb",
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:prettier/recommended",
@@ -20,5 +19,7 @@ module.exports = {
     sourceType: "module",
   },
   plugins: ["prettier", "react", "react-hooks", "@typescript-eslint"],
-  rules: {},
+  rules: {
+    "import/prefer-default-export": "off",
+  },
 }
