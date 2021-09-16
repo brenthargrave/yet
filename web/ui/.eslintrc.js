@@ -21,5 +21,6 @@ module.exports = {
   plugins: ["prettier", "react", "react-hooks", "@typescript-eslint"],
   rules: {
     "import/prefer-default-export": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
   },
 }
