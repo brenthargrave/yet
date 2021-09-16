@@ -21,6 +21,12 @@ module.exports = {
   plugins: ["prettier", "react", "react-hooks", "@typescript-eslint"],
   rules: {
     "import/prefer-default-export": "off",
+    "import/no-unresolved": "off",
+    "import/extensions": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+  },
+  settings: {
+    "import/resolver": "node",
   },
 }
