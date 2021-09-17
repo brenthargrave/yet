@@ -1,14 +1,19 @@
-import ReactDOM from "react-dom"
-import { h } from "@cycle/react"
+import { makeDOMDriver } from "@cycle/react-dom"
+import { run } from "@cycle/rxjs-run"
 
 import { App } from "./components/app"
 
 // NOTE: import env vars: https://git.io/Ju5w6
 // @ts-ignore
-const { MIX_ENV } = import.meta.env
-console.debug(`MIX_ENV : ${MIX_ENV}`)
+// TODO: const { MIX_ENV } = import.meta.env
 
-ReactDOM.render(h(App), document.getElementById("main"))
+const container: HTMLElement | null = document.getElementById("main")
+
+if (container) {
+  run(App, {
+    react: makeDOMDriver(container),
+  })
+}
 
 // TODO: HMR
 // if (import.meta.hot) {

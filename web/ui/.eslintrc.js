@@ -25,6 +25,8 @@ module.exports = {
     "import/extensions": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/ban-ts-comment": "off",
+    // TODO "sort-imports": "error",
+    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
   },
   settings: {
     "import/resolver": "node",
