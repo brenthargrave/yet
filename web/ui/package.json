@@ -30,6 +30,7 @@
     "react": "16.14.0",
     "react-dom": "16.14.0",
     "rxjs": "6.6.7",
+    "symbol-observable": "1.2.0",
     "xstream": "11.14.0"
   }
 }
