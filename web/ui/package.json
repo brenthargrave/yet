@@ -23,13 +23,14 @@
     "typescript": "4.4.2"
   },
   "dependencies": {
+    "@chakra-ui/react": "1.6.7",
     "@cycle/react": "2.9.0",
     "@cycle/react-dom": "2.4.0",
     "@cycle/run": "5.5.0",
     "@cycle/rxjs-run": "10.5.0",
-    "@emotion/react": "11.4.1",
-    "@emotion/styled": "11.3.0",
-    "@mui/material": "5.0.0",
+    "@emotion/react": "^11",
+    "@emotion/styled": "^11",
+    "framer-motion": "^4",
     "react": "16.14.0",
     "react-dom": "16.14.0",
     "rxjs": "6.6.7",
