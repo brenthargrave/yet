@@ -4,8 +4,8 @@ import { of } from "rxjs"
 import { view } from "./view"
 
 // @ts-ignore
-// const { API_ENV } = import.meta.env
-console.log(import.meta.env)
+const { VITE_API_ENV } = import.meta.env
+console.log(`API_ENV: ${VITE_API_ENV}`)
 
 interface Sources {
   react: ReactSource
