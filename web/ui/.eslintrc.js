@@ -27,6 +27,7 @@ module.exports = {
     "@typescript-eslint/ban-ts-comment": "off",
     // TODO "sort-imports": "error",
     "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+    "import/no-extraneous-dependencies": "off",
   },
   settings: {
     "import/resolver": "node",
