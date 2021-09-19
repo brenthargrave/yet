@@ -28,7 +28,7 @@ defmodule AppWeb.Router do
   scope "/", AppWeb do
     pipe_through(:browser)
 
-    # TODO:  https://vitejs.dev/guide/backend-integration.html
+    # TODO: https://vitejs.dev/guide/backend-integration.html
     # get("/", PageController, :index, as: :root)
   end
 end

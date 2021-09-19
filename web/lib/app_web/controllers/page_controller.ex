@@ -3,7 +3,7 @@ defmodule AppWeb.PageController do
 
   def index(conn, _params) do
     send_file(conn, 200, "priv/static/index.html")
-    # TODO
+    # TODO: https://vitejs.dev/guide/backend-integration.html
     # js_path =
     #   if Mix.env() != :prod,
     #     do: "https://localhost:#{System.get_env("PORT_UI")}/src/index.js",
