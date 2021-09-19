@@ -1,18 +1,18 @@
 // https://www.snowpack.dev/reference/configuration
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("fs")
+const path = require("path")
 
-let key;
-let cert;
+let key
+let cert
 try {
-  key = fs.readFileSync(path.resolve("../priv/cert/localhost-key.pem"));
-  cert = fs.readFileSync(path.resolve("../priv/cert/localhost-cert.pem"));
+  key = fs.readFileSync(path.resolve("../priv/cert/localhost-key.pem"))
+  cert = fs.readFileSync(path.resolve("../priv/cert/localhost-cert.pem"))
 } catch (error) {
-  console.error(error);
+  console.error(error)
 }
 
-const { MIX_ENV } = process.env;
+const { MIX_ENV } = process.env
 
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
@@ -45,4 +45,4 @@ module.exports = {
   //   alias: {
   //     "~": "./src/~",
   //   },
-};
+}
