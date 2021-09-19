@@ -24,4 +24,8 @@ export default defineConfig({
     strictPort: true,
     port,
   },
+  build: {
+    outDir: "../priv/static",
+    emptyOutDir: true,
+  },
 })
