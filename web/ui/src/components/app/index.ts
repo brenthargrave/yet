@@ -3,6 +3,10 @@ import { of } from "rxjs"
 
 import { view } from "./view"
 
+// @ts-ignore
+// const { API_ENV } = import.meta.env
+console.log(import.meta.env)
+
 interface Sources {
   react: ReactSource
 }
