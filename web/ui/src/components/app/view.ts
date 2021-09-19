@@ -2,7 +2,7 @@ import { h } from "@cycle/react"
 import { h1 } from "@cycle/react-dom"
 // import { Stack, Button } from "@mui/material"
 
-const logo = h1(`TBD`)
+const logo = h1(`a`)
 // const button = h(
 //   Button,
 //   {
