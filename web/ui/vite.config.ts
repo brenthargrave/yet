@@ -13,12 +13,15 @@ try {
   console.error(error)
 }
 
+const { PORT_UI } = process.env
+const port: number = parseInt(PORT_UI ?? "8080", 10)
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [reactRefresh()],
   server: {
     https: { key, cert },
     strictPort: true,
-    port: 8080,
+    port,
   },
 })
