@@ -7,15 +7,28 @@ import { App } from "./components/app"
 // @ts-ignore
 // TODO: const { MIX_ENV } = import.meta.env
 
-const container: HTMLElement | null = document.getElementById("main")
+const container: HTMLElement | null = document.getElementById("main")!
 
-if (container) {
-  run(App, {
-    react: makeDOMDriver(container),
-  })
-}
+run(App, {
+  react: makeDOMDriver(container),
+})
 
 // TODO: HMR
-// if (import.meta.hot) {
-//   import.meta.hot.accept();
-// }
+if (import.meta.hot) {
+  import.meta.hot.accept()
+}
+/*
+ */
+
+/*
+import React from "react"
+import ReactDOM from "react-dom"
+import { App } from "./components/app"
+
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById("main")
+)
+ */

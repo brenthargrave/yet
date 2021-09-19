@@ -1,4 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
+import { h1 } from "@cycle/react-dom"
 import { of } from "rxjs"
 
 import { view } from "./view"
@@ -12,8 +13,18 @@ interface Sources {
 }
 
 export const App = (_sources: Sources) => {
-  const react = of(h(view))
+  // const react = of(h(view))
+  const react = of(h1(`f`))
   return {
     react,
   }
 }
+
+/*
+import React from "react"
+import { h1 } from "@cycle/react-dom"
+
+// export const App = () => <div>Hello, world</div>
+// export const App = () => h1("hell")
+export { App } from "./view"
+*/
