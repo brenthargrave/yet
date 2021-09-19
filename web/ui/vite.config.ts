@@ -18,5 +18,7 @@ export default defineConfig({
   plugins: [reactRefresh()],
   server: {
     https: { key, cert },
+    strictPort: true,
+    port: 8080,
   },
 })
