@@ -2,7 +2,7 @@ defmodule AppWeb.PageController do
   use AppWeb, :controller
 
   def index(conn, _params) do
-    render conn, "index.html"
+    send_file(conn, 200, "priv/static/index.html")
     # TODO
     # js_path =
     #   if Mix.env() != :prod,
