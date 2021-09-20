@@ -29,7 +29,7 @@ export default defineConfig({
     emptyOutDir: true,
     manifest: true,
     rollupOptions: {
-      input: "/src/index.js",
+      input: "/src/index.tsx",
     },
   },
 })
