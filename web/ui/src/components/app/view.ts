@@ -1,4 +1,3 @@
-// import { h } from "@cycle/react"
 import { h1 } from "@cycle/react-dom"
 // import { Stack, Button } from "@mui/material"
 
@@ -22,12 +21,3 @@ export const view = () => logo
 //   },
 //   [logo, button]
 // )
-
-/*
-import React from "react"
-import { h1 } from "@cycle/react-dom"
-
-// export const App = () => <div>Hello, world</div>
-export const App = () => h1("hel")
-
-*/
