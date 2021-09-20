@@ -17,5 +17,6 @@ html lang="en"
     - else
       / script type="module" src="#{Routes.static_path(@conn, "/src/index.tsx")}"
       / https://github.com/mindreframer/vite_phx
-      script type="module" src="#{Vite.Manifest.main_js()}"
-      link rel="modulepreload" href="#{Vite.Manifest.vendor_js()}"
+      = Vite.vite_snippet("src/index.tsx")
+      / script type="module" src="#{Vite.Manifest.main_js()}"
+      / link rel="modulepreload" href="#{Vite.Manifest.vendor_js()}"
