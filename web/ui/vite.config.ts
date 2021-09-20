@@ -10,6 +10,7 @@ try {
   key = fs.readFileSync(path.resolve("../priv/cert/localhost-key.pem"))
   cert = fs.readFileSync(path.resolve("../priv/cert/localhost-cert.pem"))
 } catch (error) {
+  // eslint-disable-next-line no-console
   console.error(error)
 }
 
