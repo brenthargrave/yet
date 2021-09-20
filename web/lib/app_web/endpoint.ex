@@ -24,8 +24,8 @@ defmodule AppWeb.Endpoint do
   plug Plug.Static,
     at: "/",
     from: :app,
-    # TODO: restore w/ snowpack compat
-    # only_matching: ~w(css fonts images js favicon.ico robots.txt _snowpack)
+    # TODO: restore w/ vite compat
+    # only_matching: ~w(css fonts images js favicon.ico robots.txt)
     gzip: true
 
   # Code reloading can be explicitly enabled under the

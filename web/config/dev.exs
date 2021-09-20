@@ -7,9 +7,7 @@ config :app, AppWeb.Endpoint,
   # TODO: watcher orphans process: https://bit.ly/3tugRhN
   # watchers: [
   #   yarn: [
-  #     "snowpack",
   #     "dev",
-  #     "--verbose",
   #     cd: Path.expand("../ui", __DIR__)
   #   ]
   # ],
