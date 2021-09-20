@@ -4,4 +4,4 @@ import { h } from "@cycle/react"
 
 import { App } from "./components/app"
 
-ReactDOM.render(h(React.StrictMode, [h(App)]), document.getElementById("main"))
+ReactDOM.render(h(React.StrictMode, [h(App)]), document.getElementById("index"))

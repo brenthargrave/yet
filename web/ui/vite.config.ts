@@ -27,5 +27,9 @@ export default defineConfig({
   build: {
     outDir: "../priv/static",
     emptyOutDir: true,
+    manifest: true,
+    rollupOptions: {
+      input: "/src/index.js",
+    },
   },
 })

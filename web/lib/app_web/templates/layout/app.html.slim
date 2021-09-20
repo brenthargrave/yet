@@ -4,22 +4,15 @@ html lang="en"
     meta charset="utf-8"
     meta content="IE=edge" http-equiv="X-UA-Compatible"
     meta content="width=device-width, initial-scale=1" name="viewport"
-    title App · Phoenix Framework
-    link rel="stylesheet" href="#{Routes.static_path(@conn, "/css/app.css")}"
+    meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"
+    meta http-equiv="Pragma" content="no-cache"
+    meta http-equiv="Expires" content="0"
 
   body
-    header
-      section.container
-        nav role="navigation"
-          ul
-            li
-              a href="https://hexdocs.pm/phoenix/overview.html" Get Started
-        a.phx-logo href="http://phoenixframework.org/"
-          img src="#{ Routes.static_path(@conn, "/images/phoenix.png") }" alt="Phoenix Framework Logo"
-
-    main.container role="main"
-      p.alert.alert-info role="alert"= get_flash(@conn, :info)
-      p.alert.alert-danger role="alert"= get_flash(@conn, :error)
-      = render @view_module, @view_template, assigns
-
-    script type="text/javascript" src="#{Routes.static_path(@conn, "/js/app.js")}"
+    div id="index"
+    = if Mix.env() !== :prod do
+      script type="module" src="https://localhost:#{System.get_env("PORT_UI")}/src/react-refresh-preamble.ts"
+      script type="module" src="https://localhost:#{System.get_env("PORT_UI")}/@vite/client"
+      script type="module" src="https://localhost:#{System.get_env("PORT_UI")}/src/index.tsx"
+    - else
+      script type="module" src="#{Routes.static_path(@conn, "/src/index.tsx")}"
