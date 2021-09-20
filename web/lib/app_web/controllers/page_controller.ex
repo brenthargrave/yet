@@ -2,7 +2,8 @@ defmodule AppWeb.PageController do
   use AppWeb, :controller
 
   def index(conn, _params) do
-    send_file(conn, 200, "priv/static/index.html")
+    render(conn, "index.html")
+
     # TODO: https://vitejs.dev/guide/backend-integration.html
     # js_path =
     #   if Mix.env() != :prod,
