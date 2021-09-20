@@ -23,4 +23,8 @@ config :app, App.Repo,
   url: System.get_env("DATABASE_URL"),
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 
+ config :phoenix, :template_engines,
+    slim: PhoenixSlime.Engine,
+    slime: PhoenixSlime.Engine
+
 import_config "#{Mix.env()}.exs"
