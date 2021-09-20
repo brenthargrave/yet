@@ -15,4 +15,7 @@ html lang="en"
       script type="module" src="https://localhost:#{System.get_env("PORT_UI")}/@vite/client"
       script type="module" src="https://localhost:#{System.get_env("PORT_UI")}/src/index.tsx"
     - else
-      script type="module" src="#{Routes.static_path(@conn, "/src/index.tsx")}"
+      / script type="module" src="#{Routes.static_path(@conn, "/src/index.tsx")}"
+      / https://github.com/mindreframer/vite_phx
+      script type="module" src="#{Vite.Manifest.main_js()}"
+      link rel="modulepreload" href="#{Vite.Manifest.vendor_js()}"

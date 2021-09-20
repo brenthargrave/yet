@@ -27,4 +27,9 @@ config :app, App.Repo,
     slim: PhoenixSlime.Engine,
     slime: PhoenixSlime.Engine
 
+config :vite_phx,
+  release_app: :app,
+  environment: Mix.env(),
+  vite_manifest: "priv/static/manifest.json"
+
 import_config "#{Mix.env()}.exs"
