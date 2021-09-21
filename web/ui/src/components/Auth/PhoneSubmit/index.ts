@@ -10,7 +10,7 @@ export const PhoneSubmit = () => {
   const onChangePhone: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     const { value } = event.currentTarget
     setPhone(value)
-    // TODO: this is too sluggish; use rxjs
+    // TODO: too sluggish; use rxjs
     const { isValid } = validatePhone(value, {
       country: "USA",
       strictDetection: true,
