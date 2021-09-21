@@ -1,5 +1,4 @@
 import { h1 } from "@cycle/react-dom"
-// import { Stack, Button } from "@mui/material"
 
 const logo = h1(`hello, world!`)
 // const button = h(
