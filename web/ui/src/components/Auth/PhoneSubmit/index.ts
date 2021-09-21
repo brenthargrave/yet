@@ -5,8 +5,9 @@ import { view } from "./view"
 
 export const PhoneSubmit = () => {
   const [phone, setPhone] = useState("")
+  const [isDisabled, setDisabled] = useState<boolean>(true)
   const onChangePhone: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     setPhone(event.currentTarget.value)
   }
-  return h(view, { phone, onChangePhone })
+  return h(view, { phone, onChangePhone, isDisabled })
 }

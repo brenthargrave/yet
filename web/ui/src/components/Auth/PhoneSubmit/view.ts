@@ -15,8 +15,9 @@ const size = "lg"
 interface Props {
   phone: string
   onChangePhone: React.ChangeEventHandler<HTMLInputElement>
+  isDisabled: boolean
 }
-export const view = ({ phone, onChangePhone }: Props) =>
+export const view = ({ phone, onChangePhone, isDisabled }: Props) =>
   h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center", margin: "4" }, [
       h(Heading, { size }, t("auth.tel.entry.cta")),
@@ -34,6 +35,10 @@ export const view = ({ phone, onChangePhone }: Props) =>
           onChange: onChangePhone,
         }),
       ]),
-      h(Button, { size, width: "100%" }, t(`auth.tel.entry.submit`)),
+      h(
+        Button,
+        { isDisabled, size, width: "100%" },
+        t(`auth.tel.entry.submit`)
+      ),
     ]),
   ])
