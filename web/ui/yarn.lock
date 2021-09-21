@@ -2662,6 +2662,11 @@ path-type@^4.0.0:
   resolved "https://registry.npmjs.org/path-type/-/path-type-4.0.0.tgz"
   integrity sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==
 
+phone@3.1.8:
+  version "3.1.8"
+  resolved "https://registry.yarnpkg.com/phone/-/phone-3.1.8.tgz#6e348512539c9df81bf07fddb3ed3e2ec7e0c66e"
+  integrity sha512-eyneQKbBwhy6PLYgkioO4CcocMUrFHh4WEfYl1A3PpiQK9tiP0ABKU4yhs7F1URKDbp+oeI8rbJU0+8uMgWfBQ==
+
 picomatch@^2.2.2, picomatch@^2.2.3:
   version "2.3.0"
   resolved "https://registry.npmjs.org/picomatch/-/picomatch-2.3.0.tgz"
