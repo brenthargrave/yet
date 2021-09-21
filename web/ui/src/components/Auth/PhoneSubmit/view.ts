@@ -1,4 +1,5 @@
 import { h } from "@cycle/react"
+import React from "react"
 import {
   InputAddon,
   Button,
@@ -16,8 +17,9 @@ interface Props {
   phone: string
   onChangePhone: React.ChangeEventHandler<HTMLInputElement>
   isDisabled: boolean
+  onSubmit: React.FormEventHandler<HTMLButtonElement>
 }
-export const view = ({ phone, onChangePhone, isDisabled }: Props) =>
+export const view = ({ phone, onChangePhone, isDisabled, onSubmit }: Props) =>
   h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center", margin: "4" }, [
       h(Heading, { size }, t("auth.tel.entry.cta")),
@@ -36,7 +38,7 @@ export const view = ({ phone, onChangePhone, isDisabled }: Props) =>
       ]),
       h(
         Button,
-        { isDisabled, size, width: "100%" },
+        { isDisabled, size, width: "100%", onSubmit },
         t(`auth.tel.entry.submit`)
       ),
     ]),
