@@ -45,7 +45,8 @@ defmodule App.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:phoenix_slime, github: "slime-lang/phoenix_slime", ref: "dc451d8" },
-      {:vite_phx, "~> 0.2"}
+      {:vite_phx, "~> 0.2"},
+      {:absinthe_phoenix, "~> 2.0.0"}
     ]
   end
 
