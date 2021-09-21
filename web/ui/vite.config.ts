@@ -2,7 +2,7 @@ import { defineConfig } from "vite"
 import reactRefresh from "@vitejs/plugin-react-refresh"
 
 import fs from "fs"
-import path from "path"
+import path, { resolve } from "path"
 
 let key
 let cert
@@ -31,6 +31,12 @@ export default defineConfig({
     manifest: true,
     rollupOptions: {
       input: "/src/index.tsx",
+    },
+  },
+  resolve: {
+    // https://git.io/Jz4f5
+    alias: {
+      "~": resolve(__dirname, "src"),
     },
   },
 })
