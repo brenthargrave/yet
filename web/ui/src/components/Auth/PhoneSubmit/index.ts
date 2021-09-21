@@ -8,9 +8,14 @@ export const PhoneSubmit = () => {
   const [phone, setPhone] = useState("")
   const [isDisabled, setDisabled] = useState<boolean>(true)
   const onChangePhone: React.ChangeEventHandler<HTMLInputElement> = (event) => {
-    setPhone(event.currentTarget.value)
-    const { isValid } = validatePhone(phone, { country: "USA" })
-    setDisabled(!isDisabled)
+    const { value } = event.currentTarget
+    setPhone(value)
+    // TODO: this is too sluggish; use rxjs
+    const { isValid } = validatePhone(value, {
+      country: "USA",
+      strictDetection: true,
+    })
+    setDisabled(!isValid)
   }
   return h(view, { phone, onChangePhone, isDisabled })
 }

@@ -29,7 +29,6 @@ export const view = ({ phone, onChangePhone, isDisabled }: Props) =>
           type: "tel",
           placeholder: t("auth.tel.entry.placeholder"),
           isRequired: true,
-          // TODO: validate phone format
           pattern: "[0-9]{3}-[0-9]{3}-[0-9]{4}",
           value: phone,
           onChange: onChangePhone,
