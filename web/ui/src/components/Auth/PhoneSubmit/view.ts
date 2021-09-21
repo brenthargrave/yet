@@ -15,6 +15,7 @@ import { t } from "~/i18n"
 const size = "lg"
 
 export const view = () =>
+  // TODO: strugglign w/ rx or hooks
   h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center", margin: "4" }, [
       h(Heading, { size }, t("auth.tel.entry.cta")),
