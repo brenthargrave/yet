@@ -34,6 +34,9 @@ module.exports = {
     // ],
     "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
     "import/no-extraneous-dependencies": "off",
+    "default-case": "off", // rely on ts
+    "no-shadow": "off", // bug: incorrectly flags enum defs
+    "consistent-return": "off", // bug: incorrectly flags enum defs
   },
   settings: {
     "import/resolver": "node",
