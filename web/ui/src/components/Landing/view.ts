@@ -1,22 +1,8 @@
-import { h1 } from "@cycle/react-dom"
+import { h } from "@cycle/react"
+import { Heading, Stack } from "@chakra-ui/react"
 
-const logo = h1(`hello, world!`)
-// const button = h(
-//   Button,
-//   {
-//     variant: "outlined",
-//   },
-//   `Sign up`
-// )
-
-export const view = () => logo
-// h(
-//   Stack,
-//   {
-//     direction: "column",
-//     justifyContent: "center",
-//     alignItems: "center",
-//     spacing: 2,
-//   },
-//   [logo, button]
-// )
+// TODO: wrap compnents w/ props
+export const view = () =>
+  h(Stack, { direction: "column", width: "100vw", height: "100vh" }, [
+    h(Heading, {}, "TBD"),
+  ])
