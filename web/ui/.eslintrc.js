@@ -25,7 +25,13 @@ module.exports = {
     "import/extensions": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/ban-ts-comment": "off",
-    // TODO "sort-imports": "error",
+    // "sort-imports": [
+    //   "error",
+    //   {
+    //     allowSeparatedGroups: true,
+    //     ignoreMemberSort: true,
+    //   },
+    // ],
     "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
     "import/no-extraneous-dependencies": "off",
   },
