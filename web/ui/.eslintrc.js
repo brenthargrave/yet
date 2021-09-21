@@ -32,7 +32,7 @@ module.exports = {
     //     ignoreMemberSort: true,
     //   },
     // ],
-    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+    "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
     "import/no-extraneous-dependencies": "off",
   },
   settings: {
