@@ -1,7 +1,13 @@
 type Event {
-  name: String
+  name: String!
 }
 
-type User {
-  name: String
-}
+# TODO: define queries/mutations in SDL
+# type Query {
+#   events: [Event!]!
+# }
+# mutation CreateEvent(name: String!) {
+#   createEvent {
+#     name
+#   }
+# }
