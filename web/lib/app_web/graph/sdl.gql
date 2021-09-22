@@ -1,0 +1,7 @@
+type Event {
+  name: String
+}
+
+type User {
+  name: String
+}

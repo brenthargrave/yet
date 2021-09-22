@@ -1,10 +1,7 @@
 defmodule AppWeb.Graph.Schema do
   use Absinthe.Schema
 
-  @desc "An event"
-  object :event do
-    field(:name, :string)
-  end
+  import_sdl(path: Path.absname("./sdl.gql", __DIR__))
 
   query do
     field :events, list_of(non_null(:event)) do
@@ -13,5 +10,4 @@ defmodule AppWeb.Graph.Schema do
       end)
     end
   end
-
 end
