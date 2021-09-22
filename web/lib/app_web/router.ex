@@ -25,6 +25,20 @@ defmodule AppWeb.Router do
     end
   end
 
+  forward(
+    "/graphql",
+    Absinthe.Plug,
+    schema: AppWeb.Graph.Schema
+  )
+
+  # https://goo.gl/4Q9MEx
+  forward(
+    "/graphiql",
+    Absinthe.Plug.GraphiQL,
+    schema: AppWeb.Graph.Schema,
+    interface: :playground
+  )
+
   scope "/", AppWeb do
     pipe_through(:browser)
 
