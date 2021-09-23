@@ -37,6 +37,8 @@ module.exports = {
     "default-case": "off", // rely on ts
     "no-shadow": "off", // bug: incorrectly flags enum defs
     "consistent-return": "off", // bug: incorrectly flags enum defs
+    "react/jsx-filename-extension": [1, { extensions: [".ts", ".tsx"] }],
+    "react/jsx-props-no-spreading": "off",
   },
   settings: {
     "import/resolver": "node",
