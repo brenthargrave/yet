@@ -2,6 +2,10 @@ type Event {
   name: String!
 }
 
+# type PhoneInput {
+#   e164: String!
+# }
+
 # TODO: define queries/mutations in SDL
 # type Query {
 #   events: [Event!]!

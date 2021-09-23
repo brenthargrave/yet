@@ -18,10 +18,18 @@ interface Props {
   onChangePhone: React.ChangeEventHandler<HTMLInputElement>
   isDisabled: boolean
   onSubmit: React.FormEventHandler<HTMLButtonElement>
+  isLoading: boolean
 }
-export const view = ({ phone, onChangePhone, isDisabled, onSubmit }: Props) =>
+export const View = ({
+  phone,
+  onChangePhone,
+  isDisabled,
+  onSubmit,
+  isLoading,
+}: Props) =>
   h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center", margin: "4" }, [
+      // TODO: back button? nav?
       h(Heading, { size }, t("auth.tel.entry.cta")),
       // TODO: focus on first render
       h(InputGroup, { size }, [
@@ -38,7 +46,7 @@ export const view = ({ phone, onChangePhone, isDisabled, onSubmit }: Props) =>
       ]),
       h(
         Button,
-        { isDisabled, size, width: "100%", onSubmit },
+        { isDisabled, size, width: "100%", onSubmit, isLoading },
         t(`auth.tel.entry.submit`)
       ),
     ]),

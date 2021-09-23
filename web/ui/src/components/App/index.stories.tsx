@@ -3,7 +3,8 @@ import { h } from "@cycle/react"
 
 import { App } from "."
 import { Landing } from "~/components/Landing"
-import { PhoneSubmit } from "../Auth/PhoneSubmit"
+import { PhoneVerify } from "~/components/Auth/PhoneVerify"
+import { PhoneSubmit } from "~/components/Auth/PhoneSubmit"
 
 export default {
   title: "App/Onboarding",
@@ -25,3 +26,6 @@ export const Pitch: ComponentStory<typeof Landing> = () => h(Landing)
 
 export const Phone_Submit: ComponentStory<typeof PhoneSubmit> = () =>
   h(PhoneSubmit)
+
+export const Phone_Verify: ComponentStory<typeof PhoneVerify> = () =>
+  h(PhoneVerify)

@@ -1,0 +1,10 @@
+overwrite: true
+schema: "http://localhost:${PORT:5000}/graphql"
+documents: "src/**/*.graphql"
+generates:
+  src/graph/generated/index.ts:
+    plugins:
+      # src: https://the-guild.dev/blog/graphql-with-typescript-done-right
+      - typescript
+      - typescript-operations
+      - typed-document-node

@@ -1,5 +1,6 @@
 import { defineConfig } from "vite"
 import reactRefresh from "@vitejs/plugin-react-refresh"
+import codegen from "vite-plugin-graphql-codegen"
 
 import fs from "fs"
 import path, { resolve } from "path"
@@ -19,7 +20,7 @@ const port: number = parseInt(PORT_UI ?? "8080", 10)
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [reactRefresh()],
+  plugins: [reactRefresh(), codegen()],
   server: {
     https: { key, cert },
     strictPort: true,

@@ -44,4 +44,6 @@ module.exports = {
   settings: {
     "import/resolver": "node",
   },
+  // ignore graphql-codegen artifacts
+  ignorePatterns: ["**/generated/*.ts"],
 }

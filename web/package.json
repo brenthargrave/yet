@@ -2,7 +2,11 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "deploy": "bash ./scripts/deploy.sh"
+    "deploy": "bash ./scripts/deploy.sh",
+    "watch:graph": "./scripts/watch-graph.sh"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "chokidar-cli": "3.0.0"
+  }
 }
