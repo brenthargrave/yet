@@ -1,11 +1,14 @@
-import { useQuery } from "@apollo/client"
+import { useQuery, useMutation } from "@apollo/client"
 import { h } from "@cycle/react"
 import { useState } from "react"
 import { useAsync } from "react-use"
 
 import type { Graph } from "~/components/App"
 import { PhoneSubmit } from "./PhoneSubmit"
-import { GetEventsDocument } from "~/graph/generated"
+import {
+  CreateVerificationDocument,
+  GetEventsDocument,
+} from "~/graph/generated"
 
 enum Step {
   Submit,
@@ -18,23 +21,24 @@ interface Props {
 }
 
 export const Auth = ({ graph }: Props) => {
-  const { data } = useQuery(GetEventsDocument)
+  // const { data } = useQuery(GetEventsDocument)
+  const [createVerification, { data, loading }] = useMutation(
+    CreateVerificationDocument
+  )
 
   useAsync(async () => {
-    const {
-      data: { events },
-    } = await graph.query({ query: GetEventsDocument })
+    // const result = await createVerification({
+    //   variables: {
+    //     input: { e164: "+19099103449" },
+    //   },
+    // })
+    // result.data?.createVerification?.status
 
     // const {
     //   data: { events },
-    //   error,
-    //   errors,
-    //   loading,
-    // } = result
-    // console.debug(loading)
-    // console.error(error)
-    // console.error(errors)
-    // console.debug(events)
+    // } = await graph.query({ query: GetEventsDocument })
+    const result = await graph.mutate({ mutation: CreateVerificationDocument })
+    // result.data?.createVerification?.status
   })
 
   const [step, setStep] = useState(Step.Submit)

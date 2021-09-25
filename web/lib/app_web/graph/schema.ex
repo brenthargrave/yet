@@ -31,6 +31,7 @@ defmodule AppWeb.Graph.Schema do
   input_object :create_verification_input do
     # TODO: custom scalar for e164
     field :e164, non_null(:string)
+    # TODO: resolver
   end
 
   mutation do

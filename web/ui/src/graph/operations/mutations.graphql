@@ -1,0 +1,5 @@
+mutation CreateVerification($input: CreateVerificationInput!) {
+  createVerification(input:$input) {
+    status
+  }
+}

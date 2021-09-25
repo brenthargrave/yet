@@ -36,7 +36,7 @@ defmodule AppWeb.Router do
     "/graphiql",
     Absinthe.Plug.GraphiQL,
     schema: AppWeb.Graph.Schema,
-    interface: :playground
+    interface: :advanced
   )
 
   scope "/", AppWeb do
