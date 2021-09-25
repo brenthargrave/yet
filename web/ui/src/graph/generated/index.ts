@@ -12,15 +12,40 @@ export type Scalars = {
   Float: number;
 };
 
+export type CreateVerificationInput = {
+  e164: Scalars['String'];
+};
+
 export type Event = {
   __typename?: 'Event';
   name: Scalars['String'];
+};
+
+export type RootMutationType = {
+  __typename?: 'RootMutationType';
+  createVerification?: Maybe<Verification>;
+};
+
+
+export type RootMutationTypeCreateVerificationArgs = {
+  input: CreateVerificationInput;
 };
 
 export type RootQueryType = {
   __typename?: 'RootQueryType';
   events: Array<Event>;
 };
+
+export type Verification = {
+  __typename?: 'Verification';
+  status: VerificationStatus;
+};
+
+export enum VerificationStatus {
+  Approved = 'APPROVED',
+  Canceled = 'CANCELED',
+  Pending = 'PENDING'
+}
 
 export type GetEventsQueryVariables = Exact<{ [key: string]: never; }>;
 
