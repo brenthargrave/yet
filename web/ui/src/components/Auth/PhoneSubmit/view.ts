@@ -24,10 +24,11 @@ export const View = ({
   phone,
   onChangePhone,
   isDisabled,
-  onSubmit,
+  onSubmit: _onSubmit,
   isLoading,
-}: Props) =>
-  h(Center, { width: "100vw", height: "100vh" }, [
+}: Props) => {
+  const onSubmit = () => console.debug("submit")
+  return h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center", margin: "4" }, [
       // TODO: back button? nav?
       h(Heading, { size }, t("auth.tel.entry.cta")),
@@ -51,3 +52,4 @@ export const View = ({
       ),
     ]),
   ])
+}

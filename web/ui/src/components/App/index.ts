@@ -12,6 +12,7 @@ import { Auth } from "~/components/Auth"
 
 export type Graph = ApolloClient<NormalizedCacheObject>
 const client = new ApolloClient({
+  // TODO: use env var
   uri: "https://localhost:5443/graphql",
   cache: new InMemoryCache(),
 })
