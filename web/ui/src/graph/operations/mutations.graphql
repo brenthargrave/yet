@@ -1,5 +1,13 @@
 mutation CreateVerification($input: CreateVerificationInput!) {
   createVerification(input:$input) {
-    status
+    successful
+    messages {
+      code
+      field
+      message
+    }
+    result {
+      status
+    }
   }
 }

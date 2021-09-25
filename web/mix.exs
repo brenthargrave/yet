@@ -44,9 +44,10 @@ defmodule App.MixProject do
       {:telemetry_poller, "~> 0.4"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
-      {:phoenix_slime, github: "slime-lang/phoenix_slime", ref: "dc451d8" },
+      {:phoenix_slime, github: "slime-lang/phoenix_slime", ref: "dc451d8"},
       {:vite_phx, "~> 0.2"},
-      {:absinthe_phoenix, "~> 2.0.0"}
+      {:absinthe_phoenix, "~> 2.0.0"},
+      {:absinthe_error_payload, "~> 1.0"}
     ]
   end
 

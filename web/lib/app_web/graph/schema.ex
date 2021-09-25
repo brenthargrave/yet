@@ -34,8 +34,12 @@ defmodule AppWeb.Graph.Schema do
     # TODO: resolver
   end
 
+  import AbsintheErrorPayload.Payload
+  import_types(AbsintheErrorPayload.ValidationMessageTypes)
+  payload_object(:verification_payload, :verification)
+
   mutation do
-    field :create_verification, type: :verification do
+    field :create_verification, type: :verification_payload do
       arg(:input, non_null(:create_verification_input))
     end
   end
