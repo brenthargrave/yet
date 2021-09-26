@@ -3,11 +3,13 @@ import { h } from "@cycle/react"
 
 import { App } from "."
 import { View as LandingView } from "~/components/Landing/View"
-import { View as PhoneVerify } from "~/components/Auth/PhoneVerify/View"
-import { View as PhoneSubmit } from "~/components/Auth/PhoneSubmit"
+import {
+  View as PhoneSubmitView,
+  Props as PhoneSubmitViewProps,
+} from "~/components/Auth/PhoneSubmit/View"
 
 export default {
-  title: "Onboarding",
+  title: "App / Onboarding",
   component: App,
 } as Meta
 
@@ -20,10 +22,9 @@ export default {
 //   label: "Button",
 // }
 
-// TODO
-// export const Landing: Story<LandingView> = () => h(LandingView)
+export const Landing: Story<LandingView> = () => h(LandingView)
+Landing.storyName = "Landing page"
 
-// export const Phone_Submit: Story<PhoneSubmit> = () => h(PhoneSubmit)
-
-// export const Phone_Verify: ComponentStory<typeof PhoneVerify> = () =>
-//   h(PhoneVerify)
+export const PhoneSubmit: Story<PhoneSubmitViewProps> = (args) =>
+  h(PhoneSubmitView, { ...args })
+PhoneSubmit.storyName = "Submit phone"

@@ -13,7 +13,7 @@ import { t } from "~/i18n"
 
 const size = "lg"
 
-interface Props {
+export interface Props {
   phone: string
   onChangePhone: React.ChangeEventHandler<HTMLInputElement>
   isDisabled: boolean

@@ -6,8 +6,6 @@ import { useApolloClient } from "@apollo/client"
 import { View } from "./View"
 import { GetEventsDocument } from "~/graph/generated"
 
-export { View }
-
 export const PhoneSubmit = () => {
   const [phone, setPhone] = useState("")
   const [isDisabled, setDisabled] = useState<boolean>(true)
