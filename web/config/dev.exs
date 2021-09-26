@@ -14,6 +14,7 @@ config :app, AppWeb.Endpoint,
     #   "./node_modules/vite/bin/vite.js",
     #   cd: Path.expand("../ui", __DIR__)
     # ]
+    # TODO: storybook watcher
   ],
   https: [
     port: System.get_env("PORT_SSL"),
