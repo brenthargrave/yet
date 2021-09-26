@@ -4,6 +4,8 @@ import {
   ButtonProps,
   Center as _Center,
   CenterProps,
+  Divider as _Divider,
+  DividerProps,
   Heading as _Heading,
   HeadingProps,
   Input as _Input,
@@ -20,6 +22,7 @@ import {
 
 export const Button = (props: ButtonProps) => h(_Button, props)
 export const Center = (props: CenterProps) => h(_Center, props)
+export const Divider = (props: DividerProps) => h(_Divider, props)
 export const Heading = (props: HeadingProps) => h(_Heading, props)
 export const Input = (props: InputProps) => h(_Input, props)
 export const InputAddon = (props: InputAddonProps) => h(_InputAddon, props)
