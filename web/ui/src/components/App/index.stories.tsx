@@ -1,18 +1,15 @@
-import { ComponentStory, ComponentMeta } from "@storybook/react"
+import { Story, Meta } from "@storybook/react"
 import { h } from "@cycle/react"
 
 import { App } from "."
 import { View as LandingView } from "~/components/Landing/View"
 import { View as PhoneVerify } from "~/components/Auth/PhoneVerify/View"
-import { PhoneSubmit } from "~/components/Auth/PhoneSubmit"
+import { View as PhoneSubmit } from "~/components/Auth/PhoneSubmit"
 
 export default {
   title: "Onboarding",
   component: App,
-  argTypes: {
-    // backgroundColor: { control: "color" },
-  },
-} as ComponentMeta<typeof App>
+} as Meta
 
 // TODO
 // @ts-ignore
@@ -23,10 +20,10 @@ export default {
 //   label: "Button",
 // }
 
-export const Landing: ComponentStory<typeof LandingView> = () => h(LandingView)
+// TODO
+// export const Landing: Story<LandingView> = () => h(LandingView)
 
-export const Phone_Submit: ComponentStory<typeof PhoneSubmit> = () =>
-  h(PhoneSubmit)
+// export const Phone_Submit: Story<PhoneSubmit> = () => h(PhoneSubmit)
 
-export const Phone_Verify: ComponentStory<typeof PhoneVerify> = () =>
-  h(PhoneVerify)
+// export const Phone_Verify: ComponentStory<typeof PhoneVerify> = () =>
+//   h(PhoneVerify)
