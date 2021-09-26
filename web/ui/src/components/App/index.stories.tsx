@@ -2,7 +2,7 @@ import { ComponentStory, ComponentMeta } from "@storybook/react"
 import { h } from "@cycle/react"
 
 import { App } from "."
-import { Landing } from "~/components/Landing"
+import { View as LandingView } from "~/components/Landing/View"
 import { View as PhoneVerify } from "~/components/Auth/PhoneVerify/View"
 import { PhoneSubmit } from "~/components/Auth/PhoneSubmit"
 
@@ -14,6 +14,7 @@ export default {
   },
 } as ComponentMeta<typeof App>
 
+// TODO
 // @ts-ignore
 // const Story: ComponentStory<typeof App> = (args) => h(App, args)
 // export const Onboarding = Story.bind({})
@@ -22,7 +23,7 @@ export default {
 //   label: "Button",
 // }
 
-export const Pitch: ComponentStory<typeof Landing> = () => h(Landing)
+export const Landing: ComponentStory<typeof LandingView> = () => h(LandingView)
 
 export const Phone_Submit: ComponentStory<typeof PhoneSubmit> = () =>
   h(PhoneSubmit)

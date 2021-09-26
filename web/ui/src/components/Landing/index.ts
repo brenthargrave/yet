@@ -1,5 +1,5 @@
 import { h } from "@cycle/react"
 
-import { view } from "./view"
+import { View } from "./View"
 
-export const Landing = () => h(view)
+export const Landing = () => h(View)
