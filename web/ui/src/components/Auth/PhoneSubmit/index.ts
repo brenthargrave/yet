@@ -1,8 +1,10 @@
 import { h } from "@cycle/react"
 import { useState } from "react"
 import { phone as validatePhone } from "phone"
+import { useApolloClient } from "@apollo/client"
 
 import { View } from "./View"
+import { GetEventsDocument } from "~/graph/generated"
 
 export const PhoneSubmit = () => {
   const [phone, setPhone] = useState("")
@@ -17,20 +19,13 @@ export const PhoneSubmit = () => {
     })
     setDisabled(!isValid)
   }
-  const onSubmit = async () => {
-    console.debug("submit")
+  const client = useApolloClient()
+  const onClickSubmit = async () => {
     setDisabled(true)
     setLoading(true)
-    /*
-    - phx/absinthe mutation: SubmitPhone
-    - generate local schema/queries
-    - call w/ apollo
-    TODO submit phone to api
-      ok -> call onSuccess(), how nav to next step?
-      error -> where render error? how make preview?
-
-     */
+    const result = await client.query({ query: GetEventsDocument })
+    console.debug(result)
   }
 
-  return h(View, { phone, onChangePhone, isDisabled, onSubmit, isLoading })
+  return h(View, { phone, onChangePhone, isDisabled, onClickSubmit, isLoading })
 }

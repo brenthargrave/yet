@@ -17,17 +17,16 @@ interface Props {
   phone: string
   onChangePhone: React.ChangeEventHandler<HTMLInputElement>
   isDisabled: boolean
-  onSubmit: React.FormEventHandler<HTMLButtonElement>
+  onClickSubmit: React.FormEventHandler<HTMLButtonElement>
   isLoading: boolean
 }
 export const View = ({
   phone,
   onChangePhone,
   isDisabled,
-  onSubmit: _onSubmit,
+  onClickSubmit,
   isLoading,
 }: Props) => {
-  const onSubmit = () => console.debug("submit")
   return h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center", margin: "4" }, [
       // TODO: back button? nav?
@@ -47,7 +46,7 @@ export const View = ({
       ]),
       h(
         Button,
-        { isDisabled, size, width: "100%", onSubmit, isLoading },
+        { isDisabled, size, width: "100%", onClick: onClickSubmit, isLoading },
         t(`auth.tel.entry.submit`)
       ),
     ]),

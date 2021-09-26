@@ -1,28 +1,19 @@
 import { h } from "@cycle/react"
-import { ChakraProvider } from "@chakra-ui/react"
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  NormalizedCacheObject,
-} from "@apollo/client"
+import { Fragment } from "react"
 
+import type { Client } from "graph"
 import { Landing } from "~/components/Landing"
 import { Auth } from "~/components/Auth"
+import { useRoute } from "~/router"
 
-export type Graph = ApolloClient<NormalizedCacheObject>
-const client = new ApolloClient({
-  // TODO: use env var
-  uri: "https://localhost:5443/graphql",
-  cache: new InMemoryCache(),
-})
+interface Props {
+  client: Client
+}
 
-export const App = () =>
-  h(ChakraProvider, {}, [
-    h(
-      ApolloProvider,
-      // @ts-ignore
-      { client },
-      [h(Auth, { graph: client })]
-    ),
+export const App = ({ client }: Props) => {
+  const route = useRoute()
+  return h(Fragment, [
+    route.name === "home" && h(Landing),
+    route.name === "in" && h(Auth, { graph: client }),
   ])
+}
