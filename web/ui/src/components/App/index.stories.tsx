@@ -3,11 +3,11 @@ import { h } from "@cycle/react"
 
 import { App } from "."
 import { Landing } from "~/components/Landing"
-import { PhoneVerify } from "~/components/Auth/PhoneVerify"
+import { View as PhoneVerify } from "~/components/Auth/PhoneVerify/View"
 import { PhoneSubmit } from "~/components/Auth/PhoneSubmit"
 
 export default {
-  title: "App/Onboarding",
+  title: "Onboarding",
   component: App,
   argTypes: {
     // backgroundColor: { control: "color" },
