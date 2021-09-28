@@ -1,5 +1,6 @@
 import { h } from "@cycle/react"
 import React from "react"
+import { form } from "@cycle/react-dom"
 import {
   InputAddon,
   Button,
@@ -17,14 +18,14 @@ export interface Props {
   phone: string
   onChangePhone: React.ChangeEventHandler<HTMLInputElement>
   isDisabled: boolean
-  onClickSubmit: React.FormEventHandler<HTMLButtonElement>
+  onSubmit: React.FormEventHandler<HTMLButtonElement>
   isLoading: boolean
 }
 export const View = ({
   phone,
   onChangePhone,
   isDisabled,
-  onClickSubmit,
+  onSubmit,
   isLoading,
 }: Props) => {
   return h(Center, { width: "100vw", height: "100vh" }, [
@@ -32,23 +33,25 @@ export const View = ({
       // TODO: back button? nav?
       h(Heading, { size }, t("auth.tel.entry.cta")),
       // TODO: focus on first render
-      h(InputGroup, { size }, [
-        // TODO: support int'l country codes
-        h(InputAddon, { children: "+1" }),
-        h(Input, {
-          type: "tel",
-          placeholder: t("auth.tel.entry.placeholder"),
-          isRequired: true,
-          pattern: "[0-9]{3}-[0-9]{3}-[0-9]{4}",
-          value: phone,
-          onChange: onChangePhone,
-        }),
+      form({ onSubmit }, [
+        h(InputGroup, { size }, [
+          // TODO: support int'l country codes
+          h(InputAddon, { children: "+1" }),
+          h(Input, {
+            type: "tel",
+            placeholder: t("auth.tel.entry.placeholder"),
+            isRequired: true,
+            pattern: "[0-9]{3}-?[0-9]{3}-?[0-9]{4}",
+            value: phone,
+            onChange: onChangePhone,
+          }),
+        ]),
+        h(
+          Button,
+          { isDisabled, size, width: "100%", isLoading },
+          t(`auth.tel.entry.submit`)
+        ),
       ]),
-      h(
-        Button,
-        { isDisabled, size, width: "100%", onClick: onClickSubmit, isLoading },
-        t(`auth.tel.entry.submit`)
-      ),
     ]),
   ])
 }
