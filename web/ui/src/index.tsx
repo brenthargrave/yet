@@ -5,6 +5,7 @@ import { ChakraProvider } from "@chakra-ui/react"
 import { ApolloProvider } from "@apollo/client"
 import * as Sentry from "@sentry/react"
 import { Integrations } from "@sentry/tracing"
+import { h1 } from "@cycle/react-dom"
 
 import { RouteProvider } from "~/router"
 import { App } from "~/components/App"
@@ -23,14 +24,16 @@ Sentry.init({
 
 ReactDOM.render(
   h(React.StrictMode, [
-    h(RouteProvider, [
-      h(ChakraProvider, {}, [
-        h(
-          ApolloProvider,
-          // @ts-ignore
-          { client },
-          [h(App)]
-        ),
+    h(Sentry.ErrorBoundary, { fallback: h1("ERROR") }, [
+      h(RouteProvider, [
+        h(ChakraProvider, {}, [
+          h(
+            ApolloProvider,
+            // @ts-ignore
+            { client },
+            [h(App)]
+          ),
+        ]),
       ]),
     ]),
   ]),
