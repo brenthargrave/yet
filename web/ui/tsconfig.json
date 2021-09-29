@@ -10,5 +10,9 @@
     // "sourceMap": true,
     // "inlineSources": true,
     // "sourceRoot": "/"
+    // TODO: restore lib checks once deps fixed
+    // https://github.com/chakra-ui/chakra-ui/issues/2955
+    // https://github.com/streamich/react-use/pull/2101
+    "skipLibCheck": true,
   }
 }
