@@ -29,7 +29,7 @@ export const PhoneSubmit = () => {
     if (data) console.debug(data)
     if (errors) console.error(errors)
     // TODO:
-    // error -> render errors
+    // error -> render errors globally, send non-user errors to sentry
     // ok -> next screen
   }
 

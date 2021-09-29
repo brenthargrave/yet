@@ -4,16 +4,16 @@ import { Fragment } from "react"
 import type { Client } from "graph"
 import { Landing } from "~/components/Landing"
 import { Auth } from "~/components/Auth"
-import { useRoute } from "~/router"
+import { useRoute, routes } from "~/router"
 
 interface Props {
   client: Client
 }
 
 export const App = ({ client }: Props) => {
-  const route = useRoute()
+  const currentRoute = useRoute()
   return h(Fragment, [
-    route.name === "home" && h(Landing),
-    route.name === "in" && h(Auth, { graph: client }),
+    currentRoute.name === "home" && h(Landing),
+    currentRoute.name === "in" && h(Auth, { graph: client }),
   ])
 }
