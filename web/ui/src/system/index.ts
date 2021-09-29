@@ -1,5 +1,13 @@
 import { h } from "@cycle/react"
 import {
+  Alert as _Alert,
+  AlertProps,
+  AlertIcon as _AlertIcon,
+  AlertIconProps,
+  AlertTitle as _AlertTitle,
+  AlertTitleProps,
+  AlertDescription as _AlertDescription,
+  AlertDescriptionProps,
   Button as _Button,
   ButtonProps,
   Center as _Center,
@@ -20,6 +28,11 @@ import {
   TextProps,
 } from "@chakra-ui/react"
 
+export const Alert = (props: AlertProps) => h(_Alert, props)
+export const AlertIcon = (props: AlertIconProps) => h(_AlertIcon, props)
+export const AlertTitle = (props: AlertTitleProps) => h(_AlertTitle, props)
+export const AlertDescription = (props: AlertDescriptionProps) =>
+  h(_AlertDescription, props)
 export const Button = (props: ButtonProps) => h(_Button, props)
 export const Center = (props: CenterProps) => h(_Center, props)
 export const Divider = (props: DividerProps) => h(_Divider, props)

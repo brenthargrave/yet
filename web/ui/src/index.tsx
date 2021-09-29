@@ -5,11 +5,11 @@ import { ChakraProvider } from "@chakra-ui/react"
 import { ApolloProvider } from "@apollo/client"
 import * as Sentry from "@sentry/react"
 import { Integrations } from "@sentry/tracing"
-import { h1 } from "@cycle/react-dom"
 
 import { RouteProvider } from "~/router"
 import { App } from "~/components/App"
 import { client } from "~/graph"
+import { ErrorAlert } from "~/system/ErrorAlert"
 
 // @ts-ignore
 const { VITE_API_ENV, VITE_SENTRY_DSN, VITE_SENTRY_DEBUG } = import.meta.env
@@ -24,7 +24,7 @@ Sentry.init({
 
 ReactDOM.render(
   h(React.StrictMode, [
-    h(Sentry.ErrorBoundary, { fallback: h1("ERROR") }, [
+    h(Sentry.ErrorBoundary, { fallback: h(ErrorAlert), showDialog: true }, [
       h(RouteProvider, [
         h(ChakraProvider, {}, [
           h(
