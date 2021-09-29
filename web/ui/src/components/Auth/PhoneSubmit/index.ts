@@ -3,10 +3,15 @@ import { useState } from "react"
 import { phone as validatePhone } from "phone"
 import { useMutation } from "@apollo/client"
 
+import { isPresent } from "~/fp"
 import { View } from "./View"
 import { CreateVerificationDocument } from "~/graph/generated"
+import { Context } from "~/context"
 
-export const PhoneSubmit = () => {
+interface Props {
+  context: Context
+}
+export const PhoneSubmit = ({ context }: Props) => {
   const [phone, setPhone] = useState("")
   const [isDisabled, setDisabled] = useState<boolean>(true)
   const [mutate, { loading }] = useMutation(CreateVerificationDocument)
@@ -23,14 +28,13 @@ export const PhoneSubmit = () => {
 
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = async (event) => {
     event.preventDefault()
-    console.debug(event)
     setDisabled(true)
     const { data, errors } = await mutate()
-
-    // if (errors) console.error(errors)
-    // TODO:
-    // error -> render errors globally, send non-user errors to sentry
-    // ok -> next screen
+    if (isPresent(errors)) {
+      context.errors$.next(errors)
+    }
+    // TODO: error -> render errors globally, send non-user errors to sentry
+    // TODO: ok -> next screen
     if (data) console.debug(data)
   }
 
