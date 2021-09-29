@@ -6,5 +6,9 @@
      // https://git.io/Jz4f5
     "baseUrl": "./src",
     "paths": { "~/*": ["./*"] },
+    // TODO: inline sourcemaps https://bit.ly/3ij0FeP
+    // "sourceMap": true,
+    // "inlineSources": true,
+    // "sourceRoot": "/"
   }
 }
