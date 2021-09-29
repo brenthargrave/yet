@@ -1,9 +1,6 @@
 import { useMutation } from "@apollo/client"
 import { h } from "@cycle/react"
-import { useState } from "react"
-import { useAsync } from "react-use"
 
-import type { Graph } from "~/components/App"
 import { PhoneSubmit } from "./PhoneSubmit"
 import { CreateVerificationDocument } from "~/graph/generated"
 
@@ -13,11 +10,7 @@ import { CreateVerificationDocument } from "~/graph/generated"
 //   Confirm,
 // }
 
-interface Props {
-  graph: Graph
-}
-
-export const Auth = ({ graph }: Props) => {
+export const Auth = () => {
   const [createVerification, { data, loading }] = useMutation(
     CreateVerificationDocument
   )
