@@ -27,7 +27,7 @@ export const PhoneSubmit = () => {
     setDisabled(true)
     const { data, errors } = await mutate()
     if (data) console.debug(data)
-    if (errors) console.error(errors)
+    // if (errors) console.error(errors)
     // TODO:
     // error -> render errors globally, send non-user errors to sentry
     // ok -> next screen
