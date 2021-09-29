@@ -2,7 +2,10 @@ import { h } from "@cycle/react"
 import { useState } from "react"
 import { phone as validatePhone } from "phone"
 import { useMutation } from "@apollo/client"
-import { CreateVerificationDocument } from "~/graph/generated"
+import {
+  CreateVerificationDocument,
+  VerificationStatus,
+} from "~/graph/generated"
 
 import { isPresent } from "~/fp"
 import { View } from "./View"
@@ -35,8 +38,13 @@ export const PhoneSubmit = ({ context }: Props) => {
     if (isPresent(errors)) {
       context.errors$.next(errors)
     }
-    // TODO: ok -> next screen
     if (data) console.debug(data)
+    if (data?.createVerification?.successful) {
+      const status: VerificationStatus | undefined =
+        data.createVerification.result?.status
+      const approved = status === VerificationStatus.Approved
+      // TODO: next screen
+    }
   }
 
   return h(View, {
