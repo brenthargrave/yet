@@ -2,10 +2,10 @@ import { h } from "@cycle/react"
 import { useState } from "react"
 import { phone as validatePhone } from "phone"
 import { useMutation } from "@apollo/client"
+import { CreateVerificationDocument } from "~/graph/generated"
 
 import { isPresent } from "~/fp"
 import { View } from "./View"
-import { CreateVerificationDocument } from "~/graph/generated"
 import { Context } from "~/context"
 
 interface Props {
@@ -29,11 +29,12 @@ export const PhoneSubmit = ({ context }: Props) => {
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = async (event) => {
     event.preventDefault()
     setDisabled(true)
-    const { data, errors } = await mutate()
+    const { data, errors } = await mutate({
+      variables: { input: { e164: phone } },
+    })
     if (isPresent(errors)) {
       context.errors$.next(errors)
     }
-    // TODO: error -> render errors globally, send non-user errors to sentry
     // TODO: ok -> next screen
     if (data) console.debug(data)
   }

@@ -41,10 +41,12 @@ defmodule AppWeb.Graph.Schema do
     field :create_verification, type: :verification_payload do
       arg(:input, non_null(:create_verification_input))
       resolve(&create_verification/3)
+      middleware(&build_payload/2)
     end
   end
 
-  defp create_verification(_parent, %{input: %{e164: _e164}} = _args, _resolution) do
-    {:ok, %{status: "pending"}}
+  defp create_verification(_parent, %{input: %{e164: e164}} = _args, _resolution) do
+    IO.puts("e164: #{e164}")
+    {:ok, %{status: :pending}}
   end
 end
