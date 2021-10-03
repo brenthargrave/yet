@@ -8,13 +8,11 @@ config :app, AppWeb.Endpoint,
     yarn: [
       "watch:graph",
       cd: Path.expand("..", __DIR__)
+    ],
+    node: [
+      "./dev.mjs",
+      cd: Path.expand("../ui", __DIR__)
     ]
-    # TODO: fix watcher orphaning vite process: https://bit.ly/3tugRhN
-    # node: [
-    #   "./node_modules/vite/bin/vite.js",
-    #   cd: Path.expand("../ui", __DIR__)
-    # ]
-    # TODO: storybook watcher
   ],
   https: [
     port: System.get_env("PORT_SSL"),
