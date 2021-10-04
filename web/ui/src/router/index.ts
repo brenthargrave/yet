@@ -6,6 +6,10 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
   out: defineRoute("/out"),
 })
 
+// @ts-ignore
+export const isRoute = (route: Route, expectedRoute: Route): boolean =>
+  route.name === expectedRoute.name
+
 const unlisten = session.listen((route) => {
   console.debug(route)
 })

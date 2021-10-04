@@ -10,6 +10,7 @@ import {
 import { isPresent } from "~/fp"
 import { View } from "./View"
 import { Context } from "~/context"
+import { routes } from "~/router"
 
 interface Props {
   context: Context
@@ -45,6 +46,7 @@ export const PhoneSubmit = ({ context }: Props) => {
       const status: VerificationStatus | undefined =
         data.createVerification.result?.status
       const approved = status === VerificationStatus.Approved
+      // if (approved) routes.ho
       // TODO: next screen
     }
   }
