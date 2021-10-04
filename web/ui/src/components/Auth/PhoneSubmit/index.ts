@@ -10,14 +10,14 @@ import {
 import { isPresent } from "~/fp"
 import { View } from "./View"
 import { Context } from "~/context"
-import { routes } from "~/router"
 
 interface Props {
   context: Context
 }
 export const PhoneSubmit = ({ context }: Props) => {
   const [phone, setPhone] = useState("")
-  const [isDisabled, setDisabled] = useState<boolean>(true)
+  const [isButtonDisabled, setButtonDisabled] = useState<boolean>(true)
+  const [isInputDisabled, setInputDisabled] = useState<boolean>(false)
   const [mutate, { loading }] = useMutation(CreateVerificationDocument)
 
   const onChangePhone: React.ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -27,12 +27,13 @@ export const PhoneSubmit = ({ context }: Props) => {
       country: "USA",
       strictDetection: true,
     })
-    setDisabled(!isValid || loading)
+    setButtonDisabled(!isValid || loading)
   }
 
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = async (event) => {
     event.preventDefault()
-    setDisabled(true)
+    setButtonDisabled(true)
+    setInputDisabled(true)
     // TODO: how to forward errors up to global notifications?
     // if use hooks, surely need to wrap the hook?
     const { data, errors } = await mutate({
@@ -48,13 +49,15 @@ export const PhoneSubmit = ({ context }: Props) => {
       const approved = status === VerificationStatus.Approved
       // if (approved) routes.ho
       // TODO: next screen
+      setInputDisabled(false)
     }
   }
 
   return h(View, {
     phone,
     onChangePhone,
-    isDisabled,
+    isButtonDisabled,
+    isInputDisabled,
     onSubmit,
     isLoading: loading,
   })

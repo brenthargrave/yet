@@ -17,38 +17,38 @@ const size = "lg"
 export interface Props {
   phone: string
   onChangePhone: React.ChangeEventHandler<HTMLInputElement>
-  isDisabled: boolean
+  isButtonDisabled: boolean
+  isInputDisabled: boolean
   onSubmit: React.FormEventHandler<HTMLButtonElement>
   isLoading: boolean
 }
 export const View = ({
   phone,
   onChangePhone,
-  isDisabled,
+  isButtonDisabled,
+  isInputDisabled,
   onSubmit,
   isLoading,
 }: Props) => {
   return h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center" }, [
-      // TODO: back button? nav?
       h(Heading, { size }, t("auth.tel.entry.cta")),
       // TODO: focus on first render
       form({ onSubmit }, [
         h(InputGroup, { size }, [
-          // TODO: support int'l country codes
           h(InputAddon, { children: "+1" }),
           h(Input, {
             type: "tel",
             placeholder: t("auth.tel.entry.placeholder"),
             isRequired: true,
-            pattern: "[0-9]{3}-?[0-9]{3}-?[0-9]{4}",
             value: phone,
             onChange: onChangePhone,
+            isDisabled: isInputDisabled,
           }),
         ]),
         h(
           Button,
-          { isDisabled, size, width: "100%", isLoading },
+          { isDisabled: isButtonDisabled, size, width: "100%", isLoading },
           t(`auth.tel.entry.submit`)
         ),
       ]),
