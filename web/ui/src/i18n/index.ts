@@ -9,7 +9,7 @@ export const t = (key: string): string => {
     "landing.join": `Create Account`,
     "landing.login": `Sign in`,
     "auth.tel.entry.cta": `My phone number is`,
-    "auth.tel.entry.placeholder": "123-456-7890",
+    "auth.tel.entry.placeholder": "(123) 456-7890",
     "auth.tel.entry.submit": shared.continue,
   }
   return messages[key]
