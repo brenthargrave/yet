@@ -1,5 +1,5 @@
 import { h } from "@cycle/react"
-import React from "react"
+import React, { useEffect, useRef } from "react"
 import { form } from "@cycle/react-dom"
 import {
   InputAddon,
@@ -30,6 +30,11 @@ export const View = ({
   onSubmit,
   isLoading,
 }: Props) => {
+  const ref = useRef<HTMLInputElement>()
+  useEffect(() => {
+    ref.current?.focus()
+  })
+
   return h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center" }, [
       h(Heading, { size }, t("auth.tel.entry.cta")),
@@ -38,6 +43,7 @@ export const View = ({
         h(InputGroup, { size }, [
           h(InputAddon, { children: "+1" }),
           h(Input, {
+            autoFocus: true,
             type: "tel",
             placeholder: t("auth.tel.entry.placeholder"),
             isRequired: true,
