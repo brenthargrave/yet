@@ -29,7 +29,7 @@ export const View = ({
   isLoading,
 }: Props) => {
   return h(Center, { width: "100vw", height: "100vh" }, [
-    h(Stack, { direction: "column", align: "center", margin: "4" }, [
+    h(Stack, { direction: "column", align: "center" }, [
       // TODO: back button? nav?
       h(Heading, { size }, t("auth.tel.entry.cta")),
       // TODO: focus on first render
