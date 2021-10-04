@@ -32,6 +32,8 @@ export const PhoneSubmit = ({ context }: Props) => {
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = async (event) => {
     event.preventDefault()
     setDisabled(true)
+    // TODO: how to forward errors up to global notifications?
+    // if use hooks, surely need to wrap the hook?
     const { data, errors } = await mutate({
       variables: { input: { e164: phone } },
     })
