@@ -38,7 +38,6 @@ export const View = ({
   return h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center" }, [
       h(Heading, { size }, t("auth.tel.entry.cta")),
-      // TODO: focus on first render
       form({ onSubmit }, [
         h(InputGroup, { size }, [
           h(InputAddon, { children: "+1" }),
@@ -54,7 +53,13 @@ export const View = ({
         ]),
         h(
           Button,
-          { isDisabled: isButtonDisabled, size, width: "100%", isLoading },
+          {
+            isDisabled: isButtonDisabled,
+            size,
+            width: "100%",
+            isLoading,
+            type: "submit",
+          },
           t(`auth.tel.entry.submit`)
         ),
       ]),
