@@ -1,15 +1,11 @@
 import { h } from "@cycle/react"
 import { useState } from "react"
 import { phone as validatePhone } from "phone"
-import { useMutation } from "@apollo/client"
-import {
-  CreateVerificationDocument,
-  VerificationStatus,
-} from "~/graph/generated"
+import { VerificationStatus } from "~/graph/generated"
 
-import { isPresent } from "~/fp"
 import { View } from "./View"
 import { Context } from "~/context"
+import { signin } from "~/graph"
 
 interface Props {
   context: Context
@@ -19,7 +15,7 @@ export const PhoneSubmit = ({ context }: Props) => {
   const [e164, setE164] = useState("")
   const [isButtonDisabled, setButtonDisabled] = useState<boolean>(true)
   const [isInputDisabled, setInputDisabled] = useState<boolean>(false)
-  const [mutate, { loading }] = useMutation(CreateVerificationDocument)
+  const [isLoading, setLoading] = useState(false)
 
   const onChangePhone: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     const { value } = event.currentTarget
@@ -28,7 +24,7 @@ export const PhoneSubmit = ({ context }: Props) => {
       country: "USA",
       strictDetection: true,
     })
-    setButtonDisabled(!isValid || loading)
+    setButtonDisabled(!isValid || isLoading)
     if (isValid && !!phoneNumber) {
       setE164(phoneNumber)
     }
@@ -36,25 +32,28 @@ export const PhoneSubmit = ({ context }: Props) => {
 
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = async (event) => {
     event.preventDefault()
+    setLoading(true)
     setButtonDisabled(true)
     setInputDisabled(true)
-    // TODO: how to forward errors up to global notifications?
-    // if use hooks, surely need to wrap the hook?
-    const { data, errors } = await mutate({
-      variables: { input: { e164 } },
-    })
-    if (isPresent(errors)) {
-      context.errors$.next(errors)
+    // TODO: analytics? action?
+    // TODO: instead of messages, map to own designed error w/ single message
+    const { result, messages } = await signin(e164)
+    if (result) {
+      const { status } = result
+      switch (status) {
+        case VerificationStatus.Pending:
+          console.debug("PENDING")
+        // TODO pending? go to /verify
+        // cancelled? alert: phone verification cancelled; please try again
+        // approved? (should be impossible!)
+      }
+    } else {
+      const { message } = error
+      // TODO - context.notifications$.next(error, messsage)
     }
-    if (data) console.debug(data)
-    if (data?.createVerification?.successful) {
-      const status: VerificationStatus | undefined =
-        data.createVerification.result?.status
-      const approved = status === VerificationStatus.Approved
-      // if (approved) routes.ho
-      // TODO: next screen
-      setInputDisabled(false)
-    }
+    setInputDisabled(false)
+    setButtonDisabled(false)
+    setLoading(false)
   }
 
   return h(View, {
@@ -63,6 +62,6 @@ export const PhoneSubmit = ({ context }: Props) => {
     isButtonDisabled,
     isInputDisabled,
     onSubmit,
-    isLoading: loading,
+    isLoading,
   })
 }
