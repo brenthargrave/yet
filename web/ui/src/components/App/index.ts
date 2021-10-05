@@ -6,8 +6,6 @@ import { isRoute, routes, RouteProvider } from "~/router"
 
 import { View } from "./View"
 
-/**
-
 import { client } from "~/graph"
 import { context } from "~/context"
 
@@ -23,7 +21,8 @@ export const App = () => {
     ]),
   ])
 }
- */
+
+/*
 
 interface Sources {
   react: ReactSource
@@ -41,3 +40,5 @@ export const App = (sources: Sources) => {
     react,
   }
 }
+
+ */

@@ -1,3 +1,5 @@
+import ReactDOM from "react-dom"
+import { h } from "@cycle/react"
 import * as Sentry from "@sentry/react"
 import { Integrations } from "@sentry/tracing"
 import { run } from "@cycle/rxjs-run"
@@ -16,7 +18,7 @@ Sentry.init({
   tracesSampleRate: 1.0,
 })
 
-// ReactDOM.render(h(App), document.getElementById("index"))
-run(App, {
-  react: makeDOMDriver(document.getElementById("index")),
-})
+ReactDOM.render(h(App), document.getElementById("index"))
+// run(App, {
+//   react: makeDOMDriver(document.getElementById("index")),
+// })
