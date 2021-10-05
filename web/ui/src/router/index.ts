@@ -1,3 +1,4 @@
+import type { Route as _Route } from "type-route"
 import { createRouter, defineRoute } from "type-route"
 
 export const { routes, useRoute, RouteProvider, session } = createRouter({
@@ -6,7 +7,8 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
   out: defineRoute("/out"),
 })
 
-// @ts-ignore
+export type Route = _Route<typeof routes>
+
 export const isRoute = (route: Route, expectedRoute: Route): boolean =>
   route.name === expectedRoute.name
 

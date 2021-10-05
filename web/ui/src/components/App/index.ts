@@ -1,11 +1,15 @@
+import { h, ReactSource, h, ReactSource } from "@cycle/react"
+import { of } from "rxjs"
 import React from "react"
-import { h } from "@cycle/react"
 import { ApolloProvider } from "@apollo/client"
+import { isRoute, routes, RouteProvider } from "~/router"
 
-import { RouteProvider } from "~/router"
+import { View, View } from "./View"
+
+/**
+
 import { client } from "~/graph"
 import { context } from "~/context"
-import { View } from "./View"
 
 export const App = () => {
   return h(React.StrictMode, [
@@ -18,4 +22,22 @@ export const App = () => {
       ),
     ]),
   ])
+}
+ */
+
+interface Sources {
+  react: ReactSource
+}
+export const App = (sources: Sources) => {
+  // TODO
+  // const { history$ } = sources.router
+  // const react = history$.pipe(
+  //   flatMap((route) => {
+  //     h(View, { route })
+  //   })
+  // )
+  const react = of(h(View))
+  return {
+    react,
+  }
 }
