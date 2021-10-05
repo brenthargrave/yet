@@ -37,7 +37,7 @@ export const PhoneSubmit = ({ context }: Props) => {
     setInputDisabled(true)
     // TODO: analytics? action?
     // TODO: instead of messages, map to own designed error w/ single message
-    const { result, messages } = await signin(e164)
+    const { result, messages } = await signin({ e164 })
     if (result) {
       const { status } = result
       switch (status) {

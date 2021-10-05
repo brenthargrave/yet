@@ -4,7 +4,10 @@ import {
   NormalizedCacheObject,
 } from "@apollo/client"
 import { isPresent } from "~/fp"
-import { CreateVerificationDocument } from "./generated"
+import {
+  CreateVerificationDocument,
+  CreateVerificationInput,
+} from "./generated"
 
 class GraphError extends Error {}
 
@@ -15,11 +18,11 @@ export const client = new ApolloClient({
   cache: new InMemoryCache(),
 })
 
-export const signin = async (e164: string) => {
+export const signin = async (input: CreateVerificationInput) => {
   const { data, errors } = await client.mutate({
     mutation: CreateVerificationDocument,
     variables: {
-      input: { e164 },
+      input,
     },
   })
   if (isPresent(errors)) throw new GraphError(JSON.stringify(errors))
