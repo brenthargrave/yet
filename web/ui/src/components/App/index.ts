@@ -1,10 +1,10 @@
-import { h, ReactSource, h, ReactSource } from "@cycle/react"
+import { h, ReactSource } from "@cycle/react"
 import { of } from "rxjs"
 import React from "react"
 import { ApolloProvider } from "@apollo/client"
 import { isRoute, routes, RouteProvider } from "~/router"
 
-import { View, View } from "./View"
+import { View } from "./View"
 
 /**
 
