@@ -7,14 +7,5 @@ mutation CreateVerification($input: CreateVerificationInput!) {
     ...on VerificationError {
       message
     }
-    # successful
-    # messages {
-    #   code
-    #   field
-    #   message
-    # }
-    # result {
-    #   status
-    # }
   }
 }

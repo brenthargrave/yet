@@ -1,11 +1,10 @@
 import { h } from "@cycle/react"
 import { useState } from "react"
 import { phone as validatePhone } from "phone"
-import { VerificationStatus } from "~/graph/generated"
 
 import { View } from "./View"
 import { Context } from "~/context"
-import { signin } from "~/graph"
+import { signin, VerificationStatus } from "~/graph"
 
 interface Props {
   context: Context
@@ -36,40 +35,30 @@ export const PhoneSubmit = ({ context }: Props) => {
     setButtonDisabled(true)
     setInputDisabled(true)
     // TODO: analytics? action?
-    // TODO: instead of messages, map to own designed error w/ single message
     const result = await signin({ e164 })
     switch (result.__typename) {
+      case "VerificationError": {
+        const { message } = result
+        // TODO: alert message
+        context.notifications.error
+        // why would it be in context?
+        break
+      }
       case "Verification":
         console.debug(result.status)
-        // switch (result.status) {
-        //   case VerificationStatus.Pending:
-        //     console.debug("PENDING")
-        //     break
-        //   case VerificationStatus.Approved:
-        // }
-        // TODO pending? go to /verify
-        // cancelled? alert: phone verification cancelled; please try again
-        // approved? (should be impossible!)
-
-        break
-      case "VerificationError":
+        switch (result.status) {
+          case VerificationStatus.Canceled:
+            // TODO: alert "Phone numbers verification cancelled, please try again."
+            break
+          case VerificationStatus.Approved:
+            // TODO: route home
+            break
+          case VerificationStatus.Pending:
+            // TODO: route /verify
+            break
+        }
         break
     }
-    /*
-    if (result) {
-      const { status } = result
-      switch (status) {
-        case VerificationStatus.Pending:
-          console.debug("PENDING")
-        // TODO pending? go to /verify
-        // cancelled? alert: phone verification cancelled; please try again
-        // approved? (should be impossible!)
-      }
-    } else {
-      const { message } = error
-      // TODO - context.notifications$.next(error, messsage)
-    }
-     */
     setInputDisabled(false)
     setButtonDisabled(false)
     setLoading(false)

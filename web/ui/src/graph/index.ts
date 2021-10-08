@@ -30,3 +30,5 @@ export const signin = async (input: CreateVerificationInput) => {
   if (!payload) throw new GraphError("MIA: payload")
   return payload
 }
+
+export * from "./generated"
