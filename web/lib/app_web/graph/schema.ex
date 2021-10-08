@@ -36,6 +36,10 @@ defmodule AppWeb.Graph.Schema do
   import AbsintheErrorPayload.Payload
   import_types(AbsintheErrorPayload.ValidationMessageTypes)
   payload_object(:verification_payload, :verification)
+  # TODO: Verification (¿ success == true)
+  # TODO: interface Error message (¿ success == false)
+  # TODO: VerificationError implements Error
+  # TODO: verification result == union verification | verification error
 
   mutation do
     field :create_verification, type: :verification_payload do

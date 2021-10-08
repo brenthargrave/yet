@@ -38,6 +38,9 @@ export const PhoneSubmit = ({ context }: Props) => {
     // TODO: analytics? action?
     // TODO: instead of messages, map to own designed error w/ single message
     const { result, messages } = await signin({ e164 })
+    // switch (result.__typename) {
+    //   case "Verification"
+    // }
     if (result) {
       const { status } = result
       switch (status) {
