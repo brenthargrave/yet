@@ -37,10 +37,25 @@ export const PhoneSubmit = ({ context }: Props) => {
     setInputDisabled(true)
     // TODO: analytics? action?
     // TODO: instead of messages, map to own designed error w/ single message
-    const { result, messages } = await signin({ e164 })
-    // switch (result.__typename) {
-    //   case "Verification"
-    // }
+    const result = await signin({ e164 })
+    switch (result.__typename) {
+      case "Verification":
+        console.debug(result.status)
+        // switch (result.status) {
+        //   case VerificationStatus.Pending:
+        //     console.debug("PENDING")
+        //     break
+        //   case VerificationStatus.Approved:
+        // }
+        // TODO pending? go to /verify
+        // cancelled? alert: phone verification cancelled; please try again
+        // approved? (should be impossible!)
+
+        break
+      case "VerificationError":
+        break
+    }
+    /*
     if (result) {
       const { status } = result
       switch (status) {
@@ -54,6 +69,7 @@ export const PhoneSubmit = ({ context }: Props) => {
       const { message } = error
       // TODO - context.notifications$.next(error, messsage)
     }
+     */
     setInputDisabled(false)
     setButtonDisabled(false)
     setLoading(false)
