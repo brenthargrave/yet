@@ -5,17 +5,20 @@ import codegen from "vite-plugin-graphql-codegen"
 import fs from "fs"
 import path, { resolve } from "path"
 
+const { PORT_UI, MIX_ENV } = process.env
+
 let key
 let cert
 try {
   key = fs.readFileSync(path.resolve("../priv/cert/localhost-key.pem"))
   cert = fs.readFileSync(path.resolve("../priv/cert/localhost-cert.pem"))
 } catch (error) {
-  // eslint-disable-next-line no-console
-  console.error(error)
+  if (MIX_ENV === "dev") {
+    // eslint-disable-next-line no-console
+    console.error(error)
+  }
 }
 
-const { PORT_UI } = process.env
 const port: number = parseInt(PORT_UI ?? "8080", 10)
 
 // https://vitejs.dev/config/
