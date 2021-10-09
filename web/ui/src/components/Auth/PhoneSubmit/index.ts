@@ -10,7 +10,6 @@ interface Props {
   context: Context
 }
 export const PhoneSubmit = ({ context }: Props) => {
-  const [phone, setPhone] = useState("")
   const [e164, setE164] = useState("")
   const [isButtonDisabled, setButtonDisabled] = useState<boolean>(true)
   const [isInputDisabled, setInputDisabled] = useState<boolean>(false)
@@ -18,7 +17,6 @@ export const PhoneSubmit = ({ context }: Props) => {
 
   const onChangePhone: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     const { value } = event.currentTarget
-    setPhone(value)
     const { isValid, phoneNumber } = validatePhone(value, {
       country: "USA",
       strictDetection: true,
@@ -40,7 +38,7 @@ export const PhoneSubmit = ({ context }: Props) => {
       case "VerificationError": {
         const { message } = result
         // TODO: alert message
-        context.notifications.error
+        // context.notifications.error
         // why would it be in context?
         break
       }
@@ -65,7 +63,7 @@ export const PhoneSubmit = ({ context }: Props) => {
   }
 
   return h(View, {
-    phone,
+    // phone,
     onChangePhone,
     isButtonDisabled,
     isInputDisabled,

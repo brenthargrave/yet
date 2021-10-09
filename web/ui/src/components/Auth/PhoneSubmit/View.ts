@@ -1,5 +1,8 @@
 import { h } from "@cycle/react"
 import { form } from "@cycle/react-dom"
+import RestrictedInput from "restricted-input"
+import { useEffectOnce } from "react-use"
+
 import {
   InputAddon,
   Button,
@@ -14,7 +17,6 @@ import { t } from "~/i18n"
 const size = "lg"
 
 export interface Props {
-  phone: string
   onChangePhone: React.ChangeEventHandler<HTMLInputElement>
   isButtonDisabled: boolean
   isInputDisabled: boolean
@@ -22,13 +24,26 @@ export interface Props {
   isLoading: boolean
 }
 export const View = ({
-  phone,
   onChangePhone,
   isButtonDisabled,
   isInputDisabled,
   onSubmit,
   isLoading,
 }: Props) => {
+  const inputId = "phone-number"
+  useEffectOnce(() => {
+    // TODO: extract react-compat format function from RestrictedInput
+    // eslint-disable-next-line
+    const element = document.querySelector(`#${inputId}`)!
+    // eslint-disable-next-line
+    const input = new RestrictedInput({
+      // @ts-ignore
+      element,
+      pattern: "({{999}}) {{999}}-{{9999}}",
+    })
+    // @ts-ignore
+    element.addEventListener("input", onChangePhone, false)
+  })
   return h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center" }, [
       h(Heading, { size }, t("auth.tel.entry.cta")),
@@ -36,11 +51,11 @@ export const View = ({
         h(InputGroup, { size }, [
           h(InputAddon, { children: "+1" }),
           h(Input, {
+            id: "phone-number",
             autoFocus: true,
             type: "tel",
             placeholder: t("auth.tel.entry.placeholder"),
             isRequired: true,
-            value: phone,
             onChange: onChangePhone,
             isDisabled: isInputDisabled,
           }),
