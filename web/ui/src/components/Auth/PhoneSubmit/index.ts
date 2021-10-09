@@ -8,8 +8,9 @@ import { signin, VerificationStatus } from "~/graph"
 
 interface Props {
   context: Context
+  notify: (message: string) => void
 }
-export const PhoneSubmit = ({ context }: Props) => {
+export const PhoneSubmit = ({ context, notify }: Props) => {
   const [e164, setE164] = useState("")
   const [isButtonDisabled, setButtonDisabled] = useState<boolean>(true)
   const [isInputDisabled, setInputDisabled] = useState<boolean>(false)
@@ -36,10 +37,7 @@ export const PhoneSubmit = ({ context }: Props) => {
     const result = await signin({ e164 })
     switch (result.__typename) {
       case "VerificationError": {
-        const { message } = result
-        // TODO: alert message
-        // context.notifications.error
-        // why would it be in context?
+        notify(result.message)
         break
       }
       case "Verification":

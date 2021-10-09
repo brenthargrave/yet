@@ -11,8 +11,9 @@ import { Context } from "~/context"
 
 interface Props {
   context: Context
+  notify: (message: string) => void
 }
-export const Auth = ({ context }: Props) => {
+export const Auth = ({ context, notify }: Props) => {
   // switch (step) {
   //   case Step.Submit:
   //   case Step.Verify:

@@ -3,17 +3,26 @@ import { h } from "@cycle/react"
 import { h1 } from "@cycle/react-dom"
 import type { Route } from "type-route"
 
+import { useToast, UseToastOptions } from "@chakra-ui/toast"
 import { routes, isRoute, useRoute } from "~/router"
 
 import { Landing } from "~/components/Landing"
 import { Auth } from "~/components/Auth"
-import { Context } from "~/context"
+import { Context, context } from "~/context"
 
-export const View = ({ context }: { context: Context }) => {
+export const View = () => {
+  const toast = useToast()
+  const notify = (message: string) => {
+    toast({
+      status: "error",
+      duration: 9000,
+      isClosable: true,
+    })
+  }
   const route = useRoute()
   return h(Fragment, [
     isRoute(route, routes.home()) && h(Landing),
-    isRoute(route, routes.in()) && h(Auth, { context }),
+    isRoute(route, routes.in()) && h(Auth, { context, notify }),
   ])
 }
 
