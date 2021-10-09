@@ -3,7 +3,7 @@ import { h } from "@cycle/react"
 import { h1 } from "@cycle/react-dom"
 import type { Route } from "type-route"
 
-import { useToast, UseToastOptions } from "@chakra-ui/toast"
+import { useToast } from "@chakra-ui/toast"
 import { routes, isRoute, useRoute } from "~/router"
 
 import { Landing } from "~/components/Landing"
@@ -12,8 +12,9 @@ import { Context, context } from "~/context"
 
 export const View = () => {
   const toast = useToast()
-  const notify = (message: string) => {
+  const notify = (message: string): void => {
     toast({
+      title: message,
       status: "error",
       duration: 9000,
       isClosable: true,

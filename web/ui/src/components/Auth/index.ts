@@ -20,5 +20,5 @@ export const Auth = ({ context, notify }: Props) => {
   //   case Step.Confirm:
   // }
   // const [step, setStep] = useState(Step.Submit)
-  return h(PhoneSubmit, { context })
+  return h(PhoneSubmit, { context, notify })
 }
