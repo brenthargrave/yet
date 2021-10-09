@@ -23,6 +23,7 @@ export const View = () => {
       status,
       duration: 9000,
       isClosable: true,
+      position: "top",
     })
   }
   const route = useRoute()

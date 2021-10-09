@@ -68,8 +68,7 @@ defmodule AppWeb.Graph.Schema do
 
   defp create_verification(_parent, %{input: %{e164: e164}} = _args, _resolution) do
     IO.puts("e164: #{e164}")
-    # {:ok, %{status: :pending}}
-    # {:error, "Oops"}
+    {:ok, %{status: :pending}}
     # {:ok, %{message: "Oops!"}}
   end
 end

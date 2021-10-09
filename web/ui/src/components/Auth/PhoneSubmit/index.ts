@@ -2,10 +2,12 @@ import { h } from "@cycle/react"
 import { useState } from "react"
 import { phone as validatePhone } from "phone"
 
+import { useEffectOnce } from "react-use"
 import { View } from "./View"
 import { Context } from "~/context"
 import { signin, VerificationStatus } from "~/graph"
 import { Notify } from "~/components/App/View"
+import { routes } from "~/router"
 
 interface Props {
   context: Context
@@ -16,6 +18,10 @@ export const PhoneSubmit = ({ context, notify }: Props) => {
   const [isButtonDisabled, setButtonDisabled] = useState<boolean>(true)
   const [isInputDisabled, setInputDisabled] = useState<boolean>(false)
   const [isLoading, setLoading] = useState(false)
+
+  useEffectOnce(() => {
+    // TODO: track("viewed submit phone")
+  })
 
   const onChangePhone: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     const { value } = event.currentTarget
@@ -31,8 +37,7 @@ export const PhoneSubmit = ({ context, notify }: Props) => {
 
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = async (event) => {
     event.preventDefault()
-    // TODO: analytics? action?
-    // await track
+    // TODO: track("submitted phone number")
     setLoading(true)
     setButtonDisabled(true)
     setInputDisabled(true)
@@ -52,7 +57,8 @@ export const PhoneSubmit = ({ context, notify }: Props) => {
             })
             break
           case VerificationStatus.Pending:
-            // TODO: route /verify
+            // TODO: track("viewed verify phone")
+            routes.verify().push()
             break
           case VerificationStatus.Approved:
             // TODO: skip verify, *MUST* be auth token, so route home
@@ -66,7 +72,6 @@ export const PhoneSubmit = ({ context, notify }: Props) => {
   }
 
   return h(View, {
-    // phone,
     onChangePhone,
     isButtonDisabled,
     isInputDisabled,
