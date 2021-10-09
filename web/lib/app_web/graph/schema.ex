@@ -1,9 +1,6 @@
 defmodule AppWeb.Graph.Schema do
   use Absinthe.Schema
 
-  # TODO: define in SDL
-  # import_sdl(path: Path.absname("./sdl.graphql", __DIR__))
-
   object :event do
     field :name, non_null(:string)
   end

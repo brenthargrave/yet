@@ -31,10 +31,11 @@ export const PhoneSubmit = ({ context, notify }: Props) => {
 
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = async (event) => {
     event.preventDefault()
+    // TODO: analytics? action?
+    // await track
     setLoading(true)
     setButtonDisabled(true)
     setInputDisabled(true)
-    // TODO: analytics? action?
     const result = await signin({ e164 })
     switch (result.__typename) {
       case "VerificationError": {
