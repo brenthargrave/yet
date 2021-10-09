@@ -45,6 +45,7 @@
     "eslint-plugin-react": "7.25.1",
     "eslint-plugin-react-hooks": "4.2.0",
     "prettier": "2.4.1",
+    "rollup-plugin-analyzer": "4.0.0",
     "storybook": "6.3.9",
     "storybook-addon-performance": "0.16.1",
     "storybook-builder-vite": "^0.1.0",
