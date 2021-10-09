@@ -9,6 +9,7 @@ import { routes, isRoute, useRoute } from "~/router"
 import { Landing } from "~/components/Landing"
 import { Context, context } from "~/context"
 import { PhoneSubmit } from "~/components/Auth/PhoneSubmit"
+import { PhoneVerify } from "~/components/Auth/PhoneVerify"
 
 // export type Notify = (status: "info" | "warning" | "success" | "error", message: string)
 type NotifyConfig = Pick<UseToastOptions, "status" | "title">
@@ -28,16 +29,9 @@ export const View = () => {
   }
   const route = useRoute()
   return h(Fragment, [
-    /*
-    if unauthenticated, landing
-     not true - still unauthenticated while onboarding
-
-    else Home()
-    NOTE: do we want a /verify route? should only be accesssible if last route
-    in histroy was /submit
-     */
     isRoute(route, routes.home()) && h(Landing),
     isRoute(route, routes.in()) && h(PhoneSubmit, { context, notify }),
+    isRoute(route, routes.verify()) && h(PhoneVerify, {}),
   ])
 }
 
