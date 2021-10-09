@@ -3,19 +3,24 @@ import { h } from "@cycle/react"
 import { h1 } from "@cycle/react-dom"
 import type { Route } from "type-route"
 
-import { useToast } from "@chakra-ui/toast"
+import { useToast, UseToastOptions } from "@chakra-ui/toast"
 import { routes, isRoute, useRoute } from "~/router"
 
 import { Landing } from "~/components/Landing"
 import { Auth } from "~/components/Auth"
 import { Context, context } from "~/context"
 
+// export type Notify = (status: "info" | "warning" | "success" | "error", message: string)
+type NotifyConfig = Pick<UseToastOptions, "status" | "title">
+export type Notify = (config: NotifyConfig) => void
+
 export const View = () => {
   const toast = useToast()
-  const notify = (message: string): void => {
+  const notify: Notify = (config: NotifyConfig) => {
+    const { title, status } = config
     toast({
-      title: message,
-      status: "error",
+      title,
+      status,
       duration: 9000,
       isClosable: true,
     })

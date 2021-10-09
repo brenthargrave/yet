@@ -73,6 +73,6 @@ defmodule AppWeb.Graph.Schema do
     IO.puts("e164: #{e164}")
     # {:ok, %{status: :pending}}
     # {:error, "Oops"}
-    {:ok, %{message: "Oops!"}}
+    # {:ok, %{message: "Oops!"}}
   end
 end

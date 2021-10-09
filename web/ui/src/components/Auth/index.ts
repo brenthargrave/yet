@@ -2,6 +2,7 @@ import { h } from "@cycle/react"
 
 import { PhoneSubmit } from "./PhoneSubmit"
 import { Context } from "~/context"
+import { Notify } from "../App/View"
 
 // enum Step {
 //   Submit,
@@ -11,7 +12,7 @@ import { Context } from "~/context"
 
 interface Props {
   context: Context
-  notify: (message: string) => void
+  notify: Notify
 }
 export const Auth = ({ context, notify }: Props) => {
   // switch (step) {

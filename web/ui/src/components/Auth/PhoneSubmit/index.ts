@@ -5,10 +5,11 @@ import { phone as validatePhone } from "phone"
 import { View } from "./View"
 import { Context } from "~/context"
 import { signin, VerificationStatus } from "~/graph"
+import { Notify } from "~/components/App/View"
 
 interface Props {
   context: Context
-  notify: (message: string) => void
+  notify: Notify
 }
 export const PhoneSubmit = ({ context, notify }: Props) => {
   const [e164, setE164] = useState("")
@@ -37,20 +38,23 @@ export const PhoneSubmit = ({ context, notify }: Props) => {
     const result = await signin({ e164 })
     switch (result.__typename) {
       case "VerificationError": {
-        notify(result.message)
+        notify({ status: "error", title: result.message })
         break
       }
       case "Verification":
         console.debug(result.status)
         switch (result.status) {
           case VerificationStatus.Canceled:
-            // TODO: alert "Phone numbers verification cancelled, please try again."
-            break
-          case VerificationStatus.Approved:
-            // TODO: route home
+            notify({
+              title: "Verification cancelled, please try again.",
+              status: "warning",
+            })
             break
           case VerificationStatus.Pending:
             // TODO: route /verify
+            break
+          case VerificationStatus.Approved:
+            // TODO: skip verify, *MUST* be auth token, so route home
             break
         }
         break
