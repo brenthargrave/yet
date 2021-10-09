@@ -1,7 +1,6 @@
-import React, { FC } from "react"
+import React, { FC, Fragment } from "react"
 import { h } from "@cycle/react"
 import { h1 } from "@cycle/react-dom"
-import { ChakraProvider } from "@chakra-ui/react"
 import type { Route } from "type-route"
 
 import { routes, isRoute, useRoute } from "~/router"
@@ -12,7 +11,7 @@ import { Context } from "~/context"
 
 export const View = ({ context }: { context: Context }) => {
   const route = useRoute()
-  return h(ChakraProvider, [
+  return h(Fragment, [
     isRoute(route, routes.home()) && h(Landing),
     isRoute(route, routes.in()) && h(Auth, { context }),
   ])

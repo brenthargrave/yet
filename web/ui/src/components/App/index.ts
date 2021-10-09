@@ -1,6 +1,7 @@
 import { h } from "@cycle/react"
 import React from "react"
 import { ApolloProvider } from "@apollo/client"
+import { ChakraProvider } from "@chakra-ui/react"
 import { RouteProvider } from "~/router"
 
 import { View } from "./View"
@@ -14,7 +15,7 @@ export const App = () => {
         ApolloProvider,
         // @ts-ignore
         { client },
-        [h(View, { context })]
+        [h(ChakraProvider, [h(View, { context })])]
       ),
     ]),
   ])
