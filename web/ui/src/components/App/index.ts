@@ -1,26 +1,8 @@
-import { h } from "@cycle/react"
-import React from "react"
-import { ApolloProvider } from "@apollo/client"
-import { ChakraProvider } from "@chakra-ui/react"
+import { h, ReactSource } from "@cycle/react"
+import { of } from "rxjs"
+import { h1 } from "@cycle/react-dom"
 
-import { RouteProvider } from "~/router"
 import { View } from "./View"
-import { client } from "~/graph"
-
-export const App = () => {
-  return h(React.StrictMode, [
-    h(RouteProvider, [
-      h(
-        ApolloProvider,
-        // @ts-ignore
-        { client },
-        [h(ChakraProvider, [h(View)])]
-      ),
-    ]),
-  ])
-}
-
-/*
 
 interface Sources {
   react: ReactSource
@@ -33,10 +15,8 @@ export const App = (sources: Sources) => {
   //     h(View, { route })
   //   })
   // )
-  const react = of(h(View))
+  const react = of(h(View, [h1("Hello, world!")]))
   return {
     react,
   }
 }
-
- */
