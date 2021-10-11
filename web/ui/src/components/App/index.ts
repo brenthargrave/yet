@@ -1,5 +1,6 @@
 import { h, ReactSource } from "@cycle/react"
-import { of } from "rxjs"
+import { combineLatest, of } from "rxjs"
+import { map, share } from "rxjs/operators"
 import { h1 } from "@cycle/react-dom"
 
 import { View } from "./View"
@@ -8,7 +9,7 @@ interface Sources {
   react: ReactSource
 }
 export const App = (sources: Sources) => {
-  const authenticated$ = of(false)
+  const authenticated$ = of(false) // TODO: auth state?
 
   // TODO
   // const { history$ } = sources.router
@@ -25,7 +26,13 @@ export const App = (sources: Sources) => {
   // Home = Auth || Onboarding || ? Search Results?
   // else Landing()
 
-  const react = of(h(View, [h1("Hello, world!")]))
+  const react = combineLatest([authenticated$]).pipe(
+    map(([authenticated]) => {
+      return h(View, [h1("Hello, world!")])
+    }),
+    share()
+  )
+
   return {
     react,
   }
