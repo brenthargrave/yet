@@ -8,6 +8,8 @@ interface Sources {
   react: ReactSource
 }
 export const App = (sources: Sources) => {
+  const authenticated$ = of(false)
+
   // TODO
   // const { history$ } = sources.router
   // const react = history$.pipe(
@@ -15,6 +17,14 @@ export const App = (sources: Sources) => {
   //     h(View, { route })
   //   })
   // )
+  /**
+   *  ¿how choose which components appears first?
+   */
+
+  // if authenticated, Home
+  // Home = Auth || Onboarding || ? Search Results?
+  // else Landing()
+
   const react = of(h(View, [h1("Hello, world!")]))
   return {
     react,
