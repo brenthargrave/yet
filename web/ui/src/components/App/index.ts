@@ -1,15 +1,15 @@
 import { h, ReactSource } from "@cycle/react"
 import { combineLatest, of } from "rxjs"
-import { map, share } from "rxjs/operators"
-import { h1 } from "@cycle/react-dom"
+import { map, share, switchMap } from "rxjs/operators"
 
 import { View } from "./View"
+import { Landing } from "~/components/Landing"
 
 interface Sources {
   react: ReactSource
 }
 export const App = (sources: Sources) => {
-  const authenticated$ = of(false) // TODO: auth state?
+  const authenticated$ = of(false) // TODO: derive from graph?
 
   // TODO
   // const { history$ } = sources.router
@@ -26,9 +26,12 @@ export const App = (sources: Sources) => {
   // Home = Auth || Onboarding || ? Search Results?
   // else Landing()
 
-  const react = combineLatest([authenticated$]).pipe(
-    map(([authenticated]) => {
-      return h(View, [h1("Hello, world!")])
+  const { react: landingView$ } = Landing(sources)
+
+  const react = combineLatest(authenticated$, landingView$).pipe(
+    map(([authenticated, landing]) => {
+      const childView = landing
+      return h(View, [childView])
     }),
     share()
   )
