@@ -8,7 +8,11 @@ import { Landing } from "~/components/Landing"
 interface Sources {
   react: ReactSource
 }
-export const App = (sources: Sources) => {
+export const App = (rootSources: Sources) => {
+  const sources = {
+    // TODO: fake sources here
+    ...rootSources,
+  }
   const authenticated$ = of(false) // TODO: derive from graph?
 
   // TODO
