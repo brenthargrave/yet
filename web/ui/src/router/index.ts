@@ -15,6 +15,7 @@ export const isRoute = (route: Route, expectedRoute: Route): boolean =>
   route.name === expectedRoute.name
 
 export const history$ = new Observable<Route>((observer) => {
+  observer.next(session.getInitialRoute())
   const unlisten = session.listen((route) => {
     observer.next(route)
   })
