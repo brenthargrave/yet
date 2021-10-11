@@ -1,6 +1,7 @@
 import { h, ReactSource } from "@cycle/react"
 import { combineLatest, of } from "rxjs"
-import { map, share, switchMap } from "rxjs/operators"
+import { map, share } from "rxjs/operators"
+import { driver as router, isRoute } from "~/router"
 
 import { View } from "./View"
 import { Landing } from "~/components/Landing"
@@ -9,11 +10,12 @@ interface Sources {
   react: ReactSource
 }
 export const App = (rootSources: Sources) => {
+  // NOTE: stub sources in lieu of drivers
   const sources = {
-    // TODO: fake sources here
+    router,
     ...rootSources,
   }
-  const authenticated$ = of(false) // TODO: derive from graph?
+  const { history$ } = sources.router
 
   // TODO
   // const { history$ } = sources.router
@@ -32,8 +34,8 @@ export const App = (rootSources: Sources) => {
 
   const { react: landingView$ } = Landing(sources)
 
-  const react = combineLatest(authenticated$, landingView$).pipe(
-    map(([authenticated, landing]) => {
+  const react = combineLatest(history$, landingView$).pipe(
+    map(([route, landing]) => {
       const childView = landing
       return h(View, [childView])
     }),
