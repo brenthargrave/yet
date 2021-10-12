@@ -9,6 +9,7 @@ import { Landing } from "~/components/Landing"
 interface Sources {
   react: ReactSource
 }
+
 export const App = (_sources: Sources) => {
   // NOTE: stub sources in lieu of drivers
   const sources = {
