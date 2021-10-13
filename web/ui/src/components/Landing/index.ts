@@ -18,7 +18,8 @@ export const Landing = (_sources: Sources) => {
 
   const onClickJoin = async () => {
     routes.in().push()
-    await track(EventName.TapSignup)
+    const event = await track(EventName.TapSignup, { install: { id: "foo " } })
+    console.debug(event)
   }
   const onClickLogin = () => onClickJoin()
   return {

@@ -7,8 +7,13 @@ import { isPresent } from "~/fp"
 import {
   CreateVerificationDocument,
   CreateVerificationInput,
+  Event,
   EventName,
+  EventProperties,
+  TrackEventDocument,
 } from "./generated"
+
+export * from "./generated"
 
 class GraphError extends Error {}
 
@@ -32,17 +37,31 @@ export const signin = async (input: CreateVerificationInput) => {
   return payload
 }
 
-export const track = async (name: EventName) => console.debug(name)
-// TODO
-// const { data, errors } = await client.mutate({
-//   mutation: CreateVerificationDocument,
-//   variables: {
-//     input,
-//   },
-// })
-// if (isPresent(errors)) throw new GraphError(JSON.stringify(errors))
-// const payload = data?.createVerification
-// if (!payload) throw new GraphError("MIA: payload")
-// return payload
-
-export * from "./generated"
+export const track = async (
+  name: EventName,
+  props?: EventProperties
+): Promise<Event> => {
+  const properties: EventProperties = {
+    // TODO: autogenerate installId
+    install: {
+      id: "TODO",
+    },
+    ...props,
+  }
+  const input = {
+    name,
+    properties,
+  }
+  const { data, errors } = await client.mutate({
+    mutation: TrackEventDocument,
+    variables: {
+      input,
+    },
+  })
+  if (isPresent(errors)) throw new GraphError(JSON.stringify(errors))
+  const event = data?.trackEvent?.event
+  if (event) {
+    return event
+  }
+  throw new GraphError("MIA: event")
+}

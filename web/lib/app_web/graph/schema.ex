@@ -26,9 +26,10 @@ defmodule AppWeb.Graph.Schema do
     @desc "Track event"
     field :track_event, :track_event_result do
       arg(:input, non_null(:track_event_input))
-      # TODO resolve(&track/3)
-      resolve(fn _parent, _args, _context ->
-        nil
+
+      resolve(fn _parent, args, _context ->
+        inspect(args)
+        {:error, "TODO"}
         # TODO: insert event, return event
       end)
     end
