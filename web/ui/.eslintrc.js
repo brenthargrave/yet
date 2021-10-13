@@ -32,7 +32,6 @@ module.exports = {
     //     ignoreMemberSort: true,
     //   },
     // ],
-    "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
     "import/no-extraneous-dependencies": "off",
     "default-case": "off", // rely on ts
     "no-shadow": "off", // bug: incorrectly flags enum defs
@@ -41,6 +40,9 @@ module.exports = {
     "react/jsx-filename-extension": [1, { extensions: [".ts", ".tsx"] }],
     "react/jsx-props-no-spreading": "off",
     "no-underscore-dangle": "off",
+    // TODO: no-unused-vars: https://git.io/JK36s
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["off", { argsIgnorePattern: "^_" }],
   },
   settings: {
     "import/resolver": "node",
