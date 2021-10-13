@@ -3,6 +3,8 @@ import {
   InMemoryCache,
   NormalizedCacheObject,
 } from "@apollo/client"
+import { uuid } from "uuidv4"
+
 import { isPresent } from "~/fp"
 import {
   CreateVerificationDocument,
@@ -41,10 +43,16 @@ export const track = async (
   name: EventName,
   props?: EventProperties
 ): Promise<Event> => {
+  const INSTALL_ID_CACHE_KEY = "graph.install_id"
+  let id = localStorage.getItem(INSTALL_ID_CACHE_KEY)
+  if (!id) {
+    id = uuid()
+    localStorage.setItem(INSTALL_ID_CACHE_KEY, id)
+  }
+
   const properties: EventProperties = {
-    // TODO: autogenerate installId
     install: {
-      id: "TODO",
+      id,
     },
     ...props,
   }
