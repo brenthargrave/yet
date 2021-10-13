@@ -22,6 +22,9 @@ export const history$ = new Observable<Route>((observer) => {
   return unlisten
 })
 
-export const driver = {
+export interface Source {
+  history$: Observable<Route>
+}
+export const driver: Source = {
   history$,
 }
