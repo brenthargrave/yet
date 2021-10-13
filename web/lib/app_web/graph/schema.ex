@@ -1,8 +1,38 @@
 defmodule AppWeb.Graph.Schema do
   use Absinthe.Schema
 
+  enum :event_name do
+    value(:tap_signup)
+  end
+
+  input_object :install do
+    field(:id, non_null(:string))
+  end
+
+  input_object :event_properties do
+    field(:install, non_null(:install))
+  end
+
+  input_object :track_event_input do
+    field(:name, non_null(:event_name))
+    field(:properties, non_null(:event_properties))
+  end
+
+  @doc """
+  object :track_event_mutation do
+    @desc "Track analytics event"
+    field :track_event, :track_event_result do
+      arg(:input, non_null(:track_event_input))
+      resolve(fn _parent, _args, _context ->
+        # TODO resolve(&signin/3)
+        nil
+      end)
+    end
+  end
+  """
+
   object :event do
-    field :name, non_null(:string)
+    field(:name, non_null(:event_name))
   end
 
   query do
@@ -22,12 +52,12 @@ defmodule AppWeb.Graph.Schema do
 
   # TODO: wrap w/ Result type
   object :verification do
-    field :status, non_null(:verification_status)
+    field(:status, non_null(:verification_status))
   end
 
   input_object :create_verification_input do
     # TODO: custom scalar for e164
-    field :e164, non_null(:string)
+    field(:e164, non_null(:string))
   end
 
   import AbsintheErrorPayload.Payload
@@ -38,12 +68,12 @@ defmodule AppWeb.Graph.Schema do
   # TODO: VerificationError implements Error
   # TODO: verification result == union verification | verification error
   interface :error do
-    field :message, non_null(:string)
+    field(:message, non_null(:string))
   end
 
   object :verification_error do
     is_type_of(:error)
-    field :message, non_null(:string)
+    field(:message, non_null(:string))
   end
 
   union :verification_result do

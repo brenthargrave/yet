@@ -2,6 +2,7 @@ import { h, ReactSource } from "@cycle/react"
 import { of } from "rxjs"
 
 import { routes, Source as RouterSource } from "~/router"
+import { EventName, track } from "~/graph"
 import { View } from "./View"
 
 interface Sources {
@@ -17,11 +18,9 @@ export const Landing = (_sources: Sources) => {
 
   const onClickJoin = async () => {
     routes.in().push()
-    await track(CLICK_SIGNUP, {
-      installID,
-    })
+    await track(EventName.TapSignup)
   }
-  // const onClickLogin = () => onClickJoin()
+  const onClickLogin = () => onClickJoin()
   return {
     react: of(h(View, { onClickJoin, onClickLogin })),
   }
