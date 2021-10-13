@@ -18,17 +18,23 @@ defmodule AppWeb.Graph.Schema do
     field(:properties, non_null(:event_properties))
   end
 
-  @doc """
+  object :track_event_result do
+    field :event, type: :event
+  end
+
   object :track_event_mutation do
-    @desc "Track analytics event"
+    @desc "Track event"
     field :track_event, :track_event_result do
       arg(:input, non_null(:track_event_input))
+      # TODO resolve(&track/3)
       resolve(fn _parent, _args, _context ->
-        # TODO resolve(&signin/3)
         nil
+        # TODO: insert event, return event
       end)
     end
   end
+
+  @doc """
   """
 
   object :event do
@@ -94,6 +100,8 @@ defmodule AppWeb.Graph.Schema do
       resolve(&create_verification/3)
       # middleware(&build_payload/2)
     end
+
+    import_fields(:track_event_mutation)
   end
 
   defp create_verification(_parent, %{input: %{e164: e164}} = _args, _resolution) do

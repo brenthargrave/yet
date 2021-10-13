@@ -25,9 +25,19 @@ export enum EventName {
   TapSignup = 'TAP_SIGNUP'
 }
 
+export type EventProperties = {
+  install: Install;
+};
+
+export type Install = {
+  id: Scalars['String'];
+};
+
 export type RootMutationType = {
   __typename?: 'RootMutationType';
   createVerification?: Maybe<VerificationResult>;
+  /** Track event */
+  trackEvent?: Maybe<TrackEventResult>;
 };
 
 
@@ -35,9 +45,24 @@ export type RootMutationTypeCreateVerificationArgs = {
   input: CreateVerificationInput;
 };
 
+
+export type RootMutationTypeTrackEventArgs = {
+  input: TrackEventInput;
+};
+
 export type RootQueryType = {
   __typename?: 'RootQueryType';
   events: Array<Event>;
+};
+
+export type TrackEventInput = {
+  name: EventName;
+  properties: EventProperties;
+};
+
+export type TrackEventResult = {
+  __typename?: 'TrackEventResult';
+  event?: Maybe<Event>;
 };
 
 export type Verification = {
