@@ -1,6 +1,7 @@
 import type { Route as _Route } from "type-route"
 import { createRouter, defineRoute } from "type-route"
 import { Observable } from "rxjs"
+import { shareReplay } from "rxjs/operators"
 
 export const { routes, useRoute, RouteProvider, session } = createRouter({
   home: defineRoute("/"),
@@ -20,7 +21,7 @@ export const history$ = new Observable<Route>((observer) => {
     observer.next(route)
   })
   return unlisten
-})
+}).pipe(shareReplay())
 
 export interface Source {
   history$: Observable<Route>
