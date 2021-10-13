@@ -19,12 +19,6 @@ export const App = (_sources: Sources) => {
   }
   const { history$ } = sources.router
 
-  // TODO
-  // ¿how choose which components appears first?
-  // if authenticated, Home
-  // Home = Auth || Onboarding || ? Search Results?
-  // else Landing()
-
   const { react: landingView$ } = Landing(sources)
 
   const react = history$.pipe(

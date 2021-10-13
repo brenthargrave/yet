@@ -10,10 +10,18 @@ interface Sources {
 }
 
 export const Landing = (_sources: Sources) => {
-  // TODO: analytics!
-  // TODO: use rxjs instead of callbacks?
-  const onClickJoin = () => routes.in().push()
-  const onClickLogin = () => routes.in().push()
+  // TODO
+  // const { join$, onClickJoin } = fromCallback...
+  // const { login$, onClickLogin } = fromCallback...
+  // const router = scheduled([join$, login$]).pipe(mergeAll().pipe(map(.in)))
+
+  const onClickJoin = async () => {
+    routes.in().push()
+    await track(CLICK_SIGNUP, {
+      installID,
+    })
+  }
+  // const onClickLogin = () => onClickJoin()
   return {
     react: of(h(View, { onClickJoin, onClickLogin })),
   }
