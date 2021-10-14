@@ -39,17 +39,19 @@ export const signin = async (input: CreateVerificationInput) => {
   return payload
 }
 
+console.debug("uuid", uuid())
+let id = localStorage.getItem("graph.install_id")
+console.debug("GET id", id)
+if (!id) {
+  id = uuid()
+  console.debug("SET id", id)
+  localStorage.setItem("graph.install_id", id)
+}
+
 export const track = async (
   name: EventName,
   props?: EventProperties
 ): Promise<Event> => {
-  const INSTALL_ID_CACHE_KEY = "graph.install_id"
-  let id = localStorage.getItem(INSTALL_ID_CACHE_KEY)
-  if (!id) {
-    id = uuid()
-    localStorage.setItem(INSTALL_ID_CACHE_KEY, id)
-  }
-
   const properties: EventProperties = {
     install: {
       id,

@@ -28,7 +28,8 @@ defmodule AppWeb.Graph.Schema do
       arg(:input, non_null(:track_event_input))
 
       resolve(fn _parent, args, _context ->
-        inspect(args)
+        IO.puts(inspect(args))
+        # %{input: %{name: :tap_signup, properties: %{install: %{id: "foo "}}}}
         {:error, "TODO"}
         # TODO: insert event, return event
       end)
