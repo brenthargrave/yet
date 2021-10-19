@@ -1,5 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
-import { of } from "rxjs"
+import { of, from } from "rxjs"
 
 import { routes, Source as RouterSource } from "~/router"
 import { EventName, track } from "~/graph"
@@ -20,9 +20,13 @@ export const Landing = (_sources: Sources) => {
     routes.in().push()
     const event = await track(EventName.TapSignup)
     console.debug(event)
+    // how catch all unexpeced errors?
   }
   const onClickLogin = () => null
+
+  const react = of(h(View, { onClickJoin, onClickLogin }))
+
   return {
-    react: of(h(View, { onClickJoin, onClickLogin })),
+    react,
   }
 }

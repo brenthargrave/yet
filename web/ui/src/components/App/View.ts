@@ -1,9 +1,10 @@
 import React, { FC, Fragment } from "react"
 import { h } from "@cycle/react"
-import { h1 } from "@cycle/react-dom"
+import { h1, i } from "@cycle/react-dom"
 import type { Route } from "type-route"
 import { ChakraProvider } from "@chakra-ui/react"
 import { useToast, UseToastOptions } from "@chakra-ui/toast"
+import { ErrorBoundary } from "@sentry/react"
 
 import { routes, isRoute, useRoute } from "~/router"
 
@@ -40,11 +41,13 @@ View.displayName = "AppView"
 
 export const View: FC = ({ children }) => {
   return h(React.StrictMode, [
-    h(ChakraProvider, [
-      children,
-      // h1(`hello, world`),
-      // isRoute(route, routes.home()) && h(Landing),
-      // isRoute(route, routes.in()) && h(Auth, { context }),
+    h(ErrorBoundary, { showDialog: true }, [
+      h(ChakraProvider, [
+        children,
+        // h1(`hello, world`),
+        // isRoute(route, routes.home()) && h(Landing),
+        // isRoute(route, routes.in()) && h(Auth, { context }),
+      ]),
     ]),
   ])
 }

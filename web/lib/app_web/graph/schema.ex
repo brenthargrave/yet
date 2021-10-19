@@ -18,6 +18,7 @@ defmodule AppWeb.Graph.Schema do
     field(:properties, non_null(:event_properties))
   end
 
+  # TODO: WTF is alt to event?
   object :track_event_result do
     field :event, type: :event
   end
@@ -35,9 +36,6 @@ defmodule AppWeb.Graph.Schema do
       end)
     end
   end
-
-  @doc """
-  """
 
   object :event do
     field(:name, non_null(:event_name))
