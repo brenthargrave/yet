@@ -40,7 +40,7 @@ defmodule AppWeb.Graph.Analytics do
   object :analytics_queries do
     field :events, non_null(list_of(non_null(:event))) do
       resolve(fn _parent, _args, _context ->
-        {:ok, []}
+        {:ok, App.Analytics.list_events()}
       end)
     end
   end
