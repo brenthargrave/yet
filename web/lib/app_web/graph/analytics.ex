@@ -9,12 +9,8 @@ defmodule AppWeb.Graph.Analytics do
     field(:name, non_null(:event_name))
   end
 
-  input_object :install do
-    field(:id, non_null(:string))
-  end
-
   input_object :event_properties do
-    field(:install, non_null(:install))
+    field(:install_id, non_null(:string))
   end
 
   input_object :track_event_input do
@@ -22,7 +18,6 @@ defmodule AppWeb.Graph.Analytics do
     field(:properties, non_null(:event_properties))
   end
 
-  # TODO: WTF is alt to event?
   object :track_event_result do
     field :event, type: :event
   end

@@ -26,11 +26,7 @@ export enum EventName {
 }
 
 export type EventProperties = {
-  install: Install;
-};
-
-export type Install = {
-  id: Scalars['String'];
+  installId: Scalars['String'];
 };
 
 export type RootMutationType = {
