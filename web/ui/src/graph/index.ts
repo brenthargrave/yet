@@ -3,7 +3,7 @@ import {
   InMemoryCache,
   NormalizedCacheObject,
 } from "@apollo/client"
-import { uuid } from "uuidv4"
+import { ulid } from "ulid"
 
 import { isPresent } from "~/fp"
 import {
@@ -39,14 +39,16 @@ export const signin = async (input: CreateVerificationInput) => {
   return payload
 }
 
-console.debug("uuid", uuid())
-let id = localStorage.getItem("graph.install_id")
-console.debug("GET id", id)
-if (!id) {
-  id = uuid()
-  console.debug("SET id", id)
-  localStorage.setItem("graph.install_id", id)
-}
+// TODO: clobber installId on signout
+// console.debug("ulid", ulid())
+// let id = localStorage.getItem("graph.install_id")
+// console.debug("GET id", id)
+// if (!id) {
+//   id = ulid()
+//   console.debug("SET id", id)
+//   localStorage.setItem("graph.install_id", id)
+// }
+const id = "TODO"
 
 export const track = async (
   name: EventName,
