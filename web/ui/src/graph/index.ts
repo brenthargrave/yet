@@ -3,8 +3,8 @@ import {
   InMemoryCache,
   NormalizedCacheObject,
 } from "@apollo/client"
-import { ulid } from "ulid"
 
+import { getId as getInstallId } from "./installation"
 import { isPresent } from "~/fp"
 import {
   CreateVerificationDocument,
@@ -39,21 +39,11 @@ export const signin = async (input: CreateVerificationInput) => {
   return payload
 }
 
-// TODO: clobber installId on signout
-// console.debug("ulid", ulid())
-// let id = localStorage.getItem("graph.install_id")
-// console.debug("GET id", id)
-// if (!id) {
-//   id = ulid()
-//   console.debug("SET id", id)
-//   localStorage.setItem("graph.install_id", id)
-// }
-const id = "TODO"
-
 export const track = async (
   name: EventName,
   props?: EventProperties
 ): Promise<Event> => {
+  const id = getInstallId()
   const properties: EventProperties = {
     install: {
       id,

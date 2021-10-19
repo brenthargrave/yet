@@ -18,10 +18,10 @@ export const Landing = (_sources: Sources) => {
 
   const onClickJoin = async () => {
     routes.in().push()
-    const event = await track(EventName.TapSignup, { install: { id: "foo " } })
+    const event = await track(EventName.TapSignup)
     console.debug(event)
   }
-  const onClickLogin = () => onClickJoin()
+  const onClickLogin = () => null
   return {
     react: of(h(View, { onClickJoin, onClickLogin })),
   }
