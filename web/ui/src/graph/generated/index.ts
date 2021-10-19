@@ -32,7 +32,6 @@ export type EventProperties = {
 export type RootMutationType = {
   __typename?: 'RootMutationType';
   createVerification?: Maybe<VerificationResult>;
-  /** Track event */
   trackEvent?: Maybe<TrackEventResult>;
 };
 

@@ -1,5 +1,6 @@
 defmodule AppWeb.Graph.Analytics do
   use Absinthe.Schema.Notation
+  alias AppWeb.Resolvers
 
   enum :event_name do
     value(:tap_signup)
@@ -22,30 +23,16 @@ defmodule AppWeb.Graph.Analytics do
     field :event, type: :event
   end
 
-  object :track_event_mutation do
-    @desc "Track event"
+  object :analytics_mutations do
     field :track_event, :track_event_result do
       arg(:input, non_null(:track_event_input))
-
-      resolve(fn _parent, args, _context ->
-        IO.puts(inspect(args))
-        # %{input: %{name: :tap_signup, properties: %{install: %{id: "foo "}}}}
-        {:error, "TODO"}
-        # TODO: insert event
-        # TODO: segment
-      end)
+      resolve(&Resolvers.Analytics.track_event/3)
     end
   end
 
   object :analytics_queries do
     field :events, non_null(list_of(non_null(:event))) do
-      resolve(fn _parent, _args, _context ->
-        {:ok, App.Analytics.list_events()}
-      end)
+      resolve(&Resolvers.Analytics.events/3)
     end
-  end
-
-  object :analytics_mutations do
-    import_fields(:track_event_mutation)
   end
 end
