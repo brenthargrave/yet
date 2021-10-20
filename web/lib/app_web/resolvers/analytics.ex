@@ -7,10 +7,16 @@ defmodule AppWeb.Resolvers.Analytics do
 
     name =
       name
-      |> Atom.to_string()
       |> Recase.to_snake()
 
-    Analytics.create_event(%{name: name})
+    case Analytics.create_event(%{name: name}) do
+      {:ok, event} ->
+        {:ok, %{event: event}}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
+
     # TODO: segment
   end
 

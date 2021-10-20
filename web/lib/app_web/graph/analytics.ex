@@ -3,8 +3,8 @@ defmodule AppWeb.Graph.Analytics do
   alias AppWeb.Resolvers
 
   enum :event_name do
-    value(:tap_signup)
-    value(:tap_signin)
+    value(:tap_signup, as: "tap_signup")
+    value(:tap_signin, as: "tap_signin")
   end
 
   object :event do

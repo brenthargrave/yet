@@ -5,8 +5,7 @@ defmodule App.Repo.Migrations.CreateEvents do
     create table(:events) do
       add :name, :string
       # user_id: user_id,
-      # anonymous_id: anon_id,
-      # event: event_action,
+      # anon_id: anon_id,
       # properties: properties,
       # timestamp: timestamp.utc.iso8601
 
