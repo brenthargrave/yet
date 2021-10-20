@@ -22,6 +22,7 @@ export type Event = {
 };
 
 export enum EventName {
+  TapSignin = 'TAP_SIGNIN',
   TapSignup = 'TAP_SIGNUP'
 }
 

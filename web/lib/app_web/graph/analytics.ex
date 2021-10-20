@@ -4,6 +4,7 @@ defmodule AppWeb.Graph.Analytics do
 
   enum :event_name do
     value(:tap_signup)
+    value(:tap_signin)
   end
 
   object :event do
