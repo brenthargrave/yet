@@ -3,6 +3,7 @@ defmodule App.Analytics.Event do
   import Ecto.Changeset
 
   schema "events" do
+    field :anon_id, :string
     field :name, :string
 
     timestamps()

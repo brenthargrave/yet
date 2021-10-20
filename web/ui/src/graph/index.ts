@@ -45,7 +45,7 @@ export const track = async (
 ): Promise<Event> => {
   const id = getInstallId()
   const properties: EventProperties = {
-    installId: id,
+    anonId: id,
     ...props,
   }
   const input = {

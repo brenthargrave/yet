@@ -6,6 +6,7 @@ defmodule AppWeb.Resolvers.Analytics do
     %{name: name} = input
     name = Recase.to_snake(name)
 
+    # TODO: Analytics.track_event
     case Analytics.create_event(%{name: name}) do
       {:ok, event} ->
         {:ok, %{event: event}}
@@ -13,8 +14,6 @@ defmodule AppWeb.Resolvers.Analytics do
       {:error, changeset} ->
         {:error, changeset}
     end
-
-    # TODO: segment
   end
 
   def events(_parent, _args, _resolution) do

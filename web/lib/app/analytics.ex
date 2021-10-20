@@ -12,4 +12,6 @@ defmodule App.Analytics do
     |> Event.changeset(attrs)
     |> Repo.insert()
   end
+
+  # TODO: track_event (calls segmetn after create)
 end

@@ -12,20 +12,18 @@ defmodule AppWeb.Graph.Analytics do
   end
 
   input_object :event_properties do
-    field(:install_id, non_null(:string))
+    # TODO
   end
 
   input_object :track_event_input do
     field(:name, non_null(:event_name))
     field(:properties, non_null(:event_properties))
-  end
-
-  object :track_event_result do
-    field :event, type: :event
+    field(:anon_id, non_null(:string))
+    field(:user_id, :string)
   end
 
   object :analytics_mutations do
-    field :track_event, :track_event_result do
+    field :track_event, :event do
       arg(:input, non_null(:track_event_input))
       resolve(&Resolvers.Analytics.track_event/3)
     end
