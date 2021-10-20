@@ -17,7 +17,8 @@ defmodule AppWeb.Graph.Analytics do
 
   input_object :track_event_input do
     field(:name, non_null(:event_name))
-    field(:properties, non_null(:event_properties))
+    # TODO:
+    # field(:properties, non_null(:event_properties))
     field(:anon_id, non_null(:string))
     field(:user_id, :string)
   end
