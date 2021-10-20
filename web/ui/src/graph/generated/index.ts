@@ -26,6 +26,10 @@ export enum EventName {
   TapSignup = 'TAP_SIGNUP'
 }
 
+export type EventProperties = {
+  tmp?: Maybe<Scalars['String']>;
+};
+
 export type RootMutationType = {
   __typename?: 'RootMutationType';
   createVerification?: Maybe<VerificationResult>;
@@ -50,6 +54,7 @@ export type RootQueryType = {
 export type TrackEventInput = {
   anonId: Scalars['String'];
   name: EventName;
+  properties: EventProperties;
   userId?: Maybe<Scalars['String']>;
 };
 

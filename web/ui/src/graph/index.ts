@@ -41,14 +41,11 @@ export const signin = async (input: CreateVerificationInput) => {
 
 export const track = async (
   name: EventName,
-  props?: EventProperties
+  properties?: EventProperties
 ): Promise<Event> => {
   const anonId = getId()
-  const properties: EventProperties = {
-    anonId,
-    ...props,
-  }
   const input = {
+    anonId,
     name,
     properties,
   }
@@ -59,7 +56,7 @@ export const track = async (
     },
   })
   if (isPresent(errors)) throw new GraphError(JSON.stringify(errors))
-  const event = data?.trackEvent?.event
+  const event = data?.trackEvent
   if (event) {
     return event
   }
