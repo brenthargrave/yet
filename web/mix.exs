@@ -47,7 +47,8 @@ defmodule App.MixProject do
       {:phoenix_slime, github: "slime-lang/phoenix_slime", ref: "dc451d8"},
       {:vite_phx, "~> 0.2"},
       {:absinthe_phoenix, "~> 2.0.0"},
-      {:absinthe_error_payload, "~> 1.0"}
+      {:absinthe_error_payload, "~> 1.0"},
+      {:recase, "~> 0.5"}
     ]
   end
 
