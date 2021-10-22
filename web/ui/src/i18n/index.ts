@@ -11,6 +11,9 @@ export const t = (key: string): string => {
     "auth.tel.entry.cta": `My phone number is`,
     "auth.tel.entry.placeholder": "(123) 456-7890",
     "auth.tel.entry.submit": shared.continue,
+    "auth.tel.verify.head": `We sent you a code.`,
+    "auth.tel.verify.cta": `Enter it below to verify $PHONE.`,
+    "auth.tel.verify.placeholder": `Verification code`,
   }
   return messages[key]
 }
