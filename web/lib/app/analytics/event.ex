@@ -12,7 +12,7 @@ defmodule App.Analytics.Event do
   @doc false
   def changeset(event, attrs) do
     event
-    |> cast(attrs, [:name])
-    |> validate_required([:name])
+    |> cast(attrs, [:name, :anon_id])
+    |> validate_required([:name, :anon_id])
   end
 end

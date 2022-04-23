@@ -3,13 +3,13 @@ defmodule AppWeb.Resolvers.Analytics do
 
   def track_event(_parent, %{input: input}, _resolution) do
     IO.puts(inspect(input))
-    %{name: name} = input
+    %{name: name, anon_id: anon_id} = input
     name = Recase.to_snake(name)
 
     # TODO: Analytics.track_event
-    case Analytics.create_event(%{name: name}) do
+    case Analytics.create_event(%{name: name, anon_id: anon_id}) do
       {:ok, event} ->
-        {:ok, %{event: event}}
+        {:ok, event}
 
       {:error, changeset} ->
         {:error, changeset}

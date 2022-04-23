@@ -11,7 +11,7 @@ interface Sources {
 }
 
 export const App = (_sources: Sources) => {
-  // NOTE: stub sources in lieu of drivers pending:
+  // NOTE: stub sources (eg, router) in lieu of drivers, pending:
   // https://github.com/cyclejs/cyclejs/pull/929
   const sources = {
     router,

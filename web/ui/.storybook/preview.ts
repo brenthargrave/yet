@@ -3,7 +3,6 @@ import React from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 import { h } from '@cycle/react';
 import { addDecorator } from '@storybook/react';
-import { withPerformance } from 'storybook-addon-performance';
 import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport';
 
 addDecorator(
@@ -12,9 +11,6 @@ addDecorator(
       h(Story)
     ])
   ))
-
-// TODO: component perf
-// addDecorator(withPerformance);
 
 export const parameters: Parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },

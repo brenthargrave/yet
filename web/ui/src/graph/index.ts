@@ -41,7 +41,7 @@ export const signin = async (input: CreateVerificationInput) => {
 
 export const track = async (
   name: EventName,
-  properties?: EventProperties
+  properties: EventProperties = {}
 ): Promise<Event> => {
   const anonId = getId()
   const input = {

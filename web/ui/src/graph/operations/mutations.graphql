@@ -13,5 +13,6 @@ mutation CreateVerification($input: CreateVerificationInput!) {
 mutation TrackEvent($input: TrackEventInput!) {
   trackEvent(input: $input) {
     name
+    anonId
   }
 }

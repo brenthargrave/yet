@@ -17,10 +17,9 @@ export const Landing = (_sources: Sources) => {
   // const router = scheduled([join$, login$]).pipe(mergeAll().pipe(map(.in)))
 
   const onClickJoin = async () => {
-    routes.in().push()
+    routes.in().push() // TODO: to sink
     const event = await track(EventName.TapSignup)
     console.debug(event)
-    // how catch all unexpeced errors?
   }
   const onClickLogin = () => null
 
