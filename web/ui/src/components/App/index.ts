@@ -1,9 +1,9 @@
 import { h, ReactSource } from "@cycle/react"
 import { combineLatest, of } from "rxjs"
-import { map, share, switchMap } from "rxjs/operators"
+import { map, share } from "rxjs/operators"
 import { driver as router, isRoute, routes } from "~/router"
 
-import { View } from "./View"
+import { View as AppView } from "./View"
 import { Landing } from "~/components/Landing"
 
 interface Sources {
@@ -21,12 +21,20 @@ export const App = (_sources: Sources) => {
 
   const { react: landingView$ } = Landing(sources)
 
-  const react = history$.pipe(
-    switchMap((route) => {
-      return landingView$.pipe(
-        // TODO
-        map((childView) => h(View, [childView]))
-      )
+  const react = combineLatest({
+    route: history$,
+    landing: landingView$,
+  }).pipe(
+    map(({ route, landing }) => {
+      let childView
+      // TODO: replace if/else w/ pattern-matching?
+      if (isRoute(route, routes.home())) {
+        childView = landing
+      } else if (isRoute(route, routes.in())) {
+        // TODO: auth view
+        childView = null
+      }
+      return h(AppView, [childView])
     }),
     share()
   )

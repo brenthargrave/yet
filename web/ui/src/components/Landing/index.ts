@@ -1,5 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
-import { of, from } from "rxjs"
+import { of } from "rxjs"
 
 import { routes, Source as RouterSource } from "~/router"
 import { EventName, track } from "~/graph"
@@ -11,20 +11,14 @@ interface Sources {
 }
 
 export const Landing = (_sources: Sources) => {
-  // TODO
-  // const { join$, onClickJoin } = fromCallback...
-  // const { login$, onClickLogin } = fromCallback...
-  // const router = scheduled([join$, login$]).pipe(mergeAll().pipe(map(.in)))
-
   const onClickJoin = async () => {
-    routes.in().push() // TODO: to sink
-    const event = await track(EventName.TapSignup)
-    console.debug(event)
+    routes.in().push() // TODO: sink
+    const _event = await track(EventName.TapSignup)
   }
+
   const onClickLogin = () => null
 
   const react = of(h(View, { onClickJoin, onClickLogin }))
-
   return {
     react,
   }
