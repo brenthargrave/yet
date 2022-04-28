@@ -1,7 +1,8 @@
 import { h, ReactSource } from "@cycle/react"
 import { combineLatest, of } from "rxjs"
 import { map, share } from "rxjs/operators"
-import { driver as router, isRoute, routes } from "~/router"
+import { match } from "ts-pattern"
+import { driver as router } from "~/router"
 
 import { View as AppView } from "./View"
 import { Landing } from "~/components/Landing"
@@ -26,14 +27,10 @@ export const App = (_sources: Sources) => {
     landing: landingView$,
   }).pipe(
     map(({ route, landing }) => {
-      let childView
-      // TODO: replace if/else w/ pattern-matching?
-      if (isRoute(route, routes.home())) {
-        childView = landing
-      } else if (isRoute(route, routes.in())) {
-        // TODO: auth view
-        childView = null
-      }
+      const childView = match(route.name)
+        .with("home", () => landing)
+        .with("in", () => landing)
+        .otherwise(() => landing) // TODO: .exhaustive()
       return h(AppView, [childView])
     }),
     share()
