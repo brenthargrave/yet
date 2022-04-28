@@ -1,5 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
-import { combineLatest, of } from "rxjs"
+import { combineLatest } from "rxjs"
 import { map, share } from "rxjs/operators"
 import { match } from "ts-pattern"
 import { driver as router } from "~/router"

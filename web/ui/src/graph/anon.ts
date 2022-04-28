@@ -1,6 +1,6 @@
 import { ulid } from "ulid"
 
-const cacheKey = "graph.install_id"
+const cacheKey = "graph.ananymous_id"
 
 export const getId = (): string => {
   let id = localStorage.getItem(cacheKey)

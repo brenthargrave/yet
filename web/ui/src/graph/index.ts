@@ -4,7 +4,7 @@ import {
   NormalizedCacheObject,
 } from "@apollo/client"
 
-import { getId } from "./installation"
+import { getId } from "./anon"
 import { isPresent } from "~/fp"
 import {
   CreateVerificationDocument,
@@ -39,11 +39,15 @@ export const signin = async (input: CreateVerificationInput) => {
   return payload
 }
 
+// Analytics
+//
+
+const anonId = getId()
+
 export const track = async (
   name: EventName,
   properties: EventProperties = {}
 ): Promise<Event> => {
-  const anonId = getId()
   const input = {
     anonId,
     name,
