@@ -14,4 +14,5 @@ export default {
 export const Default: Story<Props> = (args) => h(View, args)
 Default.argTypes = {
   onSubmit: { control: false, action: "submit" },
+  onChangePhoneInput: { control: false },
 }

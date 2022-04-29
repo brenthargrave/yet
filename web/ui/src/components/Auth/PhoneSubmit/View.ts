@@ -17,24 +17,32 @@ import { t } from "~/i18n"
 const size = "lg"
 
 export interface Props {
-  onChangePhoneInput: React.ChangeEventHandler<HTMLInputElement>
+  onChangePhoneInput: (text: string) => void
   isSubmitButtonDisabled: boolean
   isPhoneInputDisabled: boolean
-  onSubmit: React.FormEventHandler<HTMLButtonElement>
+  onSubmit: () => void
   isLoading: boolean
 }
 export const View = ({
   onChangePhoneInput,
   isSubmitButtonDisabled,
   isPhoneInputDisabled,
-  onSubmit,
+  onSubmit: _onSubmit,
   isLoading,
 }: Props) => {
-  const inputId = "phone-number"
+  const onSubmit: React.FormEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault()
+    _onSubmit()
+  }
+  const phoneInputId = "phone-number"
+  const phoneInputHandler: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    const { value } = e.currentTarget
+    onChangePhoneInput(value)
+  }
   useEffectOnce(() => {
     // TODO: extract react-compat format function from RestrictedInput
     // eslint-disable-next-line
-    const element = document.querySelector(`#${inputId}`)!
+    const element = document.querySelector(`#${phoneInputId}`)!
     // eslint-disable-next-line
     const input = new RestrictedInput({
       // @ts-ignore
@@ -42,7 +50,7 @@ export const View = ({
       pattern: "({{999}}) {{999}}-{{9999}}",
     })
     // @ts-ignore
-    element.addEventListener("input", onChangePhoneInput, false)
+    element.addEventListener("input", phoneInputHandler, false)
   })
   return h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center" }, [
@@ -56,7 +64,7 @@ export const View = ({
             type: "tel",
             placeholder: t("auth.tel.entry.placeholder"),
             isRequired: true,
-            onChange: onChangePhoneInput,
+            onChange: phoneInputHandler,
             isDisabled: isPhoneInputDisabled,
           }),
         ]),

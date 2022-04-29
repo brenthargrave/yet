@@ -23,9 +23,8 @@ export const PhoneSubmit = ({ context, notify }: Props) => {
     // TODO: track("viewed submit phone")
   })
 
-  const onChangePhone: React.ChangeEventHandler<HTMLInputElement> = (event) => {
-    const { value } = event.currentTarget
-    const { isValid, phoneNumber } = validatePhone(value, {
+  const onChangePhone = (phone: string) => {
+    const { isValid, phoneNumber } = validatePhone(phone, {
       country: "USA",
       strictDetection: true,
     })
