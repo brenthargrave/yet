@@ -72,9 +72,9 @@ export const PhoneSubmit = ({ context, notify }: Props) => {
   }
 
   return h(View, {
-    onChangePhone,
+    onChangePhoneInput: onChangePhone,
     isButtonDisabled,
-    isInputDisabled,
+    isPhoneInputDisabled: isInputDisabled,
     onSubmit,
     isLoading,
   })

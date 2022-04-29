@@ -12,7 +12,7 @@ interface Sources {
 
 export const Landing = (_sources: Sources) => {
   const onClickJoin = async () => {
-    routes.in().push() // TODO: make driver
+    routes.in().push() // TODO: driver
     const _event = await track(EventName.TapSignup)
   }
 

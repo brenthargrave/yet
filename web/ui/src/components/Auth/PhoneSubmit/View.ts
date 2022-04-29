@@ -17,16 +17,16 @@ import { t } from "~/i18n"
 const size = "lg"
 
 export interface Props {
-  onChangePhone: React.ChangeEventHandler<HTMLInputElement>
-  isButtonDisabled: boolean
-  isInputDisabled: boolean
+  onChangePhoneInput: React.ChangeEventHandler<HTMLInputElement>
+  isSubmitButtonDisabled: boolean
+  isPhoneInputDisabled: boolean
   onSubmit: React.FormEventHandler<HTMLButtonElement>
   isLoading: boolean
 }
 export const View = ({
-  onChangePhone,
-  isButtonDisabled,
-  isInputDisabled,
+  onChangePhoneInput,
+  isSubmitButtonDisabled,
+  isPhoneInputDisabled,
   onSubmit,
   isLoading,
 }: Props) => {
@@ -42,7 +42,7 @@ export const View = ({
       pattern: "({{999}}) {{999}}-{{9999}}",
     })
     // @ts-ignore
-    element.addEventListener("input", onChangePhone, false)
+    element.addEventListener("input", onChangePhoneInput, false)
   })
   return h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center" }, [
@@ -56,14 +56,14 @@ export const View = ({
             type: "tel",
             placeholder: t("auth.tel.entry.placeholder"),
             isRequired: true,
-            onChange: onChangePhone,
-            isDisabled: isInputDisabled,
+            onChange: onChangePhoneInput,
+            isDisabled: isPhoneInputDisabled,
           }),
         ]),
         h(
           Button,
           {
-            isDisabled: isButtonDisabled,
+            isDisabled: isSubmitButtonDisabled,
             size,
             width: "100%",
             isLoading,
