@@ -23,6 +23,8 @@ export const PhoneSubmit = ({ context, notify }: Props) => {
     // TODO: track("viewed submit phone")
   })
 
+  const onChangePhoneInput = () => null
+  /*
   const onChangePhone = (phone: string) => {
     const { isValid, phoneNumber } = validatePhone(phone, {
       country: "USA",
@@ -33,7 +35,10 @@ export const PhoneSubmit = ({ context, notify }: Props) => {
       setE164(phoneNumber)
     }
   }
+  */
 
+  const onSubmit = () => null
+  /**
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = async (event) => {
     event.preventDefault()
     // TODO: track("submitted phone number")
@@ -69,10 +74,11 @@ export const PhoneSubmit = ({ context, notify }: Props) => {
     setButtonDisabled(false)
     setLoading(false)
   }
+   */
 
   return h(View, {
-    onChangePhoneInput: onChangePhone,
-    isButtonDisabled,
+    onChangePhoneInput,
+    isSubmitButtonDisabled: isButtonDisabled,
     isPhoneInputDisabled: isInputDisabled,
     onSubmit,
     isLoading,
