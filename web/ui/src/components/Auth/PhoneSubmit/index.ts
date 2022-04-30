@@ -1,19 +1,31 @@
-import { h } from "@cycle/react"
+import { h, ReactSource } from "@cycle/react"
 import { useState } from "react"
 import { phone as validatePhone } from "phone"
-
 import { useEffectOnce } from "react-use"
+
 import { View } from "./View"
 import { Context } from "~/context"
 import { signin, VerificationStatus } from "~/graph"
-import { Notify } from "~/components/App/View"
+// import { Notify } from "~/components/App/View"
 import { routes } from "~/router"
+import { of } from "rxjs"
+
+interface Sources {
+  react: ReactSource
+}
+const PhoneSubmit = (sources: Sources) => {
+  const react = of(h(View({ })))
+
+  return {
+    react:
+  }
+}
 
 interface Props {
   context: Context
-  notify: Notify
+  // notify: Notify
 }
-export const PhoneSubmit = ({ context, notify }: Props) => {
+export const PhoneSubmitHooks = ({ context }: Props) => {
   const [e164, setE164] = useState("")
   const [isButtonDisabled, setButtonDisabled] = useState<boolean>(true)
   const [isInputDisabled, setInputDisabled] = useState<boolean>(false)
@@ -24,8 +36,7 @@ export const PhoneSubmit = ({ context, notify }: Props) => {
   })
 
   const onChangePhoneInput = () => null
-  /*
-  const onChangePhone = (phone: string) => {
+  const _onChangePhone = (phone: string) => {
     const { isValid, phoneNumber } = validatePhone(phone, {
       country: "USA",
       strictDetection: true,
@@ -35,11 +46,11 @@ export const PhoneSubmit = ({ context, notify }: Props) => {
       setE164(phoneNumber)
     }
   }
-  */
 
   const onSubmit = () => null
-  /**
-  const onSubmit: React.FormEventHandler<HTMLButtonElement> = async (event) => {
+  const _onSubmit: React.FormEventHandler<HTMLButtonElement> = async (
+    event
+  ) => {
     event.preventDefault()
     // TODO: track("submitted phone number")
     setLoading(true)
@@ -48,17 +59,18 @@ export const PhoneSubmit = ({ context, notify }: Props) => {
     const result = await signin({ e164 })
     switch (result.__typename) {
       case "VerificationError": {
-        notify({ status: "error", title: result.message })
+        //TODO: notify({ status: "error", title: result.message })
         break
       }
       case "Verification":
         console.debug(result.status)
         switch (result.status) {
           case VerificationStatus.Canceled:
-            notify({
-              title: "Verification cancelled, please try again.",
-              status: "warning",
-            })
+            // TODO
+            // notify({
+            //   title: "Verification cancelled, please try again.",
+            //   status: "warning",
+            // })
             break
           case VerificationStatus.Pending:
             // TODO: track("viewed verify phone")
@@ -74,7 +86,6 @@ export const PhoneSubmit = ({ context, notify }: Props) => {
     setButtonDisabled(false)
     setLoading(false)
   }
-   */
 
   return h(View, {
     onChangePhoneInput,
