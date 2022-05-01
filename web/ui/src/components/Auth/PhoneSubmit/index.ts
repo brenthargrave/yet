@@ -14,11 +14,11 @@ interface Sources {
   react: ReactSource
 }
 export const PhoneSubmit = (sources: Sources) => {
+  const onChangePhoneInput = (t: string) => console.debug(t)
+  const onSubmit = () => console.debug("submit")
   const isLoading$ = new BehaviorSubject<boolean>(false)
   const isSubmitButtonDisabled$ = new BehaviorSubject<boolean>(true)
   const isPhoneInputDisabled$ = new BehaviorSubject<boolean>(false)
-  const onSubmit = () => console.debug("submit")
-  const onChangePhoneInput = (t: string) => console.debug(t)
 
   const react = combineLatest({
     isLoading: isLoading$,
