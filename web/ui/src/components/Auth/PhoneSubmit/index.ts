@@ -8,16 +8,35 @@ import { Context } from "~/context"
 import { signin, VerificationStatus } from "~/graph"
 // import { Notify } from "~/components/App/View"
 import { routes } from "~/router"
-import { of } from "rxjs"
+import { BehaviorSubject, combineLatest, map, of } from "rxjs"
 
 interface Sources {
   react: ReactSource
 }
-const PhoneSubmit = (sources: Sources) => {
-  const react = of(h(View({ })))
+export const PhoneSubmit = (sources: Sources) => {
+  const isLoading$ = new BehaviorSubject<boolean>(false)
+  const isSubmitButtonDisabled$ = new BehaviorSubject<boolean>(true)
+  const isPhoneInputDisabled$ = new BehaviorSubject<boolean>(false)
+  const onSubmit = () => console.debug("submit")
+  const onChangePhoneInput = (t: string) => console.debug(t)
 
+  const react = combineLatest({
+    isLoading: isLoading$,
+    isSubmitButtonDisabled: isSubmitButtonDisabled$,
+    isPhoneInputDisabled: isPhoneInputDisabled$,
+  }).pipe(
+    map((props) => h(View, { ...props, onSubmit, onChangePhoneInput }))
+  )
+
+  // const react = of(h(View({
+    // onChangePhoneInput: (text: string) => void
+    // isSubmitButtonDisabled: boolean
+    // isPhoneInputDisabled: boolean
+    // onSubmit: () => void
+    // isLoading: boolean
+  //  })))
   return {
-    react:
+    react,
   }
 }
 
