@@ -35,7 +35,6 @@ interface Sources {
 }
 export const PhoneSubmit = (sources: Sources) => {
   const [phoneInput$, onChangePhoneInput] = makeObservableCallback<string>()
-  const [submit$, onSubmit] = makeObservableCallback()
 
   const phoneValidation$ = phoneInput$.pipe(
     map((phone) =>
@@ -46,17 +45,22 @@ export const PhoneSubmit = (sources: Sources) => {
     ),
     shareReplay()
   )
+  const phone$ = phoneValidation$.pipe(map(({ phoneNumber }) => phoneNumber))
   const isPhoneValid$ = phoneValidation$.pipe(
     map(({ isValid }) => isValid),
     startWith(false)
   )
-  const phone$ = phoneValidation$.pipe(map(({ phoneNumber }) => phoneNumber))
+  // TODO: operator: not()
+  const isPhoneInvalid$ = isPhoneValid$.pipe(map((valid) => !valid))
 
-  // submitDisable ==  isLoadingg, isPhoneValid
-  const isSubmitButtonDisabled$ = isPhoneValid$.pipe(map((valid) => !valid))
+  // TODO: loading == request in flight
+  const [submit$, onSubmit] = makeObservableCallback()
+  // states: loading, result | error
 
-  // loading == request in flight - how model?
-  const isLoading$ = new BehaviorSubject<boolean>(false)
+  const isLoading$ = new BehaviorSubject<boolean>(false) // loading, start false
+
+  // TODO: disabled while loading
+  const isSubmitButtonDisabled$ = isPhoneInvalid$
   const isPhoneInputDisabled$ = new BehaviorSubject<boolean>(false)
 
   const react = combineLatest({
