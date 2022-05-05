@@ -13,6 +13,7 @@ import {
   switchMap,
   shareReplay,
   startWith,
+  withLatestFrom,
 } from "rxjs"
 import { not } from "ramda"
 import { View } from "./View"
@@ -55,7 +56,19 @@ export const PhoneSubmit = (sources: Sources) => {
 
   // TODO: loading == request in flight
   const [submit$, onSubmit] = makeObservableCallback()
-  // states: loading, result | error
+  const response$ = submit$.pipe(
+    withLatestFrom(phone$),
+    map(([_, phone]) => {
+      // TODO
+    })
+  )
+  // states: loading || value | error (expected/baked in || graphql/network)
+  // { data, fetching, error }
+  // Operation { fetching: boolean, result } // could add percentComplete: dec
+  // Result { success: true, data } | { success: false, error }
+  // data T (grqphql data) | error { message }
+  // ...tedious
+  // { data?: T, error?: Error, loading: boolean }
 
   const isLoading$ = new BehaviorSubject<boolean>(false) // loading, start false
 

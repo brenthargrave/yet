@@ -26,6 +26,12 @@ export const client = new ApolloClient({
   cache: new InMemoryCache(),
 })
 
+interface GraphRequest<T, E> {
+  loading: boolean
+  data?: T
+  error?: E
+}
+
 export const signin = async (input: CreateVerificationInput) => {
   const { data, errors } = await client.mutate({
     mutation: CreateVerificationDocument,
