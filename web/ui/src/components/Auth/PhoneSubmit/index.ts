@@ -1,6 +1,6 @@
 import { h, ReactSource } from "@cycle/react"
 import { useState } from "react"
-import { phone as validatePhone } from "phone"
+import phone, { phone as validatePhone } from "phone"
 import { useEffectOnce } from "react-use"
 
 import {
@@ -10,6 +10,9 @@ import {
   map,
   of,
   Observable,
+  switchMap,
+  shareReplay,
+  startWith,
 } from "rxjs"
 import { View } from "./View"
 import { Context } from "~/context"
@@ -31,11 +34,29 @@ interface Sources {
   react: ReactSource
 }
 export const PhoneSubmit = (sources: Sources) => {
-  const [phoneInput$, onChangePhoneInput] = makeObservableCallback()
+  const [phoneInput$, onChangePhoneInput] = makeObservableCallback<string>()
   const [submit$, onSubmit] = makeObservableCallback()
 
+  const phoneValidation$ = phoneInput$.pipe(
+    map((phone) =>
+      validatePhone(phone, {
+        country: "USA",
+        strictDetection: true,
+      })
+    ),
+    shareReplay()
+  )
+  const isPhoneValid$ = phoneValidation$.pipe(
+    map(({ isValid }) => isValid),
+    startWith(false)
+  )
+  const phone$ = phoneValidation$.pipe(map(({ phoneNumber }) => phoneNumber))
+
+  // submitDisable ==  isLoadingg, isPhoneValid
+  const isSubmitButtonDisabled$ = isPhoneValid$.pipe(map((valid) => !valid))
+
+  // loading == request in flight - how model?
   const isLoading$ = new BehaviorSubject<boolean>(false)
-  const isSubmitButtonDisabled$ = new BehaviorSubject<boolean>(true)
   const isPhoneInputDisabled$ = new BehaviorSubject<boolean>(false)
 
   const react = combineLatest({
