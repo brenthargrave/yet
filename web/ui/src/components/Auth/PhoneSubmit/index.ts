@@ -17,25 +17,23 @@ import { signin, VerificationStatus } from "~/graph"
 // import { Notify } from "~/components/App/View"
 import { routes } from "~/router"
 
-interface ObserveCallback<O> {
-  observable: Observable<O>
-  callback: (t?: any) => void
-}
-function observeCallback<T>(): ObserveCallback<T> {
+type ObservableCallback<O> = [Observable<O>, (t?: any) => void]
+function makeObservableCallback<T>(): ObservableCallback<T> {
   const subject = new Subject<T>()
   const observable = subject.asObservable()
   const callback = (i: T) => {
     subject.next(i)
   }
-  return { observable, callback }
+  return [observable, callback]
 }
 
 interface Sources {
   react: ReactSource
 }
 export const PhoneSubmit = (sources: Sources) => {
-  const onChangePhoneInput = (t: string) => console.debug(t)
-  const { observable: submit$, callback: onSubmit } = observeCallback()
+  const [phoneInput$, onChangePhoneInput] = makeObservableCallback()
+  const [submit$, onSubmit] = makeObservableCallback()
+
   const isLoading$ = new BehaviorSubject<boolean>(false)
   const isSubmitButtonDisabled$ = new BehaviorSubject<boolean>(true)
   const isPhoneInputDisabled$ = new BehaviorSubject<boolean>(false)
@@ -45,10 +43,6 @@ export const PhoneSubmit = (sources: Sources) => {
     isSubmitButtonDisabled: isSubmitButtonDisabled$,
     isPhoneInputDisabled: isPhoneInputDisabled$,
   }).pipe(map((props) => h(View, { ...props, onSubmit, onChangePhoneInput })))
-
-  // TODO: where/how subscribe to event callbacks? in cycle, you observe react
-  // source; there's no need to subscribe/send to a distinct sink, it's part of teh react
-  // sink
 
   return {
     react,
