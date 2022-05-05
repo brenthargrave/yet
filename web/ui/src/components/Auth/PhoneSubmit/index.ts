@@ -14,6 +14,7 @@ import {
   shareReplay,
   startWith,
 } from "rxjs"
+import { not } from "ramda"
 import { View } from "./View"
 import { Context } from "~/context"
 import { signin, VerificationStatus } from "~/graph"
@@ -50,8 +51,7 @@ export const PhoneSubmit = (sources: Sources) => {
     map(({ isValid }) => isValid),
     startWith(false)
   )
-  // TODO: operator: not()
-  const isPhoneInvalid$ = isPhoneValid$.pipe(map((valid) => !valid))
+  const isPhoneInvalid$ = isPhoneValid$.pipe(map(not))
 
   // TODO: loading == request in flight
   const [submit$, onSubmit] = makeObservableCallback()
