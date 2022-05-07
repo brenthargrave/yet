@@ -4,19 +4,14 @@ import phone, { phone as validatePhone } from "phone"
 import { useEffectOnce } from "react-use"
 import {
   Subject,
-  BehaviorSubject,
   combineLatest,
   map,
-  of,
   Observable,
   switchMap,
   shareReplay,
   startWith,
   withLatestFrom,
   share,
-  pluck,
-  filter,
-  skipWhile,
   tap,
   merge,
 } from "rxjs"
@@ -67,25 +62,31 @@ export const PhoneSubmit = (sources: Sources) => {
   const isPhoneInvalid$ = isPhoneValid$.pipe(map(not))
 
   const [submit$, onSubmit] = makeObservableCallback()
-  // TODO: error handling?
+
   const result$ = submit$.pipe(
     withLatestFrom(phone$),
     switchMap(([_, phone]) => verifyPhone$({ e164: phone })),
     tag("result"),
-    share()
-  )
-
-  const route = result$.pipe(
-    map((result) => {
-      const route = match(result)
+    tap((result) => {
+      // TODO: imperative => sinks
+      match(result)
         .with({ __typename: "Verification" }, (result) => {
-          return result.status
+          match(result.status)
+            .with(VerificationStatus.Pending, () => routes.verify().push())
+            .with(VerificationStatus.Approved, () => routes.home().push())
+            .with(VerificationStatus.Canceled, () => {
+              // TODO: notification?
+              console.error("verification cancelled")
+            })
+            .exhaustive()
         })
+        .with({ __typename: "VerificationError" }, ({ message }) =>
+          // TODO: when does this EVER occur?
+          console.error(message)
+        )
         .run()
-      // .with({ __typename: "VerificationError" }, (result) => result.message)
-      // .otherwise((value) => null)
-      // .exhaustive()
-    })
+    }),
+    share()
   )
 
   const isLoading$ = merge(
@@ -101,15 +102,6 @@ export const PhoneSubmit = (sources: Sources) => {
     share()
   )
   const isPhoneInputDisabled$ = isLoading$
-
-  // PROBLEM: if there's sink attached to ANY observable, it won't run; how
-  // handle imperative things like routing?
-  // case VerificationStatus.Pending
-  //  => routes: phone veirfy view
-  // case VerificationStatus.Canceled
-  //  => alert "Canceeled please try again"
-  // case VerificationStatus.Approved
-  //  => ¿impossible? must mean auth token set?
 
   const react = combineLatest({
     isLoading: isLoading$,
