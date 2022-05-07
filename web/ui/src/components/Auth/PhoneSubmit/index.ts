@@ -14,11 +14,16 @@ import {
   shareReplay,
   startWith,
   withLatestFrom,
+  share,
+  pluck,
+  filter,
+  skipWhile,
+  tap,
 } from "rxjs"
 import { not } from "ramda"
 import { View } from "./View"
 import { Context } from "~/context"
-import { signin, VerificationStatus } from "~/graph"
+import { signin, VerificationStatus, verifyPhone$ } from "~/graph"
 // import { Notify } from "~/components/App/View"
 import { routes } from "~/router"
 
@@ -47,34 +52,37 @@ export const PhoneSubmit = (sources: Sources) => {
     ),
     shareReplay()
   )
-  const phone$ = phoneValidation$.pipe(map(({ phoneNumber }) => phoneNumber))
+  const phone$: Observable<string> = phoneValidation$.pipe(
+    map(({ phoneNumber }) => phoneNumber || ""),
+    share()
+  )
   const isPhoneValid$ = phoneValidation$.pipe(
     map(({ isValid }) => isValid),
     startWith(false)
   )
   const isPhoneInvalid$ = isPhoneValid$.pipe(map(not))
 
-  // TODO: loading == request in flight
   const [submit$, onSubmit] = makeObservableCallback()
-  const response$ = submit$.pipe(
+  const result$ = submit$.pipe(
     withLatestFrom(phone$),
-    map(([_, phone]) => {
-      // TODO
-    })
+    switchMap(([_, phone]) => verifyPhone$({ e164: phone })),
+    share()
   )
-  // states: loading || value | error (expected/baked in || graphql/network)
-  // { data, fetching, error }
-  // Operation { fetching: boolean, result } // could add percentComplete: dec
-  // Result { success: true, data } | { success: false, error }
-  // data T (grqphql data) | error { message }
-  // ...tedious
-  // { data?: T, error?: Error, loading: boolean }
+  // const isLoading$ = new BehaviorSubject<boolean>(false) // loading, start false
+  const isLoading$ = result$.pipe(
+    map((result) => !!result.hasNext),
+    startWith(false)
+  )
+  // TODO const alerts = operation$.pipe(materialize(), filter(n => Error?)
 
-  const isLoading$ = new BehaviorSubject<boolean>(false) // loading, start false
-
-  // TODO: disabled while loading
-  const isSubmitButtonDisabled$ = isPhoneInvalid$
-  const isPhoneInputDisabled$ = new BehaviorSubject<boolean>(false)
+  const isSubmitButtonDisabled$ = combineLatest({
+    invalid: isPhoneInvalid$,
+    loading: isLoading$,
+  }).pipe(
+    map(({ invalid, loading }) => invalid || loading),
+    share()
+  )
+  const isPhoneInputDisabled$ = isLoading$
 
   const react = combineLatest({
     isLoading: isLoading$,
