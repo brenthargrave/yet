@@ -2,7 +2,6 @@ import { h, ReactSource } from "@cycle/react"
 import { useState } from "react"
 import phone, { phone as validatePhone } from "phone"
 import { useEffectOnce } from "react-use"
-
 import {
   Subject,
   BehaviorSubject,
@@ -19,13 +18,16 @@ import {
   filter,
   skipWhile,
   tap,
+  merge,
 } from "rxjs"
 import { not } from "ramda"
+
 import { View } from "./View"
 import { Context } from "~/context"
 import { signin, VerificationStatus, verifyPhone$ } from "~/graph"
 // import { Notify } from "~/components/App/View"
 import { routes } from "~/router"
+import { tag } from "~/log"
 
 type ObservableCallback<O> = [Observable<O>, (t?: any) => void]
 function makeObservableCallback<T>(): ObservableCallback<T> {
@@ -54,6 +56,7 @@ export const PhoneSubmit = (sources: Sources) => {
   )
   const phone$: Observable<string> = phoneValidation$.pipe(
     map(({ phoneNumber }) => phoneNumber || ""),
+    tag("phone"),
     share()
   )
   const isPhoneValid$ = phoneValidation$.pipe(
@@ -63,17 +66,18 @@ export const PhoneSubmit = (sources: Sources) => {
   const isPhoneInvalid$ = isPhoneValid$.pipe(map(not))
 
   const [submit$, onSubmit] = makeObservableCallback()
+  // TODO: error handling?
   const result$ = submit$.pipe(
     withLatestFrom(phone$),
     switchMap(([_, phone]) => verifyPhone$({ e164: phone })),
+    tag("result"),
     share()
   )
-  // const isLoading$ = new BehaviorSubject<boolean>(false) // loading, start false
-  const isLoading$ = result$.pipe(
-    map((result) => !!result.hasNext),
-    startWith(false)
-  )
-  // TODO const alerts = operation$.pipe(materialize(), filter(n => Error?)
+
+  const isLoading$ = merge(
+    submit$.pipe(map((_) => true)),
+    result$.pipe(map((_) => false))
+  ).pipe(startWith(false))
 
   const isSubmitButtonDisabled$ = combineLatest({
     invalid: isPhoneInvalid$,

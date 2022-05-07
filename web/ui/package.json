@@ -72,6 +72,7 @@
     "react-use": "17.3.2",
     "restricted-input": "3.0.5",
     "rxjs": "7.5.5",
+    "rxjs-spy": "8.0.2",
     "ts-pattern": "4.0.2",
     "type-route": "0.7.1",
     "ulid": "2.3.0",
