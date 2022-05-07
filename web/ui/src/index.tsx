@@ -3,6 +3,7 @@ import { run } from "@cycle/rxjs-run"
 import { makeDOMDriver } from "@cycle/react-dom"
 
 import { App } from "~/components/App"
+import { makeRouterDriver } from "~/router"
 
 // @ts-ignore
 const { VITE_API_ENV, VITE_SENTRY_DSN, VITE_SENTRY_DEBUG } = import.meta.env
@@ -15,4 +16,5 @@ Sentry.init({
 
 run(App, {
   react: makeDOMDriver(document.getElementById("index")),
+  router: makeRouterDriver(),
 })
