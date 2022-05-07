@@ -2,8 +2,8 @@ import { h, ReactSource } from "@cycle/react"
 import { combineLatest } from "rxjs"
 import { map, share } from "rxjs/operators"
 import { match } from "ts-pattern"
-import { Source as RouterSource } from "~/router"
 
+import { Source as RouterSource } from "~/router"
 import { View as AppView } from "./View"
 import { Landing } from "~/components/Landing"
 import { PhoneSubmit } from "~/components/Auth/PhoneSubmit"
@@ -12,7 +12,6 @@ interface Sources {
   react: ReactSource
   router: RouterSource
 }
-
 export const App = (sources: Sources) => {
   const { history$ } = sources.router
   const { react: landingView$ } = Landing(sources)

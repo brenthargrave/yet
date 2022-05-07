@@ -21,10 +21,10 @@ import { match } from "ts-pattern"
 import { View } from "./View"
 import { Context } from "~/context"
 import { signin, VerificationStatus, verifyPhone$ } from "~/graph"
-// import { Notify } from "~/components/App/View"
 import { routes } from "~/router"
 import { tag } from "~/log"
 import { makeObservableCallback } from "~/rx"
+import { alert } from "~/toast"
 
 interface Sources {
   react: ReactSource
@@ -63,11 +63,16 @@ export const PhoneSubmit = (sources: Sources) => {
         .with({ __typename: "Verification" }, (result) => {
           match(result.status)
             // TODO: sink:route
-            .with(VerificationStatus.Pending, () => routes.verify().push())
+            .with(VerificationStatus.Pending, () => {
+              routes.verify().push()
+            })
             .with(VerificationStatus.Approved, () => routes.home().push())
             .with(VerificationStatus.Canceled, () => {
-              // TODO: notification?
-              console.error("verification cancelled")
+              alert({
+                title: "Oops!",
+                description: "Phone verification cancelled",
+                status: "error",
+              })
             })
             .exhaustive()
         })
