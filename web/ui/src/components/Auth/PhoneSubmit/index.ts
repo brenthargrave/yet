@@ -16,24 +16,15 @@ import {
   merge,
 } from "rxjs"
 import { not } from "ramda"
-
 import { match } from "ts-pattern"
+
 import { View } from "./View"
 import { Context } from "~/context"
 import { signin, VerificationStatus, verifyPhone$ } from "~/graph"
 // import { Notify } from "~/components/App/View"
 import { routes } from "~/router"
 import { tag } from "~/log"
-
-type ObservableCallback<O> = [Observable<O>, (t?: any) => void]
-function makeObservableCallback<T>(): ObservableCallback<T> {
-  const subject = new Subject<T>()
-  const observable = subject.asObservable()
-  const callback = (i: T) => {
-    subject.next(i)
-  }
-  return [observable, callback]
-}
+import { makeObservableCallback } from "~/rx"
 
 interface Sources {
   react: ReactSource
@@ -68,10 +59,10 @@ export const PhoneSubmit = (sources: Sources) => {
     switchMap(([_, phone]) => verifyPhone$({ e164: phone })),
     tag("result"),
     tap((result) => {
-      // TODO: imperative => sinks
       match(result)
         .with({ __typename: "Verification" }, (result) => {
           match(result.status)
+            // TODO: sink:route
             .with(VerificationStatus.Pending, () => routes.verify().push())
             .with(VerificationStatus.Approved, () => routes.home().push())
             .with(VerificationStatus.Canceled, () => {
@@ -81,7 +72,7 @@ export const PhoneSubmit = (sources: Sources) => {
             .exhaustive()
         })
         .with({ __typename: "VerificationError" }, ({ message }) =>
-          // TODO: when does this EVER occur?
+          // TODO: notification?
           console.error(message)
         )
         .run()
