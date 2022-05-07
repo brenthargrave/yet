@@ -22,6 +22,7 @@ import {
 } from "rxjs"
 import { not } from "ramda"
 
+import { match } from "ts-pattern"
 import { View } from "./View"
 import { Context } from "~/context"
 import { signin, VerificationStatus, verifyPhone$ } from "~/graph"
@@ -74,6 +75,19 @@ export const PhoneSubmit = (sources: Sources) => {
     share()
   )
 
+  const route = result$.pipe(
+    map((result) => {
+      const route = match(result)
+        .with({ __typename: "Verification" }, (result) => {
+          return result.status
+        })
+        .run()
+      // .with({ __typename: "VerificationError" }, (result) => result.message)
+      // .otherwise((value) => null)
+      // .exhaustive()
+    })
+  )
+
   const isLoading$ = merge(
     submit$.pipe(map((_) => true)),
     result$.pipe(map((_) => false))
@@ -87,6 +101,15 @@ export const PhoneSubmit = (sources: Sources) => {
     share()
   )
   const isPhoneInputDisabled$ = isLoading$
+
+  // PROBLEM: if there's sink attached to ANY observable, it won't run; how
+  // handle imperative things like routing?
+  // case VerificationStatus.Pending
+  //  => routes: phone veirfy view
+  // case VerificationStatus.Canceled
+  //  => alert "Canceeled please try again"
+  // case VerificationStatus.Approved
+  //  => ¿impossible? must mean auth token set?
 
   const react = combineLatest({
     isLoading: isLoading$,

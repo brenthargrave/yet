@@ -4,7 +4,7 @@ import {
   NormalizedCacheObject,
 } from "@apollo/client"
 import { createClient } from "@urql/core"
-import { delay, from } from "rxjs"
+import { delay, from, map } from "rxjs"
 
 import { getId } from "./anon"
 import { isPresent } from "~/fp"
@@ -30,7 +30,9 @@ export const client = new ApolloClient({
 
 const urqlClient = createClient({ url: "/graphql" })
 export const verifyPhone$ = (input: CreateVerificationInput) =>
-  from(urqlClient.mutation(CreateVerificationDocument, { input }).toPromise())
+  from(
+    urqlClient.mutation(CreateVerificationDocument, { input }).toPromise()
+  ).pipe(map((result) => result.data?.createVerification))
 
 export const signin = async (input: CreateVerificationInput) => {
   const { data, errors } = await client.mutate({
