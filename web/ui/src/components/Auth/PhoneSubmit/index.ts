@@ -3,7 +3,6 @@ import { useState } from "react"
 import phone, { phone as validatePhone } from "phone"
 import { useEffectOnce } from "react-use"
 import {
-  Subject,
   combineLatest,
   map,
   Observable,
@@ -14,6 +13,7 @@ import {
   share,
   tap,
   merge,
+  filter,
 } from "rxjs"
 import { not } from "ramda"
 import { match } from "ts-pattern"
@@ -54,6 +54,10 @@ export const PhoneSubmit = (sources: Sources) => {
 
   const [submit$, onSubmit] = makeObservableCallback()
 
+  // TODO: what am I stuck on? this code is awful, perhaps embedded errors
+  // will be easier to work w/ than union result types.
+  // recall now that JS requires tagged unions, only way to discrimiante, so
+  // will always need to fitler off of a tag.
   const result$ = submit$.pipe(
     withLatestFrom(phone$),
     switchMap(([_, phone]) => verifyPhone$({ e164: phone })),
