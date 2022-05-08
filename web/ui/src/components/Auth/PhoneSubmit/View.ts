@@ -53,9 +53,10 @@ export const View = ({
     element.addEventListener("input", phoneInputHandler, false)
   })
   return h(Center, { width: "100vw", height: "100vh" }, [
-    h(Stack, { direction: "column", align: "center" }, [
-      h(Heading, { size }, t("auth.tel.entry.cta")),
-      form({ onSubmit }, [
+    form({ onSubmit }, [
+      h(Stack, { direction: "column", align: "center" }, [
+        h(Heading, { size }, t("auth.tel.entry.cta")),
+
         h(InputGroup, { size }, [
           h(InputAddon, { children: "+1" }),
           h(Input, {
