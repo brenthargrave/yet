@@ -26,6 +26,8 @@ import { tag } from "~/log"
 import { makeObservableCallback } from "~/rx"
 import { toast } from "~/toast"
 
+export { View }
+
 interface Sources {
   react: ReactSource
 }
