@@ -24,7 +24,7 @@ import { signin, VerificationStatus, verifyPhone$ } from "~/graph"
 import { routes } from "~/router"
 import { tag } from "~/log"
 import { makeObservableCallback } from "~/rx"
-import { alert } from "~/toast"
+import { toast } from "~/toast"
 
 interface Sources {
   react: ReactSource
@@ -72,7 +72,7 @@ export const PhoneSubmit = (sources: Sources) => {
             })
             .with(VerificationStatus.Approved, () => routes.home().push())
             .with(VerificationStatus.Canceled, () => {
-              alert({
+              toast({
                 title: "Oops!",
                 description: "Phone verification cancelled",
                 status: "error",
