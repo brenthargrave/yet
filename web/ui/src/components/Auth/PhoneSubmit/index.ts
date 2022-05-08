@@ -124,12 +124,7 @@ export const PhoneSubmitHooks = ({ context }: Props) => {
   const [isInputDisabled, setInputDisabled] = useState<boolean>(false)
   const [isLoading, setLoading] = useState(false)
 
-  useEffectOnce(() => {
-    // TODO: track("viewed submit phone")
-  })
-
-  const onChangePhoneInput = () => null
-  const _onChangePhone = (phone: string) => {
+  const onChangePhoneInput = (phone: string) => {
     const { isValid, phoneNumber } = validatePhone(phone, {
       country: "USA",
       strictDetection: true,
@@ -140,44 +135,42 @@ export const PhoneSubmitHooks = ({ context }: Props) => {
     }
   }
 
-  const onSubmit = () => null
-  const _onSubmit: React.FormEventHandler<HTMLButtonElement> = async (
-    event
-  ) => {
-    event.preventDefault()
-    // TODO: track("submitted phone number")
+  const onSubmit = async () => {
     setLoading(true)
     setButtonDisabled(true)
     setInputDisabled(true)
     const result = await signin({ e164 })
-    switch (result.__typename) {
-      case "VerificationError": {
-        // TODO: notify({ status: "error", title: result.message })
-        break
-      }
-      case "Verification":
-        console.debug(result.status)
-        switch (result.status) {
-          case VerificationStatus.Canceled:
-            // TODO
-            // notify({
-            //   title: "Verification cancelled, please try again.",
-            //   status: "warning",
-            // })
-            break
-          case VerificationStatus.Pending:
-            // TODO: track("viewed verify phone")
-            routes.verify().push()
-            break
-          case VerificationStatus.Approved:
-            // TODO: skip verify, *MUST* be auth token, so route home
-            break
-        }
-        break
-    }
     setInputDisabled(false)
     setButtonDisabled(false)
     setLoading(false)
+    match(result)
+      .with({ __typename: "VerificationError" }, ({ message }) =>
+        toast({
+          status: "error",
+          title: "Verification Failed",
+          description: message,
+        })
+      )
+      .with({ __typename: "Verification" }, (result) => {
+        match(result.status)
+          .with(VerificationStatus.Canceled, () => {
+            toast({
+              status: "error",
+              title: "Verification cancelled",
+              description: "Please try again",
+            })
+          })
+          .with(VerificationStatus.Approved, () => {
+            // NOTE: when/why this would happen?
+            routes.home().push()
+          })
+          .with(VerificationStatus.Pending, () => {
+            // TODO: what happens when verification pendign?
+            // next view, but we need state somehow
+            routes.verify().push()
+          })
+          .exhaustive()
+      })
   }
 
   return h(View, {

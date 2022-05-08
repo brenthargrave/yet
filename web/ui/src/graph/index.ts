@@ -4,7 +4,7 @@ import {
   NormalizedCacheObject,
 } from "@apollo/client"
 import { createClient } from "@urql/core"
-import { delay, from, map } from "rxjs"
+import { from, map } from "rxjs"
 
 import { getId } from "./anon"
 import { isPresent } from "~/fp"

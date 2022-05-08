@@ -2,9 +2,12 @@ import { createStandaloneToast, UseToastOptions } from "@chakra-ui/react"
 
 const _toast = createStandaloneToast()
 
-type AlertProps = Pick<UseToastOptions, "status" | "title" | "description">
+export type ToastProps = Pick<
+  UseToastOptions,
+  "status" | "title" | "description"
+>
 
-export const toast = (props: AlertProps) =>
+export const toast = (props: ToastProps) =>
   _toast({
     isClosable: true,
     duration: 9000,
