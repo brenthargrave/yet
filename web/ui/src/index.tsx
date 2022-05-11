@@ -18,14 +18,14 @@ Sentry.init({
   debug: Boolean(VITE_SENTRY_DEBUG),
 })
 
-// run(App, {
-//   react: makeDOMDriver(document.getElementById("index")),
-//   router: makeRouterDriver(),
-// })
+run(App, {
+  react: makeDOMDriver(document.getElementById("index")),
+  router: makeRouterDriver(),
+})
 
 /* eslint-disable */
-ReactDOM.render(
-  h(RouteProvider, [
-    h(App)
-  ]
-  ), document.getElementById("index"))
+// ReactDOM.render(
+//   h(RouteProvider, [
+//     h(App)
+//   ]
+//   ), document.getElementById("index"))

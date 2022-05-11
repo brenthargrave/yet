@@ -4,8 +4,8 @@
 import { h } from "@cycle/react"
 import { useState } from "react"
 
-import { View as SubmitView, Submit } from "submit"
-import { View, VerificationStep } from "./View"
+// import { View as SubmitView, Submit } from "submit"
+// import { View, VerificationStep } from "./View"
 
 /**
 const Auth$ = () => {
@@ -20,8 +20,8 @@ const Auth$ = () => {
 }
  */
 
-const Auth = () => {
-  const [step, setStep] = useState<VerificationStep>(VerificationStep.Submit)
-  const onPending = () => setStep(VerificationStep.Verify)
-  return h(View, { step, onPending, submitView: h(SubmitView) })
-}
+// const Auth = () => {
+//   const [step, setStep] = useState<VerificationStep>(VerificationStep.Submit)
+//   const onPending = () => setStep(VerificationStep.Verify)
+//   return h(View, { step, onPending, submitView: h(SubmitView) })
+// }

@@ -10,22 +10,7 @@ interface Sources {
   router: RouterSource
 }
 
-// export const Landing = (sources: Sources) => {
-//   const onClickJoin = async () => {
-//     routes.in().push() // TODO: driver
-//     const _event = await track(EventName.TapSignup)
-//   }
-
-//   const onClickLogin = () => null
-
-//   const react = of(h(View, { onClickJoin, onClickLogin }))
-
-//   return {
-//     react,
-//   }
-// }
-
-export const Landing = () => {
+export const Landing = (sources: Sources) => {
   const onClickJoin = async () => {
     routes.in().push() // TODO: driver
     const _event = await track(EventName.TapSignup)
@@ -33,5 +18,18 @@ export const Landing = () => {
 
   const onClickLogin = () => null
 
-  return h(View, { onClickJoin, onClickLogin })
+  const react = of(h(View, { onClickJoin, onClickLogin }))
+
+  return {
+    react,
+  }
 }
+
+// export const Landing = () => {
+//   const onClickJoin = async () => {
+//     routes.in().push() // TODO: driver
+//     const _event = await track(EventName.TapSignup)
+//   }
+//   const onClickLogin = () => null
+//   return h(View, { onClickJoin, onClickLogin })
+// }
