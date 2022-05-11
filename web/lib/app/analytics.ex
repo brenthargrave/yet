@@ -8,10 +8,9 @@ defmodule App.Analytics do
   end
 
   def create_event(attrs \\ %{}) do
+    # TODO: track_event (call segment)
     %Event{}
     |> Event.changeset(attrs)
     |> Repo.insert()
   end
-
-  # TODO: track_event (calls segmetn after create)
 end

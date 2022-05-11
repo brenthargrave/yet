@@ -35,12 +35,13 @@ export const verifyPhone$ = (input: CreateVerificationInput) =>
   ).pipe(map((result) => result.data?.createVerification))
 
 export const signin = async (input: CreateVerificationInput) => {
-  const { data, errors } = await client.mutate({
+  const result = client.mutate({
     mutation: CreateVerificationDocument,
     variables: {
       input,
     },
   })
+  const { data, errors } = await result
   if (isPresent(errors)) throw new GraphError(JSON.stringify(errors))
   const payload = data?.createVerification
   if (!payload) throw new GraphError("MIA: payload")

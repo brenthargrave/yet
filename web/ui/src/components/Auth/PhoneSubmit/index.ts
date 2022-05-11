@@ -72,7 +72,7 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
               onVerificationPending()
             })
             .with(VerificationStatus.Approved, () => {
-              // TODO: extract into parent Auth
+              // TODO: extract/lift up into parent: Auth
               routes.home().push()
             })
             .with(VerificationStatus.Canceled, () => {
