@@ -3,13 +3,10 @@ import { combineLatest } from "rxjs"
 import { map, share } from "rxjs/operators"
 import { match } from "ts-pattern"
 
-import * as React from "react"
-import * as ReactDOM from "react-dom"
-
-import { Source as RouterSource, useRoute } from "~/router"
-import { View } from "./View"
+import { Source as RouterSource } from "~/router"
+import { View as AppView } from "./View"
 import { Landing } from "~/components/Landing"
-import { PhoneSubmit } from "~/components/Auth/PhoneSubmit"
+import { Auth } from "~/components/Auth"
 
 interface Sources {
   react: ReactSource
@@ -18,19 +15,21 @@ interface Sources {
 export const App = (sources: Sources) => {
   const { history$ } = sources.router
   const { react: landingView$ } = Landing(sources)
-  const { react: phoneSubmitView$ } = PhoneSubmit(sources)
+  const { react: authView$ } = Auth(sources)
 
   const react = combineLatest({
     route: history$,
     landing: landingView$,
-    phoneSubmit: phoneSubmitView$,
+    auth: authView$,
   }).pipe(
-    map(({ route, landing, phoneSubmit }) => {
-      const childView = match(route.name)
-        .with("home", () => landing)
-        .with("in", () => phoneSubmit)
-        .otherwise(() => landing) // TODO: .exhaustive()
-      return h(View, [childView])
+    map(({ route, landing, auth }) => {
+      return h(AppView, [
+        match(route.name)
+          .with("home", () => landing)
+          .with("in", () => auth)
+          .otherwise(() => landing),
+        // TODO: exhaustive
+      ])
     }),
     share()
   )
@@ -40,6 +39,8 @@ export const App = (sources: Sources) => {
   }
 }
 
+// import * as React from "react"
+// import * as ReactDOM from "react-dom"
 // export const App = () => {
 //   const route = useRoute()
 //   return h(View, [
