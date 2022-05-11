@@ -47,7 +47,7 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
     ),
     shareReplay()
   )
-  const phone$: Observable<string> = phoneValidation$.pipe(
+  const e164$: Observable<string> = phoneValidation$.pipe(
     map(({ phoneNumber }) => phoneNumber || ""),
     tag("phone"),
     share()
@@ -65,8 +65,8 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
   // recall now that JS requires tagged unions, only way to discrimiante, so
   // will always need to fitler off of a tag.
   const result$ = submit$.pipe(
-    withLatestFrom(phone$),
-    switchMap(([_, phone]) => verifyPhone$({ e164: phone })),
+    withLatestFrom(e164$),
+    switchMap(([_, e164]) => verifyPhone$({ e164 })),
     tag("result"),
     tap((result) => {
       match(result)
@@ -116,8 +116,13 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
     isPhoneInputDisabled: isPhoneInputDisabled$,
   }).pipe(map((props) => h(View, { ...props, onSubmit, onChangePhoneInput })))
 
+  const value = {
+    e164$,
+  }
+
   return {
     react,
+    value,
   }
 }
 

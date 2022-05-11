@@ -13,6 +13,5 @@ export default {
 
 export const Default: Story<Props> = (args) => h(View, args)
 Default.args = {
-  codeLength: 6,
   e164: "+1234567890",
 }

@@ -12,25 +12,23 @@ import {
 import { t } from "~/i18n"
 
 export interface Props {
-  codeLength: number
-  e164: string
   onSubmit: () => void
   onChangeCodeInput: (code: string) => void
   isLoading: boolean
   isDisabledCodeInput: boolean
   isDisabledSubmitButton: boolean
+  e164: string
 }
 
 const size = "lg"
 
 export const View = ({
-  codeLength,
-  e164,
   onSubmit: _onSubmit,
   onChangeCodeInput,
   isLoading,
   isDisabledCodeInput: isDisabledPhoneInput,
   isDisabledSubmitButton,
+  e164,
 }: Props) => {
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = (event) => {
     event.preventDefault()

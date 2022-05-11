@@ -19,13 +19,19 @@ export const Auth = (sources: Sources) => {
   const step$$ = new BehaviorSubject<VerificationStep>(VerificationStep.Submit)
   const onVerificationPending = () => step$$.next(VerificationStep.Verify)
 
-  const { react: submitView$ } = PhoneSubmit({
+  const {
+    react: submitView$,
+    value: { e164$ },
+  } = PhoneSubmit({
     props: {
       onVerificationPending,
     },
     ...sources,
   })
-  const { react: verifyView$ } = PhoneVerify(sources)
+  const { react: verifyView$ } = PhoneVerify({
+    props: { e164$ },
+    ...sources,
+  })
 
   const react = combineLatest({
     step: step$$,
