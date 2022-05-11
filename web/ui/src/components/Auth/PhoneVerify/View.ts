@@ -1,5 +1,4 @@
 import { h } from "@cycle/react"
-import { useState } from "react"
 import { form } from "@cycle/react-dom"
 import {
   Button,
@@ -15,9 +14,11 @@ import { t } from "~/i18n"
 export interface Props {
   codeLength: number
   e164: string
-  onSubmit: React.FormEventHandler<HTMLButtonElement>
+  onSubmit: () => void
+  onChangeCodeInput: (code: string) => void
   isLoading: boolean
-  isDisabledInput: boolean
+  isDisabledCodeInput: boolean
+  isDisabledSubmitButton: boolean
 }
 
 const size = "lg"
@@ -25,15 +26,15 @@ const size = "lg"
 export const View = ({
   codeLength,
   e164,
-  onSubmit,
+  onSubmit: _onSubmit,
+  onChangeCodeInput,
   isLoading,
-  isDisabledInput,
+  isDisabledCodeInput: isDisabledPhoneInput,
+  isDisabledSubmitButton,
 }: Props) => {
-  const phone = e164
-  const [isDisabledButton, setDisabledButton] = useState(true)
-  const onChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
-    const { value } = event.currentTarget
-    setDisabledButton(value.length !== codeLength)
+  const onSubmit: React.FormEventHandler<HTMLButtonElement> = (event) => {
+    event.preventDefault()
+    _onSubmit()
   }
   return h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center" }, [
@@ -41,7 +42,7 @@ export const View = ({
       h(
         Text,
         { fontSize: size },
-        t("auth.tel.verify.cta").replace("$PHONE", phone)
+        t("auth.tel.verify.cta").replace("$PHONE", e164)
       ),
       form({ onSubmit }, [
         h(InputGroup, { size }, [
@@ -51,14 +52,16 @@ export const View = ({
             type: "number",
             placeholder: t("auth.tel.verify.placeholder"),
             isRequired: true,
-            onChange,
-            isDisabled: isDisabledInput,
+            onChange: (event) => {
+              onChangeCodeInput(event.currentTarget.value)
+            },
+            isDisabled: isDisabledPhoneInput,
           }),
         ]),
         h(
           Button,
           {
-            isDisabled: isDisabledButton,
+            isDisabled: isDisabledSubmitButton,
             isLoading,
             size,
             width: "100%",

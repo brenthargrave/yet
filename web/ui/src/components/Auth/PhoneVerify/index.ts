@@ -9,6 +9,7 @@ interface Sources {
 }
 export const PhoneVerify = (sources: Sources) => {
   const react = of(h(View))
+  // setDisabledButton(value.length !== codeLength)
   return {
     react,
   }
