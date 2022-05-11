@@ -1,32 +1,42 @@
 import { h, ReactSource } from "@cycle/react"
-import { useState } from "react"
+import { BehaviorSubject, combineLatest, switchMap, map } from "rxjs"
 
+import { Source as RouterSource } from "~/router"
 import { PhoneSubmit } from "./PhoneSubmit"
+import { PhoneVerify } from "./PhoneVerify"
 
-// how let out compoentn know of state change?
-// callback is simplest: onVerificationPending()
+enum VerificationStep {
+  Submit,
+  Verify,
+}
 
 interface Sources {
   react: ReactSource
+  router: RouterSource
 }
-export const Auth = (sources: Sources) => {
-  const { react: submitView$ } = PhoneSubmit(sources)
 
-  // let verifyView$
-  // const react = combineLatest(submitView, veirfyView]) = h(View, {
-  //   submitView,
-  //   verifyView,
-  // }))
-  // right, so the preview needs to build up subviews on its own
-  // how replicate in vanilla react?
-  const react = submitView$
+export const Auth = (sources: Sources) => {
+  const step$$ = new BehaviorSubject<VerificationStep>(VerificationStep.Submit)
+  const onVerificationPending = () => step$$.next(VerificationStep.Verify)
+
+  const { react: submitView$ } = PhoneSubmit({
+    props: {
+      onVerificationPending,
+    },
+    ...sources,
+  })
+  const { react: verifyView$ } = PhoneVerify(sources)
+
+  const react = combineLatest({
+    step: step$$,
+    submit: submitView$,
+    verify: verifyView$,
+  }).pipe(
+    map(({ step, submit, verify }) =>
+      step === VerificationStep.Submit ? submit : verify
+    )
+  )
   return {
     react,
   }
 }
-
-// const Auth = () => {
-//   const [step, setStep] = useState<VerificationStep>(VerificationStep.Submit)
-//   const onPending = () => setStep(VerificationStep.Verify)
-//   return h(View, { step, onPending, submitView: h(SubmitView) })
-// }
