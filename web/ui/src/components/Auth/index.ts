@@ -28,6 +28,7 @@ export const Auth = (sources: Sources) => {
     },
     ...sources,
   })
+
   const { react: verifyView$ } = PhoneVerify({
     props: { e164$ },
     ...sources,

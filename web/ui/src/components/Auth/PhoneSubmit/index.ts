@@ -60,10 +60,6 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
 
   const [submit$, onSubmit] = makeObservableCallback()
 
-  // TODO: what am I stuck on? this code is awful, perhaps embedded errors
-  // will be easier to work w/ than union result types.
-  // recall now that JS requires tagged unions, only way to discrimiante, so
-  // will always need to fitler off of a tag.
   const result$ = submit$.pipe(
     withLatestFrom(e164$),
     switchMap(([_, e164]) => verifyPhone$({ e164 })),
@@ -72,12 +68,13 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
       match(result)
         .with({ __typename: "Verification" }, (result) => {
           match(result.status)
-            // TODO: sink:route
             .with(VerificationStatus.Pending, () => {
-              // routes.verify().push()
               onVerificationPending()
             })
-            .with(VerificationStatus.Approved, () => routes.home().push())
+            .with(VerificationStatus.Approved, () => {
+              // TODO: extract into parent Auth
+              routes.home().push()
+            })
             .with(VerificationStatus.Canceled, () => {
               toast({
                 title: "Oops!",

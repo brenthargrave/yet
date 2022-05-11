@@ -1,6 +1,6 @@
 import { h, ReactSource } from "@cycle/react"
-import { code } from "@cycle/react-dom"
-import { combineLatest, Observable, of } from "rxjs"
+import { not } from "ramda"
+import { combineLatest, map, Observable, of } from "rxjs"
 import { makeObservableCallback } from "~/rx"
 import { View } from "./View"
 
@@ -15,21 +15,34 @@ interface Sources {
   props: Props
 }
 export const PhoneVerify = (sources: Sources) => {
-  // const { props: props$ } = sources
-  const [code$, onChangeCodeInput] = makeObservableCallback<VerificationCode>()
+  const {
+    props: { e164$ },
+  } = sources
+  const [code, onChangeCodeInput] = makeObservableCallback<VerificationCode>()
   const [submit$, onSubmit] = makeObservableCallback()
 
-  const isDisabledSubmitButton = of(false)
-  const isDisabledCodeInput = of(false)
-  const isLoading = of(false)
+  const validCodeLength = 6 // TODO: where set?
+  const codeIsValid = code.pipe(map((code) => code.length === validCodeLength))
 
-  combineLatest({
-    // props: props$, // e164: string
-    code: code$,
-  })
+  // TODO: get initial verification step working e2e, or finish UI?
+  // won't know waht result states are possible without complete endpoint.
+
+  const isLoading = of(false)
+  const isDisabledSubmitButton = codeIsValid.pipe(map(not)) // TODO: isLoading
+  const isDisabledCodeInput = isLoading
+
+  // const react = combineLatest({
+  //   e164: e164$,
+  // }).pipe(
+  //   map(({ e164 }) => {
+  //     return h(View, {
+  //       e164,
+  //       isDisabledSubmitButton,
+  //     })
+  //   })
+  // )
 
   const react = of(h(View))
-  // setDisabledButton(value.length !== codeLength)
   return {
     react,
   }
