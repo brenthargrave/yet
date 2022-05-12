@@ -60,6 +60,22 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
 
   const [submit$, onSubmit] = makeObservableCallback()
 
+  // should only be two possible responses:
+  // - success object, and error object
+  // success cases are done.
+  //  !!! twilio errors are all non-200 status codes, any reason
+  // to treat them as exceptions, no different from code errors?
+  // yes, if the error is something the user must fix: eg, SMS unreachable
+  // - if the problem is mine, want to push to sentry and show user
+  // a generic error message (Oops!)
+  // - else, there's a message we know about, and present to user
+  // verification$: Observable<Verification>
+  // verfiicationError$: Observable<VerificationError>
+  // (exception$ -> handled outermost level possible)
+  // so, how map Twilio non-200 responses to graphql errors?
+  // throw *all* non-200 values, push into sentry, then
+  // lift into VerificationError on a case-by-case basis.
+
   const result$ = submit$.pipe(
     withLatestFrom(e164$),
     switchMap(([_, e164]) => verifyPhone$({ e164 })),
@@ -69,6 +85,7 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
         .with({ __typename: "Verification" }, (result) => {
           match(result.status)
             .with(VerificationStatus.Pending, () => {
+              // TODO: -> result$ { verificationStatus }
               onVerificationPending()
             })
             .with(VerificationStatus.Approved, () => {
