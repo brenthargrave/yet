@@ -13,12 +13,19 @@ import {
   share,
   tap,
   merge,
+  filter,
 } from "rxjs"
+import { isNotNullish } from "rxjs-etc"
 import { not } from "ramda"
 import { match } from "ts-pattern"
 
 import { View } from "./View"
-import { VerificationStatus, verifyPhone$ } from "~/graph"
+import {
+  Verification,
+  VerificationError,
+  VerificationStatus,
+  verifyPhone$,
+} from "~/graph"
 import { routes } from "~/router"
 import { tag } from "~/log"
 import { makeObservableCallback } from "~/rx"
@@ -75,7 +82,21 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
   // so, how map Twilio non-200 responses to graphql errors?
   // throw *all* non-200 values, push into sentry, then
   // lift into VerificationError on a case-by-case basis.
+  // ? so, again, how to present user errors? for now, toasts
 
+  // ! Not happy w/ how fuzzy Result is.
+  // result$: Obsevable<Verification | VerificationError>
+  // probably better to insulate the main app from graphql BS.
+  // get it working here, push back into the API call next.
+  // ! problem: even if you tigthen up the union, how pick them
+  // apart later, with filter()? Still need a tag, which is what?
+
+  // const res$: Observable<Verification | VerificationError> = result$.pipe(
+  //   filter(isNotNullish)
+  // )
+  // const verification$: Observable<Verification> = res$.pipe(
+  //   filter((res): res is Verification => res.__typename === "Verification")
+  // )
   const result$ = submit$.pipe(
     withLatestFrom(e164$),
     switchMap(([_, e164]) => verifyPhone$({ e164 })),
