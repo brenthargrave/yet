@@ -18,9 +18,9 @@ defmodule AppWeb.Graph.Verification do
     field(:e164, non_null(:string))
   end
 
-  import AbsintheErrorPayload.Payload
-  import_types(AbsintheErrorPayload.ValidationMessageTypes)
-  payload_object(:verification_payload, :verification)
+  # import AbsintheErrorPayload.Payload
+  # import_types(AbsintheErrorPayload.ValidationMessageTypes)
+  # payload_object(:verification_payload, :verification)
   # TODO: Verification (¿ success == true)
   # TODO: interface Error message (¿ success == false)
   # TODO: VerificationError implements Error
