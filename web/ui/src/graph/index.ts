@@ -3,9 +3,10 @@ import {
   InMemoryCache,
   NormalizedCacheObject,
 } from "@apollo/client"
-import { createClient } from "@urql/core"
+import { createClient, defaultExchanges } from "@urql/core"
 import { from, map } from "rxjs"
 
+import { devtoolsExchange } from "@urql/devtools"
 import { getId } from "./anon"
 import { isPresent } from "~/fp"
 import {
@@ -28,7 +29,10 @@ export const client = new ApolloClient({
   cache: new InMemoryCache(),
 })
 
-const urqlClient = createClient({ url: "/graphql" })
+const urqlClient = createClient({
+  url: "/graphql",
+  exchanges: [devtoolsExchange, ...defaultExchanges],
+})
 export const verifyPhone$ = (input: CreateVerificationInput) =>
   from(
     urqlClient.mutation(CreateVerificationDocument, { input }).toPromise()
