@@ -23,13 +23,17 @@ config :app, App.Repo,
   url: System.get_env("DATABASE_URL"),
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 
- config :phoenix, :template_engines,
-    slim: PhoenixSlime.Engine,
-    slime: PhoenixSlime.Engine
+config :phoenix, :template_engines,
+  slim: PhoenixSlime.Engine,
+  slime: PhoenixSlime.Engine
 
 config :vite_phx,
   release_app: :app,
   environment: Mix.env(),
   vite_manifest: "priv/static/manifest.json"
+
+config :ex_twilio,
+  account_sid: {:system, "TWILIO_ACCOUNT_SID"},
+  auth_token: {:system, "TWILIO_AUTH_TOKEN"}
 
 import_config "#{Mix.env()}.exs"

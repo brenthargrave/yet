@@ -48,7 +48,8 @@ defmodule App.MixProject do
       {:vite_phx, "~> 0.2"},
       {:absinthe_phoenix, "~> 2.0.0"},
       {:absinthe_error_payload, "~> 1.0"},
-      {:recase, "~> 0.5"}
+      {:recase, "~> 0.5"},
+      {:ex_twilio, "~> 0.9.1"}
     ]
   end
 
