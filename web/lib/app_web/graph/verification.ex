@@ -1,30 +1,6 @@
 defmodule AppWeb.Graph.Verification do
   use Absinthe.Schema.Notation
 
-  #  Twilio Verification
-  enum :verification_status do
-    value(:pending)
-    value(:approved)
-    value(:canceled)
-  end
-
-  # TODO: wrap w/ Result type
-  object :verification do
-    field(:status, non_null(:verification_status))
-  end
-
-  input_object :create_verification_input do
-    # TODO: custom scalar for e164
-    field(:e164, non_null(:string))
-  end
-
-  # import AbsintheErrorPayload.Payload
-  # import_types(AbsintheErrorPayload.ValidationMessageTypes)
-  # payload_object(:verification_payload, :verification)
-  # TODO: Verification (¿ success == true)
-  # TODO: interface Error message (¿ success == false)
-  # TODO: VerificationError implements Error
-  # TODO: verification result == union verification | verification error
   interface :error do
     field(:message, non_null(:string))
   end
@@ -32,6 +8,20 @@ defmodule AppWeb.Graph.Verification do
   object :verification_error do
     is_type_of(:error)
     field(:message, non_null(:string))
+  end
+
+  enum :verification_status do
+    value(:pending)
+    value(:approved)
+    value(:canceled)
+  end
+
+  object :verification do
+    field(:status, non_null(:verification_status))
+  end
+
+  input_object :create_verification_input do
+    field(:e164, non_null(:string))
   end
 
   union :verification_result do
