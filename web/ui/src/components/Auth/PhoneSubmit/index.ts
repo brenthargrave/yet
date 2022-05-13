@@ -28,6 +28,11 @@ import { toast } from "~/toast"
 
 export { View }
 
+// @ts-ignore
+const { VITE_API_ENV } = import.meta.env
+const strictDetection = VITE_API_ENV === "prod"
+const validateMobilePrefix = strictDetection
+
 export interface Props {
   onVerificationPending: () => void
 }
@@ -44,7 +49,8 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
     map((phone) =>
       validatePhone(phone, {
         country: "USA",
-        strictDetection: true,
+        strictDetection,
+        validateMobilePrefix,
       })
     ),
     shareReplay()
