@@ -8,6 +8,7 @@ import { View as AppView } from "./View"
 import { Landing } from "~/components/Landing"
 import { Auth } from "~/components/Auth"
 import { toast } from "~/toast"
+import { t } from "~/i18n"
 
 interface Sources {
   react: ReactSource
@@ -36,8 +37,8 @@ export const App = (sources: Sources) => {
       console.error(error)
       // TODO: captureException(error)
       toast({
-        title: "Error!",
-        description: error.message,
+        title: t("default.error.title"),
+        description: t("default.error.description"),
         status: "error",
       })
       return caught$
