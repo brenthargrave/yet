@@ -16,31 +16,34 @@ defmodule App.Auth.Twilio do
   @typep result() :: {:ok, map()} | {:error, map(), status_code()}
 
   defun create_verification(e164 :: e164()) :: result() do
-    if Mix.env() === :prod do
+    # if Mix.env() === :prod do
+    #   ExTwilio.Verify.Verifications.create(%{to: e164, channel: "sms"},
+    #     service: System.get_env("TWILIO_VERIFY_SERVICE_ID")
+    #   )
+    # else
+    #   # NOTE: repurpose Twilio's magic numbers to stub responses.
+    #   # https://www.twilio.com/docs/iam/test-credentials#magic-input
+    #   case e164 do
+    #     "+15005550000" ->
+    #       {:error,
+    #        %{
+    #          "code" => 20008,
+    #          "message" => "Resource not accessible with Test Account Credentials",
+    #          "more_info" => "https://www.twilio.com/docs/errors/20008",
+    #          "status" => 403
+    #        }, 403}
+
+    #     _ ->
+    #       # TODO: sample success
+    #       {}
+    #   end
+    # end
+
+    response =
       ExTwilio.Verify.Verifications.create(%{to: e164, channel: "sms"},
         service: System.get_env("TWILIO_VERIFY_SERVICE_ID")
       )
-    else
-      # NOTE: repurpose Twilio's magic numbers to stub responses.
-      # https://www.twilio.com/docs/iam/test-credentials#magic-input
-      case e164 do
-        "+15005550000" ->
-          {:error,
-           %{
-             "code" => 20008,
-             "message" => "Resource not accessible with Test Account Credentials",
-             "more_info" => "https://www.twilio.com/docs/errors/20008",
-             "status" => 403
-           }, 403}
 
-        _ ->
-          # TODO: sample success
-          {}
-      end
-    end
-
-    ExTwilio.Verify.Verifications.create(%{to: e164, channel: "sms"},
-      service: System.get_env("TWILIO_VERIFY_SERVICE_ID")
-    )
+    IO.puts(inspect(response))
   end
 end

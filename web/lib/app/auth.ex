@@ -2,7 +2,7 @@ defmodule App.Auth do
   use Croma
   use TypedStruct
   use App.Types
-  require App.Auth.{Twilio}
+  alias App.Auth.{Twilio}
 
   typedstruct module: Verification, enforce: true do
     field(:status, String.t())
@@ -19,11 +19,7 @@ defmodule App.Auth do
   @typep result() :: Verification | Error | UserError
 
   defun create_verification(e164 :: e164()) :: result() do
-    response = Twilio.create_verification(e164)
-
-    IO.puts(inspect(response))
-
-    case response do
+    case Twilio.create_verification(e164) do
       {:ok, payload} ->
         payload
 
