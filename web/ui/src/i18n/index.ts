@@ -14,9 +14,8 @@ export const t = (key: string): string => {
     "auth.tel.verify.head": `We sent you a code.`,
     "auth.tel.verify.cta": `Enter it below to verify $PHONE.`,
     "auth.tel.verify.placeholder": `Verification code`,
-    "default.error.title": "Oops!",
-    "default.error.description":
-      "You found a bug. We've been notified and will fix ASAP",
+    "default.error.title": "Oops, a bug!",
+    "default.error.description": "We've been notified and will fix it ASAP.",
   }
   return messages[key]
 }

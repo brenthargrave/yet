@@ -35,12 +35,6 @@ defmodule AppWeb.Graph.Verification do
     types([:verification, :user_error, :error])
 
     resolve_type(fn
-      # %{status: _}, _ ->
-      #   :verification
-
-      # %{message: _}, _ ->
-      #   :user_error
-
       %Verification{}, _ ->
         :verification
 

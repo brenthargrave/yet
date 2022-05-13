@@ -2,6 +2,7 @@ import { h, ReactSource } from "@cycle/react"
 import { combineLatest, catchError } from "rxjs"
 import { map, share } from "rxjs/operators"
 import { match } from "ts-pattern"
+import { captureException } from "@sentry/react"
 
 import { Source as RouterSource } from "~/router"
 import { View as AppView } from "./View"
@@ -34,8 +35,9 @@ export const App = (sources: Sources) => {
       ])
     }),
     catchError((error, caught$) => {
+      // TODO: wrap sentry call, include logging
+      captureException(error)
       console.error(error)
-      // TODO: captureException(error)
       toast({
         title: t("default.error.title"),
         description: t("default.error.description"),
