@@ -44,5 +44,16 @@ defmodule App.Auth do
   @typep result() :: Verification | Error | UserError
 
   defun create_verification(e164 :: e164()) :: result() do
+    res =
+      ExTwilio.Verify.Verifications.create(%{to: e164, channel: "sms"},
+        service: System.get_env("TWILIO_VERIFY_SERVICE_ID")
+      )
   end
+
+  # @spec create_verifications(e164 :: e164()) :: result()
+  # def create_verification(e164) do
+  #   ExTwilio.Verify.Verifications.create(%{to: e164, channel: "sms"},
+  #     service: System.get_env("TWILIO_VERIFY_SERVICE_ID")
+  #   )
+  # end
 end
