@@ -4,7 +4,10 @@ mutation CreateVerification($input: CreateVerificationInput!) {
       status
 
     }
-    ...on VerificationError {
+    ...on UserError {
+      message
+    }
+    ...on Error {
       message
     }
   }

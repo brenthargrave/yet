@@ -122,10 +122,10 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
             })
             .exhaustive()
         })
-        .with({ __typename: "VerificationError" }, ({ message }) =>
-          // TODO: notification?
+        .with({ __typename: "UserError" }, ({ message }) =>
           console.error(message)
         )
+        // TODO: Error
         .run()
     }),
     share()
