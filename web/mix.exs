@@ -49,8 +49,8 @@ defmodule App.MixProject do
       {:absinthe_phoenix, "~> 2.0.0"},
       {:absinthe_error_payload, "~> 1.0"},
       {:recase, "~> 0.5"},
-      # {:ex_twilio, "~> 0.9.1"}
-      {:ex_twilio, github: "lesserhatch/ex_twilio", ref: "5fc56fc"}
+      {:ex_twilio, github: "lesserhatch/ex_twilio", ref: "5fc56fc"},
+      {:croma, "~> 0.11.2"}
     ]
   end
 
