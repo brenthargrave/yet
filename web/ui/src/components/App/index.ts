@@ -1,5 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
-import { combineLatest } from "rxjs"
+import { combineLatest, catchError } from "rxjs"
 import { map, share } from "rxjs/operators"
 import { match } from "ts-pattern"
 
@@ -7,6 +7,7 @@ import { Source as RouterSource } from "~/router"
 import { View as AppView } from "./View"
 import { Landing } from "~/components/Landing"
 import { Auth } from "~/components/Auth"
+import { toast } from "~/toast"
 
 interface Sources {
   react: ReactSource
@@ -30,6 +31,16 @@ export const App = (sources: Sources) => {
           .otherwise(() => landing),
         // TODO: exhaustive
       ])
+    }),
+    catchError((error, caught$) => {
+      console.error(error)
+      // TODO: captureException(error)
+      toast({
+        title: "Error!",
+        description: error.message,
+        status: "error",
+      })
+      return caught$
     }),
     share()
   )
