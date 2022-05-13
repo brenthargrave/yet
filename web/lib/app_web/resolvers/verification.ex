@@ -2,7 +2,6 @@ defmodule AppWeb.Resolvers.Verification do
   use Croma
   use App.Types
   alias App.{Auth}
-  # alias App.Auth.{Verification}
 
   defun create(
           _parent,
