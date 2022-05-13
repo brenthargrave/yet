@@ -6,9 +6,7 @@ defmodule AppWeb.Resolvers.Verification do
 
   defun create(
           _parent,
-          %{
-            input: %{e164: e164}
-          } = _args,
+          %{input: %{e164: e164}} = _args,
           _resolution
         ) :: resolver_result() do
     Auth.create_verification(e164)
