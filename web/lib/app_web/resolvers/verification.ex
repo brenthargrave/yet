@@ -1,5 +1,6 @@
 defmodule AppWeb.Resolvers.Verification do
   def create(_parent, _args, _resolution) do
+    # VerificationService.create(e164)
     {:ok, %{status: :pending}}
   end
 
