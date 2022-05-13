@@ -20,12 +20,7 @@ import { not } from "ramda"
 import { match } from "ts-pattern"
 
 import { View } from "./View"
-import {
-  Verification,
-  VerificationError,
-  VerificationStatus,
-  verifyPhone$,
-} from "~/graph"
+import { Verification, VerificationStatus, verifyPhone$ } from "~/graph"
 import { routes } from "~/router"
 import { tag } from "~/log"
 import { makeObservableCallback } from "~/rx"

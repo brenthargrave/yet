@@ -2,7 +2,7 @@ defmodule App.Auth do
   use Croma
   use TypedStruct
 
-  """
+  @moduledoc """
    - Authentication service?
    - when in dev
      - any number returns 200, payload PENDING
@@ -10,14 +10,9 @@ defmodule App.Auth do
    in the future, lift into a dev-only feature flag for verifying UX patterns
    exception
    error | user
-
-   should verification even be exposed to client?
-   VerifyService.create(phone)
-   VerifyService.check(phone, code) # UserError (wrong code, unreachable phone)
-   Customer.find_or_create_by_phone(phone): token
   """
 
-  """
+  @moduledoc """
      {:error,
   %{
     "code" => 20008,
@@ -43,11 +38,13 @@ defmodule App.Auth do
 
   @typep result() :: Verification | Error | UserError
 
-  defun create_verification(e164 :: e164()) :: result() do
+  defun create_verification(e164 :: e164()) :: term() do
     res =
       ExTwilio.Verify.Verifications.create(%{to: e164, channel: "sms"},
         service: System.get_env("TWILIO_VERIFY_SERVICE_ID")
       )
+
+    IO.puts(inspect(res))
   end
 
   # @spec create_verifications(e164 :: e164()) :: result()
