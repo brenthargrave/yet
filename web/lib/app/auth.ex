@@ -24,7 +24,7 @@ defmodule App.Auth do
 
     case result do
       {:ok, payload} ->
-        payload
+        {:ok, payload}
 
       {:error, %{"message" => message} = _map, _status_code} ->
         # TODO: log, sentry unexpected errors
@@ -35,9 +35,8 @@ defmodule App.Auth do
         #   "more_info" => "https://www.twilio.com/docs/errors/20008",
         #   "status" => 403
         # }, 403}
+
         %Error{message: message}
     end
-
-    {:ok, %Verification{status: :pending}}
   end
 end

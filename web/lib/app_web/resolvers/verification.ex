@@ -1,8 +1,11 @@
 defmodule AppWeb.Resolvers.Verification do
+  use Croma
+  use App.Types
   alias App.{Auth}
-  alias App.Auth.{Verification}
+  # alias App.Auth.{Verification}
 
-  def create(_parent, %{input: %{e164: e164}} = _args, _resolution) do
+  defun create(_parent, %{input: %{e164: e164}} = _args, _resolution) :: resolver_result() do
+    # {:ok, %Verification{status: :pending}}
     Auth.create_verification(e164)
   end
 end
