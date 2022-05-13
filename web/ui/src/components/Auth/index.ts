@@ -1,5 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
-import { BehaviorSubject, combineLatest, switchMap, map } from "rxjs"
+import { BehaviorSubject, combineLatest, map, catchError } from "rxjs"
 
 import { Source as RouterSource } from "~/router"
 import { PhoneSubmit } from "./PhoneSubmit"
@@ -41,7 +41,12 @@ export const Auth = (sources: Sources) => {
   }).pipe(
     map(({ step, submit, verify }) =>
       step === VerificationStep.Submit ? submit : verify
-    )
+    ),
+    catchError((error, caught$) => {
+      console.error(error)
+      // captureException(error)
+      return caught$
+    })
   )
   return {
     react,
