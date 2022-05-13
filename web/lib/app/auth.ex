@@ -23,20 +23,13 @@ defmodule App.Auth do
     IO.puts(inspect(result))
 
     case result do
-      {:ok, payload} ->
-        {:ok, payload}
+      {:ok, %{status: status} = _payload} ->
+        {:ok, %Verification{status: String.to_existing_atom(status)}}
 
-      {:error, %{"message" => message} = _map, _status_code} ->
+      # TODO: where UserError?
+      {:error, %{"message" => message} = _data, _http_status_code} ->
         # TODO: log, sentry unexpected errors
-        # {:error,
-        # %{
-        #   "code" => 20008,
-        #   "message" => "Resource not accessible with Test Account Credentials",
-        #   "more_info" => "https://www.twilio.com/docs/errors/20008",
-        #   "status" => 403
-        # }, 403}
-
-        %Error{message: message}
+        {:ok, %Error{message: message}}
     end
   end
 end

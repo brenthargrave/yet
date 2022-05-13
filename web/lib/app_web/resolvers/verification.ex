@@ -4,8 +4,13 @@ defmodule AppWeb.Resolvers.Verification do
   alias App.{Auth}
   # alias App.Auth.{Verification}
 
-  defun create(_parent, %{input: %{e164: e164}} = _args, _resolution) :: resolver_result() do
-    # {:ok, %Verification{status: :pending}}
+  defun create(
+          _parent,
+          %{
+            input: %{e164: e164}
+          } = _args,
+          _resolution
+        ) :: resolver_result() do
     Auth.create_verification(e164)
   end
 end
