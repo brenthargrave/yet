@@ -46,6 +46,14 @@ defmodule AppWeb.Graph.Verification do
 
   defp create_verification(_parent, %{input: %{e164: e164}} = _args, _resolution) do
     IO.puts("e164: #{e164}")
+
+    res =
+      ExTwilio.Verify.Verifications.create(%{to: e164, channel: "sms"},
+        service: System.get_env("TWILIO_VERIFY_SERVICE_ID")
+      )
+
+    IO.puts("res: #{res}")
+
     {:ok, %{status: :pending}}
     # {:ok, %{message: "Oops!"}}
   end
