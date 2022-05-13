@@ -12,7 +12,9 @@ defmodule App.MixProject do
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      # NOTE: silences ExTwilio warning:
+      xref: [exclude: [ExTwilio.Verify.Verifications]]
     ]
   end
 
