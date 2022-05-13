@@ -123,10 +123,22 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
             })
             .exhaustive()
         })
-        .with({ __typename: "UserError" }, ({ message }) =>
+        .with({ __typename: "UserError" }, ({ message }) => {
           console.error(message)
-        )
-        // TODO: Error
+          toast({
+            title: "Please try again.",
+            description: message,
+            status: "error",
+          })
+        })
+        .with({ __typename: "Error" }, ({ message }) => {
+          console.error(message)
+          toast({
+            title: "Oops!",
+            description: message,
+            status: "error",
+          })
+        })
         .run()
     }),
     share()
