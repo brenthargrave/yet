@@ -50,7 +50,8 @@ defmodule App.MixProject do
       {:absinthe_error_payload, "~> 1.0"},
       {:recase, "~> 0.5"},
       {:ex_twilio, github: "lesserhatch/ex_twilio", ref: "5fc56fc"},
-      {:croma, "~> 0.11.2"}
+      {:croma, "~> 0.11.2"},
+      {:typed_struct, "~> 0.3.0"}
     ]
   end
 
