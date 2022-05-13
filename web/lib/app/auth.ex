@@ -12,16 +12,6 @@ defmodule App.Auth do
    error | user
   """
 
-  @moduledoc """
-     {:error,
-  %{
-    "code" => 20008,
-    "message" => "Resource not accessible with Test Account Credentials",
-    "more_info" => "https://www.twilio.com/docs/errors/20008",
-    "status" => 403
-  }, 403}
-  """
-
   @typep e164() :: String.t()
 
   typedstruct module: Verification, enforce: true do
@@ -39,12 +29,29 @@ defmodule App.Auth do
   @typep result() :: Verification | Error | UserError
 
   defun create_verification(e164 :: e164()) :: term() do
-    res =
+    response =
       ExTwilio.Verify.Verifications.create(%{to: e164, channel: "sms"},
         service: System.get_env("TWILIO_VERIFY_SERVICE_ID")
       )
 
-    IO.puts(inspect(res))
+    IO.puts(inspect(response))
+
+    case response do
+      {:ok, payload} ->
+        # Map.take(payload, [:status])
+        payload
+
+      {:error, %{message: message} = _error, _twilio_error_code} ->
+        # TODO: log, sentry unexpected errors
+        # {:error,
+        # %{
+        #   "code" => 20008,
+        #   "message" => "Resource not accessible with Test Account Credentials",
+        #   "more_info" => "https://www.twilio.com/docs/errors/20008",
+        #   "status" => 403
+        # }, 403}
+        %Error{message: message}
+    end
 
     {:ok, %Verification{status: :pending}}
   end
