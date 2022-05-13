@@ -45,6 +45,8 @@ defmodule App.Auth do
       )
 
     IO.puts(inspect(res))
+
+    {:ok, %Verification{status: :pending}}
   end
 
   # @spec create_verifications(e164 :: e164()) :: result()
