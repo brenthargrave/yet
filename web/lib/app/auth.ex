@@ -19,11 +19,14 @@ defmodule App.Auth do
   @typep result() :: Verification | Error | UserError
 
   defun create_verification(e164 :: e164()) :: result() do
-    case Twilio.create_verification(e164) do
+    result = Twilio.create_verification(e164)
+    IO.puts(inspect(result))
+
+    case result do
       {:ok, payload} ->
         payload
 
-      {:error, %{message: message} = _map, _status_code} ->
+      {:error, %{"message" => message} = _map, _status_code} ->
         # TODO: log, sentry unexpected errors
         # {:error,
         # %{
