@@ -27,6 +27,7 @@ defmodule App.Auth do
 
       # NOTE: by default return all unexpected errors as absinthe/graphql errors
       {:error, %{"message" => message} = _data, _http_status_code} ->
+        # TODO: push to sentry?
         {:error, message}
     end
   end
@@ -42,6 +43,7 @@ defmodule App.Auth do
         {:ok, %Verification{status: String.to_existing_atom(status)}}
 
       {:error, %{"message" => message} = _data, _http_status_code} ->
+        # TODO: push to sentry?
         {:error, message}
     end
   end
