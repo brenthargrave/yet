@@ -32,13 +32,12 @@ defmodule App.Auth do
   end
 
   defun check_verification(e164 :: e164(), code :: number()) :: result() do
-    # case Twilio.create_verification(e164) do
-    #   {:ok, %{status: status} = _payload} ->
-    #     {:ok, %Verification{status: String.to_existing_atom(status)}}
+    case Twilio.check_verification(e164, code) do
+      {:ok, %{status: status} = _payload} ->
+        {:ok, %Verification{status: String.to_existing_atom(status)}}
 
-    #   # NOTE: by default return all unexpected errors as absinthe/graphql errors
-    #   {:error, %{"message" => message} = _data, _http_status_code} ->
-    #     {:error, message}
-    # end
+      {:error, %{"message" => message} = _data, _http_status_code} ->
+        {:error, message}
+    end
   end
 end

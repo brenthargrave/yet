@@ -34,8 +34,9 @@ export const PhoneVerify = (sources: Sources) => {
   const [code$, onChangeCodeInput] = makeObservableCallback<VerificationCode>()
   const [submit$, onSubmit] = makeObservableCallback()
 
-  const validCodeLength = 6
+  const validCodeLength = 4
   const codeIsValid$ = code$.pipe(
+    tag("code$"),
     map((code) => code.length === validCodeLength),
     startWith(false)
   )
@@ -55,7 +56,7 @@ export const PhoneVerify = (sources: Sources) => {
     result$.pipe(map((_) => false))
   ).pipe(startWith(false))
 
-  const isDisabledCodeInput$ = codeIsInvalid$
+  const isDisabledCodeInput$ = isLoading$
   const isDisabledSubmitButton$ = combineLatest({
     isLoading: isLoading$,
     codeIsInvalid: codeIsInvalid$,
