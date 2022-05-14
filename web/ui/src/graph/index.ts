@@ -33,6 +33,7 @@ const urqlClient = createClient({
   url: "/graphql",
   exchanges: [devtoolsExchange, ...defaultExchanges],
 })
+
 export const verifyPhone$ = (input: CreateVerificationInput) =>
   from(
     urqlClient.mutation(CreateVerificationDocument, { input }).toPromise()
@@ -42,6 +43,16 @@ export const verifyPhone$ = (input: CreateVerificationInput) =>
       return data?.createVerification
     })
   )
+
+// export const verifyCode$ = (input: CreateVerificationInput) =>
+//   from(
+//     urqlClient.mutation(CreateVerificationDocument, { input }).toPromise()
+//   ).pipe(
+//     map(({ data, error }) => {
+//       if (error) throw error // TODO: extract into rxjs operator
+//       return data?.createVerification
+//     })
+//   )
 
 export const signin = async (input: CreateVerificationInput) => {
   const result = client.mutate({

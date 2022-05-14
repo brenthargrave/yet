@@ -1,6 +1,15 @@
 import { h, ReactSource } from "@cycle/react"
 import { not } from "ramda"
-import { combineLatest, map, Observable, of } from "rxjs"
+import {
+  combineLatest,
+  map,
+  Observable,
+  of,
+  switchMap,
+  withLatestFrom,
+} from "rxjs"
+import { withLatestFromWhen } from "rxjs-etc/dist/esm/operators"
+import { tag } from "rxjs-spy/cjs/operators"
 import { makeObservableCallback } from "~/rx"
 import { View } from "./View"
 
@@ -18,27 +27,51 @@ export const PhoneVerify = (sources: Sources) => {
   const {
     props: { e164$ },
   } = sources
-  const [code, onChangeCodeInput] = makeObservableCallback<VerificationCode>()
+  const [code$, onChangeCodeInput] = makeObservableCallback<VerificationCode>()
   const [submit$, onSubmit] = makeObservableCallback()
 
-  const validCodeLength = 6 // TODO: where set?
-  const codeIsValid = code.pipe(map((code) => code.length === validCodeLength))
+  const validCodeLength = 6
+  const codeIsValid$ = code$.pipe(
+    map((code) => code.length === validCodeLength)
+  )
 
-  // TODO: get initial verification step working e2e, or finish UI?
-  // won't know waht result states are possible without complete endpoint.
+  const result$ = submit$.pipe(
+    withLatestFrom(combineLatest({ e164: e164$, code: code$ })),
+    switchMap(([_, pair]) => {
+      const { code, e164 } = pair
+      return of(pair)
+    }),
+    tag("verifyCode$")
+  )
 
-  const isLoading = of(false)
-  const isDisabledSubmitButton = codeIsValid.pipe(map(not)) // TODO: isLoading
-  const isDisabledCodeInput = isLoading
+  // const isLoading$ = merge(
+  //   submit$.pipe(map((_) => true)),
+  //   result$.pipe(map((_) => false))
+  // ).pipe(startWith(false))
+
+  // const isDisabledSubmitButton = combineLatest({
+  //   invalid: isPhoneInvalid$,
+  //   loading: isLoading$,
+  // }).pipe(
+  //   map(({ invalid, loading }) => invalid || loading),
+  //   share()
+  // )
+  // const isDisabledSubmitButton = codeIsValid.pipe(map(not))
+  // const isDisabledCodeInput = isLoading
 
   // const react = of(h(View))
   const react = combineLatest({
     e164: e164$,
+    // isDisabledSubmitButton,
   }).pipe(
-    map(({ e164 }) => {
+    map(({ e164, isDisabledSubmitButton }) => {
       return h(View, {
         e164,
-        isDisabledSubmitButton,
+        // isDisabledCodeInput,
+        // isDisabledSubmitButton,
+        // isLoading,
+        onSubmit,
+        onChangeCodeInput,
       })
     })
   )
