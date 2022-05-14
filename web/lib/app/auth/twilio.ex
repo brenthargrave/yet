@@ -8,13 +8,18 @@ defmodule App.Auth.Twilio do
 
   defp live() do
     Mix.env() === :prod
+    # Mix.env() === :dev
   end
 
   defun create_verification(e164 :: e164()) :: term() do
     if live() do
-      ExTwilio.Verify.Verifications.create(%{to: e164, channel: "sms"},
-        service: service()
-      )
+      res =
+        ExTwilio.Verify.Verifications.create(%{to: e164, channel: "sms"},
+          service: service()
+        )
+
+      IO.puts(inspect(res))
+      res
     else
       # NOTE: repurpose Twilio's magic numbers to stub responses.
       # https://www.twilio.com/docs/iam/test-credentials#magic-input
@@ -30,20 +35,27 @@ defmodule App.Auth.Twilio do
 
   defun check_verification(e164 :: e164(), code :: number()) :: term() do
     if live() do
-      ExTwilio.Verify.VerificationCheck.create(
-        %{
-          to: e164,
-          code: code
-        },
-        service: service()
-      )
+      res =
+        ExTwilio.Verify.VerificationCheck.create(
+          %{
+            to: e164,
+            code: code
+          },
+          service: service()
+        )
+
+      IO.puts(inspect(res))
+      res
     else
       case code do
         "0000" ->
           stub_check_error()
 
+        "1111" ->
+          stub_check_wrong_code()
+
         _ ->
-          stub_check()
+          stub_check_ok()
       end
     end
   end
@@ -101,7 +113,34 @@ defmodule App.Auth.Twilio do
     }
   end
 
-  defp stub_check() do
+  defp stub_check_error() do
+    {:error,
+     %{
+       "code" => 60203,
+       "message" => "Max send attempts reached",
+       "more_info" => "https://www.twilio.com/docs/errors/60203",
+       "status" => 429
+     }, 429}
+  end
+
+  defp stub_check_wrong_code() do
+    {:ok,
+     %ExTwilio.Verify.VerificationCheck{
+       account_sid: "AC6965c1da82c9b5bb93d99ec45caeb781",
+       amount: nil,
+       channel: "sms",
+       date_created: "2022-05-14T22:32:50Z",
+       date_updated: "2022-05-14T22:33:19Z",
+       payee: nil,
+       service_sid: "VAfc95ba97399b05f59d304d30b4d5961f",
+       sid: "VEb9f1ef654fe6c16df5ee10e884c5d078",
+       status: "pending",
+       to: "+19099103449",
+       valid: false
+     }}
+  end
+
+  defp stub_check_ok() do
     {:ok,
      %ExTwilio.Verify.VerificationCheck{
        account_sid: "AC6965c1da82c9b5bb93d99ec45caeb781",
@@ -116,15 +155,5 @@ defmodule App.Auth.Twilio do
        to: "+19099103449",
        valid: true
      }}
-  end
-
-  defp stub_check_error() do
-    {:error,
-     %{
-       "code" => 60203,
-       "message" => "Max send attempts reached",
-       "more_info" => "https://www.twilio.com/docs/errors/60203",
-       "status" => 429
-     }, 429}
   end
 end
