@@ -8,8 +8,8 @@ import {
   switchMap,
   withLatestFrom,
 } from "rxjs"
-import { withLatestFromWhen } from "rxjs-etc/dist/esm/operators"
-import { tag } from "rxjs-spy/cjs/operators"
+import { tag } from "~/log"
+
 import { makeObservableCallback } from "~/rx"
 import { View } from "./View"
 
@@ -44,11 +44,13 @@ export const PhoneVerify = (sources: Sources) => {
     tag("verifyCode$")
   )
 
+  const isLoading$ = of(false)
   // const isLoading$ = merge(
   //   submit$.pipe(map((_) => true)),
   //   result$.pipe(map((_) => false))
   // ).pipe(startWith(false))
 
+  const isDisabledCodeInput$ = of(false)
   // const isDisabledSubmitButton = combineLatest({
   //   invalid: isPhoneInvalid$,
   //   loading: isLoading$,
@@ -56,22 +58,25 @@ export const PhoneVerify = (sources: Sources) => {
   //   map(({ invalid, loading }) => invalid || loading),
   //   share()
   // )
+
+  const isDisabledSubmitButton$ = of(false)
   // const isDisabledSubmitButton = codeIsValid.pipe(map(not))
-  // const isDisabledCodeInput = isLoading
 
   // const react = of(h(View))
   const react = combineLatest({
     e164: e164$,
-    // isDisabledSubmitButton,
+    isLoading: isLoading$,
+    isDisabledCodeInput: isDisabledCodeInput$,
+    isDisabledSubmitButton: isDisabledSubmitButton$,
   }).pipe(
-    map(({ e164, isDisabledSubmitButton }) => {
+    map(({ e164, isLoading, isDisabledCodeInput, isDisabledSubmitButton }) => {
       return h(View, {
-        e164,
-        // isDisabledCodeInput,
-        // isDisabledSubmitButton,
-        // isLoading,
         onSubmit,
         onChangeCodeInput,
+        e164,
+        isLoading,
+        isDisabledCodeInput,
+        isDisabledSubmitButton,
       })
     })
   )

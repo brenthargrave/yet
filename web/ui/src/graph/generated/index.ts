@@ -13,6 +13,11 @@ export type Scalars = {
   Float: number;
 };
 
+export type CheckVerificationInput = {
+  code: Scalars['String'];
+  e164: Scalars['String'];
+};
+
 export type CreateVerificationInput = {
   e164: Scalars['String'];
 };
@@ -39,8 +44,14 @@ export type EventProperties = {
 
 export type RootMutationType = {
   __typename?: 'RootMutationType';
+  checkVerification?: Maybe<VerificationResult>;
   createVerification?: Maybe<VerificationResult>;
   trackEvent?: Maybe<Event>;
+};
+
+
+export type RootMutationTypeCheckVerificationArgs = {
+  input: CheckVerificationInput;
 };
 
 

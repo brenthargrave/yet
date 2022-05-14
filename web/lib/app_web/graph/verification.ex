@@ -31,6 +31,11 @@ defmodule AppWeb.Graph.Verification do
     field(:e164, non_null(:string))
   end
 
+  input_object :check_verification_input do
+    field(:e164, non_null(:string))
+    field(:code, non_null(:string))
+  end
+
   union :verification_result do
     types([:verification, :user_error, :error])
 
@@ -50,6 +55,11 @@ defmodule AppWeb.Graph.Verification do
     field :create_verification, type: :verification_result do
       arg(:input, non_null(:create_verification_input))
       resolve(&Resolvers.Verification.create/3)
+    end
+
+    field :check_verification, type: :verification_result do
+      arg(:input, non_null(:check_verification_input))
+      resolve(&Resolvers.Verification.check/3)
     end
   end
 end
