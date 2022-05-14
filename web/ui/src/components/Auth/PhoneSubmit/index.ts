@@ -1,6 +1,6 @@
 import { h, ReactSource } from "@cycle/react"
 import { useState } from "react"
-import phone, { phone as validatePhone } from "phone"
+import { phone as validatePhone } from "phone"
 import { useEffectOnce } from "react-use"
 import {
   combineLatest,

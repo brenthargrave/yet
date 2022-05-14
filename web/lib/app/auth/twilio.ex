@@ -7,7 +7,7 @@ defmodule App.Auth.Twilio do
   end
 
   defun create_verification(e164 :: e164()) :: term() do
-    if Mix.env() === :dev do
+    if Mix.env() === :prod do
       ExTwilio.Verify.Verifications.create(%{to: e164, channel: "sms"},
         service: service()
       )
@@ -25,7 +25,7 @@ defmodule App.Auth.Twilio do
   end
 
   defun check_verification(e164 :: e164(), code :: number()) :: term() do
-    if Mix.env() === :dev do
+    if Mix.env() === :prod do
       res =
         ExTwilio.Verify.VerificationCheck.create(
           %{

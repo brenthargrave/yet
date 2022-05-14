@@ -38,7 +38,6 @@ export const PhoneVerify = (sources: Sources) => {
 
   const validCodeLength = 4
   const codeIsValid$ = code$.pipe(
-    tag("code$"),
     map((code) => code.length === validCodeLength),
     startWith(false)
   )

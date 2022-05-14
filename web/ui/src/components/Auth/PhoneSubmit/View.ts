@@ -12,7 +12,7 @@ import {
   Input,
   InputGroup,
 } from "~/system"
-import { t } from "~/i18n"
+import { t, formatPhone } from "~/i18n"
 
 const size = "lg"
 

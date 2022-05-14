@@ -9,7 +9,7 @@ import {
   InputGroup,
   Text,
 } from "~/system"
-import { t } from "~/i18n"
+import { t, formatPhone } from "~/i18n"
 
 export interface Props {
   e164: string
@@ -34,13 +34,14 @@ export const View = ({
     event.preventDefault()
     _onSubmit()
   }
+
   return h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center" }, [
       h(Heading, { size }, t("auth.tel.verify.head")),
       h(
         Text,
         { fontSize: size },
-        t("auth.tel.verify.cta").replace("$PHONE", e164)
+        t("auth.tel.verify.cta").replace("$PHONE", formatPhone(e164))
       ),
       form({ onSubmit, autoComplete: "off" }, [
         h(InputGroup, { size }, [
