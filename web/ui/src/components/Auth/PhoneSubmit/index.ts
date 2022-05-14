@@ -77,7 +77,7 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
   const result$ = submit$.pipe(
     withLatestFrom(e164$),
     switchMap(([_, e164]) => verifyPhone$({ e164 })),
-    tag("result"),
+    tag("verifyPhone$"),
     tap((result) => {
       match(result)
         .with({ __typename: "Verification" }, (result) => {

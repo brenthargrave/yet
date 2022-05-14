@@ -12,6 +12,8 @@ import { isPresent } from "~/fp"
 import {
   CreateVerificationDocument,
   CreateVerificationInput,
+  CheckVerificationInput,
+  CheckVerificationDocument,
   Event,
   EventName,
   EventProperties,
@@ -44,15 +46,15 @@ export const verifyPhone$ = (input: CreateVerificationInput) =>
     })
   )
 
-// export const verifyCode$ = (input: CreateVerificationInput) =>
-//   from(
-//     urqlClient.mutation(CreateVerificationDocument, { input }).toPromise()
-//   ).pipe(
-//     map(({ data, error }) => {
-//       if (error) throw error // TODO: extract into rxjs operator
-//       return data?.createVerification
-//     })
-//   )
+export const verifyCode$ = (input: CheckVerificationInput) =>
+  from(
+    urqlClient.mutation(CheckVerificationDocument, { input }).toPromise()
+  ).pipe(
+    map(({ data, error }) => {
+      if (error) throw error // TODO: extract into rxjs operator
+      return data?.checkVerification
+    })
+  )
 
 export const signin = async (input: CreateVerificationInput) => {
   const result = client.mutate({

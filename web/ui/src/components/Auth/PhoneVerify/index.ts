@@ -11,6 +11,7 @@ import {
   startWith,
   share,
 } from "rxjs"
+import { verifyCode$ } from "~/graph"
 import { tag } from "~/log"
 
 import { makeObservableCallback } from "~/rx"
@@ -44,10 +45,7 @@ export const PhoneVerify = (sources: Sources) => {
 
   const result$ = submit$.pipe(
     withLatestFrom(combineLatest({ e164: e164$, code: code$ })),
-    switchMap(([_, pair]) => {
-      const { code, e164 } = pair
-      return of(pair)
-    }),
+    switchMap(([_, input]) => verifyCode$(input)),
     tag("verifyCode$")
   )
 

@@ -7,7 +7,15 @@ mutation CreateVerification($input: CreateVerificationInput!) {
     ...on UserError {
       message
     }
-    ...on Error {
+  }
+}
+
+mutation CheckVerification($input: CheckVerificationInput!) {
+  checkVerification(input: $input) {
+    ...on Verification {
+      status
+    }
+    ...on UserError {
       message
     }
   }
