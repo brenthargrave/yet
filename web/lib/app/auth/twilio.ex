@@ -39,7 +39,7 @@ defmodule App.Auth.Twilio do
       res
     else
       case e164 do
-        "+15005550000" ->
+        "0000" ->
           stub_check_error()
 
         _ ->
