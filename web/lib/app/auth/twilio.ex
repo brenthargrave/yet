@@ -16,7 +16,7 @@ defmodule App.Auth.Twilio do
       # https://www.twilio.com/docs/iam/test-credentials#magic-input
       case e164 do
         "+15005550000" ->
-          stub_error()
+          stub_create_error()
 
         _ ->
           stub_create()
@@ -36,7 +36,7 @@ defmodule App.Auth.Twilio do
     else
       case e164 do
         "+15005550000" ->
-          stub_error()
+          stub_check_error()
 
         _ ->
           stub_check()
@@ -44,7 +44,7 @@ defmodule App.Auth.Twilio do
     end
   end
 
-  defp stub_error() do
+  defp stub_create_error() do
     {:error,
      %{
        "code" => 20008,
@@ -137,5 +137,15 @@ defmodule App.Auth.Twilio do
         valid: false
       }
     }
+  end
+
+  defp stub_check_error() do
+    {:error,
+     %{
+       "code" => 60203,
+       "message" => "Max send attempts reached",
+       "more_info" => "https://www.twilio.com/docs/errors/60203",
+       "status" => 429
+     }, 429}
   end
 end
