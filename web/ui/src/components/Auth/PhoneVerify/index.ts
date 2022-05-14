@@ -7,6 +7,8 @@ import {
   of,
   switchMap,
   withLatestFrom,
+  merge,
+  startWith,
 } from "rxjs"
 import { tag } from "~/log"
 
@@ -44,11 +46,11 @@ export const PhoneVerify = (sources: Sources) => {
     tag("verifyCode$")
   )
 
-  const isLoading$ = of(false)
-  // const isLoading$ = merge(
-  //   submit$.pipe(map((_) => true)),
-  //   result$.pipe(map((_) => false))
-  // ).pipe(startWith(false))
+  // const isLoading$ = of(false)
+  const isLoading$ = merge(
+    submit$.pipe(map((_) => true)),
+    result$.pipe(map((_) => false))
+  ).pipe(startWith(false))
 
   const isDisabledCodeInput$ = of(false)
   // const isDisabledSubmitButton = combineLatest({
