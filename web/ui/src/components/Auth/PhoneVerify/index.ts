@@ -31,18 +31,18 @@ export const PhoneVerify = (sources: Sources) => {
   const isDisabledSubmitButton = codeIsValid.pipe(map(not)) // TODO: isLoading
   const isDisabledCodeInput = isLoading
 
-  // const react = combineLatest({
-  //   e164: e164$,
-  // }).pipe(
-  //   map(({ e164 }) => {
-  //     return h(View, {
-  //       e164,
-  //       isDisabledSubmitButton,
-  //     })
-  //   })
-  // )
+  // const react = of(h(View))
+  const react = combineLatest({
+    e164: e164$,
+  }).pipe(
+    map(({ e164 }) => {
+      return h(View, {
+        e164,
+        isDisabledSubmitButton,
+      })
+    })
+  )
 
-  const react = of(h(View))
   return {
     react,
   }

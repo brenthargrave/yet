@@ -42,11 +42,12 @@ export const View = ({
         { fontSize: size },
         t("auth.tel.verify.cta").replace("$PHONE", e164)
       ),
-      form({ onSubmit }, [
+      form({ onSubmit, autoComplete: "off" }, [
         h(InputGroup, { size }, [
           h(Input, {
             id: "code",
             autoFocus: true,
+            autoComplete: "off",
             type: "number",
             placeholder: t("auth.tel.verify.placeholder"),
             isRequired: true,
