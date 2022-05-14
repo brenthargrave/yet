@@ -2,9 +2,7 @@ defmodule App.Auth.Twilio do
   use Croma
   use App.Types
 
-  # @typep result() :: {:ok, map()} | {:error, map(), number()}
-
-  defun create_verification(e164 :: e164()) :: {:ok, map()} | {:error, map(), number()} do
+  defun create_verification(e164 :: e164()) :: term() do
     if Mix.env() === :prod do
       ExTwilio.Verify.Verifications.create(%{to: e164, channel: "sms"},
         service: System.get_env("TWILIO_VERIFY_SERVICE_ID")

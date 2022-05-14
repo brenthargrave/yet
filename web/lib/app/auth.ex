@@ -16,7 +16,11 @@ defmodule App.Auth do
     field(:message, String.t())
   end
 
-  @typep result() :: Verification | Error | UserError
+  @type result() ::
+          {:ok,
+           %Verification{status: String.t()}
+           | %Error{message: String.t()}
+           | %UserError{message: String.t()}}
 
   defun create_verification(e164 :: e164()) :: result() do
     result = Twilio.create_verification(e164)
