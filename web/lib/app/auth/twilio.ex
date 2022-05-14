@@ -6,8 +6,12 @@ defmodule App.Auth.Twilio do
     System.get_env("TWILIO_VERIFY_SERVICE_ID")
   end
 
+  defp live() do
+    Mix.env() === :prod
+  end
+
   defun create_verification(e164 :: e164()) :: term() do
-    if Mix.env() === :prod do
+    if live() do
       ExTwilio.Verify.Verifications.create(%{to: e164, channel: "sms"},
         service: service()
       )
@@ -25,20 +29,16 @@ defmodule App.Auth.Twilio do
   end
 
   defun check_verification(e164 :: e164(), code :: number()) :: term() do
-    if Mix.env() === :prod do
-      res =
-        ExTwilio.Verify.VerificationCheck.create(
-          %{
-            to: e164,
-            code: code
-          },
-          service: service()
-        )
-
-      IO.puts(inspect(res))
-      res
+    if live() do
+      ExTwilio.Verify.VerificationCheck.create(
+        %{
+          to: e164,
+          code: code
+        },
+        service: service()
+      )
     else
-      case e164 do
+      case code do
         "0000" ->
           stub_check_error()
 
