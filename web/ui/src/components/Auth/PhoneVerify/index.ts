@@ -9,6 +9,7 @@ import {
   withLatestFrom,
   merge,
   startWith,
+  share,
 } from "rxjs"
 import { tag } from "~/log"
 
@@ -27,15 +28,18 @@ interface Sources {
 }
 export const PhoneVerify = (sources: Sources) => {
   const {
-    props: { e164$ },
+    props: { e164$: _e164$ },
   } = sources
+  const e164$ = _e164$.pipe(startWith(""), share())
   const [code$, onChangeCodeInput] = makeObservableCallback<VerificationCode>()
   const [submit$, onSubmit] = makeObservableCallback()
 
   const validCodeLength = 6
   const codeIsValid$ = code$.pipe(
-    map((code) => code.length === validCodeLength)
+    map((code) => code.length === validCodeLength),
+    startWith(false)
   )
+  const codeIsInvalid$ = codeIsValid$.pipe(map(not))
 
   const result$ = submit$.pipe(
     withLatestFrom(combineLatest({ e164: e164$, code: code$ })),
@@ -46,25 +50,17 @@ export const PhoneVerify = (sources: Sources) => {
     tag("verifyCode$")
   )
 
-  // const isLoading$ = of(false)
   const isLoading$ = merge(
     submit$.pipe(map((_) => true)),
     result$.pipe(map((_) => false))
   ).pipe(startWith(false))
 
-  const isDisabledCodeInput$ = of(false)
-  // const isDisabledSubmitButton = combineLatest({
-  //   invalid: isPhoneInvalid$,
-  //   loading: isLoading$,
-  // }).pipe(
-  //   map(({ invalid, loading }) => invalid || loading),
-  //   share()
-  // )
+  const isDisabledCodeInput$ = codeIsInvalid$
+  const isDisabledSubmitButton$ = combineLatest({
+    isLoading: isLoading$,
+    codeIsInvalid: codeIsInvalid$,
+  }).pipe(map(({ isLoading, codeIsInvalid }) => isLoading || codeIsInvalid))
 
-  const isDisabledSubmitButton$ = of(false)
-  // const isDisabledSubmitButton = codeIsValid.pipe(map(not))
-
-  // const react = of(h(View))
   const react = combineLatest({
     e164: e164$,
     isLoading: isLoading$,
