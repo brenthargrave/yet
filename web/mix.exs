@@ -53,7 +53,8 @@ defmodule App.MixProject do
       {:recase, "~> 0.5"},
       {:ex_twilio, github: "lesserhatch/ex_twilio", ref: "5fc56fc"},
       {:croma, "~> 0.11.2"},
-      {:typed_struct, "~> 0.3.0"}
+      {:typed_struct, "~> 0.3.0"},
+      {:sentry, "~> 8.0"}
     ]
   end
 
