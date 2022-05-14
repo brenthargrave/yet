@@ -10,6 +10,7 @@ import {
   merge,
   startWith,
   share,
+  shareReplay,
 } from "rxjs"
 import { verifyCode$ } from "~/graph"
 import { tag } from "~/log"
@@ -44,9 +45,12 @@ export const PhoneVerify = (sources: Sources) => {
   const codeIsInvalid$ = codeIsValid$.pipe(map(not))
 
   const result$ = submit$.pipe(
-    withLatestFrom(combineLatest({ e164: e164$, code: code$ })),
+    withLatestFrom(
+      combineLatest({ e164: e164$, code: code$ }).pipe(tag("input$"), share())
+    ),
     switchMap(([_, input]) => verifyCode$(input)),
-    tag("verifyCode$")
+    tag("verifyCode$"),
+    share()
   )
 
   const isLoading$ = merge(
