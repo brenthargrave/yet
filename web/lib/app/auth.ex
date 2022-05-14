@@ -17,10 +17,8 @@ defmodule App.Auth do
   end
 
   @type result() ::
-          {:ok,
-           %Verification{status: String.t()}
-           | %Error{message: String.t()}
-           | %UserError{message: String.t()}}
+          {:ok, %Verification{status: String.t()} | %UserError{message: String.t()}}
+          | {:error, String.t()}
 
   defun create_verification(e164 :: e164()) :: result() do
     result = Twilio.create_verification(e164)
@@ -30,10 +28,10 @@ defmodule App.Auth do
       {:ok, %{status: status} = _payload} ->
         {:ok, %Verification{status: String.to_existing_atom(status)}}
 
-      # TODO: where UserError?
+      # NOTE: by default return all unexpected errors as absinthe/graphql errors
       {:error, %{"message" => message} = _data, _http_status_code} ->
-        # TODO: log, sentry unexpected errors
-        {:ok, %Error{message: message}}
+        # TODO: log Abinsthe errors to sentry?
+        {:error, message}
     end
   end
 end
