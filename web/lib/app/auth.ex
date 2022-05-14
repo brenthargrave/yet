@@ -21,16 +21,12 @@ defmodule App.Auth do
           | {:error, String.t()}
 
   defun create_verification(e164 :: e164()) :: result() do
-    result = Twilio.create_verification(e164)
-    IO.puts(inspect(result))
-
-    case result do
+    case Twilio.create_verification(e164) do
       {:ok, %{status: status} = _payload} ->
         {:ok, %Verification{status: String.to_existing_atom(status)}}
 
       # NOTE: by default return all unexpected errors as absinthe/graphql errors
       {:error, %{"message" => message} = _data, _http_status_code} ->
-        # TODO: log Abinsthe errors to sentry?
         {:error, message}
     end
   end
