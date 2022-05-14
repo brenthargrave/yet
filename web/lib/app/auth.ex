@@ -8,11 +8,11 @@ defmodule App.Auth do
     field(:status, String.t())
   end
 
-  typedstruct module: Error, enforce: true do
+  typedstruct module: UserError, enforce: true do
     field(:message, String.t())
   end
 
-  typedstruct module: UserError, enforce: true do
+  typedstruct module: Error, enforce: true do
     field(:message, String.t())
   end
 
@@ -33,6 +33,11 @@ defmodule App.Auth do
 
   defun check_verification(e164 :: e164(), code :: number()) :: result() do
     case Twilio.check_verification(e164, code) do
+      # NOTE: when incorrect code is submitted to check, Twilio responds "pending"
+      {:ok, %{status: "pending"} = _payload} ->
+        {:ok, %UserError{message: "Incorrect code, please try again."}}
+
+      # NOTE: otherwise, pass "approved" or "cancelled" along as-is
       {:ok, %{status: status} = _payload} ->
         {:ok, %Verification{status: String.to_existing_atom(status)}}
 
