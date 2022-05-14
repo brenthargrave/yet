@@ -12,10 +12,13 @@ import { makeRouterDriver, RouteProvider } from "~/router"
 // @ts-ignore
 const { VITE_API_ENV, VITE_SENTRY_DSN, VITE_SENTRY_DEBUG } = import.meta.env
 
+const environment = VITE_API_ENV
+const debug = Boolean(VITE_SENTRY_DEBUG)
 Sentry.init({
   dsn: VITE_SENTRY_DSN,
-  environment: VITE_API_ENV,
-  debug: Boolean(VITE_SENTRY_DEBUG),
+  environment,
+  debug,
+  beforeSend: (event) => (environment === "prod" ? event : null),
 })
 
 run(App, {
