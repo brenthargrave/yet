@@ -28,13 +28,8 @@ interface Sources {
 }
 export const PhoneVerify = (sources: Sources) => {
   const {
-    props: { e164$: _e164$ },
+    props: { e164$ },
   } = sources
-  const e164$ = _e164$.pipe(
-    startWith(""),
-    tag("PhoneVerify.e164$")
-    //
-  )
   const [_code$, onChangeCodeInput] = makeObservableCallback<VerificationCode>()
   const code$ = _code$.pipe(
     tag("code$"),
@@ -59,6 +54,7 @@ export const PhoneVerify = (sources: Sources) => {
     switchMap(([_, input]) => verifyCode$(input)),
     tag("verifyCode$")
   )
+  // TODO: handle response!
 
   const isLoading$ = merge(
     submit$.pipe(map((_) => true)),

@@ -60,6 +60,7 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
   )
   const e164$: Observable<string> = phoneValidation$.pipe(
     map(({ phoneNumber }) => phoneNumber || ""),
+    startWith(""),
     tag("e164$")
   )
   const isPhoneValid$ = phoneValidation$.pipe(
