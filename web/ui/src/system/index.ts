@@ -1,13 +1,13 @@
 import { h } from "@cycle/react"
 import {
   Alert as _Alert,
-  AlertProps,
-  AlertIcon as _AlertIcon,
-  AlertIconProps,
-  AlertTitle as _AlertTitle,
-  AlertTitleProps,
   AlertDescription as _AlertDescription,
   AlertDescriptionProps,
+  AlertIcon as _AlertIcon,
+  AlertIconProps,
+  AlertProps,
+  AlertTitle as _AlertTitle,
+  AlertTitleProps,
   Button as _Button,
   ButtonProps,
   Center as _Center,
@@ -22,6 +22,10 @@ import {
   InputGroup as _InputGroup,
   InputGroupProps,
   InputProps,
+  PinInput as _PinInput,
+  PinInputProps,
+  PinInputField as _PinInputField,
+  PinInputFieldProps,
   Stack as _Stack,
   StackProps,
   Text as _Text,
@@ -42,3 +46,6 @@ export const InputAddon = (props: InputAddonProps) => h(_InputAddon, props)
 export const InputGroup = (props: InputGroupProps) => h(_InputGroup, props)
 export const Stack = (props: StackProps) => h(_Stack, props)
 export const Text = (props: TextProps) => h(_Text, props)
+export const PinInput = (props: PinInputProps) => h(_PinInput, props)
+export const PinInputField = (props: PinInputFieldProps) =>
+  h(_PinInputField, props)

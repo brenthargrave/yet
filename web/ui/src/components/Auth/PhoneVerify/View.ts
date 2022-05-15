@@ -1,5 +1,6 @@
 import { h } from "@cycle/react"
-import { form } from "@cycle/react-dom"
+import { form, div } from "@cycle/react-dom"
+import { PinInput, PinInputField } from "@chakra-ui/react"
 import {
   Button,
   Center,
@@ -14,6 +15,7 @@ import { t, formatPhone } from "~/i18n"
 export interface Props {
   e164: string
   onSubmit: () => void
+  onComplete: (code: string) => void
   onChangeCodeInput: (code: string) => void
   isLoading: boolean
   isDisabledCodeInput: boolean
@@ -25,6 +27,7 @@ const size = "lg"
 export const View = ({
   e164,
   onSubmit: _onSubmit,
+  onComplete,
   onChangeCodeInput,
   isLoading,
   isDisabledCodeInput,
@@ -45,30 +48,35 @@ export const View = ({
       ),
       form({ onSubmit, autoComplete: "off" }, [
         h(InputGroup, { size }, [
-          h(Input, {
-            id: "code",
-            autoFocus: true,
-            autoComplete: "off",
-            type: "number",
-            placeholder: t("auth.tel.verify.placeholder"),
-            isRequired: true,
-            onChange: (event) => {
-              onChangeCodeInput(event.currentTarget.value)
-            },
+          h(PinInput, {
+            onChange: (value: string) => onChangeCodeInput(value),
+            onComplete: (value: string) => onComplete(value),
             isDisabled: isDisabledCodeInput,
+            autoFocus: true,
+            manageFocus: true,
+            type: "number",
+            size,
+            otp: true,
+            children: [
+              h(PinInputField),
+              h(PinInputField),
+              h(PinInputField),
+              h(PinInputField),
+            ],
           }),
         ]),
-        h(
-          Button,
-          {
-            isDisabled: isDisabledSubmitButton,
-            isLoading,
-            size,
-            width: "100%",
-            type: "submit",
-          },
-          t(`auth.tel.entry.submit`)
-        ),
+        // TODO: drop Button? Input completion triggers submit.
+        // h(
+        //   Button,
+        //   {
+        //     isDisabled: isDisabledSubmitButton,
+        //     isLoading,
+        //     size,
+        //     width: "100%",
+        //     type: "submit",
+        //   },
+        //   t(`auth.tel.entry.submit`)
+        // ),
       ]),
     ]),
   ])

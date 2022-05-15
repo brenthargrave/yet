@@ -35,7 +35,9 @@ export const PhoneVerify = (sources: Sources) => {
   const e164$ = _e164$.pipe(startWith(""), share())
   const [code$, onChangeCodeInput] = makeObservableCallback<VerificationCode>()
   const [submit$, onSubmit] = makeObservableCallback()
+  const onComplete = (code: string) => onSubmit()
 
+  // TODO: ¿canonical location to specify verification code length?
   const validCodeLength = 4
   const codeIsValid$ = code$.pipe(
     map((code) => code.length === validCodeLength),
@@ -44,8 +46,12 @@ export const PhoneVerify = (sources: Sources) => {
   const codeIsInvalid$ = codeIsValid$.pipe(map(not))
 
   const result$ = submit$.pipe(
+    tag("submit$"),
     withLatestFrom(
-      combineLatest({ e164: e164$, code: code$ }).pipe(tag("input$"), share())
+      combineLatest({ e164: e164$, code: code$ }).pipe(
+        tag("e164$, code$"),
+        share()
+      )
     ),
     switchMap(([_, input]) => verifyCode$(input)),
     tag("verifyCode$"),
@@ -72,6 +78,7 @@ export const PhoneVerify = (sources: Sources) => {
     map(({ e164, isLoading, isDisabledCodeInput, isDisabledSubmitButton }) => {
       return h(View, {
         onSubmit,
+        onComplete,
         onChangeCodeInput,
         e164,
         isLoading,
