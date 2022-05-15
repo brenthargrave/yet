@@ -44,8 +44,7 @@ export const App = (sources: Sources) => {
         status: "error",
       })
       return caught$
-    }),
-    share()
+    })
   )
 
   return {

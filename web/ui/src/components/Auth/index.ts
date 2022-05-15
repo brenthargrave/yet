@@ -1,5 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
-import { BehaviorSubject, combineLatest, map } from "rxjs"
+import { BehaviorSubject, combineLatest, map, switchMap } from "rxjs"
 
 import { Source as RouterSource } from "~/router"
 import { PhoneSubmit } from "./PhoneSubmit"
@@ -34,14 +34,20 @@ export const Auth = (sources: Sources) => {
     ...sources,
   })
 
-  const react = combineLatest({
-    step: step$$,
-    submit: submitView$,
-    verify: verifyView$,
-  }).pipe(
-    map(({ step, submit, verify }) =>
-      step === VerificationStep.Submit ? submit : verify
-    )
+  // TODO: ¿maintain subs to all step views concurrently?
+  // const react = combineLatest({
+  //   step: step$$,
+  //   submit: submitView$,
+  //   verify: verifyView$,
+  // }).pipe(
+  //   map(({ step, submit, verify }) =>
+  //     step === VerificationStep.Submit ? submit : verify
+  //   )
+  // )
+  const react = step$$.pipe(
+    switchMap((step) => {
+      return step === VerificationStep.Submit ? submitView$ : verifyView$
+    })
   )
   return {
     react,

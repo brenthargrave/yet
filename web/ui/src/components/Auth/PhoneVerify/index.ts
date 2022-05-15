@@ -41,9 +41,15 @@ export const PhoneVerify = (sources: Sources) => {
   const validCodeLength = 4
   const codeIsValid$ = code$.pipe(
     map((code) => code.length === validCodeLength),
-    startWith(false)
+    startWith(false),
+    tag("codeIsValid$"),
+    shareReplay()
   )
-  const codeIsInvalid$ = codeIsValid$.pipe(map(not))
+  const codeIsInvalid$ = codeIsValid$.pipe(
+    map(not),
+    tag("codeIsInvalid$"),
+    shareReplay()
+  )
 
   const result$ = submit$.pipe(
     tag("submit$"),
@@ -61,13 +67,17 @@ export const PhoneVerify = (sources: Sources) => {
   const isLoading$ = merge(
     submit$.pipe(map((_) => true)),
     result$.pipe(map((_) => false))
-  ).pipe(startWith(false))
+  ).pipe(startWith(false), tag("isLoading$"), shareReplay())
 
   const isDisabledCodeInput$ = isLoading$
   const isDisabledSubmitButton$ = combineLatest({
     isLoading: isLoading$,
     codeIsInvalid: codeIsInvalid$,
-  }).pipe(map(({ isLoading, codeIsInvalid }) => isLoading || codeIsInvalid))
+  }).pipe(
+    map(({ isLoading, codeIsInvalid }) => isLoading || codeIsInvalid),
+    tag("loading$ || invalid$"),
+    share()
+  )
 
   const react = combineLatest({
     e164: e164$,
