@@ -1,6 +1,14 @@
 import { h, ReactSource } from "@cycle/react"
-import { BehaviorSubject, combineLatest, map, switchMap } from "rxjs"
+import {
+  BehaviorSubject,
+  combineLatest,
+  map,
+  share,
+  shareReplay,
+  switchMap,
+} from "rxjs"
 
+import { tag } from "~/log"
 import { Source as RouterSource } from "~/router"
 import { PhoneSubmit } from "./PhoneSubmit"
 import { PhoneVerify } from "./PhoneVerify"
@@ -34,10 +42,15 @@ export const Auth = (sources: Sources) => {
     ...sources,
   })
 
+  // const react = submitView$.pipe(tag("submitView$"))
   const react = step$$.pipe(
+    tag("step$$"),
     switchMap((step) => {
-      return step === VerificationStep.Submit ? submitView$ : verifyView$
-    })
+      return step === VerificationStep.Submit
+        ? submitView$.pipe(tag("submitView$"))
+        : verifyView$.pipe(tag("verifyView$"))
+    }),
+    tag("authView$")
   )
   return {
     react,

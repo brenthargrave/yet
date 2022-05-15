@@ -53,23 +53,23 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
       })
     ),
     tag("phoneValidation$"),
-    share()
+    shareReplay({ refCount: true, bufferSize: 1 })
   )
   const e164$: Observable<string> = phoneValidation$.pipe(
     map(({ phoneNumber }) => phoneNumber || ""),
     tag("e164$"),
-    share()
+    shareReplay({ refCount: true, bufferSize: 1 })
   )
   const isPhoneValid$ = phoneValidation$.pipe(
     map(({ isValid }) => isValid),
     startWith(false),
     tag("isPhoneValid$"),
-    shareReplay()
+    shareReplay({ refCount: true, bufferSize: 1 })
   )
   const isPhoneInvalid$ = isPhoneValid$.pipe(
     map(not),
     tag("isPhoneInvalid$"),
-    share()
+    shareReplay({ refCount: true, bufferSize: 1 })
   )
 
   const [submit$, onSubmit] = makeObservableCallback()
@@ -123,6 +123,7 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
         })
         .run()
     }),
+    tag("result$"),
     share()
   )
 
@@ -137,9 +138,12 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
   }).pipe(
     map(({ invalid, loading }) => invalid || loading),
     tag("isSubmitButtonDisabled$"),
-    share()
+    shareReplay({ refCount: true, bufferSize: 1 })
   )
-  const isPhoneInputDisabled$ = isLoading$
+  const isPhoneInputDisabled$ = isLoading$.pipe(
+    tag("isPhoneInputDisabled$"),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  )
 
   const react = combineLatest({
     isLoading: isLoading$,

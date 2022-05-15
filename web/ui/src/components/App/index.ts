@@ -1,6 +1,6 @@
 import { h, ReactSource } from "@cycle/react"
 import { catchError } from "rxjs"
-import { map, share, switchMap } from "rxjs/operators"
+import { map, share, switchMap, onErrorResumeNext } from "rxjs/operators"
 import { match } from "ts-pattern"
 import { captureException } from "@sentry/react"
 
@@ -10,6 +10,7 @@ import { Landing } from "~/components/Landing"
 import { Auth } from "~/components/Auth"
 import { toast } from "~/toast"
 import { t } from "~/i18n"
+import { tag } from "~/log"
 
 interface Sources {
   react: ReactSource
@@ -21,13 +22,16 @@ export const App = (sources: Sources) => {
   const { react: authView$ } = Auth(sources)
 
   const react = history$.pipe(
+    tag("history$"),
     switchMap((route) =>
       match(route.name)
         .with("home", () => landingView$)
         .with("in", () => authView$)
         .otherwise(() => landingView$)
     ),
+    tag("routeView$"),
     map((childView) => h(AppView, [childView])),
+    tag("react$"),
     catchError((error, caught$) => {
       // TODO: wrap sentry call, include logging
       captureException(error)
@@ -37,7 +41,7 @@ export const App = (sources: Sources) => {
         description: t("default.error.description"),
         status: "error",
       })
-      return caught$
+      return caught$.pipe(tag("caught$"))
     })
   )
 
