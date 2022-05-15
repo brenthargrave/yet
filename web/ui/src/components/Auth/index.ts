@@ -39,7 +39,7 @@ export const Auth = (sources: Sources) => {
     tag("step$$"),
     switchMap((step) => {
       return step === VerificationStep.Submit
-        ? submitView$.pipe(tag("submitView$"))
+        ? submitView$
         : verifyView$.pipe(tag("verifyView$"))
     }),
     tag("Auth.react$")

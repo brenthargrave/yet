@@ -4,12 +4,10 @@ import {
   combineLatest,
   map,
   Observable,
-  of,
   switchMap,
   withLatestFrom,
   merge,
   startWith,
-  share,
   shareReplay,
 } from "rxjs"
 import { verifyCode$ } from "~/graph"
@@ -32,8 +30,16 @@ export const PhoneVerify = (sources: Sources) => {
   const {
     props: { e164$: _e164$ },
   } = sources
-  const e164$ = _e164$.pipe(startWith(""), share())
-  const [code$, onChangeCodeInput] = makeObservableCallback<VerificationCode>()
+  const e164$ = _e164$.pipe(
+    startWith(""),
+    tag("PhoneVerify.e164$")
+    //
+  )
+  const [_code$, onChangeCodeInput] = makeObservableCallback<VerificationCode>()
+  const code$ = _code$.pipe(
+    tag("code$"),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  )
   const [submit$, onSubmit] = makeObservableCallback()
   const onComplete = (code: string) => onSubmit()
 
@@ -42,32 +48,23 @@ export const PhoneVerify = (sources: Sources) => {
   const codeIsValid$ = code$.pipe(
     map((code) => code.length === validCodeLength),
     startWith(false),
-    tag("codeIsValid$"),
-    shareReplay()
+    tag("codeIsValid$")
   )
-  const codeIsInvalid$ = codeIsValid$.pipe(
-    map(not),
-    tag("codeIsInvalid$"),
-    shareReplay()
-  )
+  const codeIsInvalid$ = codeIsValid$.pipe(map(not), tag("codeIsInvalid$"))
 
   const result$ = submit$.pipe(
     tag("submit$"),
     withLatestFrom(
-      combineLatest({ e164: e164$, code: code$ }).pipe(
-        tag("e164$, code$"),
-        share()
-      )
+      combineLatest({ e164: e164$, code: code$ }).pipe(tag("e164$, code$"))
     ),
     switchMap(([_, input]) => verifyCode$(input)),
-    tag("verifyCode$"),
-    share()
+    tag("verifyCode$")
   )
 
   const isLoading$ = merge(
     submit$.pipe(map((_) => true)),
     result$.pipe(map((_) => false))
-  ).pipe(startWith(false), tag("isLoading$"), shareReplay())
+  ).pipe(startWith(false), tag("isLoading$"))
 
   const isDisabledCodeInput$ = isLoading$
   const isDisabledSubmitButton$ = combineLatest({
@@ -75,8 +72,7 @@ export const PhoneVerify = (sources: Sources) => {
     codeIsInvalid: codeIsInvalid$,
   }).pipe(
     map(({ isLoading, codeIsInvalid }) => isLoading || codeIsInvalid),
-    tag("loading$ || invalid$"),
-    share()
+    tag("loading$ || invalid$")
   )
 
   const react = combineLatest({
@@ -85,15 +81,12 @@ export const PhoneVerify = (sources: Sources) => {
     isDisabledCodeInput: isDisabledCodeInput$,
     isDisabledSubmitButton: isDisabledSubmitButton$,
   }).pipe(
-    map(({ e164, isLoading, isDisabledCodeInput, isDisabledSubmitButton }) => {
+    map((props) => {
       return h(View, {
+        ...props,
         onSubmit,
         onComplete,
         onChangeCodeInput,
-        e164,
-        isLoading,
-        isDisabledCodeInput,
-        isDisabledSubmitButton,
       })
     })
   )

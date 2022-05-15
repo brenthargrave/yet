@@ -139,7 +139,10 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
     isLoading: isLoading$,
     isSubmitButtonDisabled: isSubmitButtonDisabled$,
     isPhoneInputDisabled: isPhoneInputDisabled$,
-  }).pipe(map((props) => h(View, { ...props, onSubmit, onChangePhoneInput })))
+  }).pipe(
+    map((props) => h(View, { ...props, onSubmit, onChangePhoneInput })),
+    tag("PhoneSubmit.react")
+  )
 
   const value = {
     e164$,
