@@ -1,6 +1,7 @@
 import { createClient, defaultExchanges } from "@urql/core"
-import { from, map, share } from "rxjs"
+import { Observable, filter, from, map } from "rxjs"
 import { devtoolsExchange } from "@urql/devtools"
+import { isNotNullish } from "rxjs-etc"
 
 import { tag } from "~/log"
 import { getId } from "./anon"
@@ -15,6 +16,9 @@ import {
   TrackEventDocument,
   Verification,
   VerificationStatus,
+  UserError,
+  Error,
+  VerificationResult,
 } from "./generated"
 
 export * from "./generated"
@@ -30,19 +34,29 @@ export const verifyPhone$ = (input: CreateVerificationInput) =>
       if (error) throw error // TODO: extract into rxjs operator
       return data?.createVerification
     }),
-    tag("verifyPhone$"),
-    share()
+    tag("verifyPhone$")
   )
 
-export const verifyCode$ = (input: CheckVerificationInput) =>
-  from(client.mutation(CheckVerificationDocument, { input }).toPromise()).pipe(
+// : Observable<Verification | UserError | >
+export const verifyCode$ = (input: CheckVerificationInput) => {
+  const foo = from(
+    client.mutation(CheckVerificationDocument, { input }).toPromise()
+  ).pipe(
     map(({ data, error }) => {
       if (error) throw error // TODO: extract into rxjs operator
       return data?.checkVerification
     }),
-    tag("verifyCode$"),
-    share()
+    filter(isNotNullish),
+    // const res$: Observable<Verification | VerificationError> = result$.pipe(
+    //   filter(isNotNullish)
+    // )
+    // const verification$: Observable<Verification> = res$.pipe(
+    //   filter((res): res is Verification => res.__typename === "Verification")
+    // )
+    tag("verifyCode$")
   )
+  return foo
+}
 
 // Analytics
 //

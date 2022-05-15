@@ -33,7 +33,10 @@ defmodule App.Auth do
   end
 
   defun check_verification(e164 :: e164(), code :: number()) :: result() do
-    case Twilio.check_verification(e164, code) do
+    res = Twilio.check_verification(e164, code)
+    IO.puts(inspect(res))
+
+    case res do
       # NOTE: when incorrect code is submitted to check, Twilio responds "pending"
       {:ok, %{status: "pending"} = _payload} ->
         {:ok, %UserError{message: "Incorrect code, please try again."}}
