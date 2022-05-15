@@ -1,6 +1,6 @@
 import { h } from "@cycle/react"
-import { form, div } from "@cycle/react-dom"
-import { PinInput, PinInputField } from "@chakra-ui/react"
+import { form } from "@cycle/react-dom"
+import { HStack, PinInput, PinInputField } from "@chakra-ui/react"
 import {
   Button,
   Center,
@@ -47,7 +47,8 @@ export const View = ({
         t("auth.tel.verify.cta").replace("$PHONE", formatPhone(e164))
       ),
       form({ onSubmit, autoComplete: "off" }, [
-        h(InputGroup, { size }, [
+        // h(InputGroup, { size }, [
+        h(HStack, [
           h(PinInput, {
             onChange: (value: string) => onChangeCodeInput(value),
             onComplete: (value: string) => onComplete(value),

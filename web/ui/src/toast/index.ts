@@ -9,6 +9,7 @@ export type ToastProps = Pick<
 
 export const toast = (props: ToastProps) =>
   _toast({
+    position: "top",
     isClosable: true,
     duration: 9000,
     ...props,

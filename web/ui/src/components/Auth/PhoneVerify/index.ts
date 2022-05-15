@@ -54,9 +54,8 @@ export const PhoneVerify = (sources: Sources) => {
 
   const result$ = submit$.pipe(
     tag("submit$"),
-    withLatestFrom(
-      combineLatest({ e164: e164$, code: code$ }).pipe(tag("e164$, code$"))
-    ),
+    withLatestFrom(combineLatest({ e164: e164$, code: code$ })),
+    tag("e164$, code$"),
     switchMap(([_, input]) => verifyCode$(input)),
     tag("verifyCode$")
   )
