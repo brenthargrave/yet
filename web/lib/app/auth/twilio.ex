@@ -7,8 +7,7 @@ defmodule App.Auth.Twilio do
   end
 
   defp live() do
-    Mix.env() === :prod
-    # Mix.env() === :dev
+    System.get_env("TWILIO_STUB") == nil
   end
 
   defun create_verification(e164 :: e164()) :: term() do
