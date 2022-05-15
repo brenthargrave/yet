@@ -1,14 +1,8 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  NormalizedCacheObject,
-} from "@apollo/client"
 import { createClient, defaultExchanges } from "@urql/core"
 import { from, map } from "rxjs"
-
 import { devtoolsExchange } from "@urql/devtools"
+
 import { getId } from "./anon"
-import { isPresent } from "~/fp"
 import {
   CreateVerificationDocument,
   CreateVerificationInput,
@@ -18,28 +12,19 @@ import {
   EventName,
   EventProperties,
   TrackEventDocument,
+  Verification,
+  VerificationStatus,
 } from "./generated"
 
 export * from "./generated"
 
-class GraphError extends Error {}
-
-export type Client = ApolloClient<NormalizedCacheObject>
-
-export const client = new ApolloClient({
-  uri: "/graphql",
-  cache: new InMemoryCache(),
-})
-
-const urqlClient = createClient({
+const client = createClient({
   url: "/graphql",
   exchanges: [devtoolsExchange, ...defaultExchanges],
 })
 
 export const verifyPhone$ = (input: CreateVerificationInput) =>
-  from(
-    urqlClient.mutation(CreateVerificationDocument, { input }).toPromise()
-  ).pipe(
+  from(client.mutation(CreateVerificationDocument, { input }).toPromise()).pipe(
     map(({ data, error }) => {
       if (error) throw error // TODO: extract into rxjs operator
       return data?.createVerification
@@ -47,28 +32,12 @@ export const verifyPhone$ = (input: CreateVerificationInput) =>
   )
 
 export const verifyCode$ = (input: CheckVerificationInput) =>
-  from(
-    urqlClient.mutation(CheckVerificationDocument, { input }).toPromise()
-  ).pipe(
+  from(client.mutation(CheckVerificationDocument, { input }).toPromise()).pipe(
     map(({ data, error }) => {
       if (error) throw error // TODO: extract into rxjs operator
       return data?.checkVerification
     })
   )
-
-export const signin = async (input: CreateVerificationInput) => {
-  const result = client.mutate({
-    mutation: CreateVerificationDocument,
-    variables: {
-      input,
-    },
-  })
-  const { data, errors } = await result
-  if (isPresent(errors)) throw new GraphError(JSON.stringify(errors))
-  const payload = data?.createVerification
-  if (!payload) throw new GraphError("MIA: payload")
-  return payload
-}
 
 // Analytics
 //
@@ -84,16 +53,8 @@ export const track = async (
     name,
     properties,
   }
-  const { data, errors } = await client.mutate({
-    mutation: TrackEventDocument,
-    variables: {
-      input,
-    },
-  })
-  if (isPresent(errors)) throw new GraphError(JSON.stringify(errors))
-  const event = data?.trackEvent
-  if (event) {
-    return event
-  }
-  throw new GraphError("MIA: event")
+  const result = await client
+    .mutation(TrackEventDocument, { input })
+    .toPromise()
+  return result.data?.trackEvent as Event
 }
