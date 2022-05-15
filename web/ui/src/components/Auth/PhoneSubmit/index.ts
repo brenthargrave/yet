@@ -3,17 +3,16 @@ import { useState } from "react"
 import { phone as validatePhone } from "phone"
 import { useEffectOnce } from "react-use"
 import {
+  Observable,
   combineLatest,
   map,
-  Observable,
-  switchMap,
+  merge,
+  share,
   shareReplay,
   startWith,
-  withLatestFrom,
-  share,
+  switchMap,
   tap,
-  merge,
-  filter,
+  withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { not } from "ramda"
@@ -52,13 +51,13 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
         strictDetection,
         validateMobilePrefix,
       })
-    ),
-    shareReplay()
+    )
+    // shareReplay()
   )
   const e164$: Observable<string> = phoneValidation$.pipe(
     map(({ phoneNumber }) => phoneNumber || ""),
-    tag("phone"),
-    share()
+    tag("phone")
+    // share()
   )
   const isPhoneValid$ = phoneValidation$.pipe(
     map(({ isValid }) => isValid),
@@ -116,8 +115,8 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
           })
         })
         .run()
-    }),
-    share()
+    })
+    // share()
   )
 
   const isLoading$ = merge(
@@ -129,8 +128,8 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
     invalid: isPhoneInvalid$,
     loading: isLoading$,
   }).pipe(
-    map(({ invalid, loading }) => invalid || loading),
-    share()
+    map(({ invalid, loading }) => invalid || loading)
+    // share()
   )
   const isPhoneInputDisabled$ = isLoading$
 
