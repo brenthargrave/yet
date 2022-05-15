@@ -1,7 +1,8 @@
 import { createClient, defaultExchanges } from "@urql/core"
-import { from, map } from "rxjs"
+import { from, map, share } from "rxjs"
 import { devtoolsExchange } from "@urql/devtools"
 
+import { tag } from "~/log"
 import { getId } from "./anon"
 import {
   CreateVerificationDocument,
@@ -28,7 +29,9 @@ export const verifyPhone$ = (input: CreateVerificationInput) =>
     map(({ data, error }) => {
       if (error) throw error // TODO: extract into rxjs operator
       return data?.createVerification
-    })
+    }),
+    tag("verifyPhone$"),
+    share()
   )
 
 export const verifyCode$ = (input: CheckVerificationInput) =>
@@ -36,7 +39,9 @@ export const verifyCode$ = (input: CheckVerificationInput) =>
     map(({ data, error }) => {
       if (error) throw error // TODO: extract into rxjs operator
       return data?.checkVerification
-    })
+    }),
+    tag("verifyCode$"),
+    share()
   )
 
 // Analytics

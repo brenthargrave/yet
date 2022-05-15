@@ -34,16 +34,6 @@ export const Auth = (sources: Sources) => {
     ...sources,
   })
 
-  // TODO: ¿maintain subs to all step views concurrently?
-  // const react = combineLatest({
-  //   step: step$$,
-  //   submit: submitView$,
-  //   verify: verifyView$,
-  // }).pipe(
-  //   map(({ step, submit, verify }) =>
-  //     step === VerificationStep.Submit ? submit : verify
-  //   )
-  // )
   const react = step$$.pipe(
     switchMap((step) => {
       return step === VerificationStep.Submit ? submitView$ : verifyView$
