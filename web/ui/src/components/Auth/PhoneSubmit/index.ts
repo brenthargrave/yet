@@ -42,7 +42,11 @@ interface Sources {
 }
 export const PhoneSubmit = ({ props, ...sources }: Sources) => {
   const { onVerificationPending } = props
-  const [phoneInput$, onChangePhoneInput] = makeObservableCallback<string>()
+  const [_phoneInput$, onChangePhoneInput] = makeObservableCallback<string>()
+  const phoneInput$ = _phoneInput$.pipe(
+    tag("phoneInput$"),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  )
 
   const phoneValidation$ = phoneInput$.pipe(
     map((phone) =>
@@ -52,25 +56,18 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
         validateMobilePrefix,
       })
     ),
-    tag("phoneValidation$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
+    tag("phoneValidation$")
   )
   const e164$: Observable<string> = phoneValidation$.pipe(
     map(({ phoneNumber }) => phoneNumber || ""),
-    tag("e164$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
+    tag("e164$")
   )
   const isPhoneValid$ = phoneValidation$.pipe(
     map(({ isValid }) => isValid),
     startWith(false),
-    tag("isPhoneValid$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
+    tag("isPhoneValid$")
   )
-  const isPhoneInvalid$ = isPhoneValid$.pipe(
-    map(not),
-    tag("isPhoneInvalid$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
-  )
+  const isPhoneInvalid$ = isPhoneValid$.pipe(map(not), tag("isPhoneInvalid$"))
 
   const [submit$, onSubmit] = makeObservableCallback()
 
@@ -130,20 +127,13 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
   const isLoading$ = merge(
     submit$.pipe(map((_) => true)),
     result$.pipe(map((_) => false))
-  ).pipe(startWith(false), tag("isLoading$"), shareReplay())
+  ).pipe(startWith(false), tag("isLoading$"))
 
   const isSubmitButtonDisabled$ = combineLatest({
     invalid: isPhoneInvalid$,
     loading: isLoading$,
-  }).pipe(
-    map(({ invalid, loading }) => invalid || loading),
-    tag("isSubmitButtonDisabled$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
-  )
-  const isPhoneInputDisabled$ = isLoading$.pipe(
-    tag("isPhoneInputDisabled$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
-  )
+  }).pipe(map(({ invalid, loading }) => invalid || loading))
+  const isPhoneInputDisabled$ = isLoading$.pipe(tag("isPhoneInputDisabled$"))
 
   const react = combineLatest({
     isLoading: isLoading$,

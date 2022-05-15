@@ -1,6 +1,6 @@
 import { h, ReactSource } from "@cycle/react"
 import { catchError } from "rxjs"
-import { map, share, switchMap, onErrorResumeNext } from "rxjs/operators"
+import { map, switchMap } from "rxjs/operators"
 import { match } from "ts-pattern"
 import { captureException } from "@sentry/react"
 
@@ -29,9 +29,8 @@ export const App = (sources: Sources) => {
         .with("in", () => authView$)
         .otherwise(() => landingView$)
     ),
-    tag("routeView$"),
     map((childView) => h(AppView, [childView])),
-    tag("react$"),
+    tag("App.react$"),
     catchError((error, caught$) => {
       // TODO: wrap sentry call, include logging
       captureException(error)

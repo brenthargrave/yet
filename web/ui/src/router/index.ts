@@ -45,7 +45,7 @@ export function makeRouterDriver(): Driver<Sink, Source> {
         observer.next(route)
       })
       return unlisten
-    }).pipe(shareReplay({ refCount: true, bufferSize: 1 }))
+    }).pipe(shareReplay())
 
     return {
       history$, // TODO: adapt()
