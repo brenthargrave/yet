@@ -1,6 +1,6 @@
 import { h, ReactSource } from "@cycle/react"
-import { combineLatest, catchError } from "rxjs"
-import { map, share } from "rxjs/operators"
+import { catchError } from "rxjs"
+import { map, share, switchMap } from "rxjs/operators"
 import { match } from "ts-pattern"
 import { captureException } from "@sentry/react"
 
@@ -20,20 +20,14 @@ export const App = (sources: Sources) => {
   const { react: landingView$ } = Landing(sources)
   const { react: authView$ } = Auth(sources)
 
-  const react = combineLatest({
-    route: history$,
-    landing: landingView$,
-    auth: authView$,
-  }).pipe(
-    map(({ route, landing, auth }) => {
-      return h(AppView, [
-        match(route.name)
-          .with("home", () => landing)
-          .with("in", () => auth)
-          .otherwise(() => landing),
-        // TODO: exhaustive
-      ])
-    }),
+  const react = history$.pipe(
+    switchMap((route) =>
+      match(route.name)
+        .with("home", () => landingView$)
+        .with("in", () => authView$)
+        .otherwise(() => landingView$)
+    ),
+    map((childView) => h(AppView, [childView])),
     catchError((error, caught$) => {
       // TODO: wrap sentry call, include logging
       captureException(error)
