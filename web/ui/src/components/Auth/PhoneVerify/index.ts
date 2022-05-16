@@ -11,6 +11,7 @@ import {
   shareReplay,
   share,
   filter,
+  BehaviorSubject,
 } from "rxjs"
 import { match } from "ts-pattern"
 
@@ -42,11 +43,10 @@ export const PhoneVerify = (sources: Sources) => {
   const {
     props: { e164$ },
   } = sources
-  const [_code$, onChangeCodeInput] = makeObservableCallback<VerificationCode>()
-  const code$ = _code$.pipe(
-    tag("code$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
-  )
+  const code$$ = new BehaviorSubject<string>("")
+  const code$ = code$$.asObservable().pipe(tag("code$"), shareReplay())
+  const onChangeCodeInput = (code: string) => code$$.next(code)
+
   const [_submit$, onSubmit] = makeObservableCallback()
   const submit$ = _submit$.pipe(tag("submit$"), share())
 
