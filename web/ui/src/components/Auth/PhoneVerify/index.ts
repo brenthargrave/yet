@@ -102,7 +102,8 @@ export const PhoneVerify = (sources: Sources) => {
       //       status: "error",
       //     })
       //   })
-    })
+    }),
+    share()
   )
   // TODO: handle response!
   // const verification$: Observable<V
@@ -118,19 +119,15 @@ export const PhoneVerify = (sources: Sources) => {
   const isLoading$ = merge(
     submit$.pipe(map((_) => true)),
     result$.pipe(map((_) => false))
-  ).pipe(startWith(false), tag("isLoading$"))
+  ).pipe(startWith(false), tag("isLoading$"), share())
 
   // TODO: ¿canonical location to specify verification code length?
   const validCodeLength = 4
-  const codeIsValid$ = code$.pipe(
+  const codeIsInvalid$ = code$.pipe(
     map((code) => code.length === validCodeLength),
-    startWith(false),
-    tag("codeIsValid$")
-  )
-  const codeIsInvalid$ = codeIsValid$.pipe(
     map(not),
-    tag("codeIsInvalid$"),
-    share()
+    startWith(true),
+    tag("codeIsInvalid$")
   )
 
   const isDisabledCodeInput$ = isLoading$
