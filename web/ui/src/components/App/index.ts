@@ -10,12 +10,15 @@ import { Landing } from "~/components/Landing"
 import { Auth } from "~/components/Auth"
 import { toast } from "~/toast"
 import { t } from "~/i18n"
-import { tag } from "~/log"
+import { makeTagger } from "~/log"
+
+const tag = makeTagger("App")
 
 interface Sources {
   react: ReactSource
   router: RouterSource
 }
+
 export const App = (sources: Sources) => {
   const { history$ } = sources.router
   const { react: landingView$ } = Landing(sources)
@@ -30,7 +33,6 @@ export const App = (sources: Sources) => {
         .otherwise(() => landingView$)
     ),
     map((childView) => h(AppView, [childView])),
-    tag("App.react$"),
     catchError((error, caught$) => {
       // TODO: wrap sentry call, include logging
       captureException(error)
@@ -41,7 +43,8 @@ export const App = (sources: Sources) => {
         status: "error",
       })
       return caught$.pipe(tag("caught$"))
-    })
+    }),
+    tag("App.react$")
   )
 
   return {
