@@ -9,25 +9,20 @@ import {
   merge,
   startWith,
   shareReplay,
-  tap,
   share,
   filter,
-  NEVER,
 } from "rxjs"
 import { match } from "ts-pattern"
 
-import { useError } from "react-use"
 import {
   verifyCode$,
   VerificationStatus,
   UserError,
   Verification,
-  VerificationResult,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { makeObservableCallback } from "~/rx"
 import { View } from "./View"
-import { toast } from "~/toast"
 import { push, routes } from "~/router"
 import { error } from "~/notice"
 

@@ -15,7 +15,6 @@ import {
   pluck,
 } from "rxjs"
 import { not } from "ramda"
-import { match } from "ts-pattern"
 
 import { View } from "./View"
 import {
@@ -24,10 +23,8 @@ import {
   VerificationStatus,
   verifyPhone$,
 } from "~/graph"
-import { routes } from "~/router"
 import { makeTagger } from "~/log"
 import { makeObservableCallback } from "~/rx"
-import { toast } from "~/toast"
 import { error } from "~/notice"
 
 export { View }
@@ -39,13 +36,10 @@ const validateMobilePrefix = strictDetection
 
 const tag = makeTagger("PhoneSubmit")
 
-export interface Props {}
-
 interface Sources {
   react: ReactSource
-  props: Props
 }
-export const PhoneSubmit = ({ props, ...sources }: Sources) => {
+export const PhoneSubmit = ({ ...sources }: Sources) => {
   const [_phoneInput$, onChangePhoneInput] = makeObservableCallback<string>()
   const phoneInput$ = _phoneInput$.pipe(
     tag("phoneInput$"),

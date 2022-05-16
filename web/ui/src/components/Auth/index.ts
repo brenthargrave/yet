@@ -34,7 +34,6 @@ export const Auth = (sources: Sources) => {
     notice: submitNotice$,
     value: { e164$, verificationStatus$ },
   } = PhoneSubmit({
-    props: {},
     ...sources,
   })
 
