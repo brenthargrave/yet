@@ -9,22 +9,18 @@ import {
   merge,
   startWith,
   shareReplay,
-  filter,
   tap,
-  distinctUntilChanged,
-  debounce,
-  debounceTime,
-  throttleTime,
   share,
 } from "rxjs"
 import { match } from "ts-pattern"
 
-import { verifyCode$, VerificationStatus } from "~/graph"
-import { tag } from "~/log"
+import { verifyCode$ } from "~/graph"
+import { makeTagger } from "~/log"
 import { makeObservableCallback } from "~/rx"
 import { View } from "./View"
-import { routes } from "~/router"
 import { toast } from "~/toast"
+
+const tag = makeTagger("PhoneVerify")
 
 type VerificationCode = string
 
@@ -119,7 +115,11 @@ export const PhoneVerify = (sources: Sources) => {
   const isLoading$ = merge(
     submit$.pipe(map((_) => true)),
     result$.pipe(map((_) => false))
-  ).pipe(startWith(false), tag("isLoading$"), share())
+  ).pipe(
+    startWith(false),
+    tag("isLoading$"),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  )
 
   // TODO: ¿canonical location to specify verification code length?
   const validCodeLength = 4
@@ -127,16 +127,20 @@ export const PhoneVerify = (sources: Sources) => {
     map((code) => code.length === validCodeLength),
     map(not),
     startWith(true),
-    tag("codeIsInvalid$")
+    tag("codeIsInvalid$"),
+    share()
   )
 
-  const isDisabledCodeInput$ = isLoading$
+  const isDisabledCodeInput$ = isLoading$.pipe(tag("isDisabledCodeInput$"))
+
   const isDisabledSubmitButton$ = combineLatest({
     isLoading: isLoading$,
     codeIsInvalid: codeIsInvalid$,
   }).pipe(
     map(({ isLoading, codeIsInvalid }) => isLoading || codeIsInvalid),
-    tag("loading$ || invalid$")
+    startWith(false),
+    tag("loading$ || invalid$"),
+    share()
   )
 
   const react = combineLatest({
@@ -152,7 +156,8 @@ export const PhoneVerify = (sources: Sources) => {
         onComplete,
         onChangeCodeInput,
       })
-    })
+    }),
+    tag("react")
   )
 
   return {

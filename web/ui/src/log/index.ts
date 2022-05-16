@@ -1,6 +1,13 @@
-import { create } from "rxjs-spy"
+import { create } from "rxjs-spy" // no filter, logs everything
+
+import { tag } from "rxjs-spy/operators/tag"
 
 const spy = create({ defaultLogger: console, sourceMaps: true })
-spy.log() // no filter, logs everything
+spy.log()
 
-export { tag } from "rxjs-spy/operators/tag"
+const makeTagger =
+  <T>(scope: string) =>
+  <T>(label: string) =>
+    tag<T>(`${scope} > ${label}`)
+
+export { tag, makeTagger }

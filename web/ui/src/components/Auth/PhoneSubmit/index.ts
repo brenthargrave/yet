@@ -21,7 +21,7 @@ import { match } from "ts-pattern"
 import { View } from "./View"
 import { Verification, VerificationStatus, verifyPhone$ } from "~/graph"
 import { routes } from "~/router"
-import { tag } from "~/log"
+import { makeTagger } from "~/log"
 import { makeObservableCallback } from "~/rx"
 import { toast } from "~/toast"
 
@@ -31,6 +31,8 @@ export { View }
 const { VITE_API_ENV } = import.meta.env
 const strictDetection = VITE_API_ENV === "prod"
 const validateMobilePrefix = strictDetection
+
+const tag = makeTagger("PhoneSubmit")
 
 export interface Props {
   onVerificationPending: () => void
@@ -159,7 +161,7 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
     isPhoneInputDisabled: isPhoneInputDisabled$,
   }).pipe(
     map((props) => h(View, { ...props, onSubmit, onChangePhoneInput })),
-    tag("PhoneSubmit.react")
+    tag("react")
   )
 
   const value = {
