@@ -42,7 +42,7 @@ export const Auth = (sources: Sources) => {
     switchMap((step) => {
       return step === VerificationStep.Submit ? submitView$ : verifyView$
     }),
-    tag("Auth.react")
+    tag("react")
   )
 
   const router = merge(verifyRouter)

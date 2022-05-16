@@ -18,7 +18,6 @@ import { match } from "ts-pattern"
 
 import { useError } from "react-use"
 import {
-  filterType,
   verifyCode$,
   VerificationStatus,
   UserError,
@@ -29,7 +28,7 @@ import { makeTagger } from "~/log"
 import { makeObservableCallback } from "~/rx"
 import { View } from "./View"
 import { toast } from "~/toast"
-import { routes } from "~/router"
+import { push, routes } from "~/router"
 
 const tag = makeTagger("PhoneVerify")
 
@@ -74,7 +73,7 @@ export const PhoneVerify = (sources: Sources) => {
               // TODO: this shouldn't be POSSIBLE, redesign the flow
             })
             .with(VerificationStatus.Approved, () => {
-              routes.home().push()
+              // routes.home().push()
             })
             .with(VerificationStatus.Canceled, () => {
               // TODO: make this impossible!
@@ -168,14 +167,14 @@ export const PhoneVerify = (sources: Sources) => {
     tag("react")
   )
 
-  const router = NEVER
-  // const router = verification$.pipe(
-  //   map(({ status }) =>
-  //     match(status)
-  //       .with(VerificationStatus.Approved, () => routes.home())
-  //       .run()
-  //   )
-  // )
+  const router = verification$.pipe(
+    map(({ status }) =>
+      match(status)
+        .with(VerificationStatus.Approved, () => push(routes.home()))
+        .run()
+    ),
+    tag("router")
+  )
 
   return {
     react,

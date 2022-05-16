@@ -19,7 +19,7 @@ interface Sources {
 export const App = (sources: Sources) => {
   const { history$ } = sources.router
   const { react: landingView$ } = Landing(sources)
-  const { react: authView$ } = Auth(sources)
+  const { react: authView$, router } = Auth(sources)
 
   const react = history$.pipe(
     tag("history$"),
@@ -46,6 +46,7 @@ export const App = (sources: Sources) => {
 
   return {
     react,
+    router,
   }
 }
 

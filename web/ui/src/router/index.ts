@@ -5,6 +5,7 @@ import { shareReplay } from "rxjs/operators"
 import { Stream } from "xstream"
 import { Driver } from "@cycle/run"
 import { adapt } from "@cycle/run/lib/adapt"
+import { match } from "ts-pattern"
 
 export const { routes, useRoute, RouteProvider, session } = createRouter({
   home: defineRoute("/"),
@@ -29,12 +30,30 @@ export type Route = _Route<typeof routes>
 export interface Source {
   history$: Observable<Route>
 }
-type Sink = Stream<Route>
+
+export enum CommandType {
+  push = "push",
+}
+export interface Command {
+  type: CommandType
+  route?: Route
+}
+export const push = (route: Route): Command => {
+  return { type: CommandType.push, route }
+}
+
+type Sink = Stream<Command>
 
 export function makeRouterDriver(): Driver<Sink, Source> {
   return function (sink: Sink): Source {
+    // TODO: swallow errors?
     sink.addListener({
-      next: (route) => route.push(),
+      next: (command) => {
+        console.debug(command)
+        match(command.type)
+          .with(CommandType.push, () => command.route?.push())
+          .exhaustive()
+      },
       error: (error) => console.error(error),
       complete: () => console.info("complete"),
     })
