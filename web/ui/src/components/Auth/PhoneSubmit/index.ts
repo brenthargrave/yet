@@ -62,7 +62,8 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
   const e164$: Observable<string> = phoneValidation$.pipe(
     map(({ phoneNumber }) => phoneNumber || ""),
     startWith(""),
-    tag("e164$")
+    tag("e164$"),
+    shareReplay() // TODO: subscribe from outer component to preserve across views -> share()
   )
   const isPhoneValid$ = phoneValidation$.pipe(
     map(({ isValid }) => isValid),
