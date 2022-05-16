@@ -15,6 +15,7 @@ import {
   debounce,
   debounceTime,
   throttleTime,
+  share,
 } from "rxjs"
 import { match } from "ts-pattern"
 
@@ -45,23 +46,17 @@ export const PhoneVerify = (sources: Sources) => {
     shareReplay({ refCount: true, bufferSize: 1 })
   )
   const [_submit$, onSubmit] = makeObservableCallback()
-  const submit$ = _submit$.pipe(throttleTime(250), tag("submit$"))
+  const submit$ = _submit$.pipe(tag("submit$"))
 
   const onComplete = (code: string) => onSubmit()
 
-  // TODO: ¿canonical location to specify verification code length?
-  const validCodeLength = 4
-  const codeIsValid$ = code$.pipe(
-    map((code) => code.length === validCodeLength),
-    startWith(false),
-    tag("codeIsValid$")
+  const input$ = combineLatest({ e164: e164$, code: code$ }).pipe(
+    tag("input$"),
+    share()
   )
-  const codeIsInvalid$ = codeIsValid$.pipe(map(not), tag("codeIsInvalid$"))
-
   const result$ = submit$.pipe(
-    tag("submit$"),
-    withLatestFrom(combineLatest({ e164: e164$, code: code$ })),
-    tag("e164$, code$"),
+    withLatestFrom(input$),
+    tag("withLatestFrom(input)$"),
     switchMap(([_, input]) => verifyCode$(input)),
     tag("result$"),
     tap((result) => {
@@ -124,6 +119,19 @@ export const PhoneVerify = (sources: Sources) => {
     submit$.pipe(map((_) => true)),
     result$.pipe(map((_) => false))
   ).pipe(startWith(false), tag("isLoading$"))
+
+  // TODO: ¿canonical location to specify verification code length?
+  const validCodeLength = 4
+  const codeIsValid$ = code$.pipe(
+    map((code) => code.length === validCodeLength),
+    startWith(false),
+    tag("codeIsValid$")
+  )
+  const codeIsInvalid$ = codeIsValid$.pipe(
+    map(not),
+    tag("codeIsInvalid$"),
+    share()
+  )
 
   const isDisabledCodeInput$ = isLoading$
   const isDisabledSubmitButton$ = combineLatest({

@@ -61,14 +61,19 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
   const e164$: Observable<string> = phoneValidation$.pipe(
     map(({ phoneNumber }) => phoneNumber || ""),
     startWith(""),
-    tag("e164$")
+    tag("e164$"),
+    share()
   )
   const isPhoneValid$ = phoneValidation$.pipe(
     map(({ isValid }) => isValid),
     startWith(false),
     tag("isPhoneValid$")
   )
-  const isPhoneInvalid$ = isPhoneValid$.pipe(map(not), tag("isPhoneInvalid$"))
+  const isPhoneInvalid$ = isPhoneValid$.pipe(
+    map(not),
+    tag("isPhoneInvalid$"),
+    share()
+  )
 
   const [submit$, onSubmit] = makeObservableCallback()
 
