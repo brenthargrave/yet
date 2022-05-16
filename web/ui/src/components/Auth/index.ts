@@ -1,10 +1,12 @@
 import { h, ReactSource } from "@cycle/react"
 import { BehaviorSubject, switchMap } from "rxjs"
 
-import { tag } from "~/log"
+import { makeTagger } from "~/log"
 import { Source as RouterSource } from "~/router"
 import { PhoneSubmit } from "./PhoneSubmit"
 import { PhoneVerify } from "./PhoneVerify"
+
+const tag = makeTagger("Auth")
 
 enum VerificationStep {
   Submit,
@@ -40,8 +42,9 @@ export const Auth = (sources: Sources) => {
     switchMap((step) => {
       return step === VerificationStep.Submit ? submitView$ : verifyView$
     }),
-    tag("Auth.react$")
+    tag("Auth.react")
   )
+
   return {
     react,
   }

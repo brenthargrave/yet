@@ -14,11 +14,12 @@ import {
 } from "rxjs"
 import { match } from "ts-pattern"
 
-import { verifyCode$ } from "~/graph"
+import { verifyCode$, VerificationStatus } from "~/graph"
 import { makeTagger } from "~/log"
 import { makeObservableCallback } from "~/rx"
 import { View } from "./View"
 import { toast } from "~/toast"
+import { routes } from "~/router"
 
 const tag = makeTagger("PhoneVerify")
 
@@ -53,52 +54,38 @@ export const PhoneVerify = (sources: Sources) => {
   const result$ = submit$.pipe(
     withLatestFrom(input$),
     tag("withLatestFrom(input)$"),
-    switchMap(([_, input]) => verifyCode$(input)),
-    tag("result$"),
+    switchMap(([_, input]) => verifyCode$(input).pipe(tag("verifyCode$"))),
     tap((result) => {
-      console.debug(result)
-      switch (result.__typename) {
-        case "Verification":
-          console.debug("Verification")
-          break
-        case "UserError":
-          console.debug("UserError")
+      match(result)
+        .with({ __typename: "Verification" }, (result) => {
+          console.debug(result)
+          match(result.status)
+            .with(VerificationStatus.Pending, () => {
+              // TODO: this shouldn't be POSSIBLE, redesign the flow
+            })
+            .with(VerificationStatus.Approved, () => {
+              routes.home().push()
+            })
+            .with(VerificationStatus.Canceled, () => {
+              // TODO: make this impossible!
+              toast({
+                title: "Oops!",
+                description: "Phone verification cancelled",
+                status: "error",
+              })
+            })
+            .exhaustive()
+        })
+        .with({ __typename: "UserError" }, ({ message }) => {
           toast({
             title: "Oops!",
-            description: result.message,
+            description: message,
             status: "error",
           })
-          break
-      }
-      // match(result)
-      //   .with({ __typename: "Verification" }, (result) => {
-      //     console.debug(result)
-      //     match(result.status)
-      //       .with(VerificationStatus.Pending, () => {
-      //         // TODO: this shouldn't be POSSIBLE, redesign the flow
-      //       })
-      //       .with(VerificationStatus.Approved, () => {
-      //         routes.home().push()
-      //       })
-      //       .with(VerificationStatus.Canceled, () => {
-      //         // TODO: make this impossible!
-      //         toast({
-      //           title: "Oops!",
-      //           description: "Phone verification cancelled",
-      //           status: "error",
-      //         })
-      //       })
-      //       .exhaustive()
-      //   })
-      //   .with({ __typename: "UserError" }, ({ message }) => {
-      //     console.debug(result)
-      //     toast({
-      //       title: "Oops!",
-      //       description: message,
-      //       status: "error",
-      //     })
-      //   })
+        })
+        .run()
     }),
+    tag("result$"),
     share()
   )
   // TODO: handle response!
