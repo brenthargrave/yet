@@ -30,15 +30,16 @@ const client = createClient({
 export const verifyPhone$ = (input: CreateVerificationInput) =>
   from(client.mutation(CreateVerificationDocument, { input }).toPromise()).pipe(
     map(({ data, error }) => {
-      if (error) throw error // TODO: extract into rxjs operator
+      if (error) throw error // TODO: operator
       return data?.createVerification
-    })
+    }),
+    filter(isNotNullish)
   )
 
 export const verifyCode$ = (input: CheckVerificationInput) =>
   from(client.mutation(CheckVerificationDocument, { input }).toPromise()).pipe(
     map(({ data, error }) => {
-      if (error) throw error // TODO: extract into rxjs operator
+      if (error) throw error // TODO: operator
       return data?.checkVerification
     }),
     filter(isNotNullish)

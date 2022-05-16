@@ -1,5 +1,14 @@
 import { h, ReactSource } from "@cycle/react"
-import { BehaviorSubject, switchMap, merge } from "rxjs"
+import {
+  BehaviorSubject,
+  switchMap,
+  merge,
+  Observable,
+  map,
+  startWith,
+  shareReplay,
+} from "rxjs"
+import { VerificationStatus } from "~/graph"
 
 import { makeTagger } from "~/log"
 import { Source as RouterSource } from "~/router"
@@ -24,7 +33,7 @@ export const Auth = (sources: Sources) => {
 
   const {
     react: submitView$,
-    value: { e164$ },
+    value: { e164$, verificationStatus$ },
   } = PhoneSubmit({
     props: {
       onVerificationPending,
@@ -41,8 +50,18 @@ export const Auth = (sources: Sources) => {
     ...sources,
   })
 
+  // const step$: Observable<VerificationStep> = verificationStatus$.pipe(
+  //   map((status) =>
+  //     status === VerificationStatus.Pending
+  //       ? VerificationStep.Verify
+  //       : VerificationStep.Submit
+  //   ),
+  //   startWith(VerificationStep.Submit),
+  //   tag("step$"),
+  //   shareReplay({ bufferSize: 1, refCount: true })
+  // )
+
   const react = step$$.pipe(
-    tag("step$$"),
     switchMap((step) => {
       return step === VerificationStep.Submit ? submitView$ : verifyView$
     }),

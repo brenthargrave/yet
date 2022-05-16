@@ -1,7 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
-import { useState } from "react"
 import { phone as validatePhone } from "phone"
-import { useEffectOnce } from "react-use"
 import {
   Observable,
   combineLatest,
@@ -13,13 +11,19 @@ import {
   switchMap,
   tap,
   withLatestFrom,
+  filter,
+  pluck,
 } from "rxjs"
-import { isNotNullish } from "rxjs-etc"
 import { not } from "ramda"
 import { match } from "ts-pattern"
 
 import { View } from "./View"
-import { Verification, VerificationStatus, verifyPhone$ } from "~/graph"
+import {
+  UserError,
+  Verification,
+  VerificationStatus,
+  verifyPhone$,
+} from "~/graph"
 import { routes } from "~/router"
 import { makeTagger } from "~/log"
 import { makeObservableCallback } from "~/rx"
@@ -128,12 +132,18 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
     share()
   )
 
-  // const res$: Observable<Verification | VerificationError> = result$.pipe(
-  //   filter(isNotNullish)
-  // )
-  // const verification$: Observable<Verification> = res$.pipe(
-  //   filter((res): res is Verification => res.__typename === "Verification")
-  // )
+  const userError$ = result$.pipe(
+    filter((result): result is UserError => result.__typename === "UserError")
+  )
+  const verification$ = result$.pipe(
+    filter(
+      (result): result is Verification => result.__typename === "Verification"
+    )
+  )
+  const verificationStatus$ = verification$.pipe(
+    map((v) => v.status),
+    tag("verificationStatus$")
+  )
 
   const isLoading$ = merge(
     submit$.pipe(map((_) => true)),
@@ -167,6 +177,7 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
 
   const value = {
     e164$,
+    verificationStatus$,
   }
 
   return {
