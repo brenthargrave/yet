@@ -29,18 +29,12 @@ interface Sources {
 }
 
 export const Auth = (sources: Sources) => {
-  const step$$ = new BehaviorSubject<VerificationStep>(VerificationStep.Submit)
-  const onVerificationPending = () => console.debug("pneding?")
-  // const onVerificationPending = () => step$$.next(VerificationStep.Verify)
-
   const {
     react: submitView$,
     notice: submitNotice$,
     value: { e164$, verificationStatus$ },
   } = PhoneSubmit({
-    props: {
-      onVerificationPending,
-    },
+    props: {},
     ...sources,
   })
 

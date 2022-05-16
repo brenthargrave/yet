@@ -39,16 +39,13 @@ const validateMobilePrefix = strictDetection
 
 const tag = makeTagger("PhoneSubmit")
 
-export interface Props {
-  onVerificationPending: () => void
-}
+export interface Props {}
 
 interface Sources {
   react: ReactSource
   props: Props
 }
 export const PhoneSubmit = ({ props, ...sources }: Sources) => {
-  const { onVerificationPending } = props
   const [_phoneInput$, onChangePhoneInput] = makeObservableCallback<string>()
   const phoneInput$ = _phoneInput$.pipe(
     tag("phoneInput$"),
@@ -90,29 +87,6 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
     withLatestFrom(e164$),
     tag("submit$ w/ e164$"),
     switchMap(([_, e164]) => verifyPhone$({ e164 })),
-    tap((result) => {
-      match(result)
-        .with({ __typename: "Verification" }, (result) => {
-          match(result.status)
-            .with(VerificationStatus.Pending, () => {
-              // TODO: -> result$ { verificationStatus }
-              onVerificationPending()
-            })
-            .with(VerificationStatus.Approved, () => {
-              // TODO: extract/lift up into parent: Auth
-              routes.home().push()
-            })
-            .with(VerificationStatus.Canceled, () => {
-              toast({
-                title: "Oops!",
-                description: "Phone verification cancelled",
-                status: "error",
-              })
-            })
-            .exhaustive()
-        })
-        .run()
-    }),
     tag("result$"),
     share()
   )
