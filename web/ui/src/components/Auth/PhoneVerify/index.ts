@@ -61,40 +61,11 @@ export const PhoneVerify = (sources: Sources) => {
     tag("input$"),
     share()
   )
+
   const result$ = submit$.pipe(
     withLatestFrom(input$),
     tag("withLatestFrom(input)$"),
     switchMap(([_, input]) => verifyCode$(input).pipe(tag("verifyCode$"))),
-    tap((result) => {
-      match(result)
-        .with({ __typename: "Verification" }, (result) => {
-          console.debug(result)
-          match(result.status)
-            .with(VerificationStatus.Pending, () => {
-              // TODO: this shouldn't be POSSIBLE, redesign the flow
-            })
-            .with(VerificationStatus.Approved, () => {
-              // routes.home().push()
-            })
-            .with(VerificationStatus.Canceled, () => {
-              // TODO: make this impossible!
-              toast({
-                title: "Oops!",
-                description: "Phone verification cancelled",
-                status: "error",
-              })
-            })
-            .exhaustive()
-        })
-        .with({ __typename: "UserError" }, ({ message }) => {
-          toast({
-            title: "Oops!",
-            description: message,
-            status: "error",
-          })
-        })
-        .run()
-    }),
     tag("result$"),
     share()
   )
@@ -107,17 +78,6 @@ export const PhoneVerify = (sources: Sources) => {
   const userError$ = result$.pipe(
     filter((result): result is UserError => result.__typename === "UserError")
   )
-
-  // TODO: handle response!
-  // const verification$: Observable<V
-  // const userError$
-  // const error$
-  // const toast$ = merge(userError, error) => ? would need to import h(Toast)!
-  /// ...and then what: { value: { toast }}
-  // ! on 2nd thought: an notifications$ sink might be better
-  // no need to refactor later, only *present* them differently from App
-  // ?why not already? too many imperative outcomes: callbacks,routing
-  // ?would require creating a "fake" sink and binidng it to react sink
 
   const isLoading$ = merge(
     submit$.pipe(map((_) => true)),
@@ -178,7 +138,7 @@ export const PhoneVerify = (sources: Sources) => {
 
   const notice = userError$.pipe(
     map(({ message }) => error({ description: message })),
-    tag("notices")
+    tag("notice")
   )
 
   return {
