@@ -33,6 +33,7 @@ export const Auth = (sources: Sources) => {
 
   const {
     react: submitView$,
+    notice: submitNotice$,
     value: { e164$, verificationStatus$ },
   } = PhoneSubmit({
     props: {
@@ -43,8 +44,8 @@ export const Auth = (sources: Sources) => {
 
   const {
     react: verifyView$,
-    router: verifyRouter,
-    notice: verifyNotice,
+    router: verifyRouter$,
+    notice: verifyNotice$,
   } = PhoneVerify({
     props: { e164$ },
     ...sources,
@@ -68,8 +69,8 @@ export const Auth = (sources: Sources) => {
     tag("react")
   )
 
-  const router = merge(verifyRouter)
-  const notice = merge(verifyNotice)
+  const router = merge(verifyRouter$)
+  const notice = merge(verifyNotice$, submitNotice$)
 
   return {
     react,

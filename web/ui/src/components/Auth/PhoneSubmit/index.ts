@@ -28,6 +28,7 @@ import { routes } from "~/router"
 import { makeTagger } from "~/log"
 import { makeObservableCallback } from "~/rx"
 import { toast } from "~/toast"
+import { error } from "~/notice"
 
 export { View }
 
@@ -110,22 +111,6 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
             })
             .exhaustive()
         })
-        .with({ __typename: "UserError" }, ({ message }) => {
-          console.error(message)
-          toast({
-            title: "Please try again.",
-            description: message,
-            status: "error",
-          })
-        })
-        .with({ __typename: "Error" }, ({ message }) => {
-          console.error(message)
-          toast({
-            title: "Oops!",
-            description: message,
-            status: "error",
-          })
-        })
         .run()
     }),
     tag("result$"),
@@ -175,6 +160,10 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
     tag("react")
   )
 
+  const notice = userError$.pipe(
+    map(({ message }) => error({ description: message }))
+  )
+
   const value = {
     e164$,
     verificationStatus$,
@@ -182,6 +171,7 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
 
   return {
     react,
+    notice,
     value,
   }
 }
