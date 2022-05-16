@@ -1,5 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
-import { catchError } from "rxjs"
+import { catchError, merge } from "rxjs"
 import { map, switchMap } from "rxjs/operators"
 import { match } from "ts-pattern"
 import { captureException } from "@sentry/react"
@@ -11,6 +11,7 @@ import { Auth } from "~/components/Auth"
 import { toast } from "~/toast"
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
+import { error } from "~/notice"
 
 const tag = makeTagger("App")
 
@@ -21,8 +22,9 @@ interface Sources {
 
 export const App = (sources: Sources) => {
   const { history$ } = sources.router
+
   const { react: landingView$ } = Landing(sources)
-  const { react: authView$, router } = Auth(sources)
+  const { react: authView$, router, notice: authNotice } = Auth(sources)
 
   const react = history$.pipe(
     tag("history$"),
@@ -47,9 +49,12 @@ export const App = (sources: Sources) => {
     tag("App.react$")
   )
 
+  const notice = merge(authNotice)
+
   return {
     react,
     router,
+    notice,
   }
 }
 

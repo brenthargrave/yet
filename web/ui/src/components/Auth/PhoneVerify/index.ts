@@ -29,6 +29,7 @@ import { makeObservableCallback } from "~/rx"
 import { View } from "./View"
 import { toast } from "~/toast"
 import { push, routes } from "~/router"
+import { error } from "~/notice"
 
 const tag = makeTagger("PhoneVerify")
 
@@ -98,14 +99,13 @@ export const PhoneVerify = (sources: Sources) => {
     share()
   )
 
-  // const userError$ = result$.pipe(
-  //   filter((result) => result.__typename === "UserError")
-  // )
-
   const verification$ = result$.pipe(
     filter(
       (result): result is Verification => result.__typename === "Verification"
     )
+  )
+  const userError$ = result$.pipe(
+    filter((result): result is UserError => result.__typename === "UserError")
   )
 
   // TODO: handle response!
@@ -176,8 +176,14 @@ export const PhoneVerify = (sources: Sources) => {
     tag("router")
   )
 
+  const notice = userError$.pipe(
+    map(({ message }) => error({ description: message })),
+    tag("notices")
+  )
+
   return {
     react,
     router,
+    notice,
   }
 }

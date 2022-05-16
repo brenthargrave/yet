@@ -32,7 +32,11 @@ export const Auth = (sources: Sources) => {
     ...sources,
   })
 
-  const { react: verifyView$, router: verifyRouter } = PhoneVerify({
+  const {
+    react: verifyView$,
+    router: verifyRouter,
+    notice: verifyNotice,
+  } = PhoneVerify({
     props: { e164$ },
     ...sources,
   })
@@ -46,9 +50,11 @@ export const Auth = (sources: Sources) => {
   )
 
   const router = merge(verifyRouter)
+  const notice = merge(verifyNotice)
 
   return {
     react,
     router,
+    notice,
   }
 }
