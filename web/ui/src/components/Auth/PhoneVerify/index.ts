@@ -46,7 +46,7 @@ export const PhoneVerify = (sources: Sources) => {
     shareReplay({ refCount: true, bufferSize: 1 })
   )
   const [_submit$, onSubmit] = makeObservableCallback()
-  const submit$ = _submit$.pipe(tag("submit$"))
+  const submit$ = _submit$.pipe(tag("submit$"), share())
 
   const onComplete = (code: string) => onSubmit()
 
