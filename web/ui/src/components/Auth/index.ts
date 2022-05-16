@@ -8,6 +8,7 @@ import {
   startWith,
   shareReplay,
 } from "rxjs"
+import { match } from "ts-pattern"
 import { VerificationStatus } from "~/graph"
 
 import { makeTagger } from "~/log"
@@ -29,7 +30,8 @@ interface Sources {
 
 export const Auth = (sources: Sources) => {
   const step$$ = new BehaviorSubject<VerificationStep>(VerificationStep.Submit)
-  const onVerificationPending = () => step$$.next(VerificationStep.Verify)
+  const onVerificationPending = () => console.debug("pneding?")
+  // const onVerificationPending = () => step$$.next(VerificationStep.Verify)
 
   const {
     react: submitView$,
@@ -51,18 +53,18 @@ export const Auth = (sources: Sources) => {
     ...sources,
   })
 
-  // const step$: Observable<VerificationStep> = verificationStatus$.pipe(
-  //   map((status) =>
-  //     status === VerificationStatus.Pending
-  //       ? VerificationStep.Verify
-  //       : VerificationStep.Submit
-  //   ),
-  //   startWith(VerificationStep.Submit),
-  //   tag("step$"),
-  //   shareReplay({ bufferSize: 1, refCount: true })
-  // )
+  const step$: Observable<VerificationStep> = verificationStatus$.pipe(
+    map((status) =>
+      match(status)
+        .with(VerificationStatus.Pending, () => VerificationStep.Verify)
+        .run()
+    ),
+    startWith(VerificationStep.Submit),
+    tag("step$"),
+    shareReplay()
+  )
 
-  const react = step$$.pipe(
+  const react = step$.pipe(
     switchMap((step) => {
       return step === VerificationStep.Submit ? submitView$ : verifyView$
     }),

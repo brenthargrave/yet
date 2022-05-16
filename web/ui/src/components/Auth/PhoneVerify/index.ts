@@ -72,11 +72,13 @@ export const PhoneVerify = (sources: Sources) => {
 
   const verification$ = result$.pipe(
     filter(
-      (result): result is Verification => result.__typename === "Verification"
+      (result): result is Verification => result.__typename === "Verification",
+      tag("verification$")
     )
   )
   const userError$ = result$.pipe(
-    filter((result): result is UserError => result.__typename === "UserError")
+    filter((result): result is UserError => result.__typename === "UserError"),
+    tag("userError$")
   )
 
   const isLoading$ = merge(

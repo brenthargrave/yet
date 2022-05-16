@@ -24,7 +24,11 @@ export const App = (sources: Sources) => {
   const { history$ } = sources.router
 
   const { react: landingView$ } = Landing(sources)
-  const { react: authView$, router, notice: authNotice } = Auth(sources)
+  const {
+    react: authView$,
+    router: authRouter,
+    notice: authNotice,
+  } = Auth(sources)
 
   const react = history$.pipe(
     tag("history$"),
@@ -49,7 +53,8 @@ export const App = (sources: Sources) => {
     tag("App.react$")
   )
 
-  const notice = merge(authNotice)
+  const router = merge(authRouter).pipe(catchError((error, caught$) => caught$))
+  const notice = merge(authNotice).pipe(catchError((error, caught$) => caught$))
 
   return {
     react,

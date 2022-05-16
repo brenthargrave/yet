@@ -129,6 +129,12 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
     map((v) => v.status),
     tag("verificationStatus$")
   )
+  const pending$ = verificationStatus$.pipe(
+    filter((status) => status === VerificationStatus.Pending)
+  )
+  const cancelled$ = verificationStatus$.pipe(
+    filter((status) => status === VerificationStatus.Canceled)
+  )
 
   const isLoading$ = merge(
     submit$.pipe(map((_) => true)),
