@@ -1,5 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
-import { BehaviorSubject, switchMap } from "rxjs"
+import { BehaviorSubject, switchMap, merge } from "rxjs"
 
 import { makeTagger } from "~/log"
 import { Source as RouterSource } from "~/router"
@@ -32,7 +32,7 @@ export const Auth = (sources: Sources) => {
     ...sources,
   })
 
-  const { react: verifyView$ } = PhoneVerify({
+  const { react: verifyView$, router: verifyRouter } = PhoneVerify({
     props: { e164$ },
     ...sources,
   })
@@ -45,7 +45,10 @@ export const Auth = (sources: Sources) => {
     tag("Auth.react")
   )
 
+  const router = merge(verifyRouter)
+
   return {
     react,
+    router,
   }
 }

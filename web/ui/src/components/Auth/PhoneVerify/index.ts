@@ -11,10 +11,20 @@ import {
   shareReplay,
   tap,
   share,
+  filter,
+  NEVER,
 } from "rxjs"
 import { match } from "ts-pattern"
 
-import { verifyCode$, VerificationStatus } from "~/graph"
+import { useError } from "react-use"
+import {
+  filterType,
+  verifyCode$,
+  VerificationStatus,
+  UserError,
+  Verification,
+  VerificationResult,
+} from "~/graph"
 import { makeTagger } from "~/log"
 import { makeObservableCallback } from "~/rx"
 import { View } from "./View"
@@ -88,6 +98,17 @@ export const PhoneVerify = (sources: Sources) => {
     tag("result$"),
     share()
   )
+
+  // const userError$ = result$.pipe(
+  //   filter((result) => result.__typename === "UserError")
+  // )
+
+  const verification$ = result$.pipe(
+    filter(
+      (result): result is Verification => result.__typename === "Verification"
+    )
+  )
+
   // TODO: handle response!
   // const verification$: Observable<V
   // const userError$
@@ -147,7 +168,17 @@ export const PhoneVerify = (sources: Sources) => {
     tag("react")
   )
 
+  const router = NEVER
+  // const router = verification$.pipe(
+  //   map(({ status }) =>
+  //     match(status)
+  //       .with(VerificationStatus.Approved, () => routes.home())
+  //       .run()
+  //   )
+  // )
+
   return {
     react,
+    router,
   }
 }

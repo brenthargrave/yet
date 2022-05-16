@@ -35,25 +35,22 @@ export const verifyPhone$ = (input: CreateVerificationInput) =>
     })
   )
 
-// : Observable<Verification | UserError | >
-export const verifyCode$ = (input: CheckVerificationInput) => {
-  const foo = from(
-    client.mutation(CheckVerificationDocument, { input }).toPromise()
-  ).pipe(
+export const verifyCode$ = (input: CheckVerificationInput) =>
+  from(client.mutation(CheckVerificationDocument, { input }).toPromise()).pipe(
     map(({ data, error }) => {
       if (error) throw error // TODO: extract into rxjs operator
       return data?.checkVerification
     }),
     filter(isNotNullish)
-    // const res$: Observable<Verification | VerificationError> = result$.pipe(
-    //   filter(isNotNullish)
-    // )
-    // const verification$: Observable<Verification> = res$.pipe(
-    //   filter((res): res is Verification => res.__typename === "Verification")
-    // )
   )
-  return foo
+
+/* // TODO: custom operator to filter result types
+interface GQLType {
+  __typename: string
 }
+export const filterType = <T extends GQLType>(typename: string) =>
+  filter((result: T): result is T => result.__typename === typename)
+*/
 
 // Analytics
 //

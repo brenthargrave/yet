@@ -81,12 +81,6 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
   const [_submit$, onSubmit] = makeObservableCallback()
   const submit$ = _submit$.pipe(tag("PhoneSubmit.submit$"), share())
 
-  // const res$: Observable<Verification | VerificationError> = result$.pipe(
-  //   filter(isNotNullish)
-  // )
-  // const verification$: Observable<Verification> = res$.pipe(
-  //   filter((res): res is Verification => res.__typename === "Verification")
-  // )
   const result$ = submit$.pipe(
     withLatestFrom(e164$),
     tag("submit$ w/ e164$"),
@@ -133,6 +127,13 @@ export const PhoneSubmit = ({ props, ...sources }: Sources) => {
     tag("result$"),
     share()
   )
+
+  // const res$: Observable<Verification | VerificationError> = result$.pipe(
+  //   filter(isNotNullish)
+  // )
+  // const verification$: Observable<Verification> = res$.pipe(
+  //   filter((res): res is Verification => res.__typename === "Verification")
+  // )
 
   const isLoading$ = merge(
     submit$.pipe(map((_) => true)),
