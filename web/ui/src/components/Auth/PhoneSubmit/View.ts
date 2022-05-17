@@ -54,7 +54,7 @@ export const View = ({
   })
   return h(Center, { width: "100vw", height: "100vh" }, [
     form({ onSubmit }, [
-      h(Stack, { direction: "column", align: "center" }, [
+      h(Stack, { direction: "column", align: "center", gap: 2 }, [
         h(Heading, { size }, t("auth.tel.entry.cta")),
 
         h(InputGroup, { size }, [

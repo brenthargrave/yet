@@ -12,9 +12,12 @@ import {
   share,
   filter,
   BehaviorSubject,
+  pairwise,
+  skipWhile,
 } from "rxjs"
 import { match } from "ts-pattern"
 
+import { pairwiseStartWith } from "rxjs-etc/dist/esm/operators"
 import {
   verifyCode$,
   VerificationStatus,
@@ -28,8 +31,6 @@ import { push, routes } from "~/router"
 import { error } from "~/notice"
 
 const tag = makeTagger("PhoneVerify")
-
-type VerificationCode = string
 
 interface Props {
   e164$: Observable<string>
@@ -47,17 +48,35 @@ export const PhoneVerify = (sources: Sources) => {
   const code$ = code$$.asObservable().pipe(tag("code$"), shareReplay())
   const onChangeCodeInput = (code: string) => code$$.next(code)
 
+  const codeLatestPair$ = code$.pipe(
+    pairwiseStartWith(""),
+    tag("codeLatestPair$"),
+    shareReplay()
+  )
+
   const [_submit$, onSubmit] = makeObservableCallback()
   const submit$ = _submit$.pipe(tag("submit$"), share())
 
-  const onComplete = (code: string) => onSubmit()
+  const [complete, onComplete] = makeObservableCallback<string>()
+  const complete$ = complete.pipe(
+    withLatestFrom(codeLatestPair$),
+    tag("withLatestFrom(codeLatestPairs$)"),
+    // NOTE: only fire when last digit in PIN is changed, not the prior values
+    filter(([_, [prev, curr]]) => {
+      const sameLengths = prev.length === curr.length
+      const sameLastDigit = curr.slice(-1) === prev.slice(-1)
+      return !(sameLengths && sameLastDigit)
+    }),
+    tag("complete$"),
+    share()
+  )
 
   const input$ = combineLatest({ e164: e164$, code: code$ }).pipe(
     tag("input$"),
     share()
   )
 
-  const result$ = submit$.pipe(
+  const result$ = merge(submit$, complete$).pipe(
     withLatestFrom(input$),
     tag("withLatestFrom(input)$"),
     switchMap(([_, input]) => verifyCode$(input).pipe(tag("verifyCode$"))),

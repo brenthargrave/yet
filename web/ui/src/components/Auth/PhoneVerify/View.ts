@@ -41,43 +41,44 @@ export const View = ({
   return h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center" }, [
       h(Heading, { size }, t("auth.tel.verify.head")),
-      h(
-        Text,
-        { fontSize: size },
-        t("auth.tel.verify.cta").replace("$PHONE", formatPhone(e164))
-      ),
+      e164 &&
+        h(
+          Text,
+          { fontSize: size },
+          t("auth.tel.verify.cta").replace("$PHONE", formatPhone(e164))
+        ),
       form({ onSubmit, autoComplete: "off" }, [
-        // h(InputGroup, { size }, [
-        h(HStack, [
-          h(PinInput, {
-            onChange: (value: string) => onChangeCodeInput(value),
-            onComplete: (value: string) => onComplete(value),
-            isDisabled: isDisabledCodeInput,
-            autoFocus: true,
-            manageFocus: true,
-            type: "number",
-            size,
-            otp: true,
-            children: [
-              h(PinInputField),
-              h(PinInputField),
-              h(PinInputField),
-              h(PinInputField),
-            ],
-          }),
+        h(InputGroup, { size, flexDirection: "column", gap: 2 }, [
+          h(HStack, {}, [
+            h(PinInput, {
+              onChange: (value: string) => onChangeCodeInput(value),
+              onComplete: (value: string) => onComplete(value),
+              isDisabled: isDisabledCodeInput,
+              autoFocus: true,
+              manageFocus: true,
+              type: "number",
+              size,
+              otp: true,
+              children: [
+                h(PinInputField),
+                h(PinInputField),
+                h(PinInputField),
+                h(PinInputField),
+              ],
+            }),
+          ]),
+          h(
+            Button,
+            {
+              isDisabled: isDisabledSubmitButton,
+              isLoading,
+              size,
+              width: "100%",
+              type: "submit",
+            },
+            t(`auth.tel.entry.submit`)
+          ),
         ]),
-        // TODO: drop Button? Input completion triggers submit.
-        // h(
-        //   Button,
-        //   {
-        //     isDisabled: isDisabledSubmitButton,
-        //     isLoading,
-        //     size,
-        //     width: "100%",
-        //     type: "submit",
-        //   },
-        //   t(`auth.tel.entry.submit`)
-        // ),
       ]),
     ]),
   ])
