@@ -103,6 +103,13 @@ export const PhoneVerify = (sources: Sources) => {
   // that I read everything out of.... or rather, a graph source // graph.me$
   // ? so, for now assume writing token somewhere lcoal / how does app change?
   // ahah, this is the problem: you haven't designed onboarding logic here yet.
+  // how?
+  // - routing to /onboarding - NO, no need for a URL for that, why let people
+  // direct nav to something they'll be forced through anyway?
+  // ? how render Onboarding()
+  // could put it on a URL - but what happens when someone attempts to direct,
+  // nav to it.. in other words, how to protect it?
+  // (now that I think about it, there's probably no need for /in either!)
 
   const userError$ = result$.pipe(
     filter((result): result is UserError => result.__typename === "UserError"),

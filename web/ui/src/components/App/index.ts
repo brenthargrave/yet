@@ -34,7 +34,7 @@ export const App = (sources: Sources) => {
     tag("history$"),
     switchMap((route) =>
       match(route.name)
-        .with("home", () => landingView$)
+        .with("root", () => landingView$)
         .with("in", () => authView$)
         .otherwise(() => landingView$)
     ),

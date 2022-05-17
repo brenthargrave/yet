@@ -8,7 +8,7 @@ import { adapt } from "@cycle/run/lib/adapt"
 import { match } from "ts-pattern"
 
 export const { routes, useRoute, RouteProvider, session } = createRouter({
-  home: defineRoute("/"),
+  root: defineRoute("/"),
   in: defineRoute("/in"),
   out: defineRoute("/out"),
   verify: defineRoute("/verify"),
