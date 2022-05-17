@@ -29,6 +29,13 @@ interface Sources {
 }
 
 export const Auth = (sources: Sources) => {
+  // TODO: { me$ } = sources.graph
+  // const goHome$ = me$.pipe(
+  // mergeMap(me => isAlreadyOnboard(me) ? of(route.home()) : EMPTY)
+  // router = merge(goHome$)
+  // ! why bother with that here? it's arouter concern, in App
+  // TODO: yep, doesn't belong here onboarding?
+
   const {
     react: submitView$,
     notice: submitNotice$,

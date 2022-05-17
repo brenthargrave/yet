@@ -110,6 +110,8 @@ export const PhoneVerify = (sources: Sources) => {
   // could put it on a URL - but what happens when someone attempts to direct,
   // nav to it.. in other words, how to protect it?
   // (now that I think about it, there's probably no need for /in either!)
+  // decision: urls are good, actually
+  // ? how route away from onboarding if onboarding compelte?
 
   const userError$ = result$.pipe(
     filter((result): result is UserError => result.__typename === "UserError"),
@@ -167,7 +169,7 @@ export const PhoneVerify = (sources: Sources) => {
   const router = verification$.pipe(
     map(({ status }) =>
       match(status)
-        .with(VerificationStatus.Approved, () => push(routes.home()))
+        .with(VerificationStatus.Approved, () => push(routes.root()))
         .run()
     ),
     tag("router")
