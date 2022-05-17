@@ -25,6 +25,7 @@ defmodule AppWeb.Graph.Verification do
 
   object :verification do
     field(:status, non_null(:verification_status))
+    # TODO: Token?
   end
 
   input_object :create_verification_input do

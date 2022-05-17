@@ -12,12 +12,13 @@ import {
   share,
   filter,
   BehaviorSubject,
-  pairwise,
-  skipWhile,
+  mergeMap,
+  EMPTY,
+  of,
 } from "rxjs"
 import { match } from "ts-pattern"
-
 import { pairwiseStartWith } from "rxjs-etc/dist/esm/operators"
+
 import {
   verifyCode$,
   VerificationStatus,
@@ -90,6 +91,19 @@ export const PhoneVerify = (sources: Sources) => {
       tag("verification$")
     )
   )
+
+  // TODO: token, me
+  // const token$ = verification$.pipe(
+  //   mergeMap(({ token }) => isEmpty(token.value) ? of(token.value) : EMPTY })
+  // )
+  // if we write to a cache in graph call, there's no need to fetch the token here.
+  // ! that's a bit dirty though - how would it work otherwise? cache sink
+  // cache = token$.map(token => ) ?? what is the write API for a driver?
+  // that's super annoying... better off getting cache.source working first
+  // that I read everything out of.... or rather, a graph source // graph.me$
+  // ? so, for now assume writing token somewhere lcoal / how does app change?
+  // ahah, this is the problem: you haven't designed onboarding logic here yet.
+
   const userError$ = result$.pipe(
     filter((result): result is UserError => result.__typename === "UserError"),
     tag("userError$")
