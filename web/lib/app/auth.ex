@@ -32,7 +32,8 @@ defmodule App.Auth do
 
   typedstruct module: SubmitCodeResult do
     field :verification, Verification.t(), enfoce: true
-    # TODO: token
+    # TODO: token model
+    field :token, String.t()
   end
 
   @type submit_code_result() ::
@@ -51,7 +52,12 @@ defmodule App.Auth do
 
       # NOTE: otherwise, pass "approved" or "cancelled" along as-is
       {:ok, %{status: status} = _payload} ->
-        {:ok, %Verification{status: String.to_existing_atom(status)}}
+        {:ok,
+         %SubmitCodeResult{
+           verification: %Verification{status: String.to_existing_atom(status)},
+           # TODO
+           token: nil
+         }}
 
       {:error, %{"message" => message} = _data, _http_status_code} ->
         {:error, message}
