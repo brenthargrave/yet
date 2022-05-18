@@ -56,6 +56,7 @@ defmodule AppWeb.Graph.Auth do
     types([:submit_code_payload, :user_error])
 
     resolve_type(fn
+      # TODO: SubmitCodePayload
       %{token: _}, _ ->
         :submit_code_payload
 
@@ -72,7 +73,7 @@ defmodule AppWeb.Graph.Auth do
 
     field :submit_code, type: :submit_code_result do
       arg(:input, non_null(:submit_code_input))
-      resolve(&Resolvers.Auth.check/3)
+      resolve(&Resolvers.Auth.submit_code/3)
     end
   end
 end

@@ -8,14 +8,14 @@ defmodule AppWeb.Resolvers.Auth do
           %{input: %{e164: e164}} = _args,
           _resolution
         ) :: resolver_result() do
-    Auth.create_verification(e164)
+    Auth.submit_phone(e164)
   end
 
-  defun check(
+  defun submit_code(
           _parent,
           %{input: %{e164: e164, code: code}} = _args,
           _resolution
         ) :: resolver_result() do
-    Auth.check_verification(e164, code)
+    Auth.submit_code(e164, code)
   end
 end

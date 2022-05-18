@@ -5,18 +5,18 @@ defmodule App.Auth do
   alias App.Auth.{Twilio}
 
   typedstruct module: Verification, enforce: true do
-    field(:status, String.t())
+    field :status, String.t()
   end
 
   typedstruct module: UserError, enforce: true do
-    field(:message, String.t())
+    field :message, String.t()
   end
 
-  @type result() ::
-          {:ok, %Verification{status: String.t()} | %UserError{message: String.t()}}
+  @type submit_phone_result() ::
+          {:ok, Verification.t() | UserError.t()}
           | {:error, String.t()}
 
-  defun create_verification(e164 :: e164()) :: result() do
+  defun submit_phone(e164 :: e164()) :: submit_phone_result() do
     case Twilio.create_verification(e164) do
       {:ok, %{status: status} = _payload} ->
         {:ok, %Verification{status: String.to_existing_atom(status)}}
@@ -28,14 +28,24 @@ defmodule App.Auth do
     end
   end
 
-  defun check_verification(e164 :: e164(), code :: number()) :: result() do
+  typedstruct module: SubmitCodeResult do
+    field :verification, Verification.t(), enfoce: true
+    # TODO: token
+  end
+
+  @type submit_code_result() ::
+          {:ok, SubmitCodeResult.t() | UserError.t()}
+          | {:error, String.t()}
+
+  defun submit_code(e164 :: e164(), code :: number()) :: submit_code_result() do
     res = Twilio.check_verification(e164, code)
     IO.puts(inspect(res))
 
     case res do
       # NOTE: when incorrect code is submitted to check, Twilio responds "pending"
       {:ok, %{status: "pending"} = _payload} ->
-        {:ok, %UserError{message: "Incorrect code, please try again."}}
+        # TODO: user errors need a code, copy should be determined client-side
+        {:ok, %UserError{message: "Incorrect code."}}
 
       # NOTE: otherwise, pass "approved" or "cancelled" along as-is
       {:ok, %{status: status} = _payload} ->
