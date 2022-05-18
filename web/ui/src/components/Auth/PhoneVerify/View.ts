@@ -14,6 +14,7 @@ import { t, formatPhone } from "~/i18n"
 
 export interface Props {
   e164: string
+  code: string
   onSubmit: () => void
   onComplete: (code: string) => void
   onChangeCodeInput: (code: string) => void
@@ -26,6 +27,7 @@ const size = "lg"
 
 export const View = ({
   e164,
+  code: value,
   onSubmit: _onSubmit,
   onComplete,
   onChangeCodeInput,
@@ -51,6 +53,7 @@ export const View = ({
         h(InputGroup, { size, flexDirection: "column", gap: 2 }, [
           h(HStack, {}, [
             h(PinInput, {
+              value,
               onChange: (value: string) => onChangeCodeInput(value),
               onComplete: (value: string) => onComplete(value),
               isDisabled: isDisabledCodeInput,

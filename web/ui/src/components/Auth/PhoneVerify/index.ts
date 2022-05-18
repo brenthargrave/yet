@@ -151,6 +151,7 @@ export const PhoneVerify = (sources: Sources) => {
 
   const react = combineLatest({
     e164: e164$,
+    code: code$,
     isLoading: isLoading$,
     isDisabledCodeInput: isDisabledCodeInput$,
     isDisabledSubmitButton: isDisabledSubmitButton$,
