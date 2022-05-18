@@ -17,13 +17,15 @@ defmodule App.Auth do
           | {:error, String.t()}
 
   defun submit_phone(e164 :: e164()) :: submit_phone_result() do
-    case Twilio.create_verification(e164) do
+    # TODO: event
+    response = Twilio.create_verification(e164)
+
+    case response do
       {:ok, %{status: status} = _payload} ->
         {:ok, %Verification{status: String.to_existing_atom(status)}}
 
       # NOTE: by default return all unexpected errors as absinthe/graphql errors
       {:error, %{"message" => message} = _data, _http_status_code} ->
-        # TODO: push to sentry?
         {:error, message}
     end
   end
@@ -38,13 +40,13 @@ defmodule App.Auth do
           | {:error, String.t()}
 
   defun submit_code(e164 :: e164(), code :: number()) :: submit_code_result() do
+    # TODO: event
     res = Twilio.check_verification(e164, code)
     IO.puts(inspect(res))
 
     case res do
-      # NOTE: when incorrect code is submitted to check, Twilio responds "pending"
+      # NOTE: Twilio responds "pending" when incorrect code submitted
       {:ok, %{status: "pending"} = _payload} ->
-        # TODO: user errors need a code, copy should be determined client-side
         {:ok, %UserError{message: "Incorrect code."}}
 
       # NOTE: otherwise, pass "approved" or "cancelled" along as-is
@@ -52,7 +54,6 @@ defmodule App.Auth do
         {:ok, %Verification{status: String.to_existing_atom(status)}}
 
       {:error, %{"message" => message} = _data, _http_status_code} ->
-        # TODO: push to sentry?
         {:error, message}
     end
   end
