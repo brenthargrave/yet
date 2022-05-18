@@ -1,4 +1,4 @@
-defmodule AppWeb.Graph.Verification do
+defmodule AppWeb.Graph.Auth do
   use Absinthe.Schema.Notation
   alias AppWeb.Resolvers
   alias App.Auth.{Verification, Error, UserError}
@@ -37,6 +37,15 @@ defmodule AppWeb.Graph.Verification do
     field(:code, non_null(:string))
   end
 
+  object :token do
+    field(:value, non_null(:string))
+  end
+
+  object :check_verification_payload do
+    field(:verification, non_null(:verification))
+    field(:token, non_null(:token))
+  end
+
   union :verification_result do
     types([:verification, :user_error, :error])
 
@@ -52,15 +61,15 @@ defmodule AppWeb.Graph.Verification do
     end)
   end
 
-  object :mutations_verification do
+  object :auth_mutations do
     field :create_verification, type: :verification_result do
       arg(:input, non_null(:create_verification_input))
-      resolve(&Resolvers.Verification.create/3)
+      resolve(&Resolvers.Auth.create/3)
     end
 
     field :check_verification, type: :verification_result do
       arg(:input, non_null(:check_verification_input))
-      resolve(&Resolvers.Verification.check/3)
+      resolve(&Resolvers.Auth.check/3)
     end
   end
 end

@@ -1,7 +1,7 @@
 defmodule AppWeb.Graph.Schema do
   use Absinthe.Schema
   import_types(AppWeb.Graph.Analytics)
-  import_types(AppWeb.Graph.Verification)
+  import_types(AppWeb.Graph.Auth)
 
   query do
     import_fields(:analytics_queries)
@@ -9,6 +9,6 @@ defmodule AppWeb.Graph.Schema do
 
   mutation do
     import_fields(:analytics_mutations)
-    import_fields(:mutations_verification)
+    import_fields(:auth_mutations)
   end
 end
