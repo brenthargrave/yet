@@ -27,7 +27,7 @@ const client = createClient({
   exchanges: [devtoolsExchange, ...defaultExchanges],
 })
 
-export const verifyPhone$ = (input: CreateVerificationInput) =>
+export const submitPhone$ = (input: CreateVerificationInput) =>
   from(client.mutation(CreateVerificationDocument, { input }).toPromise()).pipe(
     map(({ data, error }) => {
       if (error) throw error // TODO: operator

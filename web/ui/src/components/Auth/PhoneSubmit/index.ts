@@ -21,7 +21,7 @@ import {
   UserError,
   Verification,
   VerificationStatus,
-  verifyPhone$,
+  submitPhone$,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { makeObservableCallback } from "~/rx"
@@ -80,7 +80,7 @@ export const PhoneSubmit = ({ ...sources }: Sources) => {
   const result$ = submit$.pipe(
     withLatestFrom(e164$),
     tag("submit$ w/ e164$"),
-    switchMap(([_, e164]) => verifyPhone$({ e164 })),
+    switchMap(([_, e164]) => submitPhone$({ e164 })),
     tag("result$"),
     share()
   )

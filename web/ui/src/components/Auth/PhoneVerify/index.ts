@@ -112,6 +112,8 @@ export const PhoneVerify = (sources: Sources) => {
   // (now that I think about it, there's probably no need for /in either!)
   // decision: urls are good, actually
   // ? how route away from onboarding if onboarding compelte?
+  // emit me$ upstream/
+  // ? WHERE to write token$, me$ to cache?
 
   const userError$ = result$.pipe(
     filter((result): result is UserError => result.__typename === "UserError"),
