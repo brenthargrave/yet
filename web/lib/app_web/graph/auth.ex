@@ -1,18 +1,13 @@
 defmodule AppWeb.Graph.Auth do
   use Absinthe.Schema.Notation
   alias AppWeb.Resolvers
-  alias App.Auth.{Verification, Error, UserError}
+  alias App.Auth.{Verification, UserError}
 
   interface :base_error do
     field(:message, non_null(:string))
   end
 
   object :user_error do
-    is_type_of(:base_error)
-    field(:message, non_null(:string))
-  end
-
-  object :error do
     is_type_of(:base_error)
     field(:message, non_null(:string))
   end
@@ -25,29 +20,19 @@ defmodule AppWeb.Graph.Auth do
 
   object :verification do
     field(:status, non_null(:verification_status))
-    # TODO: Token?
   end
 
-  input_object :create_verification_input do
+  input_object :submit_phone_input do
     field(:e164, non_null(:string))
   end
 
-  input_object :check_verification_input do
+  input_object :submit_code_input do
     field(:e164, non_null(:string))
     field(:code, non_null(:string))
   end
 
-  object :token do
-    field(:value, non_null(:string))
-  end
-
-  object :check_verification_payload do
-    field(:verification, non_null(:verification))
-    field(:token, non_null(:token))
-  end
-
-  union :verification_result do
-    types([:verification, :user_error, :error])
+  union :submit_phone_result do
+    types([:verification, :user_error])
 
     resolve_type(fn
       %Verification{}, _ ->
@@ -55,20 +40,38 @@ defmodule AppWeb.Graph.Auth do
 
       %UserError{}, _ ->
         :user_error
+    end)
+  end
 
-      %Error{}, _ ->
-        :error
+  object :token do
+    field(:value, non_null(:string))
+  end
+
+  object :submit_code_payload do
+    field(:verification, non_null(:verification))
+    field(:token, non_null(:token))
+  end
+
+  union :submit_code_result do
+    types([:submit_code_payload, :user_error])
+
+    resolve_type(fn
+      %{token: _}, _ ->
+        :submit_code_payload
+
+      %UserError{}, _ ->
+        :user_error
     end)
   end
 
   object :auth_mutations do
-    field :create_verification, type: :verification_result do
-      arg(:input, non_null(:create_verification_input))
-      resolve(&Resolvers.Auth.create/3)
+    field :submit_phone, type: :submit_phone_result do
+      arg(:input, non_null(:submit_phone_input))
+      resolve(&Resolvers.Auth.submit_phone/3)
     end
 
-    field :check_verification, type: :verification_result do
-      arg(:input, non_null(:check_verification_input))
+    field :submit_code, type: :submit_code_result do
+      arg(:input, non_null(:submit_code_input))
       resolve(&Resolvers.Auth.check/3)
     end
   end

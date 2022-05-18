@@ -3,7 +3,7 @@ defmodule AppWeb.Resolvers.Auth do
   use App.Types
   alias App.{Auth}
 
-  defun create(
+  defun submit_phone(
           _parent,
           %{input: %{e164: e164}} = _args,
           _resolution

@@ -12,10 +12,6 @@ defmodule App.Auth do
     field(:message, String.t())
   end
 
-  typedstruct module: Error, enforce: true do
-    field(:message, String.t())
-  end
-
   @type result() ::
           {:ok, %Verification{status: String.t()} | %UserError{message: String.t()}}
           | {:error, String.t()}
