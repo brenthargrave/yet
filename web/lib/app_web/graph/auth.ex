@@ -1,7 +1,7 @@
 defmodule AppWeb.Graph.Auth do
   use Absinthe.Schema.Notation
   alias AppWeb.Resolvers
-  alias App.Auth.{Verification, UserError}
+  alias App.Auth.{Verification, UserError, SubmitCodeResult}
 
   interface :base_error do
     field(:message, non_null(:string))
@@ -56,8 +56,7 @@ defmodule AppWeb.Graph.Auth do
     types([:submit_code_payload, :user_error])
 
     resolve_type(fn
-      # TODO: SubmitCodePayload
-      %{token: _}, _ ->
+      %SubmitCodeResult{}, _ ->
         :submit_code_payload
 
       %UserError{}, _ ->
