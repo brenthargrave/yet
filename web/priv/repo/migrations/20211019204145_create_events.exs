@@ -12,13 +12,15 @@ defmodule App.Repo.Migrations.CreateEvents do
       add(:phone, :string)
       timestamps()
     end
+
     create(unique_index(:customers, [:phone]))
 
     create table(:tokens) do
       add(:value, :string)
-      add(:customer_id, references(:customers, on_delete: :delete_all)
+      add(:customer_id, references(:customers, on_delete: :delete_all))
       timestamps()
     end
+
     create(unique_index(:tokens, [:value]))
     create(index(:tokens, [:customer_id]))
   end
