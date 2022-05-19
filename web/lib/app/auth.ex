@@ -81,7 +81,7 @@ defmodule App.Auth do
       {:ok, existing}
     else
       %Customer{}
-      # TODO: improve token security
+      # TODO: token security
       |> Customer.changeset(%{e164: e164, token: Ecto.UUID.generate()})
       |> Repo.insert()
     end
