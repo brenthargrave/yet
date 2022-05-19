@@ -1,6 +1,6 @@
 # https://hexdocs.pm/ecto/Ecto.Schema.html#module-schema-attributes
 # https://github.com/TheRealReal/ecto-ulid#schema
-defmodule App.Schema do
+defmodule App.Model do
   defmacro __using__(_) do
     quote do
       use Ecto.Schema

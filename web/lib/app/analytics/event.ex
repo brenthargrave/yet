@@ -1,5 +1,5 @@
 defmodule App.Analytics.Event do
-  use App.Schema
+  use App.Model
   import Ecto.Changeset
 
   schema "events" do
