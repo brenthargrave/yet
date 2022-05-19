@@ -17,7 +17,7 @@ defmodule App.Auth do
           | {:error, String.t()}
 
   defun submit_phone(e164 :: e164()) :: submit_phone_result() do
-    # TODO: event
+    # TODO: event / PUNT: wait until names stabilize
     response = Twilio.create_verification(e164)
 
     case response do
@@ -41,7 +41,7 @@ defmodule App.Auth do
           | {:error, String.t()}
 
   defun submit_code(e164 :: e164(), code :: number()) :: submit_code_result() do
-    # TODO: event
+    # TODO: event / PUNT: wait until names stabilize
     res = Twilio.check_verification(e164, code)
     IO.puts(inspect(res))
 
