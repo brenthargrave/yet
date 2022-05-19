@@ -9,14 +9,14 @@ defmodule App.Repo.Migrations.CreateEvents do
     end
 
     create table(:customers) do
-      add(:phone, :string)
+      add(:e164, :string, null: false)
       timestamps()
     end
 
-    create(unique_index(:customers, [:phone]))
+    create(unique_index(:customers, [:e164]))
 
     create table(:tokens) do
-      add(:value, :string)
+      add(:value, :string, null: false)
       add(:customer_id, references(:customers, on_delete: :delete_all))
       timestamps()
     end

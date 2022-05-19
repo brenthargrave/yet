@@ -2,7 +2,7 @@ defmodule App.Auth do
   use Croma
   use TypedStruct
   use App.Types
-  alias App.Auth.{Twilio}
+  alias App.Auth.{Twilio, Token}
 
   typedstruct module: Verification, enforce: true do
     field :status, String.t()
@@ -17,7 +17,6 @@ defmodule App.Auth do
           | {:error, String.t()}
 
   defun submit_phone(e164 :: e164()) :: submit_phone_result() do
-    # TODO: event / PUNT: wait until names stabilize
     response = Twilio.create_verification(e164)
 
     case response do
@@ -41,7 +40,7 @@ defmodule App.Auth do
           | {:error, String.t()}
 
   defun submit_code(e164 :: e164(), code :: number()) :: submit_code_result() do
-    # TODO: event / PUNT: wait until names stabilize
+    # TODO: event
     res = Twilio.check_verification(e164, code)
     IO.puts(inspect(res))
 
@@ -52,15 +51,31 @@ defmodule App.Auth do
 
       # NOTE: otherwise, pass "approved" or "cancelled" along as-is
       {:ok, %{status: status} = _payload} ->
-        {:ok,
-         %SubmitCodeResult{
-           verification: %Verification{status: String.to_existing_atom(status)},
-           # TODO
-           token: nil
-         }}
+        # TODO: find/create Customer
+        # TODO: find/create Token for customer
+        # ! anywhere in the above, we can get low-level errors, how know if
+        # they quality as UserError? we don't yet, assume there will be none,
+        # but if one arises, { :error, "message"} back to absinthe
+        # ? so, how to most efficiently pipe through
+        case find_or_create_token_with_e164(e164) do
+          {:ok, token} ->
+            {:ok,
+             %SubmitCodeResult{
+               verification: %Verification{status: String.to_existing_atom(status)},
+               token: token
+             }}
+
+          {:error, _} ->
+            # ! what happens if person/create fails, or anything fails?
+            # TODO: handle token failure
+            nil
+        end
 
       {:error, %{"message" => message} = _data, _http_status_code} ->
         {:error, message}
     end
+  end
+
+  defunp find_or_create_token_with_e164(e164: e164()) :: no_return() do
   end
 end
