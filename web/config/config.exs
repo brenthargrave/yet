@@ -39,7 +39,7 @@ config :ex_twilio,
 
 config :sentry,
   dsn: {:system, "SENTRY_DSN_API"},
-  included_environments: [:prod, :dev],
+  included_environments: [:prod],
   environment_name: Mix.env(),
   enable_source_code_context: true,
   root_source_code_path: File.cwd!()
