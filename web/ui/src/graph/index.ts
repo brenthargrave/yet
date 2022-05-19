@@ -5,10 +5,10 @@ import { isNotNullish } from "rxjs-etc"
 
 import { getId } from "./anon"
 import {
-  CreateVerificationDocument,
-  CreateVerificationInput,
-  CheckVerificationInput,
-  CheckVerificationDocument,
+  SubmitPhoneInput,
+  SubmitPhoneDocument,
+  SubmitCodeInput,
+  SubmitCodeDocument,
   Event,
   EventName,
   EventProperties,
@@ -16,8 +16,6 @@ import {
   Verification,
   VerificationStatus,
   UserError,
-  Error,
-  VerificationResult,
 } from "./generated"
 
 export * from "./generated"
@@ -27,20 +25,20 @@ const client = createClient({
   exchanges: [devtoolsExchange, ...defaultExchanges],
 })
 
-export const submitPhone$ = (input: CreateVerificationInput) =>
-  from(client.mutation(CreateVerificationDocument, { input }).toPromise()).pipe(
+export const submitPhone$ = (input: SubmitPhoneInput) =>
+  from(client.mutation(SubmitPhoneDocument, { input }).toPromise()).pipe(
     map(({ data, error }) => {
       if (error) throw error // TODO: operator
-      return data?.createVerification
+      return data?.submitPhone
     }),
     filter(isNotNullish)
   )
 
-export const verifyCode$ = (input: CheckVerificationInput) =>
-  from(client.mutation(CheckVerificationDocument, { input }).toPromise()).pipe(
+export const verifyCode$ = (input: SubmitCodeInput) =>
+  from(client.mutation(SubmitCodeDocument, { input }).toPromise()).pipe(
     map(({ data, error }) => {
       if (error) throw error // TODO: operator
-      return data?.checkVerification
+      return data?.submitCode
     }),
     filter(isNotNullish)
   )

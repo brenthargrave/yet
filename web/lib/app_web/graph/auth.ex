@@ -43,13 +43,14 @@ defmodule AppWeb.Graph.Auth do
     end)
   end
 
-  object :token do
-    field(:value, non_null(:string))
+  object :customer do
+    field(:e164, non_null(:string))
+    field(:token, non_null(:string))
   end
 
   object :submit_code_payload do
     field(:verification, non_null(:verification))
-    field(:token, non_null(:token))
+    field(:customer, non_null(:customer))
   end
 
   union :submit_code_result do

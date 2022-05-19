@@ -1,27 +1,26 @@
-mutation CreateVerification($input: CreateVerificationInput!) {
-  createVerification(input:$input) {
+mutation SubmitPhone($input: SubmitPhoneInput!) {
+  submitPhone(input: $input) {
     ...on Verification {
       status
-
     }
     ...on UserError {
-      message
-    }
-    ...on Error {
       message
     }
   }
 }
 
-mutation CheckVerification($input: CheckVerificationInput!) {
-  checkVerification(input: $input) {
-    ...on Verification {
-      status
+mutation SubmitCode($input: SubmitCodeInput!) {
+  submitCode(input: $input) {
+    ...on SubmitCodePayload {
+      customer {
+        token
+        e164
+      }
+      verification {
+        status
+      }
     }
     ...on UserError {
-      message
-    }
-    ...on Error {
       message
     }
   }

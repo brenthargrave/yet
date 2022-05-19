@@ -24,6 +24,8 @@ import {
   VerificationStatus,
   UserError,
   Verification,
+  SubmitCodeResult,
+  SubmitCodePayload,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { makeObservableCallback } from "~/rx"
@@ -77,7 +79,7 @@ export const PhoneVerify = (sources: Sources) => {
     share()
   )
 
-  const result$ = merge(submit$, complete$).pipe(
+  const result$: Observable<SubmitCodeResult> = merge(submit$, complete$).pipe(
     withLatestFrom(input$),
     tag("withLatestFrom(input)$"),
     switchMap(([_, input]) => verifyCode$(input).pipe(tag("verifyCode$"))),
@@ -87,7 +89,8 @@ export const PhoneVerify = (sources: Sources) => {
 
   const verification$ = result$.pipe(
     filter(
-      (result): result is Verification => result.__typename === "Verification",
+      (result): result is SubmitCodePayload =>
+        result.__typename === "SubmitCodePayload",
       tag("verification$")
     )
   )

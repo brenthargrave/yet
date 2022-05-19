@@ -33,13 +33,12 @@ defmodule App.Auth do
   end
 
   typedstruct module: SubmitCodePayload do
-    field :verification, Verification.t(), enfoce: true
-    field :token, String.t()
-    field :customer, Customer.t()
+    field :verification, Verification.t(), enforce: true
+    field :customer, Customer.t(), enforce: true
   end
 
   @type submit_code_result() ::
-          {:ok, Payload.t() | UserError.t()}
+          {:ok, SubmitCodePayload.t() | UserError.t()}
           | {:error, String.t()}
 
   defun submit_code(e164 :: e164(), code :: number()) :: submit_code_result() do
@@ -59,8 +58,7 @@ defmodule App.Auth do
             {:ok,
              %SubmitCodePayload{
                verification: %Verification{status: String.to_existing_atom(status)},
-               customer: customer,
-               token: customer.token
+               customer: customer
              }}
 
           {:error, _any} = error ->
