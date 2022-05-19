@@ -54,7 +54,8 @@ defmodule App.MixProject do
       {:ex_twilio, github: "lesserhatch/ex_twilio", ref: "5fc56fc"},
       {:croma, "~> 0.11.2"},
       {:typed_struct, "~> 0.3.0"},
-      {:sentry, "~> 8.0"}
+      {:sentry, "~> 8.0"},
+      {:ecto_ulid, "~> 0.2.0"}
     ]
   end
 
