@@ -1,9 +1,7 @@
 defmodule App.Analytics.Event do
-  use Ecto.Schema
+  use App.Schema
   import Ecto.Changeset
 
-  @primary_key {:id, Ecto.ULID, autogenerate: false}
-  @foreign_key_type Ecto.ULID
   schema "events" do
     field :anon_id, :string
     field :name, :string
