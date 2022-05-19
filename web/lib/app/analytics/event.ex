@@ -1,12 +1,11 @@
 defmodule App.Analytics.Event do
-  use App.Model
+  use App.Schema
   import Ecto.Changeset
 
-  schema "events" do
+  typed_schema "events" do
     field :anon_id, :string
     field :name, :string
-
-    timestamps()
+    timestamps(type: :utc_datetime_usec)
   end
 
   @doc false
