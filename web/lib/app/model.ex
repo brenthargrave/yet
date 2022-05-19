@@ -4,8 +4,9 @@ defmodule App.Model do
   defmacro __using__(_) do
     quote do
       use Ecto.Schema
-      @primary_key {:id, Ecto.ULID, autogenerate: true}
+      @primary_key {:id, Ecto.ULID, autogenerate: false}
       @foreign_key_type Ecto.ULID
+      @timestamps_opts [type: :utc_datetime_usec]
     end
   end
 end
