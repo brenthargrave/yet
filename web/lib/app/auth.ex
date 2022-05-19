@@ -1,8 +1,11 @@
 defmodule App.Auth do
   use Croma
   use TypedStruct
+  use Brex.Result
+  import Ecto.Query
   use App.Types
-  alias App.Auth.{Twilio, Token}
+  alias App.Auth.{Twilio, Customer}
+  alias App.{Repo}
 
   typedstruct module: Verification, enforce: true do
     field :status, String.t()
@@ -29,14 +32,14 @@ defmodule App.Auth do
     end
   end
 
-  typedstruct module: SubmitCodeResult do
+  typedstruct module: SubmitCodePayload do
     field :verification, Verification.t(), enfoce: true
-    # TODO: token model
     field :token, String.t()
+    field :customer, Customer.t()
   end
 
   @type submit_code_result() ::
-          {:ok, SubmitCodeResult.t() | UserError.t()}
+          {:ok, Payload.t() | UserError.t()}
           | {:error, String.t()}
 
   defun submit_code(e164 :: e164(), code :: number()) :: submit_code_result() do
@@ -51,24 +54,17 @@ defmodule App.Auth do
 
       # NOTE: otherwise, pass "approved" or "cancelled" along as-is
       {:ok, %{status: status} = _payload} ->
-        # TODO: find/create Customer
-        # TODO: find/create Token for customer
-        # ! anywhere in the above, we can get low-level errors, how know if
-        # they quality as UserError? we don't yet, assume there will be none,
-        # but if one arises, { :error, "message"} back to absinthe
-        # ? so, how to most efficiently pipe through
-        case find_or_create_token_with_e164(e164) do
-          {:ok, token} ->
+        case find_or_create_with_e164(e164) do
+          {:ok, customer} ->
             {:ok,
-             %SubmitCodeResult{
+             %SubmitCodePayload{
                verification: %Verification{status: String.to_existing_atom(status)},
-               token: token
+               customer: customer,
+               token: customer.token
              }}
 
-          {:error, _} ->
-            # ! what happens if person/create fails, or anything fails?
-            # TODO: handle token failure
-            nil
+          {:error, _any} = error ->
+            error
         end
 
       {:error, %{"message" => message} = _data, _http_status_code} ->
@@ -76,6 +72,18 @@ defmodule App.Auth do
     end
   end
 
-  defunp find_or_create_token_with_e164(e164: e164()) :: no_return() do
+  defunp find_or_create_with_e164(e164 :: e164()) :: Brex.Result.s(Customer.t()) do
+    existing =
+      from(c in Customer, where: c.e164 == ^e164)
+      |> Repo.one()
+
+    if existing do
+      {:ok, existing}
+    else
+      %Customer{}
+      # TODO: improve token security
+      |> Customer.changeset(%{e164: e164, token: Ecto.UUID.generate()})
+      |> Repo.insert()
+    end
   end
 end

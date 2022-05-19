@@ -56,7 +56,8 @@ defmodule App.MixProject do
       {:typed_struct, "~> 0.3.0"},
       {:sentry, "~> 8.0"},
       {:ecto_ulid, "~> 0.2.0"},
-      {:typed_ecto_schema, "~> 0.4.1", runtime: false}
+      {:typed_ecto_schema, "~> 0.4.1", runtime: false},
+      {:brex_result, github: "brexhq/result"}
     ]
   end
 
