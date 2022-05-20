@@ -88,6 +88,7 @@ export const PhoneVerify = (sources: Sources) => {
     share()
   )
 
+  // TODO: payload$ = result$.pipe(filter(result => result.success))
   const submitCodePayload$: Observable<SubmitCodePayload> = result$.pipe(
     filter(
       (result): result is SubmitCodePayload =>
@@ -105,6 +106,7 @@ export const PhoneVerify = (sources: Sources) => {
   )
   const token$: Observable<string> = customer$.pipe(
     pluck("token"),
+    // tap(token => )
     tag("token$")
   )
   // TODO: token$?

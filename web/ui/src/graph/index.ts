@@ -1,5 +1,5 @@
 import { createClient, defaultExchanges } from "@urql/core"
-import { Observable, filter, from, map } from "rxjs"
+import { Observable, filter, from, map, tap } from "rxjs"
 import { devtoolsExchange } from "@urql/devtools"
 import { isNotNullish } from "rxjs-etc"
 
@@ -9,6 +9,7 @@ import {
   SubmitPhoneDocument,
   SubmitCodeInput,
   SubmitCodeDocument,
+  SubmitCodePayload,
   Event,
   EventName,
   EventProperties,
@@ -24,6 +25,8 @@ const client = createClient({
   url: "/graphql",
   exchanges: [devtoolsExchange, ...defaultExchanges],
 })
+
+// export const me$: Observable<null | Customer> =  persistent query?
 
 export const submitPhone$ = (input: SubmitPhoneInput) =>
   from(client.mutation(SubmitPhoneDocument, { input }).toPromise()).pipe(

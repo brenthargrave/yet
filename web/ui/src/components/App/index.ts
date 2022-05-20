@@ -30,6 +30,8 @@ export const App = (sources: Sources) => {
     notice: authNotice,
   } = Auth(sources)
 
+  // TODO: need app state that is fun(history$, me$)
+
   const react = history$.pipe(
     tag("history$"),
     switchMap((route) =>
