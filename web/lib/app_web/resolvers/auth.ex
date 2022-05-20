@@ -2,6 +2,7 @@ defmodule AppWeb.Resolvers.Auth do
   use Croma
   use App.Types
   alias App.{Auth}
+  import ShorterMaps
 
   defun submit_phone(
           _parent,
@@ -22,9 +23,9 @@ defmodule AppWeb.Resolvers.Auth do
   defun me(
           _parent,
           _args,
-          _resolution
+          %{context: ~M{current_customer}} = _resolution
         ) :: resolver_result() do
-    # TODO: CURRENT: retrieve token from header, or just the user?
-    Auth.me(token)
+    # TODO: CURRENT: retrieve token from header
+    # Auth.me(token)
   end
 end

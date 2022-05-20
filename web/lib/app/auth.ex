@@ -85,6 +85,6 @@ defmodule App.Auth do
     end
   end
 
-  defun me(token :: String.t()) :: Brex.Result.s(Customer.t()) do
-  end
+  # defun me(token :: String.t()) :: Brex.Result.s(Customer.t()) do
+  # end
 end
