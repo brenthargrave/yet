@@ -30,18 +30,10 @@ import {
 } from "./generated"
 import { isNotEmpty } from "~/fp"
 
-export type { Source } from "./driver"
+export type { Source, Commands } from "./driver"
+export { loggedIn, loggedOut } from "./driver"
 
 export * from "./generated"
-
-const tokenKey = "token"
-const token$$ = new BehaviorSubject<string | null>(
-  localStorage.getItem(tokenKey)
-)
-export const setToken = (token: string) => {
-  localStorage.setItem(tokenKey, token)
-  token$$.next(token)
-}
 
 class GraphError extends Error {}
 

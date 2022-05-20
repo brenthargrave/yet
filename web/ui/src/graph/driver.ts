@@ -20,7 +20,7 @@ enum CommandType {
 type InCommand = [type: CommandType.in, token: Token]
 type OutCommand = [type: CommandType.out]
 
-type Commands = InCommand | OutCommand
+export type Commands = InCommand | OutCommand
 
 export const loggedIn = (token: Token): InCommand => [CommandType.in, token]
 export const loggedOut = (): OutCommand => [CommandType.out]

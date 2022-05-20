@@ -28,7 +28,6 @@ import {
   Customer,
   SubmitCodeResult,
   SubmitCodePayload,
-  setToken,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { makeObservableCallback } from "~/rx"
@@ -104,8 +103,6 @@ export const PhoneVerify = (sources: Sources) => {
   )
   const me$: Observable<Customer> = submitCodePayload$.pipe(
     pluck("me"),
-    // TODO: move token mgmt inside graph.submitCode$
-    tap((customer) => setToken(customer.token)),
     tag("me$")
   )
 
