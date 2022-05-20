@@ -37,10 +37,19 @@ export const setToken = (token: string) => {
 // const setToken = replaceClient(token: null | string)
 
 // export const token$ = token$$.asObservable().pipe(tag("token$"), shareReplay())
-// export const me$: Observable<null | Customer> =  persistent query?
+// export const me$: Observable<null | Customer> = token$.flatMap(persistent query)
 // TODO: how to get all subsequent api calls to use revised client?
 // ! client$ in all components in context, passed as param into calls?
 // const client = () => client$$.value
+
+const signin = (token: string) => {
+  replaceClient(token)
+}
+const signout = () => {
+  // clear localstorage
+  // clear cache
+  replaceClient()
+}
 
 export const submitPhone$ = (input: SubmitPhoneInput) =>
   from(client.mutation(SubmitPhoneDocument, { input }).toPromise()).pipe(
