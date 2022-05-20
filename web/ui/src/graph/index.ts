@@ -17,7 +17,7 @@ import {
   UserError,
 } from "./generated"
 
-import { client } from "./urql"
+import { client as urqlClient } from "./urql"
 
 export * from "./generated"
 
@@ -70,7 +70,7 @@ export const track = async (
     name,
     properties,
   }
-  const result = await client
+  const result = await urqlClient
     .mutation(TrackEventDocument, { input })
     .toPromise()
   return result.data?.trackEvent as Event
