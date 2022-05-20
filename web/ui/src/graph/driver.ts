@@ -5,6 +5,7 @@ import { Observable, of, BehaviorSubject } from "rxjs"
 import { match } from "ts-pattern"
 
 import { Customer } from "graph"
+import { tokenCacheKey } from "./apollo"
 
 type Token = string
 
@@ -29,9 +30,8 @@ type Sink = Stream<Commands>
 
 export function makeDriver(): Driver<Sink, Source> {
   return function (sink: Sink): Source {
-    const tokenKey = "token"
     const token$$ = new BehaviorSubject<string | null>(
-      localStorage.getItem(tokenKey)
+      localStorage.getItem(tokenCacheKey)
     )
     const token$ = token$$.asObservable()
 
@@ -42,7 +42,7 @@ export function makeDriver(): Driver<Sink, Source> {
           .with(CommandType.in, () => {
             const token = command[1]
             if (token) {
-              localStorage.setItem(tokenKey, token)
+              localStorage.setItem(tokenCacheKey, token)
               token$$.next(token)
             }
           })

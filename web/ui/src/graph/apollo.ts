@@ -1,7 +1,6 @@
 import {
   ApolloClient,
   InMemoryCache,
-  ApolloProvider,
   createHttpLink,
   NormalizedCacheObject,
 } from "@apollo/client"
@@ -12,8 +11,10 @@ const httpLink = createHttpLink({
   credentials: "same-origin",
 })
 
+export const tokenCacheKey = "token"
+
 const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem("token")
+  const token = localStorage.getItem(tokenCacheKey)
   return {
     headers: {
       ...headers,
