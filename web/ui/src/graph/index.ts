@@ -1,5 +1,5 @@
 import { createClient, defaultExchanges } from "@urql/core"
-import { Observable, filter, from, map, tap } from "rxjs"
+import { Observable, filter, from, map, tap, BehaviorSubject } from "rxjs"
 import { devtoolsExchange } from "@urql/devtools"
 import { isNotNullish } from "rxjs-etc"
 
@@ -26,7 +26,20 @@ const client = createClient({
   exchanges: [devtoolsExchange, ...defaultExchanges],
 })
 
+const tokenKey = "auth-token"
+const token$$ = new BehaviorSubject<string | null>(
+  localStorage.getItem(tokenKey)
+)
+export const setToken = (token: string) => {
+  localStorage.setItem(tokenKey, token)
+  token$$.next(token)
+}
+
+// export const token$ = token$$.asObservable().pipe(tag("token$"), shareReplay())
 // export const me$: Observable<null | Customer> =  persistent query?
+// TODO: how to get all subsequent api calls to use revised client?
+// ! client$ in all components in context, passed as param into calls?
+// const client = () => client$$.value
 
 export const submitPhone$ = (input: SubmitPhoneInput) =>
   from(client.mutation(SubmitPhoneDocument, { input }).toPromise()).pipe(

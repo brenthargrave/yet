@@ -15,6 +15,7 @@ import {
   mergeMap,
   EMPTY,
   of,
+  tap,
 } from "rxjs"
 import { match } from "ts-pattern"
 import { pairwiseStartWith, pluck } from "rxjs-etc/dist/esm/operators"
@@ -27,6 +28,7 @@ import {
   Customer,
   SubmitCodeResult,
   SubmitCodePayload,
+  setToken,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { makeObservableCallback } from "~/rx"
@@ -102,16 +104,10 @@ export const PhoneVerify = (sources: Sources) => {
   )
   const customer$: Observable<Customer> = submitCodePayload$.pipe(
     pluck("customer"),
+    // TODO: lift inside graph: submitCode$
+    tap((customer) => setToken(customer.token)),
     tag("customer$")
   )
-  const token$: Observable<string> = customer$.pipe(
-    pluck("token"),
-    // tap(token => )
-    tag("token$")
-  )
-  // TODO: token$?
-  // TODO: token, me
-  // ? WHERE to write token$, me$ to cache?
 
   const userError$ = result$.pipe(
     filter((result): result is UserError => result.__typename === "UserError"),
@@ -181,9 +177,12 @@ export const PhoneVerify = (sources: Sources) => {
     tag("notice")
   )
 
+  const value = { customer$ }
+
   return {
     react,
     router,
     notice,
+    value,
   }
 }

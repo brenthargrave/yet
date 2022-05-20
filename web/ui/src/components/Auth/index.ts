@@ -41,6 +41,8 @@ export const Auth = (sources: Sources) => {
     react: verifyView$,
     router: verifyRouter$,
     notice: verifyNotice$,
+    // TODO: CURRENT: how make use of customer for routing?
+    value: { customer$ },
   } = PhoneVerify({
     props: { e164$ },
     ...sources,
