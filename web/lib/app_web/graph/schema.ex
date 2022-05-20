@@ -5,6 +5,7 @@ defmodule AppWeb.Graph.Schema do
 
   query do
     import_fields(:analytics_queries)
+    import_fields(:auth_queries)
   end
 
   mutation do

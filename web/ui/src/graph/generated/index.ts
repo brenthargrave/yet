@@ -59,6 +59,7 @@ export type RootMutationTypeTrackEventArgs = {
 export type RootQueryType = {
   __typename?: 'RootQueryType';
   events: Array<Event>;
+  me?: Maybe<Customer>;
 };
 
 export type SubmitCodeInput = {

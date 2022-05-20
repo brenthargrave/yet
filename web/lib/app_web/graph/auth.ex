@@ -76,4 +76,10 @@ defmodule AppWeb.Graph.Auth do
       resolve(&Resolvers.Auth.submit_code/3)
     end
   end
+
+  object :auth_queries do
+    field :me, :customer do
+      resolve(&Resolvers.Auth.me/3)
+    end
+  end
 end

@@ -18,4 +18,13 @@ defmodule AppWeb.Resolvers.Auth do
         ) :: resolver_result() do
     Auth.submit_code(e164, code)
   end
+
+  defun me(
+          _parent,
+          _args,
+          _resolution
+        ) :: resolver_result() do
+    # TODO: CURRENT: retrieve token from header, or just the user?
+    Auth.me(token)
+  end
 end
