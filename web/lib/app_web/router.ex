@@ -25,11 +25,19 @@ defmodule AppWeb.Router do
     end
   end
 
-  forward(
-    "/graphql",
-    Absinthe.Plug,
-    schema: AppWeb.Graph.Schema
-  )
+  pipeline :graphql do
+    plug AppWeb.Graph.Context
+  end
+
+  scope "graphql" do
+    pipe_through :graphql
+
+    forward(
+      "/",
+      Absinthe.Plug,
+      schema: AppWeb.Graph.Schema
+    )
+  end
 
   # https://goo.gl/4Q9MEx
   forward(

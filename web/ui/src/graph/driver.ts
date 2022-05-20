@@ -34,6 +34,7 @@ export function makeDriver(): Driver<Sink, Source> {
       localStorage.getItem(tokenCacheKey)
     )
     const token$ = token$$.asObservable()
+    const me$ = of(null) // TODO: graph.me$(), make contingent on token$ to ensure availble
 
     sink.addListener({
       next: (command) => {

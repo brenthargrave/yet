@@ -23,9 +23,8 @@ defmodule AppWeb.Resolvers.Auth do
   defun me(
           _parent,
           _args,
-          %{context: ~M{current_customer}} = _resolution
+          %{context: %{customer: customer}} = _resolution
         ) :: resolver_result() do
-    # TODO: CURRENT: retrieve token from header
-    # Auth.me(token)
+    {:ok, customer}
   end
 end

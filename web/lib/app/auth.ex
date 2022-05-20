@@ -84,7 +84,4 @@ defmodule App.Auth do
       |> Repo.insert()
     end
   end
-
-  # defun me(token :: String.t()) :: Brex.Result.s(Customer.t()) do
-  # end
 end
