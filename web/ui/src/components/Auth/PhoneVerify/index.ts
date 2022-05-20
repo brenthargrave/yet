@@ -104,7 +104,7 @@ export const PhoneVerify = (sources: Sources) => {
   )
   const me$: Observable<Customer> = submitCodePayload$.pipe(
     pluck("me"),
-    // TODO: lift inside graph: submitCode$
+    // TODO: move token mgmt inside graph.submitCode$
     tap((customer) => setToken(customer.token)),
     tag("me$")
   )

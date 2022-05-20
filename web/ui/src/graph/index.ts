@@ -21,12 +21,7 @@ import {
 
 export * from "./generated"
 
-const client = createClient({
-  url: "/graphql",
-  exchanges: [devtoolsExchange, ...defaultExchanges],
-})
-
-const tokenKey = "auth-token"
+const tokenKey = "token"
 const token$$ = new BehaviorSubject<string | null>(
   localStorage.getItem(tokenKey)
 )
@@ -34,22 +29,17 @@ export const setToken = (token: string) => {
   localStorage.setItem(tokenKey, token)
   token$$.next(token)
 }
-// const setToken = replaceClient(token: null | string)
+// const signin = (token: string) => {
+// }
+// const signout = () => {
+// clear localstorage
+// clear cache
+//   replaceClient()
 
-// export const token$ = token$$.asObservable().pipe(tag("token$"), shareReplay())
-// export const me$: Observable<null | Customer> = token$.flatMap(persistent query)
-// TODO: how to get all subsequent api calls to use revised client?
-// ! client$ in all components in context, passed as param into calls?
-// const client = () => client$$.value
-
-const signin = (token: string) => {
-  replaceClient(token)
-}
-const signout = () => {
-  // clear localstorage
-  // clear cache
-  replaceClient()
-}
+const client = createClient({
+  url: "/graphql",
+  exchanges: [devtoolsExchange, ...defaultExchanges],
+})
 
 export const submitPhone$ = (input: SubmitPhoneInput) =>
   from(client.mutation(SubmitPhoneDocument, { input }).toPromise()).pipe(
