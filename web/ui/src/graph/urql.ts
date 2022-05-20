@@ -46,7 +46,7 @@ import { devtoolsExchange } from "@urql/devtools"
 //   },
 // }
 
-const client = createClient({
+export const client = createClient({
   url: "/graphql",
   exchanges: [
     devtoolsExchange,
