@@ -5,7 +5,7 @@ defmodule App.Schema do
     quote do
       use TypedEctoSchema
 
-      @primary_key {:id, Ecto.ULID, autogenerate: false}
+      @primary_key {:id, Ecto.ULID, autogenerate: true}
       @foreign_key_type Ecto.ULID
       @timestamps_opts [type: :utc_datetime_usec]
     end
