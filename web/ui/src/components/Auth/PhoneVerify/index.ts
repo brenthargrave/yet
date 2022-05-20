@@ -17,13 +17,14 @@ import {
   of,
 } from "rxjs"
 import { match } from "ts-pattern"
-import { pairwiseStartWith } from "rxjs-etc/dist/esm/operators"
+import { pairwiseStartWith, pluck } from "rxjs-etc/dist/esm/operators"
 
 import {
   verifyCode$,
   VerificationStatus,
   UserError,
   Verification,
+  Customer,
   SubmitCodeResult,
   SubmitCodePayload,
 } from "~/graph"
@@ -87,35 +88,27 @@ export const PhoneVerify = (sources: Sources) => {
     share()
   )
 
-  const verification$ = result$.pipe(
+  const submitCodePayload$: Observable<SubmitCodePayload> = result$.pipe(
     filter(
       (result): result is SubmitCodePayload =>
         result.__typename === "SubmitCodePayload",
-      tag("verification$")
+      tag("submitCodePayload$")
     )
   )
-
+  const verification$: Observable<Verification> = submitCodePayload$.pipe(
+    pluck("verification"),
+    tag("verification$")
+  )
+  const customer$: Observable<Customer> = submitCodePayload$.pipe(
+    pluck("customer"),
+    tag("customer$")
+  )
+  const token$: Observable<string> = customer$.pipe(
+    pluck("token"),
+    tag("token$")
+  )
+  // TODO: token$?
   // TODO: token, me
-  // const token$ = verification$.pipe(
-  //   mergeMap(({ token }) => isEmpty(token.value) ? of(token.value) : EMPTY })
-  // )
-  // if we write to a cache in graph call, there's no need to fetch the token here.
-  // ! that's a bit dirty though - how would it work otherwise? cache sink
-  // cache = token$.map(token => ) ?? what is the write API for a driver?
-  // that's super annoying... better off getting cache.source working first
-  // that I read everything out of.... or rather, a graph source // graph.me$
-  // ? so, for now assume writing token somewhere lcoal / how does app change?
-  // ahah, this is the problem: you haven't designed onboarding logic here yet.
-  // how?
-  // - routing to /onboarding - NO, no need for a URL for that, why let people
-  // direct nav to something they'll be forced through anyway?
-  // ? how render Onboarding()
-  // could put it on a URL - but what happens when someone attempts to direct,
-  // nav to it.. in other words, how to protect it?
-  // (now that I think about it, there's probably no need for /in either!)
-  // decision: urls are good, actually
-  // ? how route away from onboarding if onboarding compelte?
-  // emit me$ upstream/
   // ? WHERE to write token$, me$ to cache?
 
   const userError$ = result$.pipe(
