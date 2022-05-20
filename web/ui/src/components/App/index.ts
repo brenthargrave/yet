@@ -24,7 +24,7 @@ interface Sources {
 
 export const App = (sources: Sources) => {
   const { history$ } = sources.router
-  const { token$ } = sources.graph
+  const { token$, me$: cachedMe$ } = sources.graph
 
   const { react: landingView$ } = Landing(sources)
   const {
@@ -32,9 +32,12 @@ export const App = (sources: Sources) => {
     router: authRouter,
     notice: authNotice,
     value: { me$: authMe$ },
+    graph,
   } = Auth(sources)
 
-  const me$: Observable<null | Customer> = merge(authMe$).pipe(tag("me$"))
+  const me$: Observable<null | Customer> = merge(authMe$, cachedMe$).pipe(
+    tag("me$")
+  )
 
   // TODO: need app state that is fun(history$, me$)
 
@@ -69,6 +72,7 @@ export const App = (sources: Sources) => {
     react,
     router,
     notice,
+    graph,
   }
 }
 

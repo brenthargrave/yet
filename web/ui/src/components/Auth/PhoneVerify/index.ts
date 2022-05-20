@@ -21,6 +21,7 @@ import { match } from "ts-pattern"
 import { pairwiseStartWith, pluck } from "rxjs-etc/dist/esm/operators"
 
 import {
+  loggedIn,
   verifyCode$,
   VerificationStatus,
   UserError,
@@ -105,6 +106,7 @@ export const PhoneVerify = (sources: Sources) => {
     pluck("me"),
     tag("me$")
   )
+  const token$ = me$.pipe(pluck("token"), tag("token$"))
 
   const userError$ = result$.pipe(
     filter((result): result is UserError => result.__typename === "UserError"),
@@ -176,10 +178,13 @@ export const PhoneVerify = (sources: Sources) => {
 
   const value = { me$ }
 
+  const graph = token$.pipe(map((token) => loggedIn(token)))
+
   return {
     react,
     router,
     notice,
     value,
+    graph,
   }
 }
