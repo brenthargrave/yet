@@ -1,6 +1,4 @@
-import { createClient, defaultExchanges } from "@urql/core"
 import { Observable, filter, from, map, tap, BehaviorSubject } from "rxjs"
-import { devtoolsExchange } from "@urql/devtools"
 import { isNotNullish } from "rxjs-etc"
 
 import { getId } from "./anon"
@@ -19,6 +17,8 @@ import {
   UserError,
 } from "./generated"
 
+import { client } from "./urql"
+
 export * from "./generated"
 
 const tokenKey = "token"
@@ -29,17 +29,6 @@ export const setToken = (token: string) => {
   localStorage.setItem(tokenKey, token)
   token$$.next(token)
 }
-// const signin = (token: string) => {
-// }
-// const signout = () => {
-// clear localstorage
-// clear cache
-//   replaceClient()
-
-const client = createClient({
-  url: "/graphql",
-  exchanges: [devtoolsExchange, ...defaultExchanges],
-})
 
 export const submitPhone$ = (input: SubmitPhoneInput) =>
   from(client.mutation(SubmitPhoneDocument, { input }).toPromise()).pipe(

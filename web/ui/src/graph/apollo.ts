@@ -3,6 +3,7 @@ import {
   InMemoryCache,
   ApolloProvider,
   createHttpLink,
+  NormalizedCacheObject,
 } from "@apollo/client"
 import { setContext } from "@apollo/client/link/context"
 
@@ -21,7 +22,10 @@ const authLink = setContext((_, { headers }) => {
   }
 })
 
+export type Client = ApolloClient<NormalizedCacheObject>
+
 export const client = new ApolloClient({
   link: authLink.concat(httpLink),
+  // TODO: persistent cache
   cache: new InMemoryCache(),
 })
