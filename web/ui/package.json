@@ -51,6 +51,7 @@
     "vite-plugin-graphql-codegen": "1.6.0"
   },
   "dependencies": {
+    "@apollo/client": "3.6.4",
     "@chakra-ui/react": "1.8.8",
     "@cycle/react": "2.10.0",
     "@cycle/react-dom": "2.4.0",
@@ -62,7 +63,7 @@
     "@urql/core": "2.4.4",
     "@urql/devtools": "2.0.3",
     "framer-motion": "6.3.2",
-    "graphql": "16.4.0",
+    "graphql": "16.5.0",
     "phone": "3.1.16",
     "ramda": "0.28.0",
     "react": "^17.0.2",
