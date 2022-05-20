@@ -80,7 +80,7 @@ defmodule App.Auth do
     else
       %Customer{}
       # TODO: token security
-      |> Customer.changeset(%{e164: e164, token: Ecto.UUID.generate()})
+      |> Customer.changeset(%{e164: e164, token: Ecto.ULID.generate()})
       |> Repo.insert()
     end
   end
