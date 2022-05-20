@@ -28,11 +28,11 @@ export const App = (sources: Sources) => {
 
   const { react: landingView$ } = Landing(sources)
   const {
+    graph: authGraph$,
     react: authView$,
     router: authRouter,
     notice: authNotice,
     value: { me$: authMe$ },
-    graph,
   } = Auth(sources)
 
   const me$: Observable<null | Customer> = merge(authMe$, cachedMe$).pipe(
@@ -53,7 +53,6 @@ export const App = (sources: Sources) => {
     catchError((error, caught$) => {
       // TODO: wrap sentry call, include logging
       captureException(error)
-      console.error(error)
       toast({
         title: t("default.error.title"),
         description: t("default.error.description"),
@@ -67,6 +66,7 @@ export const App = (sources: Sources) => {
   // NOTE: ignore errors & resubscribe in all drivers
   const router = merge(authRouter).pipe(catchError((error, caught$) => caught$))
   const notice = merge(authNotice).pipe(catchError((error, caught$) => caught$))
+  const graph = merge(authGraph$).pipe(catchError((error, caught$) => caught$))
 
   return {
     react,
