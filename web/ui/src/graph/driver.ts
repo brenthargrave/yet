@@ -1,16 +1,17 @@
 import { Stream } from "xstream"
 import { Driver } from "@cycle/run"
 import { adapt } from "@cycle/run/lib/adapt"
-import { Observable, of } from "rxjs"
+import { Observable, of, BehaviorSubject } from "rxjs"
 import { match } from "ts-pattern"
 
 import { Customer } from "graph"
 
+type Token = string
+
 export interface Source {
+  token$: Observable<Token | null>
   me$: Observable<Customer | null>
 }
-
-type Token = string
 
 enum CommandType {
   in = "in",
@@ -27,25 +28,36 @@ export const loggedOut = (): OutCommand => [CommandType.out]
 type Sink = Stream<Commands>
 
 export function makeDriver(): Driver<Sink, Source> {
-  // TODO: token$, client$, me$
   return function (sink: Sink): Source {
+    const tokenKey = "token"
+    const token$$ = new BehaviorSubject<string | null>(
+      localStorage.getItem(tokenKey)
+    )
+    const token$ = token$$.asObservable()
+
     sink.addListener({
       next: (command) => {
         console.debug(command)
         match(command[0])
           .with(CommandType.in, () => {
             const token = command[1]
-            // TODO: client.saveTken?
+            if (token) {
+              localStorage.setItem(tokenKey, token)
+              token$$.next(token)
+            }
           })
           .with(CommandType.out, () => {
-            // clear localStoregae
-            // client reset
+            localStorage.clear()
+            token$$.next(null)
+            // TODO: client reset
           })
+          .exhaustive()
       },
       error: (error) => console.error(error),
       complete: () => console.info("complete"),
     })
     return {
+      token$,
       me$: of(null),
     }
   }

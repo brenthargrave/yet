@@ -12,18 +12,19 @@ import { toast } from "~/toast"
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
-import { Customer } from "~/graph"
+import { Customer, Source as GraphSource } from "~/graph"
 
 const tag = makeTagger("App")
 
 interface Sources {
   react: ReactSource
   router: RouterSource
+  graph: GraphSource
 }
 
 export const App = (sources: Sources) => {
   const { history$ } = sources.router
-  // TODO: me$ = graph.me$ // TODO: graph driver
+  const { token$ } = sources.graph
 
   const { react: landingView$ } = Landing(sources)
   const {

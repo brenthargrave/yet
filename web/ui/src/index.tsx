@@ -8,7 +8,8 @@ import { h } from "@cycle/react"
 
 import { App } from "~/components/App"
 import { makeRouterDriver, RouteProvider } from "~/router"
-import { makeDriver } from "~/notice"
+import { makeDriver as makeNoticeDriver } from "~/notice"
+import { makeDriver as makeGraphDriver } from "./graph/driver"
 
 // @ts-ignore
 const { VITE_API_ENV, VITE_SENTRY_DSN, VITE_SENTRY_DEBUG } = import.meta.env
@@ -25,7 +26,8 @@ Sentry.init({
 run(App, {
   react: makeDOMDriver(document.getElementById("index")),
   router: makeRouterDriver(),
-  notice: makeDriver(),
+  notice: makeNoticeDriver(),
+  graph: makeGraphDriver(),
 })
 
 /* eslint-disable */

@@ -30,6 +30,8 @@ import {
 } from "./generated"
 import { isNotEmpty } from "~/fp"
 
+export type { Source } from "./driver"
+
 export * from "./generated"
 
 const tokenKey = "token"
