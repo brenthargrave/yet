@@ -34,7 +34,7 @@ defmodule App.Auth do
 
   typedstruct module: SubmitCodePayload do
     field :verification, Verification.t(), enforce: true
-    field :customer, Customer.t(), enforce: true
+    field :me, Customer.t(), enforce: true
   end
 
   @type submit_code_result() ::
@@ -58,7 +58,7 @@ defmodule App.Auth do
             {:ok,
              %SubmitCodePayload{
                verification: %Verification{status: String.to_existing_atom(status)},
-               customer: customer
+               me: customer
              }}
 
           {:error, _any} = error ->

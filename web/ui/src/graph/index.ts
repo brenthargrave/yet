@@ -34,6 +34,7 @@ export const setToken = (token: string) => {
   localStorage.setItem(tokenKey, token)
   token$$.next(token)
 }
+// const setToken = replaceClient(token: null | string)
 
 // export const token$ = token$$.asObservable().pipe(tag("token$"), shareReplay())
 // export const me$: Observable<null | Customer> =  persistent query?

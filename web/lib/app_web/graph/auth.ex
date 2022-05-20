@@ -50,7 +50,7 @@ defmodule AppWeb.Graph.Auth do
 
   object :submit_code_payload do
     field(:verification, non_null(:verification))
-    field(:customer, non_null(:customer))
+    field(:me, non_null(:customer))
   end
 
   union :submit_code_result do

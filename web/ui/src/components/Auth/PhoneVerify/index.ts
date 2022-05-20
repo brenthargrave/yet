@@ -102,11 +102,11 @@ export const PhoneVerify = (sources: Sources) => {
     pluck("verification"),
     tag("verification$")
   )
-  const customer$: Observable<Customer> = submitCodePayload$.pipe(
-    pluck("customer"),
+  const me$: Observable<Customer> = submitCodePayload$.pipe(
+    pluck("me"),
     // TODO: lift inside graph: submitCode$
     tap((customer) => setToken(customer.token)),
-    tag("customer$")
+    tag("me$")
   )
 
   const userError$ = result$.pipe(
@@ -177,7 +177,7 @@ export const PhoneVerify = (sources: Sources) => {
     tag("notice")
   )
 
-  const value = { customer$ }
+  const value = { me$ }
 
   return {
     react,

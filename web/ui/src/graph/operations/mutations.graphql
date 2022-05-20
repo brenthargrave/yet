@@ -12,7 +12,7 @@ mutation SubmitPhone($input: SubmitPhoneInput!) {
 mutation SubmitCode($input: SubmitCodeInput!) {
   submitCode(input: $input) {
     ...on SubmitCodePayload {
-      customer {
+      me {
         token
         e164
       }

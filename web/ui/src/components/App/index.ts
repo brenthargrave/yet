@@ -1,5 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
-import { catchError, merge } from "rxjs"
+import { catchError, merge, Observable } from "rxjs"
 import { map, switchMap } from "rxjs/operators"
 import { match } from "ts-pattern"
 import { captureException } from "@sentry/react"
@@ -12,6 +12,7 @@ import { toast } from "~/toast"
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
+import { Customer } from "~/graph"
 
 const tag = makeTagger("App")
 
@@ -22,13 +23,17 @@ interface Sources {
 
 export const App = (sources: Sources) => {
   const { history$ } = sources.router
+  // TODO: me$ = graph.me$ // TODO: graph driver
 
   const { react: landingView$ } = Landing(sources)
   const {
     react: authView$,
     router: authRouter,
     notice: authNotice,
+    value: { me$: authMe$ },
   } = Auth(sources)
+
+  const me$: Observable<null | Customer> = merge(authMe$).pipe(tag("me$"))
 
   // TODO: need app state that is fun(history$, me$)
 
@@ -55,6 +60,7 @@ export const App = (sources: Sources) => {
     tag("App.react$")
   )
 
+  // NOTE: ignore errors & resubscribe in all drivers
   const router = merge(authRouter).pipe(catchError((error, caught$) => caught$))
   const notice = merge(authNotice).pipe(catchError((error, caught$) => caught$))
 
