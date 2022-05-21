@@ -25,7 +25,7 @@ interface Sources {
 export const App = (sources: Sources) => {
   const { history$: _history$ } = sources.router
   const history$ = _history$.pipe(tag("history$"))
-  const { me$: cachedMe$ } = sources.graph
+  const { token$, me$: cachedMe$ } = sources.graph
 
   const { react: landingView$ } = Landing(sources)
   const {
@@ -40,15 +40,14 @@ export const App = (sources: Sources) => {
     tag("me$")
   )
 
-  // TODO: need app state that is fun(history$, me$)
-
-  const react = combineLatest({ me: me$, route: history$ }).pipe(
-    switchMap(({ me, route }) =>
-      match(route.name)
+  const react = combineLatest({ route: history$, o: me$ }).pipe(
+    switchMap(({ route, o }) => {
+      console.debug(`${route} $${o}`)
+      return match(route.name)
         .with("root", () => landingView$)
         .with("in", () => authView$)
         .otherwise(() => landingView$)
-    ),
+    }),
     map((childView) => h(AppView, [childView])),
     catchError((error, caught$) => {
       // TODO: wrap sentry call, include logging

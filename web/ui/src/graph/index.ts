@@ -53,10 +53,7 @@ export const submitPhone$ = (
     })
   ).pipe(
     map(({ data, errors, extensions, context }) => {
-      if (errors && isNotEmpty(errors)) {
-        // TODO: throw error operator
-        throw new GraphError(JSON.stringify(errors))
-      }
+      if (errors) throw new GraphError(JSON.stringify(errors))
       return data?.submitPhone
     }),
     filter(isNotNullish)
@@ -70,10 +67,7 @@ export const verifyCode$ = (input: SubmitCodeInput) =>
     })
   ).pipe(
     map(({ data, errors, extensions, context }) => {
-      if (errors && isNotEmpty(errors)) {
-        // TODO: throw error operator
-        throw new GraphError(JSON.stringify(errors))
-      }
+      if (errors) throw new GraphError(JSON.stringify(errors))
       return data?.submitCode
     }),
     filter(isNotNullish)
@@ -110,8 +104,9 @@ export const me$ = token$.pipe(
           partial,
           ...result
         }) => {
-          if (error) throw error
-          if (isNotEmpty(errors)) throw new GraphError(JSON.stringify(errors))
+          // NOTE: throw will create endless loop upon resubscription
+          if (error) console.error(`apollo error ${error}`) // throw error
+          if (errors) console.error(`errors ${errors}`) // throw new GraphError(JSON.stringify(errors))
           return data.me
         }
       ),
