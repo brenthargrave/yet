@@ -7,9 +7,12 @@ import {
   map,
   startWith,
   shareReplay,
+  of,
+  EMPTY,
+  mergeMap,
 } from "rxjs"
 import { match } from "ts-pattern"
-import { VerificationStatus } from "~/graph"
+import { loggedOut, VerificationStatus } from "~/graph"
 
 import { makeTagger } from "~/log"
 import { Source as RouterSource } from "~/router"
@@ -41,7 +44,7 @@ export const Auth = (sources: Sources) => {
     react: verifyView$,
     router: verifyRouter$,
     notice: verifyNotice$,
-    graph,
+    graph: verifyGraph$,
     value,
   } = PhoneVerify({
     props: { e164$ },
@@ -66,8 +69,13 @@ export const Auth = (sources: Sources) => {
     tag("react")
   )
 
+  const logout$ = sources.router.history$.pipe(
+    mergeMap((route) => (route.name === "out" ? of(loggedOut()) : EMPTY))
+  )
+
   const router = merge(verifyRouter$)
   const notice = merge(verifyNotice$, submitNotice$)
+  const graph = merge(verifyGraph$, logout$)
 
   return {
     react,
