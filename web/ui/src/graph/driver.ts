@@ -1,11 +1,10 @@
 import { Stream } from "xstream"
 import { Driver } from "@cycle/run"
-import { adapt } from "@cycle/run/lib/adapt"
-import { Observable, of, BehaviorSubject } from "rxjs"
+import { Observable } from "rxjs"
 import { match } from "ts-pattern"
+import { adapt } from "@cycle/run/lib/adapt"
 
-import { Customer } from "graph"
-import { tokenCacheKey } from "./apollo"
+import { Customer, setToken, token$, me$ } from "graph"
 
 type Token = string
 
@@ -30,36 +29,26 @@ type Sink = Stream<Commands>
 
 export function makeDriver(): Driver<Sink, Source> {
   return function (sink: Sink): Source {
-    const token$$ = new BehaviorSubject<string | null>(
-      localStorage.getItem(tokenCacheKey)
-    )
-    const token$ = token$$.asObservable()
-    const me$ = of(null) // TODO: graph.me$(), make contingent on token$ to ensure availble
-
     sink.addListener({
       next: (command) => {
         console.debug(command)
         match(command[0])
           .with(CommandType.in, () => {
             const token = command[1]
-            if (token) {
-              localStorage.setItem(tokenCacheKey, token)
-              token$$.next(token)
-            }
+            setToken(token)
           })
           .with(CommandType.out, () => {
-            localStorage.clear()
-            token$$.next(null)
-            // TODO: client reset
+            setToken(null)
           })
           .exhaustive()
       },
       error: (error) => console.error(error),
       complete: () => console.info("complete"),
     })
+
     return {
       token$,
-      me$: of(null),
+      me$,
     }
   }
 }

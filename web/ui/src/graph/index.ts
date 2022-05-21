@@ -8,10 +8,12 @@ import {
   of,
   EMPTY,
 } from "rxjs"
+import { concatMap } from "rxjs/operators"
 import { isNotNullish } from "rxjs-etc"
 
+import { CombinedError } from "@urql/core"
 import { client as urqlClient } from "./urql"
-import { client } from "./apollo"
+import { client, tokenCacheKey } from "./apollo"
 import { getId } from "./anon"
 import {
   SubmitPhoneInput,
@@ -27,15 +29,17 @@ import {
   VerificationStatus,
   UserError,
   SubmitPhoneResult,
+  MeDocument,
 } from "./generated"
 import { isNotEmpty } from "~/fp"
+import { zenToRx } from "~/rx"
 
 export type { Source, Commands } from "./driver"
 export { loggedIn, loggedOut } from "./driver"
 
 export * from "./generated"
 
-class GraphError extends Error {}
+export class GraphError extends Error {}
 
 export const submitPhone$ = (
   input: SubmitPhoneInput
@@ -72,13 +76,46 @@ export const verifyCode$ = (input: SubmitCodeInput) =>
     }),
     filter(isNotNullish)
   )
-// from(client.mutation(SubmitCodeDocument, { input }).toPromise()).pipe(
-//   map(({ data, error }) => {
-//     if (error) throw error // TODO: operator
-//     return data?.submitCode
-//   }),
-//   filter(isNotNullish)
-// )
+
+const token$$ = new BehaviorSubject<string | null>(
+  localStorage.getItem(tokenCacheKey)
+)
+export const token$ = token$$.asObservable()
+export const setToken = (token: string | null | undefined) => {
+  if (token) {
+    localStorage.setItem(tokenCacheKey, token)
+    token$$.next(token)
+  } else {
+    localStorage.clear()
+    token$$.next(null)
+    client.clearStore()
+  }
+}
+
+// NOTE: emits null until token set
+export const me$ = token$.pipe(
+  concatMap((token) => {
+    if (!token) return of(null)
+    return zenToRx(client.watchQuery({ query: MeDocument })).pipe(
+      map(
+        ({
+          data,
+          error,
+          errors,
+          loading,
+          networkStatus,
+          partial,
+          ...result
+        }) => {
+          if (error) throw error
+          if (isNotEmpty(errors)) throw new GraphError(JSON.stringify(errors))
+          return data.me
+        }
+      ),
+      filter(isNotNullish)
+    )
+  })
+)
 
 /* // TODO: custom operator to filter result types
 interface GQLType {

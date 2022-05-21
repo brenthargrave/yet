@@ -4,3 +4,10 @@ query GetEvents {
     anonId
   }
 }
+
+query Me {
+  me {
+    token
+    e164
+  }
+}
