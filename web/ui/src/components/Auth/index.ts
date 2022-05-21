@@ -10,12 +10,13 @@ import {
   of,
   EMPTY,
   mergeMap,
+  tap,
 } from "rxjs"
 import { match } from "ts-pattern"
 import { loggedOut, VerificationStatus } from "~/graph"
 
 import { makeTagger } from "~/log"
-import { Source as RouterSource } from "~/router"
+import { push, routes, Source as RouterSource } from "~/router"
 import { PhoneSubmit } from "./PhoneSubmit"
 import { PhoneVerify } from "./PhoneVerify"
 
@@ -70,10 +71,15 @@ export const Auth = (sources: Sources) => {
   )
 
   const logout$ = sources.router.history$.pipe(
-    mergeMap((route) => (route.name === "out" ? of(loggedOut()) : EMPTY))
+    mergeMap((route) => (route.name === "out" ? of(loggedOut()) : EMPTY)),
+    tag("logout$")
+  )
+  const redirectRoot$ = logout$.pipe(
+    map((_) => push(routes.root())),
+    tag("redirectToRoot$")
   )
 
-  const router = merge(verifyRouter$)
+  const router = merge(verifyRouter$, redirectRoot$)
   const notice = merge(verifyNotice$, submitNotice$)
   const graph = merge(verifyGraph$, logout$)
 

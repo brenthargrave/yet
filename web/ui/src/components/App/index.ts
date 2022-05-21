@@ -39,10 +39,11 @@ export const App = (sources: Sources) => {
   const me$: Observable<null | Customer> = merge(authMe$, cachedMe$).pipe(
     tag("me$")
   )
+  // TODO: how to manage view state?
+  // const state$ = combineLatest(history$, me$)
 
   const react = combineLatest({ route: history$, o: me$ }).pipe(
     switchMap(({ route, o }) => {
-      console.debug(`${route} $${o}`)
       return match(route.name)
         .with("root", () => landingView$)
         .with("in", () => authView$)

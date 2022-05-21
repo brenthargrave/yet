@@ -46,12 +46,10 @@ type Sink = Stream<Command>
 
 export function makeRouterDriver(): Driver<Sink, Source> {
   return function (sink: Sink): Source {
-    // TODO: swallow errors?
     sink.addListener({
-      next: (command) => {
-        console.debug(command)
-        match(command.type)
-          .with(CommandType.push, () => command.route?.push())
+      next: ({ type, route }) => {
+        match(type)
+          .with(CommandType.push, () => route?.push())
           .exhaustive()
       },
       error: (error) => console.error(error),
