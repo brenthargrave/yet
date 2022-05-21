@@ -4,12 +4,12 @@ defmodule AppWeb.Graph.Context do
   import Plug.Conn
   import Ecto.Query, only: [where: 2]
 
-  alias App.{Repo, Customer}
+  alias App.Repo
+  alias App.Auth.Customer
 
   def init(opts), do: opts
 
   def call(conn, _) do
-    IO.puts("\nBEGIN\n")
     context = build_context(conn)
     Absinthe.Plug.put_options(conn, context: context)
   end
@@ -18,12 +18,8 @@ defmodule AppWeb.Graph.Context do
   Return the current user context based on the authorization header
   """
   def build_context(conn) do
-    IO.puts("build_context #{inspect(conn)}")
-
     with ["Bearer " <> token] <- get_req_header(conn, "authorization"),
          {:ok, customer} <- authorize(token) do
-      IO.puts(inspect(customer))
-      IO.puts("\nCUSTOMER\n")
       %{customer: customer}
     else
       _ -> %{}
