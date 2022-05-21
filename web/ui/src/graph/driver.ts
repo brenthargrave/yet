@@ -4,7 +4,7 @@ import { Observable } from "rxjs"
 import { match } from "ts-pattern"
 import { adapt } from "@cycle/run/lib/adapt"
 
-import { Customer, setToken, token$, me$ } from "graph"
+import { Customer, setToken, token$, me$ } from "~/graph"
 
 type Token = string
 

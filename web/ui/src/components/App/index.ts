@@ -1,5 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
-import { catchError, merge, Observable } from "rxjs"
+import { catchError, combineLatest, merge, Observable } from "rxjs"
 import { map, switchMap } from "rxjs/operators"
 import { match } from "ts-pattern"
 import { captureException } from "@sentry/react"
@@ -23,8 +23,9 @@ interface Sources {
 }
 
 export const App = (sources: Sources) => {
-  const { history$ } = sources.router
-  const { token$, me$: cachedMe$ } = sources.graph
+  const { history$: _history$ } = sources.router
+  const history$ = _history$.pipe(tag("history$"))
+  const { me$: cachedMe$ } = sources.graph
 
   const { react: landingView$ } = Landing(sources)
   const {
@@ -41,9 +42,8 @@ export const App = (sources: Sources) => {
 
   // TODO: need app state that is fun(history$, me$)
 
-  const react = history$.pipe(
-    tag("history$"),
-    switchMap((route) =>
+  const react = combineLatest({ me: me$, route: history$ }).pipe(
+    switchMap(({ me, route }) =>
       match(route.name)
         .with("root", () => landingView$)
         .with("in", () => authView$)

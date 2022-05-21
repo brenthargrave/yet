@@ -3,12 +3,11 @@ import {
   filter,
   from,
   map,
-  tap,
   BehaviorSubject,
   of,
-  EMPTY,
+  shareReplay,
 } from "rxjs"
-import { concatMap } from "rxjs/operators"
+import { switchMap } from "rxjs/operators"
 import { isNotNullish } from "rxjs-etc"
 
 import { CombinedError } from "@urql/core"
@@ -33,11 +32,14 @@ import {
 } from "./generated"
 import { isNotEmpty } from "~/fp"
 import { zenToRx } from "~/rx"
+import { makeTagger } from "~/log"
 
 export type { Source, Commands } from "./driver"
 export { loggedIn, loggedOut } from "./driver"
 
 export * from "./generated"
+
+const tag = makeTagger("graph")
 
 export class GraphError extends Error {}
 
@@ -80,8 +82,9 @@ export const verifyCode$ = (input: SubmitCodeInput) =>
 const token$$ = new BehaviorSubject<string | null>(
   localStorage.getItem(tokenCacheKey)
 )
-export const token$ = token$$.asObservable()
+export const token$ = token$$.asObservable().pipe(tag("token$"), shareReplay())
 export const setToken = (token: string | null | undefined) => {
+  console.debug(`setToken(${token})`)
   if (token) {
     localStorage.setItem(tokenCacheKey, token)
     token$$.next(token)
@@ -94,7 +97,7 @@ export const setToken = (token: string | null | undefined) => {
 
 // NOTE: emits null until token set
 export const me$ = token$.pipe(
-  concatMap((token) => {
+  switchMap((token) => {
     if (!token) return of(null)
     return zenToRx(client.watchQuery({ query: MeDocument })).pipe(
       map(
@@ -112,9 +115,12 @@ export const me$ = token$.pipe(
           return data.me
         }
       ),
-      filter(isNotNullish)
+      filter(isNotNullish),
+      tag("watchQuery(me)")
     )
-  })
+  }),
+  tag("me$"),
+  shareReplay()
 )
 
 /* // TODO: custom operator to filter result types
