@@ -13,7 +13,7 @@ export const View = ({ onClickJoin, onClickLogin }: Props) =>
     h(Stack, { direction: "column", align: "center", margin: "4" }, [
       h(Heading, {}, t("brand-name")),
       h(Divider),
-      h(Text, { fontSize: "x-small" }, t("landing.disclaimer")),
+      // h(Text, { fontSize: "x-small" }, t("landing.disclaimer")),
       h(Button, { onClick: onClickJoin }, t(`landing.join`)),
       h(Button, { onClick: onClickLogin }, t(`landing.login`)),
     ]),
