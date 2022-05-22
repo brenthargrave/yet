@@ -4,28 +4,21 @@ import { Observable } from "rxjs"
 import { shareReplay } from "rxjs/operators"
 import { Stream } from "xstream"
 import { Driver } from "@cycle/run"
-import { adapt } from "@cycle/run/lib/adapt"
 import { match } from "ts-pattern"
+import { makeTagger } from "~/log"
+
+const tag = makeTagger("Router")
 
 export const { routes, useRoute, RouteProvider, session } = createRouter({
   root: defineRoute("/"),
   in: defineRoute("/in"),
   out: defineRoute("/out"),
-  verify: defineRoute("/verify"),
 })
 
 export type Route = _Route<typeof routes>
 
-// export const isRoute = (route: Route, expectedRoute: Route): boolean =>
-//   route.name === expectedRoute.name
-
-// export const history$ = new Observable<Route>((observer) => {
-//   observer.next(session.getInitialRoute())
-//   const unlisten = session.listen((route) => {
-//     observer.next(route)
-//   })
-//   return unlisten
-// }).pipe(shareReplay())
+export const isRoute = (route: Route, expectedRoute: Route): boolean =>
+  route.name === expectedRoute.name
 
 export interface Source {
   history$: Observable<Route>
@@ -44,7 +37,7 @@ export const push = (route: Route): Command => {
 
 type Sink = Stream<Command>
 
-export function makeRouterDriver(): Driver<Sink, Source> {
+export function makeDriver(): Driver<Sink, Source> {
   return function (sink: Sink): Source {
     sink.addListener({
       next: ({ type, route }) => {
@@ -62,10 +55,10 @@ export function makeRouterDriver(): Driver<Sink, Source> {
         observer.next(route)
       })
       return unlisten
-    }).pipe(shareReplay())
+    }).pipe(tag("history$"), shareReplay({ bufferSize: 1, refCount: true }))
 
     return {
-      history$, // TODO: adapt()
+      history$,
     }
   }
 }

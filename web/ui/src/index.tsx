@@ -2,12 +2,8 @@ import * as Sentry from "@sentry/react"
 import { run } from "@cycle/rxjs-run"
 import { makeDOMDriver } from "@cycle/react-dom"
 
-import * as React from "react"
-import * as ReactDOM from "react-dom"
-import { h } from "@cycle/react"
-
 import { App } from "~/components/App"
-import { makeRouterDriver, RouteProvider } from "~/router"
+import { makeDriver as makeRouterDriver } from "~/router"
 import { makeDriver as makeNoticeDriver } from "~/notice"
 import { makeDriver as makeGraphDriver } from "./graph/driver"
 
@@ -31,6 +27,9 @@ run(App, {
 })
 
 /* eslint-disable */
+// import * as React from "react"
+// import * as ReactDOM from "react-dom"
+// import { h } from "@cycle/react"
 // ReactDOM.render(
 //   h(RouteProvider, [
 //     h(App)

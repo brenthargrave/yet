@@ -1,22 +1,18 @@
-import { h, ReactSource } from "@cycle/react"
+import { ReactSource } from "@cycle/react"
 import {
-  BehaviorSubject,
   switchMap,
   merge,
   Observable,
   map,
   startWith,
   shareReplay,
-  of,
-  EMPTY,
-  mergeMap,
-  tap,
+  filter,
 } from "rxjs"
 import { match } from "ts-pattern"
 import { loggedOut, VerificationStatus } from "~/graph"
 
 import { makeTagger } from "~/log"
-import { push, routes, Source as RouterSource } from "~/router"
+import { isRoute, push, routes, Source as RouterSource } from "~/router"
 import { PhoneSubmit } from "./PhoneSubmit"
 import { PhoneVerify } from "./PhoneVerify"
 
@@ -71,17 +67,18 @@ export const Auth = (sources: Sources) => {
   )
 
   const logout$ = sources.router.history$.pipe(
-    mergeMap((route) => (route.name === "out" ? of(loggedOut()) : EMPTY)),
+    filter((route) => isRoute(routes.out(), route)),
+    map((_) => loggedOut()),
     tag("logout$")
   )
-  const redirectRoot$ = logout$.pipe(
+  const redirectToRoot$ = logout$.pipe(
     map((_) => push(routes.root())),
     tag("redirectToRoot$")
   )
 
-  const router = merge(verifyRouter$, redirectRoot$)
-  const notice = merge(verifyNotice$, submitNotice$)
   const graph = merge(verifyGraph$, logout$)
+  const router = merge(verifyRouter$, redirectToRoot$)
+  const notice = merge(verifyNotice$, submitNotice$)
 
   return {
     react,
