@@ -12,10 +12,8 @@ import {
   share,
   filter,
   BehaviorSubject,
-  mergeMap,
-  EMPTY,
-  of,
   tap,
+  catchError,
 } from "rxjs"
 import { match } from "ts-pattern"
 import { pairwiseStartWith, pluck } from "rxjs-etc/dist/esm/operators"
@@ -86,6 +84,10 @@ export const PhoneVerify = (sources: Sources) => {
     withLatestFrom(input$),
     tag("withLatestFrom(input)$"),
     switchMap(([_, input]) => verifyCode$(input).pipe(tag("verifyCode$"))),
+    catchError((error, _caught$) => {
+      code$$.next("")
+      throw error
+    }),
     tag("result$"),
     share()
   )
@@ -110,6 +112,7 @@ export const PhoneVerify = (sources: Sources) => {
 
   const userError$ = result$.pipe(
     filter((result): result is UserError => result.__typename === "UserError"),
+    tap((_) => code$$.next("")), // reset code on error | TODO: how fix focus?
     tag("userError$")
   )
 

@@ -1,15 +1,9 @@
+import { createRef, Ref } from "react"
 import { h } from "@cycle/react"
 import { form } from "@cycle/react-dom"
 import { HStack, PinInput, PinInputField } from "@chakra-ui/react"
-import {
-  Button,
-  Center,
-  Stack,
-  Heading,
-  Input,
-  InputGroup,
-  Text,
-} from "~/system"
+import { Button, Center, Stack, Heading, InputGroup, Text } from "~/system"
+
 import { t, formatPhone } from "~/i18n"
 
 export interface Props {
@@ -29,7 +23,7 @@ export const View = ({
   e164,
   code: value,
   onSubmit: _onSubmit,
-  onComplete,
+  onComplete: _onComplete,
   onChangeCodeInput,
   isLoading,
   isDisabledCodeInput,
@@ -38,6 +32,12 @@ export const View = ({
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = (event) => {
     event.preventDefault()
     _onSubmit()
+  }
+
+  const firstInput = createRef<HTMLInputElement>()
+  const onComplete = (value: string) => {
+    _onComplete(value)
+    firstInput.current?.focus()
   }
 
   return h(Center, { width: "100vw", height: "100vh" }, [
@@ -63,7 +63,7 @@ export const View = ({
               size,
               otp: true,
               children: [
-                h(PinInputField),
+                h(PinInputField, { ref: firstInput }),
                 h(PinInputField),
                 h(PinInputField),
                 h(PinInputField),

@@ -51,7 +51,6 @@ export const App = (sources: Sources) => {
     }),
     map((childView) => h(AppView, [childView])),
     catchError((error, caught$) => {
-      // TODO: wrap sentry call, include logging
       captureException(error)
       toast({
         title: t("default.error.title"),
