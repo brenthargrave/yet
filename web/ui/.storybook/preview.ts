@@ -23,5 +23,6 @@ export const parameters: Parameters = {
   viewport: {
     viewports: INITIAL_VIEWPORTS,
     defaultViewport: "iphone12mini"
-  }
+  },
+  layout: "fullscreen"
 }

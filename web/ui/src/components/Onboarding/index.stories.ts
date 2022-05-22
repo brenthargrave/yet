@@ -4,7 +4,7 @@ import { h } from "@cycle/react"
 import { View, Props } from "./View"
 
 export default {
-  title: "Components/Auth/Onboarding",
+  title: "Components/Onboarding",
   component: View,
   parameters: {
     controls: { hideNoControlsWarning: true },
