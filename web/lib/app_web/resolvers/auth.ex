@@ -2,7 +2,6 @@ defmodule AppWeb.Resolvers.Auth do
   use Croma
   use App.Types
   alias App.{Auth}
-  import ShorterMaps
 
   defun submit_phone(
           _parent,
