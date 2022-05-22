@@ -8,11 +8,12 @@ import { Source as RouterSource } from "~/router"
 import { View as AppView } from "./View"
 import { Landing } from "~/components/Landing"
 import { Auth } from "~/components/Auth"
+import { Onboarding } from "~/components/Onboarding"
 import { toast } from "~/toast"
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
-import { error } from "~/notice"
 import { Customer, Source as GraphSource } from "~/graph"
+import { isPresent } from "~/fp"
 
 const tag = makeTagger("App")
 
@@ -36,20 +37,20 @@ export const App = (sources: Sources) => {
     value: { me$: authMe$ },
   } = Auth(sources)
 
+  const { react: onboardingView$ } = Onboarding(sources)
+
   const me$: Observable<null | Customer> = merge(authMe$, cachedMe$).pipe(
     tag("me$")
   )
-  // TODO: how to manage view state?
-  // const state$ = combineLatest(history$, me$)
 
-  const react = combineLatest({ route: history$, o: me$ }).pipe(
-    switchMap(({ route, o }) => {
+  const react = combineLatest({ route: history$, me: me$ }).pipe(
+    switchMap(({ route, me }) => {
       return match(route.name)
-        .with("root", () => landingView$)
+        .with("root", () => (isPresent(me) ? onboardingView$ : landingView$))
         .with("in", () => authView$)
         .otherwise(() => landingView$)
     }),
-    map((childView) => h(AppView, [childView])),
+    map((bodyView) => h(AppView, [bodyView])),
     catchError((error, caught$) => {
       captureException(error)
       toast({
