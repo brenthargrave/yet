@@ -24,7 +24,13 @@ const port: number = parseInt(PORT_UI ?? "8080", 10)
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [reactRefresh(), codegen(), analyze({ limit: 50 })],
+  plugins: [
+    reactRefresh(),
+    codegen({
+      runOnBuild: false, // disable in production
+    }),
+    analyze({ limit: 50 }),
+  ],
   server: {
     https: { key, cert },
     strictPort: true,
