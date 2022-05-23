@@ -1,6 +1,7 @@
 import { h, ReactSource } from "@cycle/react"
 import {
   BehaviorSubject,
+  catchError,
   combineLatest,
   distinctUntilChanged,
   filter,
@@ -71,6 +72,10 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
         [attr]: value,
       })
     ),
+    catchError((error, _caught$) => {
+      inputValue$$.next("")
+      throw error
+    }),
     tag("result$"),
     share()
   )
