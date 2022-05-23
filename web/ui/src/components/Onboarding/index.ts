@@ -51,7 +51,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     tag("submit$ w/ inputValue$"),
     switchMap(([_, { me, value, attr }]) =>
       updateProfile$({
-        id: me?.id,
+        id: me.id,
         [attr]: value,
       })
     ),
@@ -76,30 +76,35 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     share()
   )
 
+  const isInputDisabled$ = isLoading$.pipe(tag("isInputDisabled$"), share())
+  const isSubmitButtonDisabled$$ = isLoading$.pipe(
+    tag("isInputDisabled$"),
+    share()
+  )
+  // TODO: is input valid?
+
   const $props = attr$.pipe(
     map((attr) => {
       return {}
     })
   )
 
-  /*
-  TODO: onboarding flow:
-  - What's your full name? (name)
-  - Where do you work? (org)
-  - What's your role there? (role)
-  */
   const props = {
-    onChangeInput: () => null,
     inputValue: "",
     isSubmitButtonDisabled: false,
     isInputDisabled: false,
-    onSubmit,
     isLoading: false,
     headingCopy: t(`onboarding.name.headingCopy`),
     inputPlaceholder: t(`onboarding.name.inputPlaceholer`),
     submitButtonCopy: t(`onboarding.name.submitButtonCopy`),
   }
-  const react = of(h(View, { ...props }))
+  combineLatest({
+    inputValue: inputValue$,
+    isSubmitButtonDisabled: isSubmitButtonDisabled$,
+    isInputDisabled: isInputDisabled$,
+    isLoading: isLoading$,
+  })
+  const react = of(h(View, { ...props, onChangeInput, onSubmit }))
 
   return {
     react,
