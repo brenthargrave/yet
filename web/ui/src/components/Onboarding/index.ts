@@ -1,18 +1,24 @@
 import { h, ReactSource } from "@cycle/react"
 import { map, of } from "rxjs"
-import { View } from "./View"
+import { match } from "ts-pattern"
 import { t } from "~/i18n"
 import { Source as GraphSource } from "~/graph"
+import { View } from "./View"
 
 interface Sources {
   react: ReactSource
   graph: GraphSource
 }
 
-export const Onboarding = (sources: Sources) => {
-  const { graph } = sources
+export const Onboarding = ({ graph }: Sources) => {
   const { me$ } = graph
-  // const state$ = me$.pipe(map)
+
+  const state$ = me$.pipe(
+    map((me) => {
+      match(me)
+    })
+  )
+
   /*
   TODO: onboarding flow:
   - What's your full name? (name)
