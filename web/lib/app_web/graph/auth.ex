@@ -1,16 +1,9 @@
 defmodule AppWeb.Graph.Auth do
   use Absinthe.Schema.Notation
   alias AppWeb.Resolvers
-  alias App.Auth.{Verification, UserError, SubmitCodePayload}
-
-  interface :base_error do
-    field(:message, non_null(:string))
-  end
-
-  object :user_error do
-    is_type_of(:base_error)
-    field(:message, non_null(:string))
-  end
+  alias App.Auth.{Verification, SubmitCodePayload}
+  alias App.{UserError}
+  import_types(AppWeb.Graph.Models)
 
   enum :verification_status do
     value(:pending)
@@ -41,11 +34,6 @@ defmodule AppWeb.Graph.Auth do
       %UserError{}, _ ->
         :user_error
     end)
-  end
-
-  object :customer do
-    field(:e164, non_null(:string))
-    field(:token, non_null(:string))
   end
 
   object :submit_code_payload do

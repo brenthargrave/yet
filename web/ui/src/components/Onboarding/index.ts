@@ -1,5 +1,16 @@
 import { h, ReactSource } from "@cycle/react"
-import { filter, map, of } from "rxjs"
+import {
+  BehaviorSubject,
+  combineLatest,
+  filter,
+  map,
+  of,
+  share,
+  shareReplay,
+  startWith,
+  switchMap,
+  withLatestFrom,
+} from "rxjs"
 import { find, has, isNil, prop, propSatisfies } from "ramda"
 import { isNotNullish } from "rxjs-etc"
 import { t } from "~/i18n"
@@ -18,13 +29,42 @@ interface Sources {
 const attributes = ["name", "org", "role"]
 
 export const Onboarding = ({ graph: { me$ } }: Sources) => {
-  const [submit$, onSubmit] = makeObservableCallback<void>()
-  const [value$, onChangeInput] = makeObservableCallback<string>()
+  const value$$ = new BehaviorSubject<string>("")
+  const inputValue$ = value$$
+    .asObservable()
+    .pipe(tag("inputValue$"), shareReplay())
+  const onChangeInput = (value: string) => value$$.next(value)
 
-  const state$ = me$.pipe(
+  const [_submit$, onSubmit] = makeObservableCallback<void>()
+  const submit$ = _submit$.pipe(tag("submit$"), share())
+
+  const attr$ = me$.pipe(
     map((me) => find((attr) => propSatisfies(isNil, attr, me), attributes)),
     filter(isNotNullish),
     tag("state$")
+  )
+
+  const result$ = submit$.pipe(
+    withLatestFrom(combineLatest(inputValue$, attr$)),
+    tag("submit$ w/ inputValue$"),
+    switchMap(([_, e164]) => submitPhone$({ e164 })),
+    tag("result$"),
+    share()
+  )
+
+  const isLoading$ = of(false)
+  const isValid$ = inputValue$.pipe(
+    // TODO: validation?
+    map((_) => false),
+    startWith(false),
+    tag("isValid"),
+    share()
+  )
+
+  const $props = attr$.pipe(
+    map((attr) => {
+      return {}
+    })
   )
 
   /*

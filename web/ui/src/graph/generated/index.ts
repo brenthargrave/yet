@@ -16,6 +16,10 @@ export type Scalars = {
 export type Customer = {
   __typename?: 'Customer';
   e164: Scalars['String'];
+  id: Scalars['String'];
+  name?: Maybe<Scalars['String']>;
+  org?: Maybe<Scalars['String']>;
+  role?: Maybe<Scalars['String']>;
   token: Scalars['String'];
 };
 
@@ -34,11 +38,24 @@ export type EventProperties = {
   tmp?: InputMaybe<Scalars['String']>;
 };
 
+export type ProfileInput = {
+  id: Scalars['String'];
+  name?: InputMaybe<Scalars['String']>;
+  org?: InputMaybe<Scalars['String']>;
+  role?: InputMaybe<Scalars['String']>;
+};
+
+export type ProfilePayload = {
+  __typename?: 'ProfilePayload';
+  me: Customer;
+};
+
 export type RootMutationType = {
   __typename?: 'RootMutationType';
   submitCode?: Maybe<SubmitCodeResult>;
   submitPhone?: Maybe<SubmitPhoneResult>;
   trackEvent?: Maybe<Event>;
+  updateProfile?: Maybe<UpdateProfileResult>;
 };
 
 
@@ -54,6 +71,11 @@ export type RootMutationTypeSubmitPhoneArgs = {
 
 export type RootMutationTypeTrackEventArgs = {
   input: TrackEventInput;
+};
+
+
+export type RootMutationTypeUpdateProfileArgs = {
+  input: ProfileInput;
 };
 
 export type RootQueryType = {
@@ -87,6 +109,8 @@ export type TrackEventInput = {
   properties: EventProperties;
   userId?: InputMaybe<Scalars['String']>;
 };
+
+export type UpdateProfileResult = ProfilePayload | UserError;
 
 export type UserError = {
   __typename?: 'UserError';

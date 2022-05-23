@@ -5,14 +5,10 @@ defmodule App.Auth do
   import Ecto.Query
   use App.Types
   alias App.Auth.{Twilio, Customer}
-  alias App.{Repo}
+  alias App.{Repo, UserError}
 
   typedstruct module: Verification, enforce: true do
     field :status, String.t()
-  end
-
-  typedstruct module: UserError, enforce: true do
-    field :message, String.t()
   end
 
   @type submit_phone_result() ::

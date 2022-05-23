@@ -75,7 +75,7 @@ export const PhoneSubmit = ({ ...sources }: Sources) => {
   )
 
   const [_submit$, onSubmit] = makeObservableCallback()
-  const submit$ = _submit$.pipe(tag("PhoneSubmit.submit$"), share())
+  const submit$ = _submit$.pipe(tag("submit$"), share())
 
   const result$ = submit$.pipe(
     withLatestFrom(e164$),
