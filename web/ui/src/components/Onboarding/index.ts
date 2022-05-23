@@ -4,6 +4,7 @@ import { match } from "ts-pattern"
 import { t } from "~/i18n"
 import { Source as GraphSource } from "~/graph"
 import { View } from "./View"
+import { makeObservableCallback } from "~/rx"
 
 interface Sources {
   react: ReactSource
@@ -11,13 +12,16 @@ interface Sources {
 }
 
 export const Onboarding = ({ graph }: Sources) => {
+  const [submit$, onSubmit] = makeObservableCallback<void>()
+  const [value$, onChangeInput] = makeObservableCallback<string>()
+
   const { me$ } = graph
 
-  const state$ = me$.pipe(
-    map((me) => {
-      match(me)
-    })
-  )
+  // const state$ = me$.pipe(
+  //   map((me) => {
+  //     match(me)
+  //   })
+  // )
 
   /*
   TODO: onboarding flow:
@@ -27,9 +31,10 @@ export const Onboarding = ({ graph }: Sources) => {
   */
   const props = {
     onChangeInput: () => null,
+    inputValue: "",
     isSubmitButtonDisabled: false,
     isInputDisabled: false,
-    onSubmit: () => null,
+    onSubmit,
     isLoading: false,
     headingCopy: t(`onboarding.name.headingCopy`),
     inputPlaceholder: t(`onboarding.name.inputPlaceholer`),
