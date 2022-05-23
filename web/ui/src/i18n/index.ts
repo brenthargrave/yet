@@ -20,6 +20,12 @@ export const t = (key: string): string => {
     "onboarding.name.headingCopy": "What's your name?",
     "onboarding.name.inputPlaceholer": "",
     "onboarding.name.submitButtonCopy": "Continue",
+    "onboarding.org.headingCopy": "Where do you work or study?",
+    "onboarding.org.inputPlaceholer": "",
+    "onboarding.org.submitButtonCopy": "Continue",
+    "onboarding.role.headingCopy": "What is your title or role there?",
+    "onboarding.role.inputPlaceholer": "",
+    "onboarding.role.submitButtonCopy": "Continue",
   }
   return messages[key]
 }

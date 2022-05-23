@@ -70,7 +70,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   )
 
   const isInputInvalid = inputValue$.pipe(
-    // TODO: validation?
+    // TODO: attr validation?
     map((_) => false),
     startWith(false),
     tag("isInputInvalid"),
