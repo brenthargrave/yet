@@ -20,7 +20,7 @@ defmodule App.Onboarding do
     IO.puts(inspect("#{key}"))
 
     attrs = %{:id => id, key => value}
-    IO.puts(inspect("#{attrs}"))
+    IO.puts(inspect(attrs))
 
     Repo.get(Customer, id)
     |> lift(nil, :not_found)

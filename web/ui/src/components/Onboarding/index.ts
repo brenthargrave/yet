@@ -15,10 +15,15 @@ import {
   tap,
   withLatestFrom,
 } from "rxjs"
-import { find, has, isNil, prop, propSatisfies } from "ramda"
+import { find, has, isNil, prop, propSatisfies, toLower } from "ramda"
 import { isNotNullish } from "rxjs-etc"
 import { t } from "~/i18n"
-import { Source as GraphSource, updateProfile$, UserError } from "~/graph"
+import {
+  Source as GraphSource,
+  updateProfile$,
+  UserError,
+  ProfileProp,
+} from "~/graph"
 import { View } from "./View"
 import { makeObservableCallback } from "~/rx"
 import { makeTagger } from "~/log"
@@ -31,7 +36,8 @@ interface Sources {
   graph: GraphSource
 }
 
-const attributes = ["name", "org", "role"]
+// const attributes = ["name", "org", "role"]
+const attributes = [ProfileProp.Name, ProfileProp.Org, ProfileProp.Role]
 
 export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   const inputValue$$ = new BehaviorSubject<string>("")
@@ -69,13 +75,10 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     switchMap(([_, { me, value, attr }]) =>
       updateProfile$({
         id: me.id,
-        [attr]: value,
+        prop: attr,
+        value,
       })
     ),
-    catchError((error, _caught$) => {
-      inputValue$$.next("")
-      throw error
-    }),
     tag("result$"),
     share()
   )
@@ -121,17 +124,18 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     isInputDisabled,
     isLoading,
   }).pipe(
-    map(({ attr, ...props }) =>
-      h(View, {
+    map(({ attr, ...props }) => {
+      const key = toLower(attr)
+      return h(View, {
         attr,
         ...props,
         onChangeInput,
         onSubmit,
-        headingCopy: t(`onboarding.${attr}.headingCopy`),
-        inputPlaceholder: t(`onboarding.${attr}.inputPlaceholer`),
-        submitButtonCopy: t(`onboarding.${attr}.submitButtonCopy`),
+        headingCopy: t(`onboarding.${key}.headingCopy`),
+        inputPlaceholder: t(`onboarding.${key}.inputPlaceholer`),
+        submitButtonCopy: t(`onboarding.${key}.submitButtonCopy`),
       })
-    ),
+    }),
     tag("react")
   )
 
