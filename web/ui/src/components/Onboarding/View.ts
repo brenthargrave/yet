@@ -6,9 +6,9 @@ import { Button, Center, Stack, Heading, Input, InputGroup } from "~/system"
 const size = "lg"
 
 export interface Props {
-  onChangePhoneInput: (text: string) => void
+  onChangeInput: (text: string) => void
   isSubmitButtonDisabled: boolean
-  isPhoneInputDisabled: boolean
+  isInputDisabled: boolean
   onSubmit: () => void
   isLoading: boolean
   headingCopy: string
@@ -16,9 +16,9 @@ export interface Props {
   submitButtonCopy: string
 }
 export const View = ({
-  onChangePhoneInput,
+  onChangeInput,
   isSubmitButtonDisabled,
-  isPhoneInputDisabled,
+  isInputDisabled,
   onSubmit: _onSubmit,
   isLoading,
   headingCopy,
@@ -29,9 +29,9 @@ export const View = ({
     e.preventDefault()
     _onSubmit()
   }
-  const phoneInputHandler: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+  const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const { value } = e.currentTarget
-    onChangePhoneInput(value)
+    onChangeInput(value)
   }
   return h(Center, { width: "100vw", height: "100vh" }, [
     form({ onSubmit }, [
@@ -42,8 +42,8 @@ export const View = ({
             autoFocus: true,
             placeholder: inputPlaceholder,
             isRequired: true,
-            onChange: phoneInputHandler,
-            isDisabled: isPhoneInputDisabled,
+            onChange,
+            isDisabled: isInputDisabled,
           }),
         ]),
         h(

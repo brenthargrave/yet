@@ -17,6 +17,9 @@ export const t = (key: string): string => {
     "auth.tel.verify.cta": `Enter it below to verify $PHONE`,
     "default.error.title": "Oops, a bug!",
     "default.error.description": "We've been notified and will fix it ASAP.",
+    "onboarding.name.headingCopy": "What's your name?",
+    "onboarding.name.inputPlaceholer": "",
+    "onboarding.name.submitButtonCopy": "Continue",
   }
   return messages[key]
 }

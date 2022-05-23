@@ -10,11 +10,21 @@ interface Sources {
 export const Onboarding = (sources: Sources) => {
   /*
   TODO: onboarding flow:
-  - What's your name? (name)
-  - Where do you work? (role)
-  - What's your role there? (org)
+  - What's your full name? (name)
+  - Where do you work? (org)
+  - What's your role there? (role)
   */
-  const react = of(h(View))
+  const props = {
+    onChangeInput: () => null,
+    isSubmitButtonDisabled: false,
+    isInputDisabled: false,
+    onSubmit: () => null,
+    isLoading: false,
+    headingCopy: t(`onboarding.name.headingCopy`),
+    inputPlaceholder: t(`onboarding.name.inputPlaceholer`),
+    submitButtonCopy: t(`onboarding.name.submitButtonCopy`),
+  }
+  const react = of(h(View, { ...props }))
 
   return {
     react,
