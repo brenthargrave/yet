@@ -36,23 +36,34 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   const inputValue$$ = new BehaviorSubject<string>("")
   const inputValue$ = inputValue$$
     .asObservable()
-    .pipe(tag("inputValue$"), distinctUntilChanged(), shareReplay())
+    .pipe(tag("inputValue$"), shareReplay())
   const onChangeInput = (value: string) => inputValue$$.next(value)
 
   const [_submit$, onSubmit] = makeObservableCallback<void>()
   const submit$ = _submit$.pipe(tag("submit$"), share())
 
-  const me$ = _me$.pipe(filter(isNotNullish), tag("me$"), share())
+  const me$ = _me$.pipe(
+    filter(isNotNullish),
+    tag("me$"),
+    shareReplay({ bufferSize: 1, refCount: true })
+  )
   const attr$ = me$.pipe(
     map((me) => find((attr) => propSatisfies(isNil, attr, me), attributes)),
     filter(isNotNullish),
+    startWith(prop(0, attributes)),
     distinctUntilChanged(),
     tag("attr$"),
-    share()
+    shareReplay({ bufferSize: 1, refCount: true })
   )
 
+  const collected$ = combineLatest({
+    me: me$,
+    value: inputValue$,
+    attr: attr$,
+  }).pipe(tag("collected$"))
+
   const result$ = submit$.pipe(
-    withLatestFrom(combineLatest({ me: me$, value: inputValue$, attr: attr$ })),
+    withLatestFrom(collected$),
     tag("submit$ w/ inputValue$"),
     switchMap(([_, { me, value, attr }]) =>
       updateProfile$({
