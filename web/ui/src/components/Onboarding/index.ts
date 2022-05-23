@@ -1,27 +1,31 @@
 import { h, ReactSource } from "@cycle/react"
-import { map, of } from "rxjs"
-import { match } from "ts-pattern"
+import { filter, map, of } from "rxjs"
+import { find, has, isNil, prop, propSatisfies } from "ramda"
+import { isNotNullish } from "rxjs-etc"
 import { t } from "~/i18n"
 import { Source as GraphSource } from "~/graph"
 import { View } from "./View"
 import { makeObservableCallback } from "~/rx"
+import { makeTagger } from "~/log"
+
+const tag = makeTagger("Onboarding")
 
 interface Sources {
   react: ReactSource
   graph: GraphSource
 }
 
-export const Onboarding = ({ graph }: Sources) => {
+const attributes = ["name", "org", "role"]
+
+export const Onboarding = ({ graph: { me$ } }: Sources) => {
   const [submit$, onSubmit] = makeObservableCallback<void>()
   const [value$, onChangeInput] = makeObservableCallback<string>()
 
-  const { me$ } = graph
-
-  // const state$ = me$.pipe(
-  //   map((me) => {
-  //     match(me)
-  //   })
-  // )
+  const state$ = me$.pipe(
+    map((me) => find((attr) => propSatisfies(isNil, attr, me), attributes)),
+    filter(isNotNullish),
+    tag("state$")
+  )
 
   /*
   TODO: onboarding flow:
