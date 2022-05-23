@@ -43,7 +43,8 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   const attr$ = me$.pipe(
     map((me) => find((attr) => propSatisfies(isNil, attr, me), attributes)),
     filter(isNotNullish),
-    tag("state$")
+    tag("attr$"),
+    share()
   )
 
   const result$ = submit$.pipe(
@@ -77,7 +78,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   )
 
   const isInputDisabled$ = isLoading$.pipe(tag("isInputDisabled$"), share())
-  const isSubmitButtonDisabled$$ = isLoading$.pipe(
+  const isSubmitButtonDisabled$ = isLoading$.pipe(
     tag("isInputDisabled$"),
     share()
   )
