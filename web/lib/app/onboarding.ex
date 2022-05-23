@@ -2,7 +2,6 @@ defmodule App.Onboarding do
   use Croma
   use TypedStruct
   use Brex.Result
-  import ShorterMaps
   alias App.{UserError, Repo}
   alias App.Onboarding.{Customer}
 
@@ -26,8 +25,7 @@ defmodule App.Onboarding do
     Repo.get(Customer, id)
     |> lift(nil, :not_found)
     # |> fmap(fn customer -> Customer.changeset(customer, ~M{ id, name, org, role }) end)
-    |> fmap(fn customer -> Customer.changeset(customer, attrs) end)
-    |> ok()
-    |> Repo.update()
+    |> fmap(&Customer.changeset(&1, attrs))
+    |> fmap(&Repo.update(&1))
   end
 end
