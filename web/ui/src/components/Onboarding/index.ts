@@ -2,6 +2,7 @@ import { h, ReactSource } from "@cycle/react"
 import {
   BehaviorSubject,
   combineLatest,
+  distinctUntilChanged,
   filter,
   map,
   merge,
@@ -33,7 +34,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   const value$$ = new BehaviorSubject<string>("")
   const inputValue$ = value$$
     .asObservable()
-    .pipe(tag("inputValue$"), shareReplay())
+    .pipe(tag("inputValue$"), distinctUntilChanged(), shareReplay())
   const onChangeInput = (value: string) => value$$.next(value)
 
   const [_submit$, onSubmit] = makeObservableCallback<void>()
@@ -43,6 +44,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   const attr$ = me$.pipe(
     map((me) => find((attr) => propSatisfies(isNil, attr, me), attributes)),
     filter(isNotNullish),
+    distinctUntilChanged(),
     tag("attr$"),
     share()
   )
