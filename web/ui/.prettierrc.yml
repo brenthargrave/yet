@@ -1,3 +1,7 @@
 semi: false
 singleQuote: false
 trailingComma: es5
+# TODO: @trivago/prettier-plugin-sort-imports
+# importOrder: ["^~/(.*)$", "^[./]"]
+# importOrderSeparation: true
+# importOrderSortSpecifiers: true
