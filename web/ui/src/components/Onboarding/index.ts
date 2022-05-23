@@ -60,7 +60,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     share()
   )
 
-  const isLoading$ = merge(
+  const isLoading = merge(
     submit$.pipe(map((_) => true)),
     result$.pipe(map((_) => false))
   ).pipe(
@@ -69,43 +69,45 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     shareReplay({ refCount: true, bufferSize: 1 })
   )
 
-  const isValid$ = inputValue$.pipe(
+  const isInputInvalid = inputValue$.pipe(
     // TODO: validation?
     map((_) => false),
     startWith(false),
-    tag("isValid"),
+    tag("isInputInvalid"),
     share()
   )
 
-  const isInputDisabled$ = isLoading$.pipe(tag("isInputDisabled$"), share())
-  const isSubmitButtonDisabled$ = isLoading$.pipe(
-    tag("isInputDisabled$"),
+  const isInputDisabled = isLoading.pipe(tag("isInputDisabled$"), share())
+  const isSubmitButtonDisabled = combineLatest({
+    isLoading,
+    isInputInvalid,
+  }).pipe(
+    map(({ isLoading, isInputInvalid }) => isLoading || isInputInvalid),
+    startWith(false),
+    tag("loading$ || invalid$"),
     share()
   )
-  // TODO: is input valid?
 
-  const $props = attr$.pipe(
-    map((attr) => {
-      return {}
-    })
-  )
-
-  const props = {
-    inputValue: "",
-    isSubmitButtonDisabled: false,
-    isInputDisabled: false,
-    isLoading: false,
-    headingCopy: t(`onboarding.name.headingCopy`),
-    inputPlaceholder: t(`onboarding.name.inputPlaceholer`),
-    submitButtonCopy: t(`onboarding.name.submitButtonCopy`),
-  }
-  combineLatest({
+  const react = combineLatest({
+    attr: attr$,
     inputValue: inputValue$,
-    isSubmitButtonDisabled: isSubmitButtonDisabled$,
-    isInputDisabled: isInputDisabled$,
-    isLoading: isLoading$,
-  })
-  const react = of(h(View, { ...props, onChangeInput, onSubmit }))
+    isSubmitButtonDisabled,
+    isInputDisabled,
+    isLoading,
+  }).pipe(
+    map(({ attr, ...props }) =>
+      h(View, {
+        attr,
+        ...props,
+        onChangeInput,
+        onSubmit,
+        headingCopy: t(`onboarding.${attr}.headingCopy`),
+        inputPlaceholder: t(`onboarding.${attr}.inputPlaceholer`),
+        submitButtonCopy: t(`onboarding.${attr}.submitButtonCopy`),
+      })
+    ),
+    tag("react")
+  )
 
   return {
     react,
