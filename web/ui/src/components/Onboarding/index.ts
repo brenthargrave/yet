@@ -10,7 +10,8 @@ interface Sources {
 }
 
 export const Onboarding = (sources: Sources) => {
-  const { me$ } = sources.graph
+  const { graph } = sources
+  const { me$ } = graph
   // const state$ = me$.pipe(map)
   /*
   TODO: onboarding flow:
