@@ -2,11 +2,19 @@ defmodule AppWeb.Graph.Onboarding do
   use Absinthe.Schema.Notation
   alias AppWeb.Resolvers.{Onboarding}
 
+  enum :profile_prop do
+    value(:name, as: "name")
+    value(:org, as: "org")
+    value(:role, as: "role")
+  end
+
   input_object :profile_input do
     field(:id, non_null(:string))
-    field(:name, :string)
-    field(:org, :string)
-    field(:role, :string)
+    field(:prop, non_null(:profile_prop))
+    field(:value, non_null(:string))
+    # field(:name, :string)
+    # field(:org, :string)
+    # field(:role, :string)
   end
 
   object :profile_payload do

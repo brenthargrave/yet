@@ -6,10 +6,10 @@ defmodule AppWeb.Resolvers.Onboarding do
 
   defun update_profile(
           _parent,
-          %{input: ~M{ id, name, org, role }} = _args,
+          %{input: ~M{ id, prop, value }} = _args,
           _resolution
         ) :: resolver_result() do
-    Onboarding.update_profile(id, name, org, role)
+    Onboarding.update_profile(id, prop, value)
   end
 
   # defun me(

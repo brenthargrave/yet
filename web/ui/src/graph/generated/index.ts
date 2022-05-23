@@ -40,15 +40,20 @@ export type EventProperties = {
 
 export type ProfileInput = {
   id: Scalars['String'];
-  name?: InputMaybe<Scalars['String']>;
-  org?: InputMaybe<Scalars['String']>;
-  role?: InputMaybe<Scalars['String']>;
+  prop: ProfileProp;
+  value: Scalars['String'];
 };
 
 export type ProfilePayload = {
   __typename?: 'ProfilePayload';
   me: Customer;
 };
+
+export enum ProfileProp {
+  Name = 'NAME',
+  Org = 'ORG',
+  Role = 'ROLE'
+}
 
 export type RootMutationType = {
   __typename?: 'RootMutationType';
