@@ -13,6 +13,7 @@ mutation SubmitCode($input: SubmitCodeInput!) {
   submitCode(input: $input) {
     ...on SubmitCodePayload {
       me {
+        id
         token
         e164
       }

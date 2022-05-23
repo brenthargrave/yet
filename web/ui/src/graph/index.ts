@@ -29,6 +29,8 @@ import {
   UserError,
   SubmitPhoneResult,
   MeDocument,
+  UpdateProfileDocument,
+  ProfileInput,
 } from "./generated"
 import { isNotEmpty } from "~/fp"
 import { zenToRx } from "~/rx"
@@ -69,6 +71,20 @@ export const verifyCode$ = (input: SubmitCodeInput) =>
     map(({ data, errors, extensions, context }) => {
       if (errors) throw new GraphError(JSON.stringify(errors))
       return data?.submitCode
+    }),
+    filter(isNotNullish)
+  )
+
+export const updateProfile$ = (input: ProfileInput) =>
+  from(
+    client.mutate({
+      mutation: UpdateProfileDocument,
+      variables: { input },
+    })
+  ).pipe(
+    map(({ data, errors, extensions, context }) => {
+      if (errors) throw new GraphError(JSON.stringify(errors))
+      return data?.updateProfile
     }),
     filter(isNotNullish)
   )

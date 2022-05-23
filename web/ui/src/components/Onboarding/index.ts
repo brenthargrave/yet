@@ -4,6 +4,7 @@ import {
   combineLatest,
   filter,
   map,
+  merge,
   of,
   share,
   shareReplay,
@@ -14,7 +15,7 @@ import {
 import { find, has, isNil, prop, propSatisfies } from "ramda"
 import { isNotNullish } from "rxjs-etc"
 import { t } from "~/i18n"
-import { Source as GraphSource } from "~/graph"
+import { Source as GraphSource, updateProfile$ } from "~/graph"
 import { View } from "./View"
 import { makeObservableCallback } from "~/rx"
 import { makeTagger } from "~/log"
@@ -28,7 +29,7 @@ interface Sources {
 
 const attributes = ["name", "org", "role"]
 
-export const Onboarding = ({ graph: { me$ } }: Sources) => {
+export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   const value$$ = new BehaviorSubject<string>("")
   const inputValue$ = value$$
     .asObservable()
@@ -38,6 +39,7 @@ export const Onboarding = ({ graph: { me$ } }: Sources) => {
   const [_submit$, onSubmit] = makeObservableCallback<void>()
   const submit$ = _submit$.pipe(tag("submit$"), share())
 
+  const me$ = _me$.pipe(filter(isNotNullish), tag("me$"), share())
   const attr$ = me$.pipe(
     map((me) => find((attr) => propSatisfies(isNil, attr, me), attributes)),
     filter(isNotNullish),
@@ -45,14 +47,27 @@ export const Onboarding = ({ graph: { me$ } }: Sources) => {
   )
 
   const result$ = submit$.pipe(
-    withLatestFrom(combineLatest(inputValue$, attr$)),
+    withLatestFrom(combineLatest({ me: me$, value: inputValue$, attr: attr$ })),
     tag("submit$ w/ inputValue$"),
-    switchMap(([_, e164]) => submitPhone$({ e164 })),
+    switchMap(([_, { me, value, attr }]) =>
+      updateProfile$({
+        id: me?.id,
+        [attr]: value,
+      })
+    ),
     tag("result$"),
     share()
   )
 
-  const isLoading$ = of(false)
+  const isLoading$ = merge(
+    submit$.pipe(map((_) => true)),
+    result$.pipe(map((_) => false))
+  ).pipe(
+    startWith(false),
+    tag("isLoading$"),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  )
+
   const isValid$ = inputValue$.pipe(
     // TODO: validation?
     map((_) => false),

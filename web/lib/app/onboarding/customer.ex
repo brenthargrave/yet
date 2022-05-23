@@ -4,15 +4,18 @@ defmodule App.Onboarding.Customer do
   import Ecto.Changeset
   import App.Types
 
+  @type changeset :: Ecto.Changeset.t()
+
   typed_schema "customers" do
     field(:name, :string, null: false)
     field(:org, :string)
     field(:role, :string)
   end
 
-  def changeset(customer, attrs) do
+  defun changeset(customer :: t(), attrs :: %{}) :: changeset() do
     customer
     |> cast(attrs, [:name, :org, :role])
-    |> validate_required([:name])
+    |> validate_required([:name], trim: true)
+    |> validate_length(:name, min: 3)
   end
 end

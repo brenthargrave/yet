@@ -1,0 +1,15 @@
+mutation UpdateProfile($input: ProfileInput!) {
+  updateProfile(input: $input) {
+    ...on ProfilePayload {
+      me {
+        id
+        name
+        org
+        role
+      }
+    }
+    ...on UserError {
+      message
+    }
+  }
+}
