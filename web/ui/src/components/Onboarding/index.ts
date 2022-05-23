@@ -1,7 +1,7 @@
 import { h, ReactSource } from "@cycle/react"
 import { of } from "rxjs"
-
 import { View } from "./View"
+import { t } from "~/i18n"
 
 interface Sources {
   react: ReactSource
