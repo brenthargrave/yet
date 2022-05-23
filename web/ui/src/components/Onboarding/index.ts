@@ -11,15 +11,17 @@ import {
   shareReplay,
   startWith,
   switchMap,
+  tap,
   withLatestFrom,
 } from "rxjs"
 import { find, has, isNil, prop, propSatisfies } from "ramda"
 import { isNotNullish } from "rxjs-etc"
 import { t } from "~/i18n"
-import { Source as GraphSource, updateProfile$ } from "~/graph"
+import { Source as GraphSource, updateProfile$, UserError } from "~/graph"
 import { View } from "./View"
 import { makeObservableCallback } from "~/rx"
 import { makeTagger } from "~/log"
+import { error } from "~/notice"
 
 const tag = makeTagger("Onboarding")
 
@@ -31,11 +33,11 @@ interface Sources {
 const attributes = ["name", "org", "role"]
 
 export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
-  const value$$ = new BehaviorSubject<string>("")
-  const inputValue$ = value$$
+  const inputValue$$ = new BehaviorSubject<string>("")
+  const inputValue$ = inputValue$$
     .asObservable()
     .pipe(tag("inputValue$"), distinctUntilChanged(), shareReplay())
-  const onChangeInput = (value: string) => value$$.next(value)
+  const onChangeInput = (value: string) => inputValue$$.next(value)
 
   const [_submit$, onSubmit] = makeObservableCallback<void>()
   const submit$ = _submit$.pipe(tag("submit$"), share())
@@ -60,6 +62,12 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     ),
     tag("result$"),
     share()
+  )
+
+  const userError$ = result$.pipe(
+    filter((result): result is UserError => result.__typename === "UserError"),
+    tap((_) => inputValue$$.next("")),
+    tag("userError$")
   )
 
   const isLoading = merge(
@@ -111,7 +119,13 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     tag("react")
   )
 
+  const notice = userError$.pipe(
+    map(({ message }) => error({ description: message })),
+    tag("notice")
+  )
+
   return {
     react,
+    notice,
   }
 }
