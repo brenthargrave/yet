@@ -13,8 +13,8 @@ defmodule App.Onboarding do
 
   @type result() :: {:ok, Customer.t() | UserError.t()} | {:error, any()}
   # TODO: how to persist these values?
-  # defun update_profile(id :: id(), name :: name(), org :: org(), role :: role()) :: term() do
-  def update_profile(id, name, org, role) do
+  defun update_profile(id :: id(), name :: name(), org :: org(), role :: role()) :: term() do
+    # def update_profile(id, name, org, role) do
     IO.puts(inspect("#{name} #{org} #{role}"))
 
     Repo.get(Customer, id)
