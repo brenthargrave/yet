@@ -7,6 +7,7 @@ defmodule App.Types do
               | {:error, list(String.t())}
               | {:error, messsage: String.t()}
               | {:error, %{message: String.t()}}
+
       @type resolver_result() :: {:ok, any()} | absinthe_error()
 
       # lib
