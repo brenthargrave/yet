@@ -9,12 +9,20 @@ defmodule App.Repo.Migrations.CreateEvents do
     end
 
     create table(:customers) do
-      add(:e164, :string, null: false)
-      add(:token, :string, null: false)
+      add :e164, :string, null: false
+      add :token, :string, null: false
+      # profile
+      add :name, :string
+      add :org, :string
+      add :role, :string
       timestamps()
     end
 
     create(unique_index(:customers, [:e164]))
-    create(unique_index(:customers, [:token]))
+    create(index(:customers, [:token]))
+    # profile
+    create(index(:customers, [:name]))
+    create(index(:customers, [:org]))
+    create(index(:customers, [:role]))
   end
 end
