@@ -8,7 +8,7 @@ defmodule App.Onboarding do
   @type ulid :: Ecto.ULID.t()
   @type prop :: String.t()
   @type value :: String.t()
-  @type result() :: {:ok, Customer.t() | UserError.t()} | {:error, any()}
+  @type result() :: Brex.Result.t(Customer.t() | UserError.t())
 
   defun update_profile(id :: ulid(), prop :: prop(), value :: value()) :: result() do
     key = String.to_atom(prop)

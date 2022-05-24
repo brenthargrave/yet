@@ -11,12 +11,4 @@ defmodule AppWeb.Resolvers.Onboarding do
         ) :: resolver_result() do
     Onboarding.update_profile(id, prop, value)
   end
-
-  # defun me(
-  #         _parent,
-  #         _args,
-  #         %{context: %{customer: customer}} = _resolution
-  #       ) :: resolver_result() do
-  #   {:ok, customer}
-  # end
 end
