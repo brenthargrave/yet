@@ -2,18 +2,16 @@ defmodule App.Onboarding do
   use Croma
   use TypedStruct
   use Brex.Result
-  import Ecto.Query
 
   alias App.{UserError, Repo}
   alias App.Onboarding.{Customer}
 
-  @type id :: Ecto.ULID.t()
-  @type name :: String.t()
-  @type org :: String.t()
-  @type role :: String.t()
-
+  @type ulid :: Ecto.ULID.t()
+  @type prop :: String.t()
+  @type value :: String.t()
   @type result() :: {:ok, Customer.t() | UserError.t()} | {:error, any()}
-  defun update_profile(id :: id(), prop :: String.t(), value :: String.t()) :: term() do
+
+  defun update_profile(id :: ulid(), prop :: prop(), value :: value()) :: result() do
     key = String.to_atom(prop)
     attrs = %{:id => id, key => value}
 
