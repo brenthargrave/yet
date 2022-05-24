@@ -1,14 +1,13 @@
 mutation UpdateProfile($input: ProfileInput!) {
   updateProfile(input: $input) {
-    ...on ProfilePayload {
-      me {
-        id
-        name
-        org
-        role
-      }
+    success
+    me {
+      id
+      name
+      org
+      role
     }
-    ...on UserError {
+    userError {
       message
     }
   }
