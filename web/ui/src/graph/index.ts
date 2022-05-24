@@ -84,23 +84,18 @@ export const verifyCode$ = (input: SubmitCodeInput) =>
 // export const updateProfile$ = (input: ProfileInput) =>
 export const updateProfile$ = (
   input: ProfileInput
-  // ): Observable<Result<Customer, UserError>> =>
-): Observable<Customer> =>
+): Observable<Result<Customer, UserError>> =>
   from(
     client.mutate({
       mutation: UpdateProfileDocument,
       variables: { input },
     })
   ).pipe(
+    // TODO: custom operator to to
     map(({ data, errors, extensions, context }) => {
       if (errors) throw new GraphError(JSON.stringify(errors))
-      if (!data?.updateProfile) throw new GraphError("MIA: payload")
-      const { success, me, userError } = data.updateProfile
-      if (!success) throw new GraphError("!success")
-      if (!me) throw new GraphError("MIA: me")
-      return me
-      //
-      // return success ? new Ok(me) : new Err(userError)
+      const { success, me, userError } = data!.updateProfile!
+      return success ? new Ok(me!) : new Err(userError!)
     })
   )
 
@@ -109,7 +104,6 @@ const token$$ = new BehaviorSubject<string | null>(
 )
 export const token$ = token$$.asObservable().pipe(tag("token$"), shareReplay())
 export const setToken = (token: string | null | undefined) => {
-  console.debug(`setToken(${token})`)
   if (token) {
     localStorage.setItem(tokenCacheKey, token)
     token$$.next(token)

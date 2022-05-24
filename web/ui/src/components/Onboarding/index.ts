@@ -1,4 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
+import { find, has, isNil, prop, propSatisfies, toLower } from "ramda"
 import {
   BehaviorSubject,
   catchError,
@@ -17,19 +18,19 @@ import {
   tap,
   withLatestFrom,
 } from "rxjs"
-import { find, has, isNil, prop, propSatisfies, toLower } from "ramda"
 import { isNotNullish } from "rxjs-etc"
-import { t } from "~/i18n"
+import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
+import { View } from "./View"
 import {
   Source as GraphSource,
   updateProfile$,
   UserError,
   ProfileProp,
 } from "~/graph"
-import { View } from "./View"
-import { makeObservableCallback } from "~/rx"
+import { t } from "~/i18n"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
+import { makeObservableCallback } from "~/rx"
 
 const tag = makeTagger("Onboarding")
 
@@ -84,6 +85,8 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     tag("result$"),
     share()
   )
+  const __me$ = result$.pipe(filterResultOk())
+  const __userErr$ = result$.pipe(filterResultErr())
   // const __me$ = result$.pipe(
   //   mergeMap((result) => (result.success === true ? of(result.me) : EMPTY))
   // )
