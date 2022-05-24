@@ -10,5 +10,8 @@ query Me {
     id
     token
     e164
+    name
+    org
+    role
   }
 }

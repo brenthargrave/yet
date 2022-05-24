@@ -48,7 +48,6 @@ interface Sources {
   graph: GraphSource
 }
 
-// const attributes = ["name", "org", "role"]
 const attributes = [ProfileProp.Name, ProfileProp.Org, ProfileProp.Role]
 
 export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
@@ -61,13 +60,11 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   const [_submit$, onSubmit] = makeObservableCallback<void>()
   const submit$ = _submit$.pipe(tag("submit$"), share())
 
-  const me$ = _me$.pipe(
-    filter(isNotNullish),
-    tag("me$"),
-    shareReplay({ bufferSize: 1, refCount: true })
-  )
+  const me$ = _me$.pipe(filter(isNotNullish), tag("me$"), shareReplay())
   const attr$ = me$.pipe(
-    map((me) => find((attr) => propSatisfies(isNil, attr, me), attributes)),
+    map((me) =>
+      find((attr) => propSatisfies(isNil, toLower(attr), me), attributes)
+    ),
     filter(isNotNullish),
     startWith(prop(0, attributes)),
     distinctUntilChanged(),
@@ -100,17 +97,13 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   const isLoading = merge(
     submit$.pipe(map((_) => true)),
     result$.pipe(map((_) => false))
-  ).pipe(
-    startWith(false),
-    tag("isLoading$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
-  )
+  ).pipe(startWith(false), tag("isLoading$"), shareReplay())
 
   const isInputInvalid = inputValue$.pipe(
     map((value) => trim(value).length < 4),
     startWith(true),
     tag("isInputInvalid"),
-    shareReplay({ refCount: true, bufferSize: 1 })
+    shareReplay()
   )
 
   const isInputDisabled = isLoading.pipe(tag("isInputDisabled$"), share())
@@ -121,7 +114,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     map(({ isLoading, isInputInvalid }) => isLoading || isInputInvalid),
     startWith(true),
     tag("loading$ || invalid$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
+    shareReplay()
   )
 
   const react = combineLatest({
