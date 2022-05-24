@@ -6,6 +6,8 @@ mutation UpdateProfile($input: ProfileInput!) {
       name
       org
       role
+      e164
+      token
     }
     userError {
       message

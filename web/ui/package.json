@@ -76,6 +76,7 @@
     "rxjs-etc": "10.6.2",
     "rxjs-spy": "8.0.2",
     "ts-pattern": "4.0.2",
+    "ts-results": "3.3.0",
     "type-route": "0.7.1",
     "ulid": "2.3.0",
     "xstream": "11.14.0"

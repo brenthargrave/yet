@@ -11,6 +11,8 @@ import { switchMap } from "rxjs/operators"
 import { isNotNullish } from "rxjs-etc"
 
 import { CombinedError } from "@urql/core"
+import { useError } from "react-use"
+import { Ok, Err, Result } from "ts-results"
 import { client as urqlClient } from "./urql"
 import { client, tokenCacheKey } from "./apollo"
 import { getId } from "./anon"
@@ -35,7 +37,10 @@ import {
 } from "./generated"
 import { zenToRx } from "~/rx"
 import { makeTagger } from "~/log"
-import { useError } from "react-use"
+
+// type Success = { success: boolean; me: Customer }
+// type Failure = { success: boolean; userError: UserError }
+// type Result = Success | Failure
 
 export type { Source, Commands } from "./driver"
 export { loggedIn, loggedOut } from "./driver"
@@ -76,11 +81,11 @@ export const verifyCode$ = (input: SubmitCodeInput) =>
     filter(isNotNullish)
   )
 
-type Success = { success: boolean; me: Customer }
-type Failure = { success: boolean; userError: UserError }
-type Result = Success | Failure
 // export const updateProfile$ = (input: ProfileInput) =>
-export const updateProfile$ = (input: ProfileInput): Observable<Result> =>
+export const updateProfile$ = (
+  input: ProfileInput
+  // ): Observable<Result<Customer, UserError>> =>
+): Observable<Customer> =>
   from(
     client.mutate({
       mutation: UpdateProfileDocument,
@@ -91,11 +96,12 @@ export const updateProfile$ = (input: ProfileInput): Observable<Result> =>
       if (errors) throw new GraphError(JSON.stringify(errors))
       if (!data?.updateProfile) throw new GraphError("MIA: payload")
       const { success, me, userError } = data.updateProfile
-      if (success) {
-      }
-      return success ? { success: true, me as Customer } : { success: false, userError as UserError }
-    }),
-    filter(isNotNullish)
+      if (!success) throw new GraphError("!success")
+      if (!me) throw new GraphError("MIA: me")
+      return me
+      //
+      // return success ? new Ok(me) : new Err(userError)
+    })
   )
 
 const token$$ = new BehaviorSubject<string | null>(
