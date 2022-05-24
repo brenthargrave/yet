@@ -77,7 +77,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
         id: me.id,
         prop: attr,
         value,
-      })
+      }).pipe(tag("updateProfile$"))
     ),
     tag("result$"),
     share()

@@ -2,7 +2,6 @@ defmodule App.Onboarding do
   use Croma
   use TypedStruct
   use Brex.Result
-
   alias App.{UserError, Repo}
   alias App.Onboarding.{Customer}
 
@@ -19,5 +18,9 @@ defmodule App.Onboarding do
     |> lift(nil, :not_found)
     |> fmap(&Customer.changeset(&1, attrs))
     |> fmap(&Repo.update(&1))
+    |> case do
+      {:ok, customer} -> customer
+      {:error, message: message} -> {:error, message}
+    end
   end
 end
