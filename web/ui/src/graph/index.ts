@@ -1,3 +1,5 @@
+/* eslint @typescript-eslint/no-non-null-assertion: 0 */
+/* eslint no-console: 0 */
 import {
   Observable,
   filter,
@@ -9,10 +11,8 @@ import {
 } from "rxjs"
 import { switchMap } from "rxjs/operators"
 import { isNotNullish } from "rxjs-etc"
-
-import { CombinedError } from "@urql/core"
-import { useError } from "react-use"
 import { Ok, Err, Result } from "ts-results"
+
 import { client as urqlClient } from "./urql"
 import { client, tokenCacheKey } from "./apollo"
 import { getId } from "./anon"
@@ -21,13 +21,10 @@ import {
   SubmitPhoneDocument,
   SubmitCodeInput,
   SubmitCodeDocument,
-  SubmitCodePayload,
   Event,
   EventName,
   EventProperties,
   TrackEventDocument,
-  Verification,
-  VerificationStatus,
   UserError,
   SubmitPhoneResult,
   MeDocument,
@@ -37,10 +34,6 @@ import {
 } from "./generated"
 import { zenToRx } from "~/rx"
 import { makeTagger } from "~/log"
-
-// type Success = { success: boolean; me: Customer }
-// type Failure = { success: boolean; userError: UserError }
-// type Result = Success | Failure
 
 export type { Source, Commands } from "./driver"
 export { loggedIn, loggedOut } from "./driver"
