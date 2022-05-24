@@ -1,5 +1,14 @@
 import { h, ReactSource } from "@cycle/react"
-import { find, has, isNil, prop, propSatisfies, toLower } from "ramda"
+import {
+  find,
+  has,
+  isNil,
+  length,
+  prop,
+  propSatisfies,
+  toLower,
+  trim,
+} from "ramda"
 import {
   BehaviorSubject,
   catchError,
@@ -98,11 +107,10 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   )
 
   const isInputInvalid = inputValue$.pipe(
-    // TODO: attr validation?
-    map((_) => false),
-    startWith(false),
+    map((value) => trim(value).length < 4),
+    startWith(true),
     tag("isInputInvalid"),
-    share()
+    shareReplay({ refCount: true, bufferSize: 1 })
   )
 
   const isInputDisabled = isLoading.pipe(tag("isInputDisabled$"), share())
@@ -111,9 +119,9 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     isInputInvalid,
   }).pipe(
     map(({ isLoading, isInputInvalid }) => isLoading || isInputInvalid),
-    startWith(false),
+    startWith(true),
     tag("loading$ || invalid$"),
-    share()
+    shareReplay({ refCount: true, bufferSize: 1 })
   )
 
   const react = combineLatest({
