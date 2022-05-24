@@ -13,6 +13,8 @@ defmodule App.Onboarding.Customer do
   end
 
   def changeset(customer, %{name: _name} = attrs) do
+    IO.puts("CUSTOMER: #{inspect(customer)}")
+
     customer
     |> cast(attrs, [:name])
     |> validate_required(:name, trim: true)

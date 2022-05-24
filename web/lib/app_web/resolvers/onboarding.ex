@@ -18,8 +18,6 @@ defmodule AppWeb.Resolvers.Onboarding do
         ) :: resolver_result() do
     case Onboarding.update_profile(id, prop, value) do
       {:ok, customer} ->
-        IO.puts(inspect(customer))
-
         {:ok,
          %UpdateProfilePayload{
            me: customer
