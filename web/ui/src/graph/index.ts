@@ -31,10 +31,11 @@ import {
   MeDocument,
   UpdateProfileDocument,
   ProfileInput,
+  Customer,
 } from "./generated"
-import { isNotEmpty } from "~/fp"
 import { zenToRx } from "~/rx"
 import { makeTagger } from "~/log"
+import { useError } from "react-use"
 
 export type { Source, Commands } from "./driver"
 export { loggedIn, loggedOut } from "./driver"
@@ -75,7 +76,11 @@ export const verifyCode$ = (input: SubmitCodeInput) =>
     filter(isNotNullish)
   )
 
-export const updateProfile$ = (input: ProfileInput) =>
+type Success = { success: boolean; me: Customer }
+type Failure = { success: boolean; userError: UserError }
+type Result = Success | Failure
+// export const updateProfile$ = (input: ProfileInput) =>
+export const updateProfile$ = (input: ProfileInput): Observable<Result> =>
   from(
     client.mutate({
       mutation: UpdateProfileDocument,
@@ -84,7 +89,11 @@ export const updateProfile$ = (input: ProfileInput) =>
   ).pipe(
     map(({ data, errors, extensions, context }) => {
       if (errors) throw new GraphError(JSON.stringify(errors))
-      return data?.updateProfile
+      if (!data?.updateProfile) throw new GraphError("MIA: payload")
+      const { success, me, userError } = data.updateProfile
+      if (success) {
+      }
+      return success ? { success: true, me as Customer } : { success: false, userError as UserError }
     }),
     filter(isNotNullish)
   )

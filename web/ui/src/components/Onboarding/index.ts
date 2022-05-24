@@ -4,9 +4,11 @@ import {
   catchError,
   combineLatest,
   distinctUntilChanged,
+  EMPTY,
   filter,
   map,
   merge,
+  mergeMap,
   of,
   share,
   shareReplay,
@@ -81,6 +83,14 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     ),
     tag("result$"),
     share()
+  )
+  const __me$ = result$.pipe(
+    mergeMap((result) => (result.success === true ? of(result.me) : EMPTY))
+  )
+  const _userError$ = result$.pipe(
+    mergeMap((result) =>
+      result.success === false ? of(result.userError) : EMPTY
+    )
   )
 
   const userError$ = result$.pipe(
