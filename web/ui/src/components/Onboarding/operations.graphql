@@ -1,6 +1,5 @@
 mutation UpdateProfile($input: ProfileInput!) {
   updateProfile(input: $input) {
-    success
     me {
       id
       name

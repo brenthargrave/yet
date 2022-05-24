@@ -85,8 +85,8 @@ export const updateProfile$ = (
   ).pipe(
     map(({ data, errors, extensions, context }) => {
       if (errors) throw new GraphError(JSON.stringify(errors))
-      const { success, me, userError } = data!.updateProfile!
-      return success ? new Ok(me!) : new Err(userError!)
+      const { userError, me } = data!.updateProfile!
+      return userError ? new Err(userError) : new Ok(me!)
     })
   )
 

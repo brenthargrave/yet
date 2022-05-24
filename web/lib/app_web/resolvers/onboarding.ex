@@ -7,7 +7,6 @@ defmodule AppWeb.Resolvers.Onboarding do
   alias App.UserError
 
   typedstruct module: UpdateProfilePayload do
-    field :sucess, boolean(), enforce: true, default: false
     field :me, Onboarding.Customer.t()
     field :user_error, UserError.t()
   end
@@ -19,7 +18,7 @@ defmodule AppWeb.Resolvers.Onboarding do
         ) :: resolver_result() do
     case Onboarding.update_profile(id, prop, value) do
       {:ok, customer} ->
-        %UpdateProfilePayload{sucess: true, me: customer}
+        %UpdateProfilePayload{me: customer}
 
       # TODO: changeset errors (ie, validations?) => {:ok, UserError}
       {:error, _} = error ->

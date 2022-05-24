@@ -15,7 +15,6 @@ defmodule AppWeb.Graph.Onboarding do
   end
 
   object :update_profile_payload do
-    field(:success, non_null(:boolean))
     field(:me, :customer)
     field(:user_error, :user_error)
   end
