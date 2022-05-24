@@ -74,7 +74,6 @@ export const verifyCode$ = (input: SubmitCodeInput) =>
     filter(isNotNullish)
   )
 
-// export const updateProfile$ = (input: ProfileInput) =>
 export const updateProfile$ = (
   input: ProfileInput
 ): Observable<Result<Customer, UserError>> =>
@@ -84,7 +83,6 @@ export const updateProfile$ = (
       variables: { input },
     })
   ).pipe(
-    // TODO: custom operator to to
     map(({ data, errors, extensions, context }) => {
       if (errors) throw new GraphError(JSON.stringify(errors))
       const { success, me, userError } = data!.updateProfile!

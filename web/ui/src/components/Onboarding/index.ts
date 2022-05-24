@@ -85,22 +85,8 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     tag("result$"),
     share()
   )
-  const __me$ = result$.pipe(filterResultOk())
-  const __userErr$ = result$.pipe(filterResultErr())
-  // const __me$ = result$.pipe(
-  //   mergeMap((result) => (result.success === true ? of(result.me) : EMPTY))
-  // )
-  // const _userError$ = result$.pipe(
-  //   mergeMap((result) =>
-  //     result.success === false ? of(result.userError) : EMPTY
-  //   )
-  // )
-
-  const userError$ = result$.pipe(
-    filter((result): result is UserError => result.__typename === "UserError"),
-    tap((_) => inputValue$$.next("")),
-    tag("userError$")
-  )
+  const _$ = result$.pipe(filterResultOk())
+  const userError$ = result$.pipe(filterResultErr(), tag("userError$"))
 
   const isLoading = merge(
     submit$.pipe(map((_) => true)),
