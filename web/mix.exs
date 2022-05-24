@@ -58,7 +58,9 @@ defmodule App.MixProject do
       {:ecto_ulid, "~> 0.2.0"},
       {:typed_ecto_schema, "~> 0.4.1"},
       {:brex_result, github: "brexhq/result"},
-      {:shorter_maps, "~> 2.2"}
+      {:shorter_maps, "~> 2.2"},
+      {:scribe, "~> 0.10"},
+      {:tabula, "~> 2.1.1"}
     ]
   end
 

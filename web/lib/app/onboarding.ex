@@ -14,9 +14,13 @@ defmodule App.Onboarding do
     key = String.to_atom(prop)
     attrs = %{:id => id, key => value}
 
-    Repo.get(Customer, id)
-    |> lift(nil, :not_found)
-    |> fmap(&Customer.changeset(&1, attrs))
-    |> fmap(&Repo.update(&1))
+    result =
+      Repo.get(Customer, id)
+      |> lift(nil, :not_found)
+      |> bind(&Customer.changeset(&1, attrs))
+      |> bind(&Repo.update(&1))
+
+    IO.puts(inspect(result))
+    result
   end
 end
