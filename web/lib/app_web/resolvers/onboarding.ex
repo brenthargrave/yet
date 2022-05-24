@@ -18,7 +18,11 @@ defmodule AppWeb.Resolvers.Onboarding do
         ) :: resolver_result() do
     case Onboarding.update_profile(id, prop, value) do
       {:ok, customer} ->
-        %UpdateProfilePayload{me: customer}
+        {:ok,
+         %UpdateProfilePayload{
+           me: customer
+           # userError
+         }}
 
       # TODO: changeset errors (ie, validations?) => {:ok, UserError}
       {:error, _} = error ->
