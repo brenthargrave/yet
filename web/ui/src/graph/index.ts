@@ -74,9 +74,10 @@ export const verifyCode$ = (input: SubmitCodeInput) =>
     filter(isNotNullish)
   )
 
+type CustomerProfileOnly = Omit<Customer, "e164" | "token">
 export const updateProfile$ = (
   input: ProfileInput
-): Observable<Result<Customer, UserError>> =>
+): Observable<Result<CustomerProfileOnly, UserError>> =>
   from(
     client.mutate({
       mutation: UpdateProfileDocument,
