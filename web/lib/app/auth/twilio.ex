@@ -13,7 +13,12 @@ defmodule App.Auth.Twilio do
   defun create_verification(e164 :: e164()) :: term() do
     if live() do
       res =
-        ExTwilio.Verify.Verifications.create(%{to: e164, channel: "sms"},
+        ExTwilio.Verify.Verifications.create(
+          %{
+            custom_friendly_name: System.get_env("PRODUCT_NAME"),
+            to: e164,
+            channel: "sms"
+          },
           service: service()
         )
 

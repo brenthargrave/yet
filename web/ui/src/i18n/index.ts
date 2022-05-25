@@ -1,15 +1,11 @@
 import { phone as validatePhone } from "phone"
 
-// @ts-ignore
-const { VITE_PRODUCT_NAME } = import.meta.env
-
 const shared = {
   continue: `Continue`,
   empty: "",
 }
 
 const messages: Record<string, string> = {
-  "brand-name": `~${VITE_PRODUCT_NAME}`,
   "landing.disclaimer": `By tapping Create Account or Sign in you agree to never sue me.`,
   "landing.join": `Create Account`,
   "landing.login": `Sign in`,

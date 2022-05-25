@@ -16,7 +16,7 @@ defmodule App.Auth do
           | {:error, String.t()}
 
   defun submit_phone(e164 :: e164()) :: submit_phone_result() do
-    response = Twilio.create_verification(e164)
+    brand_name = response = Twilio.create_verification(e164)
 
     case response do
       {:ok, %{status: status} = _payload} ->

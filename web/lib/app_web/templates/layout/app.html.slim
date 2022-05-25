@@ -9,7 +9,7 @@ html lang="en"
     meta http-equiv="Expires" content="0"
 
   body
-    div id="index"
+    div id="index" data-product=System.get_env("PRODUCT_NAME")
     = if Mix.env() !== :prod do
       script type="module" src="https://localhost:#{System.get_env("PORT_UI")}/src/react-refresh-preamble.ts"
       script type="module" src="https://localhost:#{System.get_env("PORT_UI")}/@vite/client"
