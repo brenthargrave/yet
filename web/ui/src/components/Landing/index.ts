@@ -12,11 +12,11 @@ interface Sources {
 
 export const Landing = (sources: Sources) => {
   const onClickJoin = async () => {
-    routes.in().push() // TODO: driver
+    routes.in().push()
     const _event = await track(EventName.TapSignup)
   }
 
-  const onClickLogin = () => null
+  const onClickLogin = () => routes.in().push()
 
   const react = of(h(View, { onClickJoin, onClickLogin }))
 
