@@ -4,8 +4,8 @@ defmodule App.Auth do
   use Brex.Result
   import Ecto.Query
   use App.Types
-  alias App.Auth.{Twilio, Customer}
-  alias App.{Repo, UserError}
+  alias App.Auth.{Twilio}
+  alias App.{Repo, Customer, UserError}
 
   typedstruct module: Verification, enforce: true do
     field :status, String.t()
@@ -16,7 +16,7 @@ defmodule App.Auth do
           | {:error, String.t()}
 
   defun submit_phone(e164 :: e164()) :: submit_phone_result() do
-    brand_name = response = Twilio.create_verification(e164)
+    response = Twilio.create_verification(e164)
 
     case response do
       {:ok, %{status: status} = _payload} ->
@@ -76,7 +76,7 @@ defmodule App.Auth do
     else
       %Customer{}
       # TODO: token security
-      |> Customer.changeset(%{e164: e164, token: Ecto.ULID.generate()})
+      |> Customer.auth_changeset(%{e164: e164, token: Ecto.ULID.generate()})
       |> Repo.insert()
     end
   end

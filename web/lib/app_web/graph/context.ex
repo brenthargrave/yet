@@ -5,7 +5,7 @@ defmodule AppWeb.Graph.Context do
   import Ecto.Query, only: [where: 2]
 
   alias App.Repo
-  alias App.Auth.Customer
+  alias App.Customer
 
   def init(opts), do: opts
 

@@ -2,8 +2,7 @@ defmodule App.Onboarding do
   use Croma
   use TypedStruct
   use Brex.Result
-  alias App.{UserError, Repo}
-  alias App.Onboarding.{Customer}
+  alias App.{UserError, Repo, Customer}
 
   @type ulid :: Ecto.ULID.t()
   @type prop :: String.t()
@@ -16,7 +15,7 @@ defmodule App.Onboarding do
 
     Repo.get(Customer, id)
     |> lift(nil, "MIA: Customer #{id}")
-    |> fmap(&Customer.changeset(&1, attrs))
+    |> fmap(&Customer.onboarding_changeset(&1, attrs))
     |> bind(&Repo.update/1)
   end
 end

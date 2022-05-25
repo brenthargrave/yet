@@ -4,10 +4,10 @@ defmodule AppWeb.Resolvers.Onboarding do
   use TypedStruct
   import ShorterMaps
   alias App.{Onboarding}
-  alias App.UserError
+  alias App.{UserError, Customer}
 
   typedstruct module: UpdateProfilePayload do
-    field :me, Onboarding.Customer.t()
+    field :me, Customer.t()
     field :user_error, UserError.t()
   end
 
