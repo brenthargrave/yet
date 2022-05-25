@@ -11,6 +11,7 @@ export interface Props {
 export const View = ({ onClickJoin, onClickLogin }: Props) =>
   h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center", margin: "4" }, [
+      // TODO: store product name in env var; use in SMS sends
       h(Heading, {}, t("brand-name")),
       h(Divider),
       // h(Text, { fontSize: "x-small" }, t("landing.disclaimer")),
