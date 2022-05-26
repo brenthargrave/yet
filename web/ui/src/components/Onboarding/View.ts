@@ -1,11 +1,17 @@
 import { h } from "@cycle/react"
-import { form } from "@cycle/react-dom"
+import { form, h1 } from "@cycle/react-dom"
 
 import { Button, Center, Stack, Heading, Input, InputGroup } from "~/system"
+
+export enum State {
+  Editing = "editing",
+  Done = "done",
+}
 
 const size = "lg"
 
 export interface Props {
+  state: State
   onChangeInput: (text: string) => void
   inputValue: string
   isSubmitButtonDisabled: boolean
@@ -17,6 +23,7 @@ export interface Props {
   submitButtonCopy: string
 }
 export const View = ({
+  state,
   onChangeInput,
   inputValue: value,
   isSubmitButtonDisabled,
@@ -37,30 +44,32 @@ export const View = ({
   }
   return h(Center, { width: "100vw", height: "100vh" }, [
     form({ onSubmit }, [
-      h(Stack, { direction: "column", align: "center", gap: 2 }, [
-        h(Heading, { size }, headingCopy),
-        h(InputGroup, { size }, [
-          h(Input, {
-            value,
-            autoFocus: true,
-            placeholder: inputPlaceholder,
-            isRequired: true,
-            onChange,
-            isDisabled: isInputDisabled,
-          }),
+      state === State.Done && h1("Done"),
+      state === State.Editing &&
+        h(Stack, { direction: "column", align: "center", gap: 2 }, [
+          h(Heading, { size }, headingCopy),
+          h(InputGroup, { size }, [
+            h(Input, {
+              value,
+              autoFocus: true,
+              placeholder: inputPlaceholder,
+              isRequired: true,
+              onChange,
+              isDisabled: isInputDisabled,
+            }),
+          ]),
+          h(
+            Button,
+            {
+              isDisabled: isSubmitButtonDisabled,
+              size,
+              width: "100%",
+              isLoading,
+              type: "submit",
+            },
+            submitButtonCopy
+          ),
         ]),
-        h(
-          Button,
-          {
-            isDisabled: isSubmitButtonDisabled,
-            size,
-            width: "100%",
-            isLoading,
-            type: "submit",
-          },
-          submitButtonCopy
-        ),
-      ]),
     ]),
   ])
 }

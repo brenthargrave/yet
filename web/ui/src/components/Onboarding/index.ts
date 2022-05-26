@@ -1,9 +1,11 @@
 import { h, ReactSource } from "@cycle/react"
 import {
+  all,
   find,
   has,
   isNil,
   length,
+  none,
   prop,
   propSatisfies,
   toLower,
@@ -19,6 +21,7 @@ import {
   map,
   merge,
   mergeMap,
+  Observable,
   of,
   share,
   shareReplay,
@@ -29,12 +32,13 @@ import {
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
-import { View } from "./View"
+import { View, State } from "./View"
 import {
   Source as GraphSource,
   updateProfile$,
   UserError,
   ProfileProp,
+  Customer,
 } from "~/graph"
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
@@ -50,6 +54,9 @@ interface Sources {
 
 const attributes = [ProfileProp.Name, ProfileProp.Org, ProfileProp.Role]
 
+const isOnboarded = (me: Customer) =>
+  none((attr) => propSatisfies(isNil, toLower(attr), me), attributes)
+
 export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"), shareReplay())
   const attr$ = me$.pipe(
@@ -62,8 +69,11 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     tag("attr$"),
     shareReplay({ bufferSize: 1, refCount: true })
   )
-  // TODO: a "done" state and corresponding view - modeling off MIA attributes
-  // reverts back to Name once all are populated. Fuck w/ xstate?
+  const state$: Observable<State> = me$.pipe(
+    map((me) => (isOnboarded(me) ? State.Done : State.Editing)),
+    tag("state$"),
+    shareReplay({ bufferSize: 1, refCount: true })
+  )
 
   const inputValue$$ = new BehaviorSubject<string>("")
   const inputValue$ = merge(
@@ -121,6 +131,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   )
 
   const react = combineLatest({
+    state: state$,
     attr: attr$,
     inputValue: inputValue$,
     isSubmitButtonDisabled,
