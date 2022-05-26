@@ -1,5 +1,7 @@
 /* eslint @typescript-eslint/no-non-null-assertion: 0 */
 /* eslint no-console: 0 */
+/* eslint max-classes-per-file: 0 */
+
 import {
   Observable,
   filter,
@@ -8,10 +10,12 @@ import {
   BehaviorSubject,
   of,
   shareReplay,
+  catchError,
 } from "rxjs"
 import { switchMap } from "rxjs/operators"
 import { isNotNullish } from "rxjs-etc"
 import { Ok, Err, Result } from "ts-results"
+import { captureException } from "@sentry/react"
 
 import { client as urqlClient } from "./urql"
 import { client, tokenCacheKey } from "./apollo"
@@ -43,6 +47,7 @@ export * from "./generated"
 const tag = makeTagger("graph")
 
 export class GraphError extends Error {}
+export class GraphWatchError extends GraphError {}
 
 export const submitPhone$ = (
   input: SubmitPhoneInput
@@ -122,8 +127,8 @@ export const me$ = token$.pipe(
           ...result
         }) => {
           // NOTE: throw will create endless loop upon resubscription
-          if (error) console.error(`apollo error ${error}`) // throw error
-          if (errors) console.error(`errors ${errors}`) // throw new GraphError(JSON.stringify(errors))
+          if (error) captureException(error)
+          if (errors) captureException(JSON.stringify(errors))
           return data.me
         }
       ),
@@ -131,17 +136,12 @@ export const me$ = token$.pipe(
       tag("watchQuery(me)")
     )
   }),
+  catchError((error, _caught$) => {
+    throw new GraphWatchError(error.message)
+  }),
   tag("me$"),
   shareReplay()
 )
-
-/* // TODO: custom operator to filter result types
-interface GQLType {
-  __typename: string
-}
-export const filterType = <T extends GQLType>(typename: string) =>
-  filter((result: T): result is T => result.__typename === typename)
-*/
 
 // Analytics
 //

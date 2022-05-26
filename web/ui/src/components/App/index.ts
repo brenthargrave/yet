@@ -1,5 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
-import { catchError, combineLatest, merge, Observable } from "rxjs"
+import { catchError, combineLatest, EMPTY, merge, Observable } from "rxjs"
 import { map, switchMap } from "rxjs/operators"
 import { match } from "ts-pattern"
 import { captureException } from "@sentry/react"
@@ -12,7 +12,7 @@ import { Onboarding } from "~/components/Onboarding"
 import { toast } from "~/toast"
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
-import { Customer, Source as GraphSource } from "~/graph"
+import { Customer, Source as GraphSource, GraphWatchError } from "~/graph"
 import { isPresent } from "~/fp"
 
 const tag = makeTagger("App")
@@ -58,7 +58,10 @@ export const App = (sources: Sources) => {
         description: t("default.error.description"),
         status: "error",
       })
-      return caught$.pipe(tag("caught$"))
+      // NOTE: graph watch errors are fatal, will loop indefinitely if resubscribed
+      return error instanceof GraphWatchError
+        ? EMPTY
+        : caught$.pipe(tag("caught$"))
     }),
     tag("App.react$")
   )

@@ -62,6 +62,8 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     tag("attr$"),
     shareReplay({ bufferSize: 1, refCount: true })
   )
+  // TODO: a "done" state and corresponding view - modeling off MIA attributes
+  // reverts back to Name once all are populated. Fuck w/ xstate?
 
   const inputValue$$ = new BehaviorSubject<string>("")
   const inputValue$ = merge(
