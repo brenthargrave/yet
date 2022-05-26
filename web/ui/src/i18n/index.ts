@@ -5,8 +5,10 @@ const shared = {
   empty: "",
 }
 
+const entryElement = document.getElementById("index")
+export const productName = entryElement?.dataset.product
+
 const messages: Record<string, string> = {
-  "landing.disclaimer": `By tapping Create Account or Sign in you agree to never sue me.`,
   "landing.join": `Create Account`,
   "landing.login": `Sign in`,
   "auth.tel.entry.cta": `My phone number is`,
