@@ -1,7 +1,6 @@
 import { h } from "@cycle/react"
 import { form, h1 } from "@cycle/react-dom"
-
-import { Button, Center, Stack, Heading, Input, InputGroup } from "~/system"
+import { Button, Center, Heading, Input, InputGroup, Stack } from "~/system"
 
 export enum State {
   Editing = "editing",

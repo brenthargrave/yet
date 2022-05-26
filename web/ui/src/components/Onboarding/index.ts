@@ -1,49 +1,32 @@
 import { h, ReactSource } from "@cycle/react"
-import {
-  all,
-  find,
-  has,
-  isNil,
-  length,
-  none,
-  prop,
-  propSatisfies,
-  toLower,
-  trim,
-} from "ramda"
+import { find, isNil, none, prop, propSatisfies, toLower, trim } from "ramda"
 import {
   BehaviorSubject,
-  catchError,
   combineLatest,
   distinctUntilChanged,
-  EMPTY,
   filter,
   map,
   merge,
-  mergeMap,
   Observable,
-  of,
   share,
   shareReplay,
   startWith,
   switchMap,
-  tap,
   withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
-import { View, State } from "./View"
 import {
+  Customer,
+  ProfileProp,
   Source as GraphSource,
   updateProfile$,
-  UserError,
-  ProfileProp,
-  Customer,
 } from "~/graph"
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { makeObservableCallback } from "~/rx"
+import { State, View } from "./View"
 
 const tag = makeTagger("Onboarding")
 
