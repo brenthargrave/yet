@@ -2,18 +2,9 @@ import { ChakraProvider } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { ErrorBoundary } from "@sentry/react"
 import React, { FC } from "react"
-import { productName, t } from "~/i18n"
-import { Heading, Stack } from "~/system"
-
-const Header = () =>
-  h(Stack, { direction: "row", p: 4 }, [
-    h(Heading, { size: "lg" }, productName),
-  ])
-
-const Footer = () =>
-  h(Stack, { direction: "row", p: 4 }, [
-    h(Heading, { size: "xs" }, t(`app.footer.copyright`)),
-  ])
+import { Stack } from "~/system"
+import { Footer } from "./Footer"
+import { Header } from "./Header"
 
 export const View: FC = ({ children }) => {
   return h(React.StrictMode, [
