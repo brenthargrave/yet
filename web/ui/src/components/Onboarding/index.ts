@@ -51,15 +51,6 @@ interface Sources {
 const attributes = [ProfileProp.Name, ProfileProp.Org, ProfileProp.Role]
 
 export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
-  const inputValue$$ = new BehaviorSubject<string>("")
-  const inputValue$ = inputValue$$
-    .asObservable()
-    .pipe(tag("inputValue$"), shareReplay())
-  const onChangeInput = (value: string) => inputValue$$.next(value)
-
-  const [_submit$, onSubmit] = makeObservableCallback<void>()
-  const submit$ = _submit$.pipe(tag("submit$"), share())
-
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"), shareReplay())
   const attr$ = me$.pipe(
     map((me) =>
@@ -71,6 +62,16 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     tag("attr$"),
     shareReplay({ bufferSize: 1, refCount: true })
   )
+
+  const inputValue$$ = new BehaviorSubject<string>("")
+  const inputValue$ = merge(
+    inputValue$$.asObservable(),
+    attr$.pipe(map((_) => "")) // reset input when new form step changes
+  ).pipe(tag("inputValue$"), shareReplay())
+  const onChangeInput = (value: string) => inputValue$$.next(value)
+
+  const [_submit$, onSubmit] = makeObservableCallback<void>()
+  const submit$ = _submit$.pipe(tag("submit$"), share())
 
   const collected$ = combineLatest({
     me: me$,
