@@ -9,6 +9,7 @@ const entryElement = document.getElementById("index")
 export const productName = entryElement?.dataset.product
 
 const messages: Record<string, string> = {
+  "app.footer.copyright": "© 2022 Hargrave & Co.",
   "landing.join": `Create Account`,
   "landing.login": `Sign in`,
   "auth.tel.entry.cta": `My phone number is`,

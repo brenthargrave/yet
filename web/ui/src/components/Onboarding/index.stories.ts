@@ -1,9 +1,8 @@
-import { Story, Meta } from "@storybook/react"
 import { h } from "@cycle/react"
-
-import { Stat } from "@chakra-ui/react"
+import { action } from "@storybook/addon-actions"
+import { Meta, Story } from "@storybook/react"
 import { t } from "~/i18n"
-import { View, Props, State } from "./View"
+import { Props, View } from "./View"
 
 export default {
   title: "Components/Onboarding",
@@ -19,4 +18,5 @@ Default.args = {
   headingCopy: t(`onboarding.name.headingCopy`),
   inputPlaceholder: t(`onboarding.name.inputPlaceholer`),
   submitButtonCopy: t(`onboarding.name.submitButtonCopy`),
+  onChangeInput: action("changed"),
 }
