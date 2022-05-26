@@ -53,7 +53,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     shareReplay({ bufferSize: 1, refCount: true })
   )
   const state$: Observable<State> = me$.pipe(
-    map((me) => (isOnboarded(me) ? State.Done : State.Editing)),
+    map((me) => (isOnboarded(me) ? State.Done : State.Edit)),
     tag("state$"),
     shareReplay({ bufferSize: 1, refCount: true })
   )

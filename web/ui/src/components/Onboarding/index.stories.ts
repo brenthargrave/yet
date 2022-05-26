@@ -1,8 +1,9 @@
 import { Story, Meta } from "@storybook/react"
 import { h } from "@cycle/react"
 
+import { Stat } from "@chakra-ui/react"
 import { t } from "~/i18n"
-import { View, Props } from "./View"
+import { View, Props, State } from "./View"
 
 export default {
   title: "Components/Onboarding",

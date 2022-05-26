@@ -3,7 +3,7 @@ import { form, h1 } from "@cycle/react-dom"
 import { Button, Center, Heading, Input, InputGroup, Stack } from "~/system"
 
 export enum State {
-  Editing = "editing",
+  Edit = "edit",
   Done = "done",
 }
 
@@ -22,7 +22,7 @@ export interface Props {
   submitButtonCopy: string
 }
 export const View = ({
-  state,
+  state = State.Edit,
   onChangeInput,
   inputValue: value,
   isSubmitButtonDisabled,
@@ -44,7 +44,7 @@ export const View = ({
   return h(Center, { width: "100vw", height: "100vh" }, [
     form({ onSubmit }, [
       state === State.Done && h1("Done"),
-      state === State.Editing &&
+      state === State.Edit &&
         h(Stack, { direction: "column", align: "center", gap: 2 }, [
           h(Heading, { size }, headingCopy),
           h(InputGroup, { size }, [
