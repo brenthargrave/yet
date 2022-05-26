@@ -1,13 +1,12 @@
+import { ChakraProvider } from "@chakra-ui/react";
 import { h } from '@cycle/react';
 import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport';
 import type { Parameters } from '@storybook/addons';
 import { addDecorator } from '@storybook/react';
-// @ts-ignore
-import { View } from "~/components/App/View";
 
 addDecorator(
   (Story) => (
-    h(View, [
+    h(ChakraProvider, [
       h(Story)
     ])
   ))
