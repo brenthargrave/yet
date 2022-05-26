@@ -6,7 +6,7 @@ const shared = {
 }
 
 const entryElement = document.getElementById("index")
-export const productName = entryElement?.dataset.product
+export const productName = entryElement?.dataset.product || "TBD"
 
 const messages: Record<string, string> = {
   "app.footer.copyright": "© 2022 Hargrave & Co.",

@@ -41,7 +41,7 @@ export const View = ({
     const { value } = e.currentTarget
     onChangeInput(value)
   }
-  return h(Center, { width: "100vw", height: "100vh" }, [
+  return h(Center, { width: "100%", height: "100%" }, [
     form({ onSubmit }, [
       state === State.Done && h1("Done"),
       state === State.Edit &&
