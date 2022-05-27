@@ -1,10 +1,10 @@
-import type { Route as _Route } from "type-route"
-import { createRouter, defineRoute } from "type-route"
+import { Driver } from "@cycle/run"
 import { Observable } from "rxjs"
 import { shareReplay } from "rxjs/operators"
-import { Stream } from "xstream"
-import { Driver } from "@cycle/run"
 import { match } from "ts-pattern"
+import type { Route as _Route } from "type-route"
+import { createRouter, defineRoute } from "type-route"
+import { Stream } from "xstream"
 import { makeTagger } from "~/log"
 
 const tag = makeTagger("Router")
@@ -13,6 +13,7 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
   root: defineRoute("/"),
   in: defineRoute("/in"),
   out: defineRoute("/out"),
+  notes: defineRoute("/notes"),
 })
 
 export type Route = _Route<typeof routes>

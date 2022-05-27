@@ -12,6 +12,7 @@ import { t } from "~/i18n"
 import { makeTagger } from "~/log"
 import { Source as RouterSource } from "~/router"
 import { toast } from "~/toast"
+import { Notes } from "../Notes"
 import { Header } from "./Header"
 import { View as AppView } from "./View"
 
@@ -29,9 +30,8 @@ export const App = (sources: Sources) => {
   const { token$, me$: cachedMe$ } = sources.graph
 
   const { react: headerView$ } = Header(sources)
-
   const { react: landingView$ } = Landing(sources)
-
+  const { react: notesView$ } = Notes(sources)
   const {
     graph: authGraph$,
     react: authView$,
@@ -51,6 +51,7 @@ export const App = (sources: Sources) => {
       return match(route.name)
         .with("root", () => (isPresent(me) ? onboardingView$ : landingView$))
         .with("in", () => authView$)
+        .with("notes", () => notesView$)
         .otherwise(() => landingView$)
     }),
     tag("bodyView$")

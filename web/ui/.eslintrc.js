@@ -43,6 +43,7 @@ module.exports = {
     // TODO: no-unused-vars: https://git.io/JK36s
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": ["off", { argsIgnorePattern: "^_" }],
+    "@typescript-eslint/no-empty-interface": "off",
   },
   settings: {
     "import/resolver": "node",
