@@ -1,19 +1,19 @@
 import { h, ReactSource } from "@cycle/react"
+import { captureException } from "@sentry/react"
 import { catchError, combineLatest, EMPTY, merge, Observable } from "rxjs"
 import { map, switchMap } from "rxjs/operators"
 import { match } from "ts-pattern"
-import { captureException } from "@sentry/react"
-
-import { Source as RouterSource } from "~/router"
-import { View as AppView } from "./View"
-import { Landing } from "~/components/Landing"
 import { Auth } from "~/components/Auth"
+import { Landing } from "~/components/Landing"
 import { Onboarding } from "~/components/Onboarding"
-import { toast } from "~/toast"
+import { isPresent } from "~/fp"
+import { Customer, GraphWatchError, Source as GraphSource } from "~/graph"
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
-import { Customer, Source as GraphSource, GraphWatchError } from "~/graph"
-import { isPresent } from "~/fp"
+import { Source as RouterSource } from "~/router"
+import { toast } from "~/toast"
+import { Header } from "./Header"
+import { View as AppView } from "./View"
 
 const tag = makeTagger("App")
 
@@ -28,7 +28,10 @@ export const App = (sources: Sources) => {
   const history$ = _history$.pipe(tag("history$"))
   const { token$, me$: cachedMe$ } = sources.graph
 
+  const { react: headerView$ } = Header(sources)
+
   const { react: landingView$ } = Landing(sources)
+
   const {
     graph: authGraph$,
     react: authView$,
@@ -43,14 +46,18 @@ export const App = (sources: Sources) => {
     tag("me$")
   )
 
-  const react = combineLatest({ route: history$, me: me$ }).pipe(
+  const bodyView$ = combineLatest({ route: history$, me: me$ }).pipe(
     switchMap(({ route, me }) => {
       return match(route.name)
         .with("root", () => (isPresent(me) ? onboardingView$ : landingView$))
         .with("in", () => authView$)
         .otherwise(() => landingView$)
     }),
-    map((bodyView) => h(AppView, [bodyView])),
+    tag("bodyView$")
+  )
+
+  const react = combineLatest({ header: headerView$, body: bodyView$ }).pipe(
+    map(({ header, body }) => h(AppView, { header, body })),
     catchError((error, caught$) => {
       captureException(error)
       toast({

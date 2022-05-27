@@ -29,7 +29,7 @@ defmodule AppWeb.Router do
     plug AppWeb.Graph.Context
   end
 
-  scope "graphql" do
+  scope "/graphql" do
     pipe_through :graphql
 
     forward(
