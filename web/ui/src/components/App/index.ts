@@ -51,7 +51,7 @@ export const App = (sources: Sources) => {
       return match(route.name)
         .with("root", () => (isPresent(me) ? onboardingView$ : landingView$))
         .with("in", () => authView$)
-        .with("notes", () => notesView$)
+        .with("notes", () => notesView$) // TODO: embed in Home instead
         .otherwise(() => landingView$)
     }),
     tag("bodyView$")
