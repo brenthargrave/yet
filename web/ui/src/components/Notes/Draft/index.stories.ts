@@ -1,6 +1,6 @@
 import { h } from "@cycle/react"
 import { Meta, Story } from "@storybook/react"
-import { Props, View } from "~/components/Landing/View"
+import { Props, View } from "~/components/Notes/Draft/View"
 
 export default {
   title: "Components/Notes/Draft",
