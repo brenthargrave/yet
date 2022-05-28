@@ -1,5 +1,9 @@
 import { h } from "@cycle/react"
-import { Heading, Input, Stack } from "~/system"
+import {
+  // AsyncCreatableSelect,
+  CreatableSelect,
+} from "chakra-react-select"
+import { Heading, Stack } from "~/system"
 
 export interface Props {
   // onClickJoin: React.MouseEventHandler<HTMLButtonElement>
@@ -21,8 +25,11 @@ export const View = (props: Props) =>
       h(Heading, { size: "lg" }, `Note a new conversation`),
       h(Stack, { direction: "row", alignItems: "center", width: "100%" }, [
         h(Heading, { size: "md" }, "with:"),
-        h(Input, { placeholder: "John Doe", size: "md" }),
-        // TODO: autocomplete dropbown?
+        // h(Input, { placeholder: "John Doe", size: "md" }),
+        h(CreatableSelect, {
+          size: "md",
+          options: [{ value: "xyz", label: "Brent Hargrave" }],
+        }),
       ]),
 
       // h(Button, { onClick: onClickJoin }, t(`landing.join`)),
