@@ -12,6 +12,6 @@ export default {
 
 export const Default: Story<Props> = (args) => h(View, args)
 Default.argTypes = {
-  // onClickJoin: { control: false, action: "join" },
-  // onClickLogin: { control: false, action: "login" },
+  onSelect: { control: false, action: "selected" },
+  options: [{ value: "1", label: "Brent Hargrave" }],
 }
