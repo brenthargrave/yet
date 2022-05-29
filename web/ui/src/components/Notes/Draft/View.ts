@@ -1,6 +1,7 @@
-import { InputLeftAddon } from "@chakra-ui/react"
+import { Divider, InputLeftAddon, Textarea } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { CreatableSelect, ChakraStylesConfig } from "chakra-react-select"
+import { SmallAddIcon, AddIcon } from "@chakra-ui/icons"
 import { Heading, Stack, Center, InputGroup } from "~/system"
 
 export interface Option {
@@ -29,11 +30,9 @@ export const View = ({ options, onSelect }: Props) =>
     [
       h(Heading, { size: "lg" }, `Note a new conversation`),
       h(Stack, { direction: "row", alignItems: "center", width: "100%" }, [
-        h(Heading, { size }, "with:"),
         h(InputGroup, [
-          // h(InputLeftAddon, { children: "With:" }),
           h(CreatableSelect, {
-            placeholder: "Dale Carnegie",
+            placeholder: "With whom?",
             autoFocus: true,
             size,
             chakraStyles: {
@@ -53,8 +52,13 @@ export const View = ({ options, onSelect }: Props) =>
         ]),
       ]),
       // TODO: optional, editable fields for when / where
-      h(Stack, { direction: "row", alignItems: "center", width: "100%" }, [
-        h(Heading, { size }, "when"),
+      h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
+        h(Textarea, {
+          size,
+          placeholder: "What did you learn?\nNotes, links, etc.",
+        }),
+        h(Divider, {}),
+        h(SmallAddIcon),
       ]),
     ]
   )

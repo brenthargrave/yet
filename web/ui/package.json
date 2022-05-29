@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "@apollo/client": "3.6.4",
+    "@chakra-ui/icons": "2.0.1",
     "@chakra-ui/react": "1.8.8",
     "@cycle/react": "2.10.0",
     "@cycle/react-dom": "2.4.0",
