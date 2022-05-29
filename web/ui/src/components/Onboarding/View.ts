@@ -45,29 +45,31 @@ export const View = ({
     form({ onSubmit }, [
       state === State.Done && h1("Done"),
       state === State.Edit &&
-        h(Stack, { direction: "column", align: "center", gap: 2 }, [
-          h(Heading, { size }, headingCopy),
-          h(InputGroup, { size }, [
-            h(Input, {
-              value,
-              autoFocus: true,
-              placeholder: inputPlaceholder,
-              isRequired: true,
-              onChange,
-              isDisabled: isInputDisabled,
-            }),
+        h(Center, { width: "100vw", height: "100vh" }, [
+          h(Stack, { direction: "column", align: "center", gap: 2 }, [
+            h(Heading, { size }, headingCopy),
+            h(InputGroup, { size }, [
+              h(Input, {
+                value,
+                autoFocus: true,
+                placeholder: inputPlaceholder,
+                isRequired: true,
+                onChange,
+                isDisabled: isInputDisabled,
+              }),
+            ]),
+            h(
+              Button,
+              {
+                isDisabled: isSubmitButtonDisabled,
+                size,
+                width: "100%",
+                isLoading,
+                type: "submit",
+              },
+              submitButtonCopy
+            ),
           ]),
-          h(
-            Button,
-            {
-              isDisabled: isSubmitButtonDisabled,
-              size,
-              width: "100%",
-              isLoading,
-              type: "submit",
-            },
-            submitButtonCopy
-          ),
         ]),
     ]),
   ])
