@@ -32,6 +32,7 @@ export const View = (props: Props) =>
         h(CreatableSelect, {
           size: "md",
           chakraStyles,
+          isClearable: true,
           options: [{ value: "xyz", label: "Brent Hargrave" }],
           onChange: (x) => console.debug(x),
         }),
