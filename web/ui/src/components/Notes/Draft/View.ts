@@ -33,6 +33,8 @@ export const View = (props: Props) =>
           size: "md",
           chakraStyles,
           isClearable: true,
+          createOptionPosition: "first",
+          formatCreateLabel: (inputValue) => `Add "${inputValue}"`,
           options: [{ value: "xyz", label: "Brent Hargrave" }],
           onChange: (x) => console.debug(x),
         }),
