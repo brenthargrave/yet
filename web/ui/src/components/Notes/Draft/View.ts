@@ -60,10 +60,17 @@ export const View = ({ options, onSelect }: Props) =>
       ]),
       // TODO: optional, editable fields for when / where
       h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
-        h(Textarea, {
-          size,
-          placeholder: "What did you learn?\nNotes, links, etc.",
-        }),
+        h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
+          h(Textarea, {
+            size,
+            placeholder: "What did you learn?\nNotes, links, etc.",
+          }),
+          // TODO: embed helpers: opp, links, ?
+          // h(Stack, { direction: "row", alignItems: "start", width: "100%" }, [
+          //   h(Link, { justifySelf: "left" }, `Add opportunity`),
+          // ]),
+        ]),
+        // end of note units
         h(Divider, {}),
         h(
           Stack,
@@ -73,24 +80,10 @@ export const View = ({ options, onSelect }: Props) =>
             justifyContent: "end",
           },
           [
-            h(
-              Stack,
-              {
-                width: "100%",
-                direction: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              },
-              [
-                h(Stack, { direction: "row" }, [
-                  h(Link, { justifySelf: "left" }, `Add opportunity`),
-                ]),
-                h(Stack, { direction: "row" }, [
-                  h(IconButton, { icon: h(SmallAddIcon) }),
-                  h(Button, {}, `Save`),
-                ]),
-              ]
-            ),
+            h(Stack, { direction: "row" }, [
+              h(IconButton, { icon: h(SmallAddIcon) }),
+              h(Button, {}, `Save`),
+            ]),
           ]
         ),
       ]),
