@@ -1,4 +1,11 @@
-import { Divider, InputLeftAddon, Textarea } from "@chakra-ui/react"
+import {
+  Button,
+  Divider,
+  IconButton,
+  InputLeftAddon,
+  Link,
+  Textarea,
+} from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { CreatableSelect, ChakraStylesConfig } from "chakra-react-select"
 import { SmallAddIcon, AddIcon } from "@chakra-ui/icons"
@@ -58,7 +65,34 @@ export const View = ({ options, onSelect }: Props) =>
           placeholder: "What did you learn?\nNotes, links, etc.",
         }),
         h(Divider, {}),
-        h(SmallAddIcon),
+        h(
+          Stack,
+          {
+            width: "100%",
+            direction: "row",
+            justifyContent: "end",
+          },
+          [
+            h(
+              Stack,
+              {
+                width: "100%",
+                direction: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              },
+              [
+                h(Stack, { direction: "row" }, [
+                  h(Link, { justifySelf: "left" }, `Add opportunity`),
+                ]),
+                h(Stack, { direction: "row" }, [
+                  h(IconButton, { icon: h(SmallAddIcon) }),
+                  h(Button, {}, `Save`),
+                ]),
+              ]
+            ),
+          ]
+        ),
       ]),
     ]
   )
