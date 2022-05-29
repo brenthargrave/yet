@@ -29,9 +29,9 @@ export const View = ({ options, onSelect }: Props) =>
     [
       h(Heading, { size: "lg" }, `Note a new conversation`),
       h(Stack, { direction: "row", alignItems: "center", width: "100%" }, [
-        // h(Heading, { size }, "with:"),
+        h(Heading, { size }, "with:"),
         h(InputGroup, [
-          h(InputLeftAddon, { children: "With:" }),
+          // h(InputLeftAddon, { children: "With:" }),
           h(CreatableSelect, {
             placeholder: "Dale Carnegie",
             autoFocus: true,
@@ -48,6 +48,7 @@ export const View = ({ options, onSelect }: Props) =>
             // @ts-ignore
             onChange: (newValue, _meta) => onSelect(newValue),
             options,
+            noOptionsMessage: (_inputValue) => "No results.",
           }),
         ]),
       ]),
