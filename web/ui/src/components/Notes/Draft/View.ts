@@ -63,7 +63,7 @@ export const View = ({ options, onSelect }: Props) =>
         h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
           h(Textarea, {
             size,
-            placeholder: "What did you learn?\nNotes, links, etc.",
+            placeholder: "What did you learn?\nLinks, notes, etc.",
           }),
           // TODO: embed helpers: opp, links, ?
           // h(Stack, { direction: "row", alignItems: "start", width: "100%" }, [
