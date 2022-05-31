@@ -64,7 +64,7 @@ export const View = ({ options, onSelect, notes }: Props) =>
       ]),
       // TODO: optional, editable fields for when / where
       h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
-        ...notes.map(({ value, ...props }, idx, notesProps) =>
+        ...(notes || []).map(({ value, ...props }, idx, notesProps) =>
           h(NoteView, { value })
         ),
         h(Divider, {}),
