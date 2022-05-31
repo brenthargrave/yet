@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Divider,
   IconButton,
@@ -9,6 +10,7 @@ import {
 import { h } from "@cycle/react"
 import { CreatableSelect, ChakraStylesConfig } from "chakra-react-select"
 import { SmallAddIcon, AddIcon } from "@chakra-ui/icons"
+import { span } from "@cycle/react-dom"
 import { Heading, Stack, Center, InputGroup } from "~/system"
 
 export interface Option {
@@ -65,6 +67,7 @@ export const View = ({ options, onSelect }: Props) =>
             size,
             placeholder: "What did you learn?\nLinks, notes, etc.",
           }),
+          h(Box, { position: "absolute", top: 0, right: 0 }, "X"),
           // TODO: embed helpers: opp, links, ?
           // h(Stack, { direction: "row", alignItems: "start", width: "100%" }, [
           //   h(Link, { justifySelf: "left" }, `Add opportunity`),
