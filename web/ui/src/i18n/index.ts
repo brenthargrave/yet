@@ -28,6 +28,7 @@ const messages: Record<string, string> = {
   "onboarding.role.headingCopy": "What is your title or role there?",
   "onboarding.role.inputPlaceholer": shared.empty,
   "onboarding.role.submitButtonCopy": shared.continue,
+  "note.draft.placeholder": "What did you learn?\nLinks, notes, etc.",
 }
 
 // TODO: typesafe selection

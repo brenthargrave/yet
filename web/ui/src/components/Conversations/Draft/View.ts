@@ -12,6 +12,7 @@ import { CreatableSelect, ChakraStylesConfig } from "chakra-react-select"
 import { SmallAddIcon, AddIcon } from "@chakra-ui/icons"
 import { span } from "@cycle/react-dom"
 import { Heading, Stack, Center, InputGroup } from "~/system"
+import { View as NoteView, Props as NoteProps } from "~/components/Note/Draft"
 
 export interface Option {
   value: string
@@ -21,11 +22,12 @@ export interface Option {
 export interface Props {
   options: Option[]
   onSelect: (option: Option) => void
+  notes: NoteProps[]
 }
 
 const size = "md"
 
-export const View = ({ options, onSelect }: Props) =>
+export const View = ({ options, onSelect, notes }: Props) =>
   // h(Center, { width: "100vw", height: "100vh" }, [
   h(
     Stack,
@@ -62,18 +64,9 @@ export const View = ({ options, onSelect }: Props) =>
       ]),
       // TODO: optional, editable fields for when / where
       h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
-        h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
-          h(Textarea, {
-            size,
-            placeholder: "What did you learn?\nLinks, notes, etc.",
-          }),
-          h(Box, { position: "absolute", top: 0, right: 0 }, "X"),
-          // TODO: embed helpers: opp, links, ?
-          // h(Stack, { direction: "row", alignItems: "start", width: "100%" }, [
-          //   h(Link, { justifySelf: "left" }, `Add opportunity`),
-          // ]),
-        ]),
-        // end of note units
+        ...notes.map(({ value, ...props }, idx, notesProps) =>
+          h(NoteView, { value })
+        ),
         h(Divider, {}),
         h(
           Stack,
