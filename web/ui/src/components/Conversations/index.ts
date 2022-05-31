@@ -8,7 +8,7 @@ interface Sources {
   router: RouterSource
 }
 
-export const Notes = (sources: Sources) => {
+export const Conversations = (sources: Sources) => {
   const react = of(h(View, {}))
 
   return {
