@@ -1,7 +1,8 @@
 import { h, ReactSource } from "@cycle/react"
-import { of } from "rxjs"
+import { map, of } from "rxjs"
 import { Source as RouterSource } from "~/router"
 import { Conversations } from "./Conversations"
+import { View } from "./View"
 
 interface Sources {
   react: ReactSource
@@ -9,7 +10,9 @@ interface Sources {
 }
 
 export const Home = (sources: Sources) => {
-  const { react } = Conversations(sources)
+  const conversations = Conversations(sources)
+
+  const react = conversations.react.pipe(map((subview) => h(View, [subview])))
 
   return {
     react,
