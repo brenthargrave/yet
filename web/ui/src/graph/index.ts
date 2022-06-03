@@ -17,6 +17,17 @@ import { isNotNullish } from "rxjs-etc"
 import { Ok, Err, Result } from "ts-results"
 import { captureException } from "@sentry/react"
 
+import {
+  all,
+  find,
+  isNil,
+  none,
+  prop,
+  propSatisfies,
+  toLower,
+  trim,
+} from "ramda"
+import { isPresent } from "framer-motion/types/components/AnimatePresence/use-presence"
 import { client as urqlClient } from "./urql"
 import { client, tokenCacheKey } from "./apollo"
 import { getId } from "./anon"
@@ -35,6 +46,7 @@ import {
   UpdateProfileDocument,
   ProfileInput,
   Customer,
+  ProfileProp,
 } from "./generated"
 import { zenToRx } from "~/rx"
 import { makeTagger } from "~/log"
@@ -142,6 +154,14 @@ export const me$ = token$.pipe(
   tag("me$"),
   shareReplay()
 )
+
+export const isAuthenticated = (me: Customer) => isNotNullish(me)
+
+export const isOnboard = (me: Customer) =>
+  none(
+    (prop) => propSatisfies(isNil, toLower(prop), me),
+    Object.values(ProfileProp)
+  )
 
 // Analytics
 //
