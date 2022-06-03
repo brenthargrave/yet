@@ -3,17 +3,25 @@ import { captureException } from "@sentry/react"
 import { catchError, combineLatest, EMPTY, merge, Observable } from "rxjs"
 import { map, switchMap } from "rxjs/operators"
 import { match } from "ts-pattern"
+import { not } from "ramda"
 import { Auth } from "~/components/Auth"
 import { Landing } from "~/components/Landing"
 import { Onboarding } from "~/components/Onboarding"
-import { isPresent } from "~/fp"
-import { Customer, GraphWatchError, Source as GraphSource } from "~/graph"
+import {
+  Customer,
+  GraphWatchError,
+  isAuthenticated,
+  isLurking,
+  isOnboard,
+  isOnboarding,
+  Source as GraphSource,
+} from "~/graph"
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
 import { Source as RouterSource } from "~/router"
 import { toast } from "~/toast"
-import { Conversations } from "../Conversations"
 import { Header } from "./Header"
+import { Home } from "./Home"
 import { View as AppView } from "./View"
 
 const tag = makeTagger("App")
@@ -31,7 +39,7 @@ export const App = (sources: Sources) => {
 
   const { react: headerView$ } = Header(sources)
   const { react: landingView$ } = Landing(sources)
-  const { react: conversationsView$ } = Conversations(sources)
+  const { react: homeView$ } = Home(sources)
   const {
     graph: authGraph$,
     react: authView$,
@@ -49,9 +57,12 @@ export const App = (sources: Sources) => {
   const bodyView$ = combineLatest({ route: history$, me: me$ }).pipe(
     switchMap(({ route, me }) => {
       return match(route.name)
-        .with("root", () => (isPresent(me) ? onboardingView$ : landingView$))
+        .with("root", () => {
+          if (isLurking(me)) return landingView$
+          if (isOnboarding(me)) return onboardingView$
+          return homeView$
+        })
         .with("in", () => authView$)
-        .with("notes", () => conversationsView$) // TODO: embed in Home instead
         .otherwise(() => landingView$)
     }),
     tag("bodyView$")

@@ -22,6 +22,7 @@ import {
   find,
   isNil,
   none,
+  not,
   prop,
   propSatisfies,
   toLower,
@@ -47,6 +48,7 @@ import {
   ProfileInput,
   Customer,
   ProfileProp,
+  Maybe,
 } from "./generated"
 import { zenToRx } from "~/rx"
 import { makeTagger } from "~/log"
@@ -155,13 +157,15 @@ export const me$ = token$.pipe(
   shareReplay()
 )
 
-export const isAuthenticated = (me: Customer) => isNotNullish(me)
+export const isAuthenticated = (me: Maybe<Customer>) => isNotNullish(me)
+export const isLurking = (me: Maybe<Customer>) => not(isAuthenticated(me))
 
-export const isOnboard = (me: Customer) =>
+export const isOnboard = (me: Maybe<Customer>) =>
   none(
     (prop) => propSatisfies(isNil, toLower(prop), me),
     Object.values(ProfileProp)
   )
+export const isOnboarding = (me: Maybe<Customer>) => not(isOnboard(me))
 
 // Analytics
 //
