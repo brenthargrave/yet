@@ -1,6 +1,7 @@
 import { h, ReactSource } from "@cycle/react"
 import { of } from "rxjs"
 import { Source as RouterSource } from "~/router"
+import { Conversations } from "./Conversations"
 
 interface Sources {
   react: ReactSource
@@ -8,7 +9,7 @@ interface Sources {
 }
 
 export const Home = (sources: Sources) => {
-  const react = of(null)
+  const { react } = Conversations(sources)
 
   return {
     react,
