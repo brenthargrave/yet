@@ -13,11 +13,20 @@ export const View = ({ header, body }: Props) => {
   return h(React.StrictMode, [
     h(ErrorBoundary, { showDialog: true }, [
       h(ChakraProvider, [
-        h(Stack, { direction: "column", width: "100vw", height: "100vh" }, [
-          header,
-          body,
-          // footer,
-        ]),
+        h(
+          Stack,
+          {
+            maxWidth: 468,
+            direction: "column",
+            width: "100vw",
+            height: "100vh",
+          },
+          [
+            header,
+            body,
+            // footer,
+          ]
+        ),
       ]),
     ]),
   ])
