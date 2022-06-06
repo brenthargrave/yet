@@ -9,7 +9,6 @@ export const View = () =>
     h(
       Stack,
       {
-        backgroundColor: rgb(250, 250, 250).toString(),
         direction: "column",
         align: "center",
         margin: "4",

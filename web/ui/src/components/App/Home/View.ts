@@ -1,14 +1,13 @@
 import { Box } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { rgb } from "csx"
-import { FC, ReactNode } from "react"
-import { maxWidth } from "~/system"
+import { FC } from "react"
+import { lightGray, maxWidth } from "~/system"
 
 export const View: FC = ({ children }) =>
   h(
     Box,
     {
-      backgroundColor: rgb(250, 250, 250).toString(),
+      backgroundColor: lightGray,
       margin: "4",
     },
     [h(Box, { maxWidth }, [children])]
