@@ -1,6 +1,5 @@
 import { h } from "@cycle/react"
-import { rgb } from "csx"
-import { Button, Center, Heading, Stack } from "~/system"
+import { Center, Heading, Stack } from "~/system"
 
 export interface Conversation {}
 
@@ -14,9 +13,11 @@ export const View = ({ conversations }: Props) =>
       Stack,
       {
         direction: "column",
-        // align: "center",
         margin: "4",
       },
-      [h(Heading, {}, "Conversations")]
+      [
+        //
+        h(Heading, {}, "Conversations"),
+      ]
     ),
   ])
