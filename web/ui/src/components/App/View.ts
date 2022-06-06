@@ -16,7 +16,6 @@ export const View = ({ header, body }: Props) => {
         h(
           Stack,
           {
-            maxWidth: 468,
             direction: "column",
             width: "100vw",
             height: "100vh",

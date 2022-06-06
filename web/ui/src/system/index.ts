@@ -49,3 +49,5 @@ export const Text = (props: TextProps) => h(_Text, props)
 export const PinInput = (props: PinInputProps) => h(_PinInput, props)
 export const PinInputField = (props: PinInputFieldProps) =>
   h(_PinInputField, props)
+
+export * from "./styles"
