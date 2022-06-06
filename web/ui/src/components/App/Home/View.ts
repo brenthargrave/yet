@@ -9,6 +9,12 @@ export const View: FC = ({ children }) =>
     {
       backgroundColor: lightGray,
       margin: "4",
+      width: "100%",
     },
-    [h(Box, { maxWidth }, [children])]
+    [
+      h(Box, { maxWidth, width: "100%" }, [
+        //
+        children,
+      ]),
+    ]
   )

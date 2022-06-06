@@ -2,15 +2,19 @@ import { h } from "@cycle/react"
 import { rgb } from "csx"
 import { Button, Center, Heading, Stack } from "~/system"
 
-export interface Props {}
+export interface Conversation {}
 
-export const View = () =>
+export interface Props {
+  conversations: Conversation[]
+}
+
+export const View = ({ conversations }: Props) =>
   h(Center, { width: "100vw", height: "100vh" }, [
     h(
       Stack,
       {
         direction: "column",
-        align: "center",
+        // align: "center",
         margin: "4",
       },
       [h(Heading, {}, "Conversations")]

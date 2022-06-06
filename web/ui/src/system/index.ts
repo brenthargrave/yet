@@ -10,6 +10,8 @@ import {
   AlertTitleProps,
   Button as _Button,
   ButtonProps,
+  Box as _Box,
+  BoxProps,
   Center as _Center,
   CenterProps,
   Divider as _Divider,
@@ -37,6 +39,7 @@ export const AlertIcon = (props: AlertIconProps) => h(_AlertIcon, props)
 export const AlertTitle = (props: AlertTitleProps) => h(_AlertTitle, props)
 export const AlertDescription = (props: AlertDescriptionProps) =>
   h(_AlertDescription, props)
+export const Box = (props: BoxProps) => h(_Box, props)
 export const Button = (props: ButtonProps) => h(_Button, props)
 export const Center = (props: CenterProps) => h(_Center, props)
 export const Divider = (props: DividerProps) => h(_Divider, props)
