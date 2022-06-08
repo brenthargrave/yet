@@ -18,3 +18,5 @@ export const View: FC = ({ children }) =>
       ]),
     ]
   )
+
+View.displayName = "HomeView"

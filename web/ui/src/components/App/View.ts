@@ -1,15 +1,14 @@
 import { ChakraProvider } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { ErrorBoundary } from "@sentry/react"
-import React, { ReactNode } from "react"
+import React, { FC, ReactNode } from "react"
 import { Stack } from "~/system"
 
 interface Props {
   header: ReactNode
-  // footer: ReactNode
   body: ReactNode
 }
-export const View = ({ header, body }: Props) => {
+export const View: FC<Props> = ({ header, body }) => {
   return h(React.StrictMode, [
     h(ErrorBoundary, { showDialog: true }, [
       h(ChakraProvider, [
@@ -17,8 +16,8 @@ export const View = ({ header, body }: Props) => {
           Stack,
           {
             direction: "column",
-            width: "100vw",
-            height: "100vh",
+            // width: "100vw",
+            // height: "100vh",
           },
           [
             header,
@@ -30,3 +29,5 @@ export const View = ({ header, body }: Props) => {
     ]),
   ])
 }
+
+View.displayName = "AppView"

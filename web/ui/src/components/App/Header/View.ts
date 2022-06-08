@@ -11,5 +11,7 @@ const InnerHeader: FC = ({ children }) =>
 
 InnerHeader.displayName = "InnerHeader"
 
-export const View = () =>
+export const View: FC = () =>
   h(Centered, [h(InnerHeader, [h(Heading, { size: "md" }, productName)])])
+
+View.displayName = "HeaderView"
