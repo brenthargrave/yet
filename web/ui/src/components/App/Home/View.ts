@@ -3,7 +3,7 @@ import { h } from "@cycle/react"
 import { FC } from "react"
 import { lightGray, maxWidth } from "~/system"
 
-export const View: FC = ({ children }) =>
+const Background: FC = ({ children }) =>
   h(
     Box,
     {
@@ -11,12 +11,15 @@ export const View: FC = ({ children }) =>
       margin: "4",
       width: "100%",
     },
-    [
-      h(Box, { maxWidth, width: "100%" }, [
-        //
-        children,
-      ]),
-    ]
+    [children]
   )
+Background.displayName = "BackgroundView"
 
+export const View: FC = ({ children }) =>
+  h(Background, [
+    h(Box, { maxWidth, width: "100%" }, [
+      //
+      children,
+    ]),
+  ])
 View.displayName = "HomeView"
