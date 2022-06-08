@@ -1,6 +1,7 @@
 import { h } from "@cycle/react"
 import { Meta, Story } from "@storybook/react"
 import { Props, View } from "./View"
+import { View as HomeView } from "../View"
 
 export default {
   title: "Components/App/Home/Conversations",
@@ -8,7 +9,7 @@ export default {
   parameters: {
     controls: { hideNoControlsWarning: true },
   },
-  decorators: [],
+  decorators: [(Story) => h(HomeView, [h(Story)])],
 } as Meta
 
 export const Default: Story<Props> = (args) => h(View, args)
