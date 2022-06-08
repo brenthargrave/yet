@@ -1,13 +1,14 @@
 import { h } from "@cycle/react"
 import { Meta, Story } from "@storybook/react"
-import { Props, View } from "~/components/App/Home/Conversations/Draft/View"
+import { Props, View } from "./View"
 
 export default {
-  title: "Components/Conversations",
+  title: "Components/App/Home/Conversations",
   component: View,
   parameters: {
     controls: { hideNoControlsWarning: true },
   },
+  decorators: [],
 } as Meta
 
 export const Default: Story<Props> = (args) => h(View, args)
