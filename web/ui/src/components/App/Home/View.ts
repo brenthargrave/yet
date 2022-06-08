@@ -1,5 +1,6 @@
 import { Box } from "@chakra-ui/react"
 import { h } from "@cycle/react"
+import { percent } from "csx"
 import { FC } from "react"
 import { lightGray, maxWidth } from "~/system"
 
@@ -17,7 +18,7 @@ Background.displayName = "BackgroundView"
 
 export const View: FC = ({ children }) =>
   h(Background, [
-    h(Box, { maxWidth, width: "100%" }, [
+    h(Box, { maxWidth, width: percent(100) }, [
       //
       children,
     ]),

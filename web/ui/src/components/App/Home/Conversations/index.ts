@@ -9,7 +9,7 @@ interface Sources {
 }
 
 export const Conversations = (sources: Sources) => {
-  const react = of(h(View, {}))
+  const react = of(h(View))
 
   return {
     react,
