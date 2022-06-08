@@ -34,7 +34,7 @@ export const View = ({ options, onSelect, notes }: Props) =>
     {
       direction: "column",
       align: "start",
-      margin: "4",
+      padding: "4",
       justifyContent: "flex-start",
       gap: "2",
     },

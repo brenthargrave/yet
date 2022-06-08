@@ -13,7 +13,4 @@ export default {
 } as Meta
 
 export const Default: Story<Props> = (args) => h(View, args)
-Default.argTypes = {
-  // onSelect: { control: false, action: "selected" },
-  // options: [{ value: "1", label: "Brent Hargrave" }],
-}
+Default.argTypes = {}

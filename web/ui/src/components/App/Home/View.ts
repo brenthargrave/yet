@@ -9,7 +9,7 @@ const Background: FC = ({ children }) =>
     VStack,
     {
       backgroundColor: lightGray,
-      margin: "4",
+      padding: "4",
       width: "100%",
       alignItems: "center",
     },
