@@ -10,9 +10,9 @@ interface Sources {
 }
 
 export const Home = (sources: Sources) => {
-  const conversations = Conversations(sources)
+  const { react: conversationsView$ } = Conversations(sources)
 
-  const react = conversations.react.pipe(map((subview) => h(View, [subview])))
+  const react = conversationsView$.pipe(map((subview) => h(View, [subview])))
 
   return {
     react,

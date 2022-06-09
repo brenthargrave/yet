@@ -1,7 +1,8 @@
 import { h, ReactSource } from "@cycle/react"
 import { of } from "rxjs"
 import { Source as RouterSource } from "~/router"
-import { View } from "./View"
+import { makeObservableCallback } from "~/rx"
+import { View, Conversation } from "./View"
 
 interface Sources {
   react: ReactSource
@@ -9,7 +10,9 @@ interface Sources {
 }
 
 export const Conversations = (sources: Sources) => {
-  const react = of(h(View))
+  const [clickedNew$, onClickNew] = makeObservableCallback()
+  const conversations: Conversation[] = [] // TODO: where derived from?
+  const react = of(h(View, { conversations, onClickNew }))
 
   return {
     react,
