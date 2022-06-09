@@ -1,11 +1,17 @@
-import { Button, Box, Center, Heading, VStack, Text } from "@chakra-ui/react"
+import { Button, Heading, Text, VStack } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { productName, t } from "~/i18n"
+import { t } from "~/i18n"
 
-export const EmptyView: FC = () =>
+export type OnClickNew = () => void
+
+interface Props {
+  onClickNew?: OnClickNew
+}
+
+export const EmptyView: FC<Props> = ({ onClickNew }) =>
   h(VStack, { alignItems: "center", maxWidth: "80%", gap: 4 }, [
     h(Heading, { size: "lg" }, `Welcome!`),
     h(Text, { align: "center" }, t(`note.empty.cta`)),
-    h(Button, {}, t(`note.empty.buttonCopy`)),
+    h(Button, { onClick: onClickNew }, t(`note.empty.buttonCopy`)),
   ])
