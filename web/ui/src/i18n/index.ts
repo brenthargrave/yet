@@ -29,6 +29,7 @@ const messages: Record<string, string> = {
   "onboarding.role.inputPlaceholer": shared.empty,
   "onboarding.role.submitButtonCopy": shared.continue,
   "note.draft.placeholder": "What did you learn?\nLinks, notes, etc.",
+  "note.empty.buttonCopy": "Note a conversation",
 }
 
 // TODO: typesafe selection

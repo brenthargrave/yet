@@ -1,7 +1,7 @@
 import { VStack } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { lightGray, maxWidth } from "~/system"
+import { white, maxWidth } from "~/system"
 
 const width = "100%"
 const height = "100%"
@@ -10,7 +10,7 @@ const Background: FC = ({ children }) =>
   h(
     VStack,
     {
-      backgroundColor: lightGray,
+      backgroundColor: white,
       padding: "4",
       width,
       height,
