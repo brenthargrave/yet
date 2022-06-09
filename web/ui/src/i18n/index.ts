@@ -30,6 +30,7 @@ const messages: Record<string, string> = {
   "onboarding.role.submitButtonCopy": shared.continue,
   "note.draft.placeholder": "What did you learn?\nLinks, notes, etc.",
   "note.empty.buttonCopy": "Note a conversation",
+  "note.empty.cta": `To get started, take some notes on a recent conversation you had with someone.`,
 }
 
 // TODO: typesafe selection
