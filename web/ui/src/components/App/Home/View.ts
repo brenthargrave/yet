@@ -1,6 +1,5 @@
-import { Box, Center, Stack, VStack } from "@chakra-ui/react"
+import { VStack } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { percent } from "csx"
 import { FC } from "react"
 import { lightGray, maxWidth } from "~/system"
 
