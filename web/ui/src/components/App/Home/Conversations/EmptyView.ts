@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const EmptyView: FC<Props> = ({ onClickNew }) =>
-  h(VStack, { alignItems: "center", maxWidth: "80%", gap: 4 }, [
+  h(VStack, { alignItems: "center", gap: 4 }, [
     h(Heading, { size: "lg" }, `Welcome!`),
     h(Text, { align: "center" }, t(`note.empty.cta`)),
     h(Button, { onClick: onClickNew }, t(`note.empty.buttonCopy`)),
