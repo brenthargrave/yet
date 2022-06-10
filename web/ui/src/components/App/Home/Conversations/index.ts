@@ -20,8 +20,7 @@ export const Conversations = (sources: Sources) => {
 
   const react = of(h(View, { conversations, onClickNew }))
 
-  // const router = clickNew$.pipe(map(_ => routes.conversation({ cid: TODO })))
-  // TODO: really want to be generating ulids inside every component? smells
+  const router = clickNew$.pipe(map((_) => routes.createConversation()))
 
   return {
     react,
