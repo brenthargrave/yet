@@ -16,18 +16,12 @@ export const Conversations = (sources: Sources) => {
   const [_clickNew$, onClickNew] = makeObservableCallback()
   const clickNew$ = _clickNew$.pipe(tag("clickNew$"), share())
 
-  // TODO
-  /**
-   * how to handle new converations?
-   * URL: fml
-   * this should'nt be this hard!
-   * a notion of actions might actually be helpful..
-   * action$ = click.map createConversation(ulid)
-   */
   const conversations: Conversation[] = []
+
   const react = of(h(View, { conversations, onClickNew }))
 
-  // const router = clickNew$.pipe(map(_ => routes.TODO))
+  // const router = clickNew$.pipe(map(_ => routes.conversation({ cid: TODO })))
+  // TODO: really want to be generating ulids inside every component? smells
 
   return {
     react,
