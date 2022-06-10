@@ -1,8 +1,11 @@
 import { h, ReactSource } from "@cycle/react"
-import { of } from "rxjs"
-import { Source as RouterSource } from "~/router"
+import { map, of, share } from "rxjs"
+import { Source as RouterSource, routes } from "~/router"
 import { makeObservableCallback } from "~/rx"
+import { makeTagger } from "~/log"
 import { View, Conversation } from "./View"
+
+const tag = makeTagger("Conversations")
 
 interface Sources {
   react: ReactSource
@@ -10,7 +13,9 @@ interface Sources {
 }
 
 export const Conversations = (sources: Sources) => {
-  const [click$, onClickNew] = makeObservableCallback()
+  const [_clickNew$, onClickNew] = makeObservableCallback()
+  const clickNew$ = _clickNew$.pipe(tag("clickNew$"), share())
+
   // TODO
   /**
    * how to handle new converations?
@@ -21,6 +26,8 @@ export const Conversations = (sources: Sources) => {
    */
   const conversations: Conversation[] = []
   const react = of(h(View, { conversations, onClickNew }))
+
+  // const router = clickNew$.pipe(map(_ => routes.TODO))
 
   return {
     react,
