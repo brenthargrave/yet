@@ -1,6 +1,6 @@
 import { h, ReactSource } from "@cycle/react"
-import { of } from "rxjs"
-import { Source as RouterSource } from "~/router"
+import { map, of } from "rxjs"
+import { isRoute, routes, Source as RouterSource } from "~/router"
 import { View } from "./View"
 
 interface Sources {
@@ -8,8 +8,11 @@ interface Sources {
   router: RouterSource
 }
 
-export const Header = (sources: Sources) => {
-  const react = of(h(View, {}))
+export const Header = ({ router: { history$ } }: Sources) => {
+  // const react = history$.pipe(
+  //   map((route) => (isRoute(routes.root(), route) ? null : h(View)))
+  // )
+  const react = of(h(View))
 
   return {
     react,
