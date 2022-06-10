@@ -3,14 +3,10 @@ import { of } from "rxjs"
 
 import { routes, Source as RouterSource } from "~/router"
 import { EventName, track } from "~/graph"
+import { CC, Sources } from "~/components/App"
 import { View } from "./View"
 
-interface Sources {
-  react: ReactSource
-  router: RouterSource
-}
-
-export const Landing = (sources: Sources) => {
+export const Landing: CC<Sources> = (sources) => {
   const onClickJoin = async () => {
     routes.in().push()
     const _event = await track(EventName.TapSignup)
