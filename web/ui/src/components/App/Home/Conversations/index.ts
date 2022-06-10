@@ -5,11 +5,16 @@ import { makeObservableCallback } from "~/rx"
 import { makeTagger } from "~/log"
 import { View, Conversation } from "./View"
 import { EventName, track$, Source as GraphSource } from "~/graph"
-import { CC, Sources } from "~/components/App"
 
 const tag = makeTagger("Conversations")
 
-export const Conversations: CC<Sources> = (sources) => {
+interface Sources {
+  react: ReactSource
+  router: RouterSource
+  graph: GraphSource
+}
+
+export const Conversations = (sources: Sources) => {
   const { me$ } = sources.graph
 
   const [_clickNew$, onClickNew] = makeObservableCallback()
@@ -19,9 +24,9 @@ export const Conversations: CC<Sources> = (sources) => {
     withLatestFrom(me$),
     map(([_, me]) =>
       track$({
-        userId: me?.id,
         name: EventName.TapNewConversation,
         properties: {},
+        userId: me?.id,
       })
     )
   )
