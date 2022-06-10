@@ -37,7 +37,7 @@ export const Conversations = (sources: Sources) => {
 
   return {
     react,
-    // router,
+    router,
     // track
   }
 }
