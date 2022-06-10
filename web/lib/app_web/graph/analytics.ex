@@ -5,6 +5,7 @@ defmodule AppWeb.Graph.Analytics do
   enum :event_name do
     value(:tap_signup, as: "tap_signup")
     value(:tap_signin, as: "tap_signin")
+    value(:tap_new_conversation, as: "tap_new_conversation")
   end
 
   input_object :event_properties do

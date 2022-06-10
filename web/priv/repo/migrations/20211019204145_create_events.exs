@@ -5,8 +5,12 @@ defmodule App.Repo.Migrations.CreateEvents do
     create table(:events) do
       add :anon_id, :string, null: false
       add :name, :string, null: false
+      add :customer_id, :string
       timestamps()
     end
+
+    create(index(:events, [:anon_id]))
+    create(index(:events, [:customer_id]))
 
     create table(:customers) do
       add :e164, :string, null: false
