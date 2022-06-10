@@ -49,6 +49,7 @@ import {
   Customer,
   ProfileProp,
   Maybe,
+  TrackEventInput,
 } from "./generated"
 import { zenToRx } from "~/rx"
 import { makeTagger } from "~/log"
@@ -185,4 +186,19 @@ export const track = async (
     .mutation(TrackEventDocument, { input })
     .toPromise()
   return result.data?.trackEvent as Event
+}
+
+export const track$ = (_input: Omit<TrackEventInput, "anonId">) => {
+  const input = { ..._input, anonId }
+  return from(
+    client.mutate({
+      mutation: TrackEventDocument,
+      variables: { input },
+    })
+  ).pipe(
+    map(({ data, errors, extensions, context }) => {
+      if (errors) throw new GraphError(JSON.stringify(errors))
+      return data!.trackEvent!
+    })
+  )
 }
