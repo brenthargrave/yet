@@ -1,15 +1,10 @@
-import { h, ReactSource } from "@cycle/react"
+import { h } from "@cycle/react"
 import { of } from "rxjs"
-import { Source as RouterSource } from "~/router"
+import { CC, Sources } from "~/components/App"
 import { makeObservableCallback } from "~/rx"
-import { View, Conversation } from "./View"
+import { Conversation, View } from "./View"
 
-interface Sources {
-  react: ReactSource
-  router: RouterSource
-}
-
-export const Conversations = (sources: Sources) => {
+export const Conversations: CC<Sources> = (sources) => {
   const [click$, onClickNew] = makeObservableCallback()
   // TODO
   /**
