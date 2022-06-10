@@ -59,14 +59,17 @@ export const App = (sources: Sources) => {
 
   const bodyView$ = combineLatest({ route: history$, me: me$ }).pipe(
     switchMap(({ route, me }) => {
-      return match(route.name)
-        .with("root", () => {
-          if (isLurking(me)) return landingView$
-          if (isOnboarding(me)) return onboardingView$
-          return homeView$
-        })
-        .with("in", () => authView$)
-        .otherwise(() => landingView$)
+      return (
+        match(route.name)
+          // TODO: .with(false) no match
+          .with("root", () => {
+            if (isLurking(me)) return landingView$
+            if (isOnboarding(me)) return onboardingView$
+            return homeView$
+          })
+          .with("in", () => authView$)
+          .otherwise(() => landingView$)
+      )
     }),
     tag("bodyView$")
   )

@@ -12,12 +12,13 @@ interface Sources {
 }
 
 export const Home = (sources: Sources) => {
-  const { react: conversationsView$, router } = Conversations(sources)
+  const { react: conversationsView$, router, track } = Conversations(sources)
 
   const react = conversationsView$.pipe(map((subview) => h(View, [subview])))
 
   return {
     react,
     router,
+    track,
   }
 }
