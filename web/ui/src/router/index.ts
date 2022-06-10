@@ -9,7 +9,7 @@ import { makeTagger } from "~/log"
 const tag = makeTagger("Router")
 
 const root = defineRoute("/")
-const conversations = root.extend("c")
+const conversations = root.extend("/c")
 const createConversation = conversations.extend("/new")
 const conversation = conversations.extend(
   { cid: param.path.string },

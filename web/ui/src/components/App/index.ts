@@ -42,7 +42,7 @@ export const App = (sources: Sources) => {
 
   const { react: headerView$ } = Header(sources)
   const { react: landingView$ } = Landing(sources)
-  const { react: homeView$ } = Home(sources)
+  const { react: homeView$, router: homeRouter$ } = Home(sources)
   const {
     graph: authGraph$,
     react: authView$,
@@ -89,7 +89,9 @@ export const App = (sources: Sources) => {
   )
 
   // NOTE: ignore errors & resubscribe in all drivers
-  const router = merge(authRouter).pipe(catchError((error, caught$) => caught$))
+  const router = merge(authRouter, homeRouter$).pipe(
+    catchError((error, caught$) => caught$)
+  )
   const notice = merge(authNotice).pipe(catchError((error, caught$) => caught$))
   const graph = merge(authGraph$).pipe(catchError((error, caught$) => caught$))
 
