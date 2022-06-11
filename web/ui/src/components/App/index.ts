@@ -1,9 +1,8 @@
 import { h, ReactSource } from "@cycle/react"
 import { captureException } from "@sentry/react"
-import { catchError, combineLatest, EMPTY, merge, Observable } from "rxjs"
-import { map, switchMap } from "rxjs/operators"
+import { catchError, combineLatest, EMPTY, merge, Observable, of } from "rxjs"
+import { map, switchMap, share, mergeMap } from "rxjs/operators"
 import { match } from "ts-pattern"
-import { not } from "ramda"
 import { Auth } from "~/components/Auth"
 import { Landing } from "~/components/Landing"
 import { Onboarding } from "~/components/Onboarding"
@@ -18,7 +17,7 @@ import {
 } from "~/graph"
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
-import { Source as RouterSource } from "~/router"
+import { push, routes, Source as RouterSource } from "~/router"
 import { toast } from "~/toast"
 import { Header } from "./Header"
 import { Home } from "./Home"
@@ -38,6 +37,7 @@ export interface Sources {
 export const App = (sources: Sources) => {
   const { history$: _history$ } = sources.router
   const history$ = _history$.pipe(tag("history$"))
+
   const { token$, me$: cachedMe$ } = sources.graph
 
   const { react: headerView$ } = Header(sources)
@@ -91,8 +91,15 @@ export const App = (sources: Sources) => {
     tag("App.react$")
   )
 
+  const guardedHistory$ = history$.pipe(
+    mergeMap((route) => {
+      // redirect unsupported paths to root
+      return route.name ? EMPTY : of(push(routes.root()))
+    }),
+    tag("guardedHistory$")
+  )
   // NOTE: ignore errors & resubscribe in all drivers
-  const router = merge(authRouter, homeRouter$).pipe(
+  const router = merge(guardedHistory$, authRouter, homeRouter$).pipe(
     catchError((error, caught$) => caught$)
   )
   const notice = merge(authNotice).pipe(catchError((error, caught$) => caught$))
