@@ -64,6 +64,7 @@ export const App = (sources: Sources) => {
           // TODO: .with(false) no match
           .with("root", () => {
             if (isLurking(me)) return landingView$
+            // ! why is onboarding on root and not /in?
             if (isOnboarding(me)) return onboardingView$
             return homeView$
           })
