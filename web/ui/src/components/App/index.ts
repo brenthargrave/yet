@@ -69,7 +69,9 @@ export const App = (sources: Sources) => {
             return homeView$
           })
           .with("in", () => authView$)
-          .otherwise(() => landingView$)
+          .run()
+        // .exhaustive()
+        // .otherwise(() => landingView$)
       )
     }),
     tag("bodyView$")
