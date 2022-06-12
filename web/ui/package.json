@@ -82,6 +82,7 @@
     "ts-results": "3.3.0",
     "type-route": "0.7.1",
     "ulid": "2.3.0",
+    "xstate": "4.32.1",
     "xstream": "11.14.0"
   }
 }
