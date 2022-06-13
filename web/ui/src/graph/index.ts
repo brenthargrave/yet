@@ -188,7 +188,7 @@ export const track = async (
   return result.data?.trackEvent as Event
 }
 
-// TODO: add event.occurred_at timestamp, set client-side
+// TODO: add event.occurred_at timestamp, set client-side (don't rely on network timing)
 export const track$ = (_input: Omit<TrackEventInput, "anonId">) => {
   const input = { ..._input, anonId }
   return from(
