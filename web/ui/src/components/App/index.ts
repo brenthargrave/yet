@@ -1,7 +1,7 @@
 import { h, ReactSource } from "@cycle/react"
 import { captureException } from "@sentry/react"
 import { catchError, combineLatest, EMPTY, merge, Observable, of } from "rxjs"
-import { map, switchMap, share, mergeMap } from "rxjs/operators"
+import { map, switchMap, concatMap, mergeMap } from "rxjs/operators"
 import { match } from "ts-pattern"
 import { Auth } from "~/components/Auth"
 import { Landing } from "~/components/Landing"
@@ -42,7 +42,7 @@ export const App = (sources: Sources) => {
 
   const { react: headerView$ } = Header(sources)
   const { react: landingView$ } = Landing(sources)
-  const { react: homeView$, router: homeRouter$ } = Home(sources)
+  const { react: homeView$, router: homeRouter$, ...home } = Home(sources)
   const {
     graph: authGraph$,
     react: authView$,
@@ -107,12 +107,14 @@ export const App = (sources: Sources) => {
   )
   const notice = merge(authNotice).pipe(catchError((error, caught$) => caught$))
   const graph = merge(authGraph$).pipe(catchError((error, caught$) => caught$))
+  const track = merge(home.track).pipe(catchError((error, caught$) => caught$))
 
   return {
     react,
     router,
     notice,
     graph,
+    track,
   }
 }
 
