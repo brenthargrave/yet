@@ -200,6 +200,7 @@ export const track$ = (_input: Omit<TrackEventInput, "anonId">) => {
     map(({ data, errors, extensions, context }) => {
       if (errors) throw new GraphError(JSON.stringify(errors))
       return data!.trackEvent!
-    })
+    }),
+    tag("track$")
   )
 }
