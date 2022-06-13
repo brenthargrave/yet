@@ -1,6 +1,16 @@
 import { h, ReactSource } from "@cycle/react"
-import { merge, EMPTY, map, mergeMap, of, share, withLatestFrom } from "rxjs"
-import { Source as RouterSource, routes, push } from "~/router"
+import {
+  merge,
+  EMPTY,
+  map,
+  mergeMap,
+  of,
+  share,
+  withLatestFrom,
+  filter,
+} from "rxjs"
+import { not } from "ramda"
+import { Source as RouterSource, routes, push, isRoute } from "~/router"
 import { makeObservableCallback } from "~/rx"
 import { makeTagger } from "~/log"
 import { View, Conversation } from "./View"
@@ -21,8 +31,9 @@ export const Conversations = (sources: Sources) => {
   } = sources
   // TODO: refactor into helper?
   const redirect$ = history$.pipe(
+    filter((route) => isRoute(route, routes.conversations())),
     withLatestFrom(me$),
-    mergeMap(([route, me]) => (isOnboard(me) ? EMPTY : of(routes.root())))
+    mergeMap(([_, me]) => (isOnboard(me) ? EMPTY : of(routes.root())))
   )
 
   const [_clickNew$, onClickNew] = makeObservableCallback()
