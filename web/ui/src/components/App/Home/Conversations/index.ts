@@ -1,6 +1,6 @@
 import { h, ReactSource } from "@cycle/react"
 import { merge, EMPTY, map, mergeMap, of, share, withLatestFrom } from "rxjs"
-import { Source as RouterSource, routes } from "~/router"
+import { Source as RouterSource, routes, push } from "~/router"
 import { makeObservableCallback } from "~/rx"
 import { makeTagger } from "~/log"
 import { View, Conversation } from "./View"
@@ -19,7 +19,7 @@ export const Conversations = (sources: Sources) => {
     router: { history$ },
     graph: { me$ },
   } = sources
-  // TODO: refactor into helper
+  // TODO: refactor into helper?
   const redirect$ = history$.pipe(
     withLatestFrom(me$),
     mergeMap(([route, me]) => (isOnboard(me) ? EMPTY : of(routes.root())))
@@ -27,10 +27,12 @@ export const Conversations = (sources: Sources) => {
 
   const [_clickNew$, onClickNew] = makeObservableCallback()
   const clickNew$ = _clickNew$.pipe(tag("clickNew$"), share())
-  const newConvo$ = clickNew$.pipe(map((_) => routes.createConversation()))
+  const newConvo$ = clickNew$.pipe(
+    map((_) => push(routes.createConversation()))
+  )
   const track = clickNew$.pipe(
     withLatestFrom(me$),
-    map(([_, me]) =>
+    mergeMap(([_, me]) =>
       track$({
         name: EventName.TapNewConversation,
         properties: {},
