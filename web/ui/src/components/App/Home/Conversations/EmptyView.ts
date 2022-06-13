@@ -10,8 +10,9 @@ interface Props {
 }
 
 export const EmptyView: FC<Props> = ({ onClickNew }) =>
-  h(VStack, { alignItems: "center", gap: 4 }, [
+  h(VStack, { alignItems: "center", gap: 4, height: "100%", width: "100%" }, [
     h(Heading, { size: "lg" }, `Welcome!`),
     h(Text, { align: "center" }, t(`note.empty.cta`)),
     h(Button, { onClick: onClickNew }, t(`note.empty.buttonCopy`)),
   ])
+EmptyView.displayName = "EmptyView"

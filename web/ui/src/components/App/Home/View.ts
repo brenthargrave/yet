@@ -1,9 +1,8 @@
-import { VStack } from "@chakra-ui/react"
+import { Box, VStack } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { white, maxWidth } from "~/system"
 
-const width = "100%"
 const height = "100%"
 
 const Background: FC = ({ children }) =>
@@ -11,8 +10,6 @@ const Background: FC = ({ children }) =>
     VStack,
     {
       backgroundColor: white,
-      padding: "4",
-      width,
       height,
       alignItems: "center",
     },
@@ -20,11 +17,10 @@ const Background: FC = ({ children }) =>
   )
 Background.displayName = "BackgroundView"
 
+const MaxWidthView: FC = ({ children }) =>
+  h(Box, { maxWidth, height: "100%", m: 0 }, [children])
+MaxWidthView.displayName = "MaxWidthView"
+
 export const View: FC = ({ children }) =>
-  h(Background, [
-    h(VStack, { maxWidth, width, height }, [
-      //
-      children,
-    ]),
-  ])
+  h(Background, [h(MaxWidthView, [children])])
 View.displayName = "HomeView"

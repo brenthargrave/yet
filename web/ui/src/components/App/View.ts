@@ -16,8 +16,7 @@ export const View: FC<Props> = ({ header, body }) => {
           Stack,
           {
             direction: "column",
-            // TODO: enable height-centered body views wrt viewport height
-            // height: "100vh",
+            height: "100vh",
           },
           [
             header,

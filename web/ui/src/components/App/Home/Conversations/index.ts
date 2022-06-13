@@ -9,7 +9,6 @@ import {
   withLatestFrom,
   filter,
 } from "rxjs"
-import { not } from "ramda"
 import { Source as RouterSource, routes, push, isRoute } from "~/router"
 import { makeObservableCallback } from "~/rx"
 import { makeTagger } from "~/log"
