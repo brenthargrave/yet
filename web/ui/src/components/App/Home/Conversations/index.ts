@@ -1,8 +1,8 @@
 import { ReactSource } from "@cycle/react"
-import { merge } from "rxjs"
+import { merge, mergeMap } from "rxjs"
 import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { Source as RouterSource } from "~/router"
+import { isRoute, routes, Source as RouterSource } from "~/router"
 import { List } from "./List"
 
 const tag = makeTagger("Conversations")
@@ -14,7 +14,18 @@ interface Sources {
 }
 
 export const Conversations = (sources: Sources) => {
-  const { router: listRouter$, react, track } = List(sources)
+  const {
+    router: { history$ },
+  } = sources
+
+  const { router: listRouter$, react: listView$, track } = List(sources)
+  const { react: editView$ } = Edit(sources)
+
+  const react = history$.pipe(
+    mergeMap((route) =>
+      isRoute(routes.createConversation(), route) ? editView$ : listView$
+    )
+  )
 
   const router = merge(listRouter$)
 
