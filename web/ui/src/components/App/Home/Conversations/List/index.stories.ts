@@ -1,7 +1,7 @@
 import { h } from "@cycle/react"
 import { Meta, Story } from "@storybook/react"
 import { Props, View } from "./View"
-import { ContainerView } from "../index.stories"
+import { ContainerView } from "../../index.stories"
 
 export default {
   title: "Components/App/Home/Conversations",

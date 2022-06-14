@@ -1,19 +1,9 @@
-import { h, ReactSource } from "@cycle/react"
-import {
-  merge,
-  EMPTY,
-  map,
-  mergeMap,
-  of,
-  share,
-  withLatestFrom,
-  filter,
-} from "rxjs"
-import { Source as RouterSource, routes, push, isRoute } from "~/router"
-import { makeObservableCallback } from "~/rx"
+import { ReactSource } from "@cycle/react"
+import { merge } from "rxjs"
+import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { View, Conversation } from "./View"
-import { EventName, track$, Source as GraphSource, isOnboard } from "~/graph"
+import { Source as RouterSource } from "~/router"
+import { List } from "./List"
 
 const tag = makeTagger("Conversations")
 
@@ -24,40 +14,9 @@ interface Sources {
 }
 
 export const Conversations = (sources: Sources) => {
-  const {
-    router: { history$ },
-    graph: { me$ },
-  } = sources
-  // TODO: refactor into helper
-  const redirect$ = history$.pipe(
-    filter((route) => isRoute(route, routes.conversations())),
-    withLatestFrom(me$),
-    mergeMap(([_, me]) => (isOnboard(me) ? EMPTY : of(routes.root())))
-  )
+  const { router: listRouter$, react, track } = List(sources)
 
-  // List, default view
-  const [_clickNew$, onClickNew] = makeObservableCallback()
-  const clickNew$ = _clickNew$.pipe(tag("clickNew$"), share())
-  const newConvo$ = clickNew$.pipe(
-    map((_) => push(routes.createConversation()))
-  )
-  const track = clickNew$.pipe(
-    withLatestFrom(me$),
-    mergeMap(([_, me]) =>
-      track$({
-        name: EventName.TapNewConversation,
-        properties: {},
-        userId: me?.id,
-      })
-    )
-  )
-
-  // Edit
-
-  const conversations: Conversation[] = []
-  const react = of(h(View, { conversations, onClickNew }))
-
-  const router = merge(redirect$, newConvo$)
+  const router = merge(listRouter$)
 
   return {
     react,

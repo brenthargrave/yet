@@ -1,6 +1,6 @@
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { EmptyView, OnClickNew } from "./EmptyView"
+import { EmptyView, OnClickNew } from "../EmptyView"
 
 export interface Conversation {}
 
