@@ -28,13 +28,14 @@ export const Conversations = (sources: Sources) => {
     router: { history$ },
     graph: { me$ },
   } = sources
-  // TODO: refactor into helper?
+  // TODO: refactor into helper
   const redirect$ = history$.pipe(
     filter((route) => isRoute(route, routes.conversations())),
     withLatestFrom(me$),
     mergeMap(([_, me]) => (isOnboard(me) ? EMPTY : of(routes.root())))
   )
 
+  // List, default view
   const [_clickNew$, onClickNew] = makeObservableCallback()
   const clickNew$ = _clickNew$.pipe(tag("clickNew$"), share())
   const newConvo$ = clickNew$.pipe(
@@ -50,6 +51,8 @@ export const Conversations = (sources: Sources) => {
       })
     )
   )
+
+  // Edit
 
   const conversations: Conversation[] = []
   const react = of(h(View, { conversations, onClickNew }))

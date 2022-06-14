@@ -1,9 +1,9 @@
 import { h } from "@cycle/react"
 import { Meta, Story } from "@storybook/react"
-import { Props, View } from "~/components/App/Home/Conversations/Draft/View"
+import { Props, View } from "~/components/App/Home/Conversations/Edit/View"
 
 export default {
-  title: "Components/Conversations/Draft",
+  title: "Components/Conversations/Edit",
   component: View,
   parameters: {
     controls: { hideNoControlsWarning: true },
