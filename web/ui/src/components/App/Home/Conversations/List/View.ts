@@ -13,4 +13,4 @@ export const View: FC<Props> = ({ conversations, onClickNew }) =>
   // TODO: isEmpty(conversations) ? emptyView : listView
   h(EmptyView, { onClickNew })
 
-View.displayName = "ConversationView"
+View.displayName = "Conversation.View"

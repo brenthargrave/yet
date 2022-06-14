@@ -5,7 +5,7 @@ import { makeTagger } from "~/log"
 import { isRoute, routes, Source as RouterSource } from "~/router"
 import { List } from "./List"
 
-const tag = makeTagger("Conversations")
+const tag = makeTagger("Conversation")
 
 interface Sources {
   react: ReactSource
