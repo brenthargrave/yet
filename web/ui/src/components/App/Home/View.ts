@@ -18,7 +18,7 @@ const Background: FC = ({ children }) =>
 Background.displayName = "BackgroundView"
 
 const MaxWidthView: FC = ({ children }) =>
-  h(Box, { maxWidth, height: "100%", m: 0 }, [children])
+  h(Box, { maxWidth, height: "100%", width: "100%", m: 0 }, [children])
 MaxWidthView.displayName = "MaxWidthView"
 
 export const View: FC = ({ children }) =>
