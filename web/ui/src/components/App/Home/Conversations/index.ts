@@ -4,6 +4,7 @@ import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { isRoute, routes, Source as RouterSource } from "~/router"
 import { List } from "./List"
+import { Edit } from "./Edit"
 
 const tag = makeTagger("Conversation")
 
@@ -18,8 +19,13 @@ export const Conversations = (sources: Sources) => {
     router: { history$ },
   } = sources
 
-  const { router: listRouter$, react: listView$, track } = List(sources)
-  const { react: editView$ } = Edit(sources)
+  const {
+    router: listRouter$,
+    react: listView$,
+    track,
+    ...list
+  } = List(sources)
+  const { react: editView$, ...edit } = Edit(sources)
 
   const react = history$.pipe(
     mergeMap((route) =>

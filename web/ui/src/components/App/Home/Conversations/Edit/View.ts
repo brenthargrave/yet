@@ -1,18 +1,9 @@
-import {
-  Box,
-  Button,
-  Divider,
-  IconButton,
-  InputLeftAddon,
-  Link,
-  Textarea,
-} from "@chakra-ui/react"
+import { SmallAddIcon } from "@chakra-ui/icons"
+import { Button, Divider, IconButton } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { CreatableSelect, ChakraStylesConfig } from "chakra-react-select"
-import { SmallAddIcon, AddIcon } from "@chakra-ui/icons"
-import { span } from "@cycle/react-dom"
-import { Heading, Stack, Center, InputGroup } from "~/system"
-import { View as NoteView, Props as NoteProps } from "~/components/Note/Draft"
+import { CreatableSelect } from "chakra-react-select"
+import { Props as NoteProps, View as NoteView } from "~/components/Note/Draft"
+import { Heading, InputGroup, Stack } from "~/system"
 
 export interface Option {
   value: string
@@ -28,14 +19,13 @@ export interface Props {
 const size = "md"
 
 export const View = ({ options, onSelect, notes }: Props) =>
-  // h(Center, { width: "100vw", height: "100vh" }, [
   h(
     Stack,
     {
       direction: "column",
       align: "start",
-      padding: "4",
       justifyContent: "flex-start",
+      padding: "4",
       gap: "2",
     },
     [
@@ -85,4 +75,3 @@ export const View = ({ options, onSelect, notes }: Props) =>
       ]),
     ]
   )
-// ])
