@@ -18,6 +18,7 @@ query Me {
 
 query Contacts {
   contacts {
+    id
     name
     org
     role

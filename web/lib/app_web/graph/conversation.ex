@@ -3,6 +3,7 @@ defmodule AppWeb.Graph.Conversation do
   alias AppWeb.Resolvers
 
   object :contact do
+    field(:id, non_null(:string))
     field(:name, non_null(:string))
     field(:org, non_null(:string))
     field(:role, non_null(:string))

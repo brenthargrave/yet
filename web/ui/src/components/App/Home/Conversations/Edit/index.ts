@@ -1,5 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
-import { combineLatest, map, Observable, of } from "rxjs"
+import { combineLatest, map } from "rxjs"
 import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { Source as RouterSource } from "~/router"
@@ -11,11 +11,6 @@ interface Sources {
   react: ReactSource
   router: RouterSource
   graph: GraphSource
-}
-
-interface Contact {
-  id: string
-  name: string
 }
 
 export const Edit = (sources: Sources) => {
