@@ -13,12 +13,13 @@ export interface Option {
 export interface Props {
   options: Option[]
   onSelect: (option: Option) => void
+  onCreateOption: (value: string) => void
   notes?: NoteProps[]
 }
 
 const size = "md"
 
-export const View = ({ options, onSelect, notes }: Props) =>
+export const View = ({ options, onSelect, onCreateOption, notes }: Props) =>
   h(
     Stack,
     {
@@ -47,6 +48,7 @@ export const View = ({ options, onSelect, notes }: Props) =>
             formatCreateLabel: (inputValue) => `Add contact: "${inputValue}"`,
             // @ts-ignore
             onChange: (newValue, _meta) => onSelect(newValue),
+            onCreateOption,
             options,
             noOptionsMessage: (_inputValue) => "No results.",
           }),

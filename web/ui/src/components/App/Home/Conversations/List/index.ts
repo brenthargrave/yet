@@ -19,7 +19,7 @@ export const List = (sources: Sources) => {
     graph: { me$ },
   } = sources
 
-  const [_clickNew$, onClickNew] = makeObservableCallback()
+  const { $: _clickNew$, cb: onClickNew } = makeObservableCallback()
   const clickNew$ = _clickNew$.pipe(tag("clickNew$"), share())
   const newConvo$ = clickNew$.pipe(
     map((_) => push(routes.createConversation()))

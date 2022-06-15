@@ -58,10 +58,10 @@ export const PhoneVerify = (sources: Sources) => {
     shareReplay()
   )
 
-  const [_submit$, onSubmit] = makeObservableCallback()
+  const { $: _submit$, cb: onSubmit } = makeObservableCallback()
   const submit$ = _submit$.pipe(tag("submit$"), share())
 
-  const [complete, onComplete] = makeObservableCallback<string>()
+  const { $: complete, cb: onComplete } = makeObservableCallback<string>()
   const complete$ = complete.pipe(
     withLatestFrom(codeLatestPair$),
     tag("withLatestFrom(codeLatestPairs$)"),

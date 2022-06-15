@@ -65,7 +65,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   ).pipe(tag("inputValue$"), shareReplay())
   const onChangeInput = (value: string) => inputValue$$.next(value)
 
-  const [_submit$, onSubmit] = makeObservableCallback<void>()
+  const { $: _submit$, cb: onSubmit } = makeObservableCallback<void>()
   const submit$ = _submit$.pipe(tag("submit$"), share())
 
   const collected$ = combineLatest({

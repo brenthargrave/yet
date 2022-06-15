@@ -40,7 +40,8 @@ interface Sources {
   react: ReactSource
 }
 export const PhoneSubmit = ({ ...sources }: Sources) => {
-  const [_phoneInput$, onChangePhoneInput] = makeObservableCallback<string>()
+  const { $: _phoneInput$, cb: onChangePhoneInput } =
+    makeObservableCallback<string>()
   const phoneInput$ = _phoneInput$.pipe(
     tag("phoneInput$"),
     shareReplay({ refCount: true, bufferSize: 1 })
@@ -74,7 +75,7 @@ export const PhoneSubmit = ({ ...sources }: Sources) => {
     share()
   )
 
-  const [_submit$, onSubmit] = makeObservableCallback()
+  const { $: _submit$, cb: onSubmit } = makeObservableCallback()
   const submit$ = _submit$.pipe(tag("submit$"), share())
 
   const result$ = submit$.pipe(

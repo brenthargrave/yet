@@ -1,15 +1,20 @@
-import { Subject, Observable, share } from "rxjs"
+import { isNil } from "ramda"
+import { Subject, Observable, share, OperatorFunction } from "rxjs"
 import { Observable as ZenObservable } from "zen-observable-ts"
 
-export type ObservableCallback<O> = [Observable<O>, (t?: any) => void]
+export type ObservableCallback<O> = { $: Observable<O>; cb: (t?: any) => void }
 
-export function makeObservableCallback<T>(): ObservableCallback<T> {
+export function makeObservableCallback<T>(
+  tagFn?: OperatorFunction<T, T>
+): ObservableCallback<T> {
   const subject = new Subject<T>()
   const callback = (i: T) => {
     subject.next(i)
   }
-  const observable = subject.asObservable().pipe(share())
-  return [observable, callback]
+  const observable = isNil(tagFn)
+    ? subject.asObservable().pipe(share())
+    : subject.asObservable().pipe(tagFn, share())
+  return { $: observable, cb: callback }
 }
 
 // NOTE: https://stackoverflow.com/a/66416113
