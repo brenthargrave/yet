@@ -1,8 +1,8 @@
 import { h, ReactSource } from "@cycle/react"
-import { merge, mergeMap, of } from "rxjs"
+import { combineLatest, map, Observable, of } from "rxjs"
 import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { isRoute, routes, Source as RouterSource } from "~/router"
+import { Source as RouterSource } from "~/router"
 import { View } from "./View"
 
 const tag = makeTagger("Conversation/Edit")
@@ -13,26 +13,29 @@ interface Sources {
   graph: GraphSource
 }
 
+interface Contact {
+  id: string
+  name: string
+}
+
 export const Edit = (sources: Sources) => {
-  // const {
-  //   router: { history$ },
-  // } = sources
+  // ? how to handle selections?
+  const onSelect = console.debug
 
-  // const { router: listRouter$, react: listView$, track } = List(sources)
-  // const { react: editView$ } = Edit(sources)
+  const contacts$: Observable<Contact[]> = of([])
+  const options$ = contacts$.pipe(
+    map((contacts) =>
+      contacts.map(({ id, name }, idx, _) => {
+        return { label: name, value: id }
+      })
+    )
+  )
 
-  // const react = history$.pipe(
-  //   mergeMap((route) =>
-  //     isRoute(routes.createConversation(), route) ? editView$ : listView$
-  //   )
-  // )
-
-  // const router = merge(listRouter$)
-  const react = of(h(View))
+  const react = combineLatest({ options: options$ }).pipe(
+    map(({ options }) => h(View, { options, onSelect }))
+  )
 
   return {
     react,
-    // router,
-    // track,
   }
 }

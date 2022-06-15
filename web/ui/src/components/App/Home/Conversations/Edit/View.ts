@@ -13,7 +13,7 @@ export interface Option {
 export interface Props {
   options: Option[]
   onSelect: (option: Option) => void
-  notes: NoteProps[]
+  notes?: NoteProps[]
 }
 
 const size = "md"

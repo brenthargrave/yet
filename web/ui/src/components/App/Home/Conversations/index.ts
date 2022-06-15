@@ -33,6 +33,7 @@ export const Conversations = (sources: Sources) => {
     )
   )
 
+  // TODO: const router = mergeSinks("router", [list, edit]) // listRouter$)
   const router = merge(listRouter$)
 
   return {
