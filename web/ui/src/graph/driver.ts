@@ -4,13 +4,15 @@ import { Observable } from "rxjs"
 import { match } from "ts-pattern"
 import { adapt } from "@cycle/run/lib/adapt"
 
-import { Customer, setToken, token$, me$ } from "~/graph"
+import { Customer, setToken, token$, me$, contacts$ } from "~/graph"
+import { Contact } from "./generated"
 
 type Token = string
 
 export interface Source {
   token$: Observable<Token | null>
   me$: Observable<Customer | null>
+  contacts$: Observable<Contact[]>
 }
 
 enum CommandType {
@@ -49,6 +51,7 @@ export function makeDriver(): Driver<Sink, Source> {
     return {
       token$,
       me$,
+      contacts$,
     }
   }
 }

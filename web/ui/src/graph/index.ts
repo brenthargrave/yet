@@ -50,6 +50,7 @@ import {
   ProfileProp,
   Maybe,
   TrackEventInput,
+  ContactsDocument,
 } from "./generated"
 import { zenToRx } from "~/rx"
 import { makeTagger } from "~/log"
@@ -204,3 +205,35 @@ export const track$ = (_input: Omit<TrackEventInput, "anonId">) => {
     tag("track$")
   )
 }
+
+export const contacts$ = token$.pipe(
+  switchMap((token) => {
+    if (!token) return of(null)
+    return zenToRx(client.watchQuery({ query: ContactsDocument })).pipe(
+      map(
+        ({
+          data,
+          error,
+          errors,
+          loading,
+          networkStatus,
+          partial,
+          ...result
+        }) => {
+          // NOTE: throw will create endless loop upon resubscription
+          if (error) captureException(error)
+          if (errors) captureException(JSON.stringify(errors))
+          return data.contacts
+        }
+      ),
+      filter(isNotNullish),
+      tag("watchQuery(contacts)")
+    )
+  }),
+  catchError((error, _caught$) => {
+    throw new GraphWatchError(error.message)
+  }),
+  tag("contacts$"),
+  filter(isNotNullish),
+  shareReplay()
+)

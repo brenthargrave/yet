@@ -19,10 +19,10 @@ interface Contact {
 }
 
 export const Edit = (sources: Sources) => {
-  // ? how to handle selections?
-  const onSelect = console.debug
+  const {
+    graph: { contacts$ },
+  } = sources
 
-  const contacts$: Observable<Contact[]> = of([])
   const options$ = contacts$.pipe(
     map((contacts) =>
       contacts.map(({ id, name }, idx, _) => {
@@ -30,6 +30,9 @@ export const Edit = (sources: Sources) => {
       })
     )
   )
+
+  // ? how to handle selections?
+  const onSelect = console.debug
 
   const react = combineLatest({ options: options$ }).pipe(
     map(({ options }) => h(View, { options, onSelect }))
