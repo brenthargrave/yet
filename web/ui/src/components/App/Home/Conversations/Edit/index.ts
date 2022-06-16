@@ -63,8 +63,8 @@ export const Edit = (sources: Sources) => {
     tag("response$")
   )
   const isSyncing = merge(
-    payload$.pipe(mapTo(true)),
-    response$.pipe(mapTo(false))
+    payload$.pipe(map((_) => true)),
+    response$.pipe(map((_) => false))
   ).pipe(startWith(false), tag("isSyncing$"), shareReplay())
 
   // const isValid = value.pipe(map(isNotEmpty), tag("isValid"))
