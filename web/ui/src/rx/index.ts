@@ -11,9 +11,11 @@ export function makeObservableCallback<T>(
   const callback = (i: T) => {
     subject.next(i)
   }
-  const observable = isNil(tagFn)
-    ? subject.asObservable().pipe(share())
-    : subject.asObservable().pipe(tagFn, share())
+  // TODO: include tag
+  // const observable = isNil(tagFn)
+  //   ? subject.asObservable().pipe(share())
+  //   : subject.asObservable().pipe(tagFn, share())
+  const observable = subject.asObservable().pipe(share())
   return { $: observable, cb: callback }
 }
 

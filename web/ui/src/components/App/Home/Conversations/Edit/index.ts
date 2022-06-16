@@ -1,11 +1,19 @@
 import { h, ReactSource } from "@cycle/react"
-import { combineLatest, map, shareReplay, startWith } from "rxjs"
-import { isNotEmpty } from "~/fp"
-import { Source as GraphSource } from "~/graph"
+import {
+  combineLatest,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  startWith,
+} from "rxjs"
+import { isNotNullish } from "rxjs-etc"
+import { isNotEmpty, isPresent } from "~/fp"
+import { Contact, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { Source as RouterSource } from "~/router"
 import { makeObservableCallback } from "~/rx"
-import { View } from "./View"
+import { View, Option as ContactOption } from "./View"
 
 const tag = makeTagger("Conversation/Edit")
 
@@ -30,17 +38,33 @@ export const Edit = (sources: Sources) => {
     shareReplay()
   )
 
-  const { $: _selections$, cb: onSelect } = makeObservableCallback()
-  const selections$ = _selections$.pipe(
+  const { $: _selections$, cb: onSelect } =
+    makeObservableCallback<ContactOption[]>()
+  const value = _selections$.pipe(
     startWith([]),
     tag("selections$"),
     shareReplay()
   )
 
-  const isValid = selections$.pipe(map(isNotEmpty), tag("isValid"))
+  // TODO: how to set value on load
+  const participants$ = value.pipe(
+    map((selections) => {
+      return selections.map(({ label, value, __isNew__ }, idx, all) => {
+        return isPresent(__isNew__)
+          ? { name: label, isNew: true }
+          : { name: label, isNew: false, id: value }
+      })
+      // selection -> contacts
+      // how to flat *new* contacts?
+      // ? if you're not going to join, why bother recording User ids?
+      // existing?
+    })
+  )
 
-  const react = combineLatest({ options, isValid }).pipe(
-    map(({ options }) => h(View, { options, onSelect }))
+  // const isValid = value.pipe(map(isNotEmpty), tag("isValid"))
+
+  const react = combineLatest({ options, value }).pipe(
+    map((valueProps) => h(View, { ...valueProps, onSelect }))
   )
 
   return {

@@ -8,18 +8,21 @@ import { Heading, InputGroup, Stack } from "~/system"
 export interface Option {
   value: string
   label: string
+  __isNew__?: boolean
 }
+export type SelectedOption = Omit<Option, "__isNew__">
 
 export interface Props {
   options: Option[]
   onSelect: (option: Option) => void
+  value: SelectedOption[]
   // onCreateOption: (value: string) => void
   notes?: NoteProps[]
 }
 
 const size = "md"
 
-export const View = ({ options, onSelect, notes }: Props) =>
+export const View = ({ options, onSelect, value, notes }: Props) =>
   h(
     Stack,
     {
@@ -51,6 +54,7 @@ export const View = ({ options, onSelect, notes }: Props) =>
             onChange: (newValue, _meta) => onSelect(newValue),
             options,
             noOptionsMessage: (_inputValue) => "No results.",
+            value,
           }),
         ]),
       ]),
