@@ -1,19 +1,11 @@
 import { h, ReactSource } from "@cycle/react"
-import {
-  combineLatest,
-  map,
-  Observable,
-  of,
-  shareReplay,
-  startWith,
-} from "rxjs"
-import { isNotNullish } from "rxjs-etc"
-import { isNotEmpty, isPresent } from "~/fp"
-import { Contact, Source as GraphSource } from "~/graph"
+import { combineLatest, map, shareReplay, startWith } from "rxjs"
+import { isPresent } from "~/fp"
+import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { Source as RouterSource } from "~/router"
 import { makeObservableCallback } from "~/rx"
-import { View, Option as ContactOption } from "./View"
+import { Option as ContactOption, View } from "./View"
 
 const tag = makeTagger("Conversation/Edit")
 
@@ -40,13 +32,13 @@ export const Edit = (sources: Sources) => {
 
   const { $: _selections$, cb: onSelect } =
     makeObservableCallback<ContactOption[]>()
+  // TODO: set value on initial load
   const value = _selections$.pipe(
     startWith([]),
     tag("selections$"),
     shareReplay()
   )
 
-  // TODO: how to set value on load
   const participants$ = value.pipe(
     map((selections) => {
       return selections.map(({ label, value, __isNew__ }, idx, all) => {
@@ -54,12 +46,13 @@ export const Edit = (sources: Sources) => {
           ? { name: label, isNew: true }
           : { name: label, isNew: false, id: value }
       })
-      // selection -> contacts
-      // how to flat *new* contacts?
-      // ? if you're not going to join, why bother recording User ids?
-      // existing?
     })
   )
+
+  // TODO: sync w/ API, locally.
+  // const req$ = graph.updateConversation()
+  // ? per-attribute updates, or a single update w/ nullable fields?
+  // updateConversationParticipants
 
   // const isValid = value.pipe(map(isNotEmpty), tag("isValid"))
 

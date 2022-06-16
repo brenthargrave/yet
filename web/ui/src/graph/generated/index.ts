@@ -21,6 +21,16 @@ export type Contact = {
   role: Scalars['String'];
 };
 
+export type Conversation = {
+  __typename?: 'Conversation';
+  id: Scalars['String'];
+  invitees: Array<Invitee>;
+};
+
+export type ConversationInput = {
+  invitees: Array<InviteeInput>;
+};
+
 export type Customer = {
   __typename?: 'Customer';
   e164: Scalars['String'];
@@ -47,6 +57,17 @@ export type EventProperties = {
   tmp?: InputMaybe<Scalars['String']>;
 };
 
+export type Invitee = {
+  __typename?: 'Invitee';
+  contactId?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+};
+
+export type InviteeInput = {
+  contactId?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
+};
+
 export type ProfileInput = {
   id: Scalars['String'];
   prop: ProfileProp;
@@ -65,6 +86,7 @@ export type RootMutationType = {
   submitPhone?: Maybe<SubmitPhoneResult>;
   trackEvent?: Maybe<Event>;
   updateProfile?: Maybe<UpdateProfilePayload>;
+  upsertConversation?: Maybe<Conversation>;
 };
 
 
@@ -85,6 +107,11 @@ export type RootMutationTypeTrackEventArgs = {
 
 export type RootMutationTypeUpdateProfileArgs = {
   input: ProfileInput;
+};
+
+
+export type RootMutationTypeUpsertConversationArgs = {
+  input: ConversationInput;
 };
 
 export type RootQueryType = {
