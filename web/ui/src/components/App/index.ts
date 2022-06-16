@@ -1,7 +1,7 @@
 import { h, ReactSource } from "@cycle/react"
 import { captureException } from "@sentry/react"
 import { catchError, combineLatest, EMPTY, merge, Observable, of } from "rxjs"
-import { map, switchMap, concatMap, mergeMap } from "rxjs/operators"
+import { map, mergeMap, switchMap } from "rxjs/operators"
 import { match } from "ts-pattern"
 import { Auth } from "~/components/Auth"
 import { Landing } from "~/components/Landing"
@@ -9,9 +9,7 @@ import { Onboarding } from "~/components/Onboarding"
 import {
   Customer,
   GraphWatchError,
-  isAuthenticated,
   isLurking,
-  isOnboard,
   isOnboarding,
   Source as GraphSource,
 } from "~/graph"
@@ -27,6 +25,9 @@ export type CycleComponent<T> = (sources: T) => Record<string, Observable<any>>
 export type CC<T> = CycleComponent<T>
 
 const tag = makeTagger("App")
+
+// @ts-ignore
+const { VITE_API_ENV } = import.meta.env
 
 export interface Sources {
   react: ReactSource
@@ -81,11 +82,12 @@ export const App = (sources: Sources) => {
         status: "error",
       })
       // NOTE: graph watch errors are fatal, will loop indefinitely if resubscribed
-      return error instanceof GraphWatchError
-        ? EMPTY
-        : caught$.pipe(tag("caught$"))
+      if (error instanceof GraphWatchError) return EMPTY
+      // TODO: replace w/ exp. backoff?
+      if (VITE_API_ENV === "dev") return EMPTY
+      return caught$.pipe(tag("caught$"))
     }),
-    tag("App.react$")
+    tag("react$")
   )
 
   const guardedHistory$ = history$.pipe(
