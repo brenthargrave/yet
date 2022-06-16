@@ -18,11 +18,12 @@ export interface Props {
   value: SelectedOption[]
   // onCreateOption: (value: string) => void
   notes?: NoteProps[]
+  isSyncing: boolean
 }
 
 const size = "md"
 
-export const View = ({ options, onSelect, value, notes }: Props) =>
+export const View = ({ options, onSelect, value, notes, isSyncing }: Props) =>
   h(
     Stack,
     {

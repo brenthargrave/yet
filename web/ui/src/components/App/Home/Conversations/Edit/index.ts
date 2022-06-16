@@ -1,7 +1,16 @@
 import { h, ReactSource } from "@cycle/react"
-import { combineLatest, map, shareReplay, startWith } from "rxjs"
+import {
+  combineLatest,
+  map,
+  mapTo,
+  shareReplay,
+  startWith,
+  switchMap,
+  merge,
+  share,
+} from "rxjs"
 import { isPresent } from "~/fp"
-import { Source as GraphSource } from "~/graph"
+import { Source as GraphSource, upsertConversation$ } from "~/graph"
 import { makeTagger } from "~/log"
 import { Source as RouterSource } from "~/router"
 import { makeObservableCallback } from "~/rx"
@@ -39,24 +48,28 @@ export const Edit = (sources: Sources) => {
     shareReplay()
   )
 
-  const participants$ = value.pipe(
-    map((selections) => {
-      return selections.map(({ label, value, __isNew__ }, idx, all) => {
-        return isPresent(__isNew__)
-          ? { name: label, isNew: true }
-          : { name: label, isNew: false, id: value }
+  const invitees$ = value.pipe(
+    map((selections) =>
+      selections.map(({ label, value, __isNew__ }, idx, all) => {
+        return { name: label, id: isPresent(__isNew__) ? null : value }
       })
-    })
+    ),
+    tag(`invitees$`)
   )
 
-  // TODO: sync w/ API, locally.
-  // const req$ = graph.updateConversation()
-  // ? per-attribute updates, or a single update w/ nullable fields?
-  // updateConversationParticipants
+  const payload$ = combineLatest({ invitees: invitees$ }).pipe(tag("payload$"))
+  const response$ = payload$.pipe(
+    switchMap((input) => upsertConversation$(input)),
+    tag("response$")
+  )
+  const isSyncing = merge(
+    payload$.pipe(mapTo(true)),
+    response$.pipe(mapTo(false))
+  ).pipe(startWith(false), tag("isSyncing$"), shareReplay())
 
   // const isValid = value.pipe(map(isNotEmpty), tag("isValid"))
 
-  const react = combineLatest({ options, value }).pipe(
+  const react = combineLatest({ options, value, isSyncing }).pipe(
     map((valueProps) => h(View, { ...valueProps, onSelect }))
   )
 

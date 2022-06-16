@@ -51,6 +51,8 @@ import {
   Maybe,
   TrackEventInput,
   ContactsDocument,
+  UpsertConversationDocument,
+  ConversationInput,
 } from "./generated"
 import { zenToRx } from "~/rx"
 import { makeTagger } from "~/log"
@@ -237,3 +239,18 @@ export const contacts$ = token$.pipe(
   filter(isNotNullish),
   shareReplay()
 )
+
+export const upsertConversation$ = (input: ConversationInput) => {
+  return from(
+    client.mutate({
+      mutation: UpsertConversationDocument,
+      variables: { input },
+    })
+  ).pipe(
+    map(({ data, errors, extensions, context }) => {
+      if (errors) throw new GraphError(JSON.stringify(errors))
+      return data!.upsertConversation!
+    }),
+    tag("track$")
+  )
+}
