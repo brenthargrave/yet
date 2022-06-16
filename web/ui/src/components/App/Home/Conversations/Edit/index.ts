@@ -1,5 +1,6 @@
 import { h, ReactSource } from "@cycle/react"
-import { combineLatest, map } from "rxjs"
+import { combineLatest, map, shareReplay, startWith } from "rxjs"
+import { isNotEmpty } from "~/fp"
 import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { Source as RouterSource } from "~/router"
@@ -19,24 +20,27 @@ export const Edit = (sources: Sources) => {
     graph: { contacts$ },
   } = sources
 
-  const { $: _createOption$, cb: onCreateOption } = makeObservableCallback(
-    tag("createOption$")
-  )
-  const createOption$ = _createOption$.pipe(map((name) => console.debug(name)))
-
-  // TODO: merge created option into options$
-  const options$ = contacts$.pipe(
+  const options = contacts$.pipe(
     map((contacts) =>
       contacts.map(({ id, name }, idx, _) => {
         return { label: name, value: id }
       })
-    )
+    ),
+    tag("options$"),
+    shareReplay()
   )
 
-  const onSelect = console.debug
+  const { $: _selections$, cb: onSelect } = makeObservableCallback()
+  const selections$ = _selections$.pipe(
+    startWith([]),
+    tag("selections$"),
+    shareReplay()
+  )
 
-  const react = combineLatest({ options: options$ }).pipe(
-    map(({ options }) => h(View, { options, onSelect, onCreateOption }))
+  const isValid = selections$.pipe(map(isNotEmpty), tag("isValid"))
+
+  const react = combineLatest({ options, isValid }).pipe(
+    map(({ options }) => h(View, { options, onSelect }))
   )
 
   return {

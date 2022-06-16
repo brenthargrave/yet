@@ -12,6 +12,6 @@ export default {
 
 export const Default: Story<Props> = (args) => h(View, args)
 Default.argTypes = {
-  onSelect: { control: false, action: "selected" },
+  onSelect: { control: false, action: "onSelect" },
   options: [{ value: "1", label: "Brent Hargrave" }],
 }
