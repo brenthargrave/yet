@@ -14,9 +14,16 @@ defmodule AppWeb.Graph.Conversation do
     field(:contact_id, :string)
   end
 
+  enum :conversation_state do
+    value(:draft, as: "draft")
+    value(:abandoned, as: "abandoned")
+    value(:cosigned, as: "cosigned")
+  end
+
   object :conversation do
     field(:id, non_null(:string))
     field(:invitees, non_null(list_of(non_null(:invitee))))
+    field(:state, non_null(:conversation_state))
   end
 
   input_object :invitee_input do

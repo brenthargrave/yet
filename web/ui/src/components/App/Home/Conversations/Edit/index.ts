@@ -2,13 +2,10 @@ import { h, ReactSource } from "@cycle/react"
 import {
   combineLatest,
   map,
-  mapTo,
+  merge,
   shareReplay,
   startWith,
   switchMap,
-  merge,
-  share,
-  filter,
 } from "rxjs"
 import { isNotEmpty, isPresent } from "~/fp"
 import { Source as GraphSource, upsertConversation$ } from "~/graph"
@@ -58,16 +55,16 @@ export const Edit = (sources: Sources) => {
     tag(`invitees$`)
   )
 
+  // const state$ = //
+  // ! FML: stuck on how to derive state for persistence (so as to avoid)
+  // endless attribute checks?
+
   const payload$ = combineLatest({ invitees: invitees$ }).pipe(tag("payload$"))
 
-  const isValid = payload$.pipe(
-    map(({ invitees }) => isNotEmpty(invitees)), // TODO: nor participants, notes
+  const isSyncable = payload$.pipe(
+    map(({ invitees }) => isNotEmpty(invitees)), // TODO: notes present
     tag("isValid")
   )
-
-  /*
-  state: draft | deleted | cosigned (locked, can't edit|delete)
-   */
 
   const response$ = payload$.pipe(
     switchMap((input) => upsertConversation$(input)),
