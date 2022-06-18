@@ -40,7 +40,7 @@ mutation UpsertConversation($input: ConversationInput!) {
     state
     invitees {
       name
-      contactId
+      id
     }
   }
 }

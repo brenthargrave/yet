@@ -75,7 +75,7 @@ export const View = ({ options, onSelect, value, notes, isSyncing }: Props) =>
           [
             h(Stack, { direction: "row" }, [
               h(IconButton, { icon: h(SmallAddIcon) }),
-              h(Button, {}, `Save`),
+              h(Button, {}, `Share`),
             ]),
           ]
         ),

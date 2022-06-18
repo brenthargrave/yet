@@ -33,7 +33,7 @@ export const Edit = (sources: Sources) => {
         return { label: name, value: id }
       })
     ),
-    tag("options$"),
+    tag("options"),
     shareReplay()
   )
 
@@ -55,16 +55,8 @@ export const Edit = (sources: Sources) => {
     tag(`invitees$`)
   )
 
-  // const state$ = //
-  // ! FML: stuck on how to derive state for persistence (so as to avoid)
-  // endless attribute checks?
-
+  // ? how prevent sync until payload chanegs AND differs from its onLoad value?
   const payload$ = combineLatest({ invitees: invitees$ }).pipe(tag("payload$"))
-
-  const isSyncable = payload$.pipe(
-    map(({ invitees }) => isNotEmpty(invitees)), // TODO: notes present
-    tag("isValid")
-  )
 
   const response$ = payload$.pipe(
     switchMap((input) => upsertConversation$(input)),
