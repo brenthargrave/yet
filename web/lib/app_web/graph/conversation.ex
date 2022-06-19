@@ -32,6 +32,7 @@ defmodule AppWeb.Graph.Conversation do
   end
 
   input_object :conversation_input do
+    field(:id, non_null(:string))
     field(:invitees, non_null(list_of(non_null(:invitee_input))))
   end
 

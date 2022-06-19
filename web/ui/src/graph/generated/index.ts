@@ -29,6 +29,7 @@ export type Conversation = {
 };
 
 export type ConversationInput = {
+  id: Scalars['String'];
   invitees: Array<InviteeInput>;
 };
 
