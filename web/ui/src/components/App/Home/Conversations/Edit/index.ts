@@ -3,10 +3,12 @@ import {
   combineLatest,
   map,
   merge,
+  of,
   shareReplay,
   startWith,
   switchMap,
 } from "rxjs"
+import { ulid } from "ulid"
 import { isNotEmpty, isPresent } from "~/fp"
 import { Source as GraphSource, upsertConversation$ } from "~/graph"
 import { makeTagger } from "~/log"
@@ -37,36 +39,33 @@ export const Edit = (sources: Sources) => {
     shareReplay()
   )
 
-  const { $: _selections$, cb: onSelect } =
+  const { $: selections, cb: onSelect } =
     makeObservableCallback<ContactOption[]>()
   // TODO: set value on initial load
-  const value = _selections$.pipe(
-    startWith([]),
-    tag("selections$"),
-    shareReplay()
-  )
+  const value = selections.pipe(startWith([]), tag("selections"), shareReplay())
 
-  const invitees$ = value.pipe(
+  const invitees = value.pipe(
     map((selections) =>
       selections.map(({ label, value, __isNew__ }, idx, all) => {
         return { name: label, id: isPresent(__isNew__) ? null : value }
       })
     ),
-    tag(`invitees$`)
+    tag(`invitees`)
   )
 
+  const id = of(ulid())
   // ? how prevent sync until payload chanegs AND differs from its onLoad value?
-  const payload$ = combineLatest({ invitees: invitees$ }).pipe(tag("payload$"))
+  const payload = combineLatest({ id, invitees }).pipe(tag("payload$"))
 
-  const response$ = payload$.pipe(
+  const response = payload.pipe(
     switchMap((input) => upsertConversation$(input)),
-    tag("response$")
+    tag("response")
   )
 
   const isSyncing = merge(
-    payload$.pipe(map((_) => true)),
-    response$.pipe(map((_) => false))
-  ).pipe(startWith(false), tag("isSyncing$"), shareReplay())
+    payload.pipe(map((_) => true)),
+    response.pipe(map((_) => false))
+  ).pipe(startWith(false), tag("isSyncing"), shareReplay())
 
   const react = combineLatest({ options, value, isSyncing }).pipe(
     map((valueProps) => h(View, { ...valueProps, onSelect }))
