@@ -25,11 +25,12 @@ export const Conversations = (sources: Sources) => {
     track,
     ...list
   } = List(sources)
+
   const { react: editView$, ...edit } = Edit(sources)
 
   const react = history$.pipe(
     mergeMap((route) =>
-      isRoute(routes.createConversation(), route) ? editView$ : listView$
+      route.name === "editConversation" ? editView$ : listView$
     )
   )
 
