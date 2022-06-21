@@ -1,18 +1,22 @@
 import { h, ReactSource } from "@cycle/react"
 import {
   combineLatest,
+  EMPTY,
+  filter,
   map,
   merge,
+  mergeMap,
   of,
   shareReplay,
   startWith,
   switchMap,
 } from "rxjs"
+import { match } from "ts-pattern"
 import { ulid } from "ulid"
 import { isNotEmpty, isPresent } from "~/fp"
 import { Source as GraphSource, upsertConversation$ } from "~/graph"
 import { makeTagger } from "~/log"
-import { Source as RouterSource } from "~/router"
+import { RouteProvider, Source as RouterSource } from "~/router"
 import { makeObservableCallback } from "~/rx"
 import { Option as ContactOption, View } from "./View"
 
@@ -27,7 +31,17 @@ interface Sources {
 export const Edit = (sources: Sources) => {
   const {
     graph: { contacts$ },
+    router: { history$ },
   } = sources
+
+  const id$ = history$.pipe(
+    mergeMap((route) =>
+      match(route)
+        .with({ name: "editConversation" }, ({ params }) => of(params.id))
+        .otherwise(() => EMPTY)
+    ),
+    tag("id$")
+  )
 
   const options = contacts$.pipe(
     map((contacts) =>
@@ -41,6 +55,7 @@ export const Edit = (sources: Sources) => {
 
   const { $: selections, cb: onSelect } =
     makeObservableCallback<ContactOption[]>()
+
   // TODO: set value on initial load
   const value = selections.pipe(startWith([]), tag("selections"), shareReplay())
 
@@ -53,9 +68,7 @@ export const Edit = (sources: Sources) => {
     tag(`invitees`)
   )
 
-  const id = of(ulid())
-  // ? how prevent sync until payload chanegs AND differs from its onLoad value?
-  const payload = combineLatest({ id, invitees }).pipe(tag("payload$"))
+  const payload = combineLatest({ id: id$, invitees }).pipe(tag("payload$"))
 
   const response = payload.pipe(
     switchMap((input) => upsertConversation$(input)),

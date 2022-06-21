@@ -2,9 +2,9 @@ import { ReactSource } from "@cycle/react"
 import { merge, mergeMap } from "rxjs"
 import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { isRoute, routes, Source as RouterSource } from "~/router"
-import { List } from "./List"
+import { Source as RouterSource } from "~/router"
 import { Edit } from "./Edit"
+import { List } from "./List"
 
 const tag = makeTagger("Conversation")
 

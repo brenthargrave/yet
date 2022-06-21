@@ -23,7 +23,7 @@ export const List = (sources: Sources) => {
   const { $: _clickNew$, cb: onClickNew } = makeObservableCallback()
   const clickNew$ = _clickNew$.pipe(tag("clickNew$"), share())
   const newConvo$ = clickNew$.pipe(
-    map((_) => push(routes.editConversation({ cid: ulid() })))
+    map((_) => push(routes.editConversation({ id: ulid() })))
   )
   const track = clickNew$.pipe(
     withLatestFrom(me$),

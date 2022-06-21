@@ -10,10 +10,9 @@ const tag = makeTagger("Router")
 
 const root = defineRoute("/")
 const conversations = root.extend("/c")
-const createConversation = conversations.extend("/new")
 const editConversation = conversations.extend(
-  { cid: param.path.string },
-  (p) => `/${p.cid}/edit`
+  { id: param.path.string },
+  (p) => `/${p.id}/edit`
 )
 
 export const { routes, useRoute, RouteProvider, session } = createRouter({
@@ -22,7 +21,6 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
   root,
   conversations,
   editConversation,
-  notes: defineRoute("/notes"),
 })
 
 export type Route = _Route<typeof routes>
