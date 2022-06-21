@@ -38,19 +38,14 @@ defmodule AppWeb.Graph.Conversation do
 
   object :conversation_queries do
     field :contacts, non_null(list_of(non_null(:contact))) do
-      resolve(&contacts/3)
+      resolve(fn _parents, _args, _resolution -> {:ok, []} end)
     end
   end
 
   object :conversation_mutations do
     field :upsert_conversation, :conversation do
       arg(:input, non_null(:conversation_input))
-      # resolve(&Resolvers.Analytics.track_event/3)
-      resolve({:ok, %{}})
+      resolve(&Resolvers.Conversation.upsert/3)
     end
-  end
-
-  defp contacts(_parent, _args, _resolution) do
-    {:ok, []}
   end
 end

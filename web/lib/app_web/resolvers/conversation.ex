@@ -1,5 +1,7 @@
 defmodule AppWeb.Resolvers.Conversation do
-  def upsert_conversation(_parent, %{input: input}, _resolution) do
+  def upsert(_parent, %{input: input}, _resolution) do
+    # TODO: authenticated user
     IO.puts(inspect(input))
+    {:ok, %{}}
   end
 end
