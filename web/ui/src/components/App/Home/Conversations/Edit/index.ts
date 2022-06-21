@@ -2,7 +2,6 @@ import { h, ReactSource } from "@cycle/react"
 import {
   combineLatest,
   EMPTY,
-  filter,
   map,
   merge,
   mergeMap,
@@ -12,11 +11,10 @@ import {
   switchMap,
 } from "rxjs"
 import { match } from "ts-pattern"
-import { ulid } from "ulid"
-import { isNotEmpty, isPresent } from "~/fp"
+import { isPresent } from "~/fp"
 import { Source as GraphSource, upsertConversation$ } from "~/graph"
 import { makeTagger } from "~/log"
-import { RouteProvider, Source as RouterSource } from "~/router"
+import { Source as RouterSource } from "~/router"
 import { makeObservableCallback } from "~/rx"
 import { Option as ContactOption, View } from "./View"
 
@@ -41,6 +39,12 @@ export const Edit = (sources: Sources) => {
         .otherwise(() => EMPTY)
     ),
     tag("id$")
+  )
+
+  const conversation$ = id$.pipe(
+    // switchMap(id => graphQLResultHasError.)
+    // TODO: graph.conversation$(id)
+    tag("conversation$")
   )
 
   const options = contacts$.pipe(
