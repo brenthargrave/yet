@@ -1,23 +1,26 @@
 defmodule App.Conversations do
+  use App.Types
   use Croma
   use TypedStruct
   use Brex.Result
-  # alias App.{UserError, Repo, Customer}
+  alias App.Customer
+  alias App.Conversation
+  alias App.Repo
 
-  # @type ulid :: Ecto.ULID.t()
-  # @type prop :: String.t()
-  # @type value :: String.t()
-  # @type result() :: Brex.Result.t(Customer.t() | UserError.t())
+  @type input :: {
+          id :: ulid()
+        }
 
-  # defun update_profile(id :: ulid(), prop :: prop(), value :: value()) :: result() do
-  #   key = String.to_atom(prop)
-  #   attrs = %{:id => id, key => value}
-
-  #   Repo.get(Customer, id)
-  #   |> lift(nil, "MIA: Customer #{id}")
-  #   |> fmap(&Customer.onboarding_changeset(&1, attrs))
-  #   |> bind(&Repo.update/1)
-  # end
-
-  # TODO: authenticated user
+  defun upsert_conversation(
+          customer :: Customer.t(),
+          %{id: id} = input :: input()
+        ) :: Brex.Result.s(Conversation.t()) do
+    case Repo.get(Conversaton, id) do
+      nil -> %Conversation{id: id}
+      conversation -> conversation
+    end
+    |> lift(&(customer.id != &1.creator_id), :unauthorized)
+    |> fmap(&Conversation.changeset(&1, input))
+    |> fmap(&Repo.insert_or_update(&1))
+  end
 end

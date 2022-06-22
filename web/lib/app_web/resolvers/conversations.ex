@@ -2,24 +2,24 @@ defmodule AppWeb.Resolvers.Conversations do
   use Croma
   use App.Types
   use TypedStruct
+  use Brex.Result
   # import ShorterMaps
-  # alias App.{Onboarding}
-  # alias App.{UserError, Customer}
+  alias App.Conversations
+  alias App.Conversation
+  alias App.UserError
 
   typedstruct module: ConversationPayload do
-    # field :conservation, Customer.t()
-    # field :user_error, UserError.t()
+    field :conversation, Conversation.t()
+    field :user_error, UserError.t()
   end
 
   defun upsert_conversation(
           _parent,
           %{input: input} = _args,
-          %{context: context = %{customer: customer}} = _resolution
-        ) :: resolver_result() do
-    IO.puts(inspect(input))
-    IO.puts(inspect(context))
-    # error handling?
-    App.Conversation.upsert_conversation(input, customer)
-    {:ok, %{}}
+          %{context: %{customer: customer}} = _resolution
+        ) :: resolver_result(ConversationPayload.t()) do
+    # ! TODO: resolve arbitrary upstream errors to absinthe format?
+    Conversations.upsert_conversation(input, customer)
+    |> fmap(&%ConversationPayload{conversation: &1})
   end
 end

@@ -9,6 +9,10 @@ defmodule App.Types do
               | {:error, %{message: String.t()}}
 
       @type resolver_result() :: {:ok, any()} | absinthe_error()
+      @type resolver_result(ok) :: {:ok, ok} | absinthe_error()
+
+      # Ecto
+      @type changeset() :: Ecto.Changeset.t()
 
       # lib
       @type e164() :: String.t()

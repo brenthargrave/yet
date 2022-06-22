@@ -28,5 +28,13 @@ defmodule App.Repo.Migrations.CreateEvents do
 
     create(index(:events, [:anon_id]))
     create(index(:events, [:customer_id]))
+
+    create table(:conversations) do
+      add :creator_id, references(:customers)
+      add :invitees, :map
+      timestamps()
+    end
+
+    create(index(:conversations, [:creator_id]))
   end
 end
