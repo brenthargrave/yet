@@ -36,12 +36,19 @@ defmodule App.Conversations do
     }
 
     case Repo.get(Conversation, id) do
-      nil -> %Conversation{id: id}
-      conversation -> conversation
+      nil ->
+        ok(%Conversation{})
+
+      conversation ->
+        cond do
+          conversation.creator != customer ->
+            error(:unauthorized)
+
+          true ->
+            ok(conversation)
+        end
     end
-    |> Conversation.changeset(attrs)
-    |> IO.inspect()
-    # |> lift(&(customer != &1.creator), :unauthorized)
-    |> fmap(&Repo.insert_or_update(&1))
+    |> fmap(&Conversation.changeset(&1, attrs))
+    |> bind(&Repo.insert_or_update(&1))
   end
 end

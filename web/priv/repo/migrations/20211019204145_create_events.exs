@@ -22,7 +22,7 @@ defmodule App.Repo.Migrations.CreateEvents do
       add :anon_id, :string, null: false
       add :name, :string, null: false
       add :properties, :map
-      add :customer_id, references("customers")
+      add :customer_id, references(:customers)
       timestamps()
     end
 

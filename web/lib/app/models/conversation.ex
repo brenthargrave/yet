@@ -18,8 +18,8 @@ defmodule App.Conversation do
     record
     |> cast(attrs, [])
     |> cast_embed(:invitees, with: &invitee_changeset/2)
-    |> cast_assoc(:creator, required: true)
 
+    # |> cast_assoc(:creator_id, required: true)
     # |> validate_required(:creator_id)
   end
 
