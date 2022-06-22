@@ -13,13 +13,23 @@ defmodule AppWeb.Resolvers.Conversations do
     field :user_error, UserError.t()
   end
 
-  defun upsert_conversation(
-          _parent,
-          %{input: input} = _args,
-          %{context: %{customer: customer}} = _resolution
-        ) :: resolver_result(ConversationPayload.t()) do
-    # ! TODO: resolve arbitrary upstream errors to absinthe format?
-    Conversations.upsert_conversation(input, customer)
+  # defun upsert_conversation(
+  #         _parent,
+  #         %{input: input} = _args,
+  #         %{context: %{customer: customer}} = _resolution
+  #       ) :: resolver_result(ConversationPayload.t()) do
+  #   IO.puts("INPUT")
+  #   IO.puts(inspect(input))
+
+  #   Conversations.upsert_conversation(customer, input)
+  #   |> fmap(&%ConversationPayload{conversation: &1})
+  # end
+  def upsert_conversation(
+        _parent,
+        %{input: input} = _args,
+        %{context: %{customer: customer}} = _resolution
+      ) do
+    Conversations.upsert_conversation(customer, input)
     |> fmap(&%ConversationPayload{conversation: &1})
   end
 end

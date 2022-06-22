@@ -1,6 +1,6 @@
 defmodule AppWeb.Graph.Conversations do
   use Absinthe.Schema.Notation
-  alias AppWeb.Resolvers
+  alias AppWeb.Resolvers.Conversations
 
   object :contact do
     field(:id, non_null(:string))
@@ -43,7 +43,7 @@ defmodule AppWeb.Graph.Conversations do
   object :conversations_mutations do
     field :upsert_conversation, :conversation_payload do
       arg(:input, non_null(:conversation_input))
-      resolve(&Resolvers.Conversation.upsert_conversation/3)
+      resolve(&Conversations.upsert_conversation/3)
     end
   end
 
