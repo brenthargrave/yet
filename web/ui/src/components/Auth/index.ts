@@ -73,14 +73,13 @@ export const Auth = (sources: Sources) => {
     tag("react")
   )
 
-  const tokenInvalidated$ = EMPTY
-  // const tokenInvalidated$ = token$.pipe(
-  //   filter(isNotNullish),
-  //   distinctUntilChanged(),
-  //   switchMap((_) => checkToken$()),
-  //   filter((token) => isNullish(token?.value)),
-  //   tag("tokenInvalidated$")
-  // )
+  const tokenInvalidated$ = token$.pipe(
+    filter(isNotNullish),
+    distinctUntilChanged(),
+    switchMap((_) => checkToken$()),
+    filter((token) => isNullish(token?.value)),
+    tag("tokenInvalidated$")
+  )
   const logoutRequested$ = sources.router.history$.pipe(
     filter((route) => isRoute(routes.out(), route)),
     tag("logoutRequested$")
