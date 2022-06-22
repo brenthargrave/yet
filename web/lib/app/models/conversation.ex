@@ -15,8 +15,8 @@ defmodule App.Conversation do
 
   def changeset(record, attrs) do
     record
-    |> cast(attrs, [:creator])
     |> cast_embed(:invitees, with: &invitee_changeset/2)
+    |> cast_assoc(attrs, [:creator])
     # NOTE: invitees aren't required, once removed state == deleted
     |> validate_required([:creator])
   end
