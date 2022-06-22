@@ -7,9 +7,11 @@ import {
   startWith,
   shareReplay,
   filter,
+  distinctUntilChanged,
 } from "rxjs"
+import { isNotNullish } from "rxjs-etc"
 import { match } from "ts-pattern"
-import { loggedOut, VerificationStatus } from "~/graph"
+import { token$, loggedOut, VerificationStatus } from "~/graph"
 
 import { makeTagger } from "~/log"
 import { isRoute, push, routes, Source as RouterSource } from "~/router"
@@ -66,6 +68,13 @@ export const Auth = (sources: Sources) => {
     tag("react")
   )
 
+  const tokenInvalidated$ = token$.pipe(
+    filter(isNotNullish),
+    distinctUntilChanged(),
+    // TODO: nil token object === invalidated
+    // switchMap(token => checkToken$(token)),
+    tag("checkToken$")
+  )
   const logout$ = sources.router.history$.pipe(
     filter((route) => isRoute(routes.out(), route)),
     map((_) => loggedOut()),
