@@ -24,7 +24,7 @@ defmodule App.Conversations do
   #   |> fmap(&Repo.insert_or_update(&1))
   # end
   def upsert_conversation(customer, %{id: id} = input) do
-    case Repo.get(Conversaton, id) do
+    case Repo.get(Conversation, id) do
       nil -> %Conversation{id: id}
       conversation -> conversation
     end
