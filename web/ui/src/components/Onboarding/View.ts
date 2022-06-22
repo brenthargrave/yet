@@ -1,5 +1,6 @@
 import { h } from "@cycle/react"
 import { form, h1 } from "@cycle/react-dom"
+import { createRef } from "react"
 import { Button, Center, Heading, Input, InputGroup, Stack } from "~/system"
 
 export enum State {
@@ -33,9 +34,11 @@ export const View = ({
   inputPlaceholder,
   submitButtonCopy,
 }: Props) => {
+  const id = "input"
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
     _onSubmit()
+    document.getElementById(id)?.focus()
   }
   const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const { value } = e.currentTarget
@@ -50,6 +53,7 @@ export const View = ({
             h(Heading, { size }, headingCopy),
             h(InputGroup, { size }, [
               h(Input, {
+                id,
                 value,
                 autoFocus: true,
                 placeholder: inputPlaceholder,
