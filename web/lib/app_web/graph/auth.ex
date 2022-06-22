@@ -65,9 +65,21 @@ defmodule AppWeb.Graph.Auth do
     end
   end
 
+  object :token do
+    field(:value, :string)
+  end
+
+  object :token_payload do
+    field(:token, :token)
+  end
+
   object :auth_queries do
     field :me, :customer do
       resolve(&Resolvers.Auth.me/3)
+    end
+
+    field :check_token, :token_payload do
+      resolve(&Resolvers.Auth.token/3)
     end
   end
 end

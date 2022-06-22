@@ -5,6 +5,14 @@ query GetEvents {
   }
 }
 
+query CheckToken {
+  checkToken {
+    token {
+      value
+    }
+  }
+}
+
 query Me {
   me {
     id

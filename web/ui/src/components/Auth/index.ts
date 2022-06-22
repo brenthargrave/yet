@@ -1,4 +1,5 @@
 import { ReactSource } from "@cycle/react"
+import { isEmpty, of } from "ramda"
 import {
   switchMap,
   merge,
@@ -8,10 +9,14 @@ import {
   shareReplay,
   filter,
   distinctUntilChanged,
+  mergeMap,
+  EMPTY,
 } from "rxjs"
-import { isNotNullish } from "rxjs-etc"
+import { isNotNullish, isNullish } from "rxjs-etc"
 import { match } from "ts-pattern"
-import { token$, loggedOut, VerificationStatus } from "~/graph"
+import { isNullOrUndefined } from "util"
+import { isPresent } from "~/fp"
+import { token$, loggedOut, VerificationStatus, checkToken$ } from "~/graph"
 
 import { makeTagger } from "~/log"
 import { isRoute, push, routes, Source as RouterSource } from "~/router"
@@ -68,15 +73,19 @@ export const Auth = (sources: Sources) => {
     tag("react")
   )
 
-  const tokenInvalidated$ = token$.pipe(
-    filter(isNotNullish),
-    distinctUntilChanged(),
-    // TODO: nil token object === invalidated
-    // switchMap(token => checkToken$(token)),
-    tag("checkToken$")
-  )
-  const logout$ = sources.router.history$.pipe(
+  const tokenInvalidated$ = EMPTY
+  // const tokenInvalidated$ = token$.pipe(
+  //   filter(isNotNullish),
+  //   distinctUntilChanged(),
+  //   switchMap((_) => checkToken$()),
+  //   filter((token) => isNullish(token?.value)),
+  //   tag("tokenInvalidated$")
+  // )
+  const logoutRequested$ = sources.router.history$.pipe(
     filter((route) => isRoute(routes.out(), route)),
+    tag("logoutRequested$")
+  )
+  const logout$ = merge(tokenInvalidated$, logoutRequested$).pipe(
     map((_) => loggedOut()),
     tag("logout$")
   )

@@ -53,6 +53,7 @@ import {
   ContactsDocument,
   UpsertConversationDocument,
   ConversationInput,
+  CheckTokenDocument,
 } from "./generated"
 import { zenToRx } from "~/rx"
 import { makeTagger } from "~/log"
@@ -252,5 +253,15 @@ export const upsertConversation$ = (input: ConversationInput) => {
       return data!.upsertConversation!
     }),
     tag("track$")
+  )
+}
+
+export const checkToken$ = () => {
+  return from(client.query({ query: CheckTokenDocument })).pipe(
+    map(({ data, errors }) => {
+      if (errors) throw new GraphError(JSON.stringify(errors))
+      return data!.checkToken?.token
+    }),
+    tag("checkToken$")
   )
 }
