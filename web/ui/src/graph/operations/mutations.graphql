@@ -36,11 +36,13 @@ mutation TrackEvent($input: TrackEventInput!) {
 
 mutation UpsertConversation($input: ConversationInput!) {
   upsertConversation(input: $input) {
-    id
-    state
-    invitees {
-      name
+    conversation {
       id
+      state
+      invitees {
+        name
+        id
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-defmodule AppWeb.Graph.Conversation do
+defmodule AppWeb.Graph.Conversations do
   use Absinthe.Schema.Notation
   alias AppWeb.Resolvers
 
@@ -36,16 +36,20 @@ defmodule AppWeb.Graph.Conversation do
     field(:invitees, non_null(list_of(non_null(:invitee_input))))
   end
 
-  object :conversation_queries do
-    field :contacts, non_null(list_of(non_null(:contact))) do
-      resolve(fn _parents, _args, _resolution -> {:ok, []} end)
+  object :conversation_payload do
+    field(:conversation, :conversation)
+  end
+
+  object :conversations_mutations do
+    field :upsert_conversation, :conversation_payload do
+      arg(:input, non_null(:conversation_input))
+      resolve(&Resolvers.Conversation.upsert_conversation/3)
     end
   end
 
-  object :conversation_mutations do
-    field :upsert_conversation, :conversation do
-      arg(:input, non_null(:conversation_input))
-      resolve(&Resolvers.Conversation.upsert/3)
+  object :conversations_queries do
+    field :contacts, non_null(list_of(non_null(:contact))) do
+      resolve(fn _parents, _args, _resolution -> {:ok, []} end)
     end
   end
 end

@@ -1,4 +1,4 @@
-defmodule App.Conversation do
+defmodule App.Conversations do
   use Croma
   use TypedStruct
   use Brex.Result
@@ -18,4 +18,6 @@ defmodule App.Conversation do
   #   |> fmap(&Customer.onboarding_changeset(&1, attrs))
   #   |> bind(&Repo.update/1)
   # end
+
+  # TODO: authenticated user
 end

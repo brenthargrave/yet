@@ -1,10 +1,10 @@
 defmodule App.Onboarding do
+  use App.Types
+  use Brex.Result
   use Croma
   use TypedStruct
-  use Brex.Result
   alias App.{UserError, Repo, Customer}
 
-  @type ulid :: Ecto.ULID.t()
   @type prop :: String.t()
   @type value :: String.t()
   @type result() :: Brex.Result.t(Customer.t() | UserError.t())
