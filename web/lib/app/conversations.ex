@@ -23,23 +23,25 @@ defmodule App.Conversations do
   #   |> fmap(&Conversation.changeset(&1, input))
   #   |> fmap(&Repo.insert_or_update(&1))
   # end
-  def upsert_conversation(customer, ~M{id, invitees} = input) do
+  def upsert_conversation(
+        customer,
+        %{id: id, invitees: invitees} = input
+      ) do
     IO.inspect(input)
-    creator = customer
 
     attrs = %{
       id: id,
-      creator: creator,
-      invitees: invitees
+      invitees: invitees,
+      creator: customer
     }
 
     case Repo.get(Conversation, id) do
-      nil -> %Conversation{id: id, invitees: invitees, creator: creator}
+      nil -> %Conversation{id: id}
       conversation -> conversation
     end
+    |> Conversation.changeset(attrs)
     |> IO.inspect()
-    |> lift(&(customer != &1.creator), :unauthorized)
-    |> fmap(&Conversation.changeset(&1, attrs))
+    # |> lift(&(customer != &1.creator), :unauthorized)
     |> fmap(&Repo.insert_or_update(&1))
   end
 end

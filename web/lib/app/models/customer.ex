@@ -45,4 +45,9 @@ defmodule App.Customer do
     |> validate_required(:role, trim: true)
     |> validate_length(:role, min: 3)
   end
+
+  def changeset(record, attrs) do
+    record
+    |> cast(attrs, [:e164])
+  end
 end
