@@ -10,10 +10,10 @@ defmodule App.Customer do
   typed_schema "customers" do
     field(:e164, :string, null: false)
     field(:token, :string)
-    timestamps()
     field(:name, :string, null: false)
     field(:org, :string)
     field(:role, :string)
+    timestamps(type: :utc_datetime_usec)
   end
 
   def auth_changeset(customer, attrs) do
