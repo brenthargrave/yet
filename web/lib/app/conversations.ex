@@ -3,7 +3,6 @@ defmodule App.Conversations do
   use Croma
   use TypedStruct
   use Brex.Result
-  import ShorterMaps
   alias App.Conversation
   alias App.Repo
 
@@ -35,18 +34,17 @@ defmodule App.Conversations do
       creator: customer
     }
 
-    case Repo.get(Conversation, id) do
+    Conversation
+    |> Repo.get(id)
+    |> Repo.preload(:creator)
+    |> case do
       nil ->
         ok(%Conversation{})
 
       conversation ->
-        cond do
-          conversation.creator != customer ->
-            error(:unauthorized)
-
-          true ->
-            ok(conversation)
-        end
+        if conversation.creator != customer,
+          do: error(:unauthorized),
+          else: ok(conversation)
     end
     |> fmap(&Conversation.changeset(&1, attrs))
     |> bind(&Repo.insert_or_update(&1))
