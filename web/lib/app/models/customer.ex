@@ -7,9 +7,6 @@ defmodule App.Customer do
 
   @type changeset :: Ecto.Changeset.t()
 
-  @primary_key {:id, Ecto.ULID, autogenerate: true}
-  @foreign_key_type Ecto.ULID
-  @timestamps_opts [type: :utc_datetime_usec]
   typed_schema "customers" do
     field(:e164, :string, null: false)
     field(:token, :string)
