@@ -1,3 +1,2 @@
 release: POOL_SIZE=2 mix ecto.migrate
 web: elixir --sname server-$MIX_ENV -S mix phx.server
-pgweb: pgweb

@@ -257,7 +257,9 @@ export const upsertConversation$ = (input: ConversationInput) => {
 }
 
 export const checkToken$ = () => {
-  return from(client.query({ query: CheckTokenDocument })).pipe(
+  return from(
+    client.query({ query: CheckTokenDocument, fetchPolicy: "network-only" })
+  ).pipe(
     map(({ data, errors }) => {
       if (errors) throw new GraphError(JSON.stringify(errors))
       return data!.checkToken?.token
