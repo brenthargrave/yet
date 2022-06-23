@@ -7,6 +7,7 @@ import {
   mergeMap,
   of,
   shareReplay,
+  skip,
   startWith,
   switchMap,
 } from "rxjs"
@@ -72,7 +73,10 @@ export const Edit = (sources: Sources) => {
     tag(`invitees`)
   )
 
-  const payload = combineLatest({ id: id$, invitees }).pipe(tag("payload$"))
+  const payload = combineLatest({ id: id$, invitees }).pipe(
+    skip(1), // skip initial load
+    tag("payload$")
+  )
 
   const response = payload.pipe(
     switchMap((input) => upsertConversation$(input)),
