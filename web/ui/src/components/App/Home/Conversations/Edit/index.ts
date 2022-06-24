@@ -7,13 +7,19 @@ import {
   merge,
   mergeMap,
   of,
+  partition,
   shareReplay,
   skip,
   startWith,
   switchMap,
 } from "rxjs"
 import { match } from "ts-pattern"
-import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
+import {
+  filterResultErr,
+  filterResultOk,
+  resultMap,
+  resultMapErr,
+} from "ts-results/rxjs-operators"
 import { isPresent } from "~/fp"
 import {
   getConversation$,

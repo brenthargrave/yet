@@ -2,66 +2,53 @@
 /* eslint no-console: 0 */
 /* eslint max-classes-per-file: 0 */
 
+import { captureException } from "@sentry/react"
+import { isNil, none, not, propSatisfies, toLower } from "ramda"
 import {
-  Observable,
+  BehaviorSubject,
+  catchError,
   filter,
   from,
   map,
-  BehaviorSubject,
+  Observable,
   of,
   shareReplay,
-  catchError,
 } from "rxjs"
-import { switchMap } from "rxjs/operators"
 import { isNotNullish } from "rxjs-etc"
-import { Ok, Err, Result } from "ts-results"
-import { captureException } from "@sentry/react"
-
-import {
-  all,
-  find,
-  isNil,
-  none,
-  not,
-  prop,
-  propSatisfies,
-  toLower,
-  trim,
-} from "ramda"
-import { isPresent } from "framer-motion/types/components/AnimatePresence/use-presence"
-import { client as urqlClient } from "./urql"
-import { client, tokenCacheKey } from "./apollo"
+import { switchMap } from "rxjs/operators"
+import { Err, Ok, Result } from "ts-results"
+import { makeTagger } from "~/log"
+import { zenToRx } from "~/rx"
 import { getId } from "./anon"
+import { client, tokenCacheKey } from "./apollo"
 import {
-  SubmitPhoneInput,
-  SubmitPhoneDocument,
-  SubmitCodeInput,
-  SubmitCodeDocument,
+  CheckTokenDocument,
+  ContactsDocument,
+  ConversationInput,
+  Customer,
   Event,
   EventName,
   EventProperties,
-  TrackEventDocument,
-  UserError,
-  SubmitPhoneResult,
-  MeDocument,
-  UpdateProfileDocument,
-  ProfileInput,
-  Customer,
-  ProfileProp,
   Maybe,
+  MeDocument,
+  ProfileInput,
+  ProfileProp,
+  SubmitCodeDocument,
+  SubmitCodeInput,
+  SubmitPhoneDocument,
+  SubmitPhoneInput,
+  SubmitPhoneResult,
+  TrackEventDocument,
   TrackEventInput,
-  ContactsDocument,
+  UpdateProfileDocument,
   UpsertConversationDocument,
-  ConversationInput,
-  CheckTokenDocument,
+  UserError,
   ViewConversationDocument,
 } from "./generated"
-import { zenToRx } from "~/rx"
-import { makeTagger } from "~/log"
+import { client as urqlClient } from "./urql"
 
-export type { Source, Commands } from "./driver"
 export { loggedIn, loggedOut } from "./driver"
-
+export type { Commands, Source } from "./driver"
 export * from "./generated"
 
 const tag = makeTagger("graph")
