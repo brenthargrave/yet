@@ -37,7 +37,11 @@ defmodule AppWeb.Resolvers.Conversations do
           _parent,
           %{id: id} = _args,
           %{context: %{customer: customer}} = _resolution
-        ) :: resolver_result(Conversation.t()) do
+        ) :: resolver_result(ConversationPayload.t()) do
     Conversations.find_conversation(id, customer)
+    |> fmap(&%ConversationPayload{conversation: &1})
+    |> convert_error(:not_found, %ConversationPayload{
+      user_error: %UserError{message: "Not found"}
+    })
   end
 end

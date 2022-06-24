@@ -33,14 +33,16 @@ query Contacts {
   }
 }
 
-# mutation UpsertConversation($input: ConversationInput!) {
-#   upsertConversation(input: $input) {
-#     conversation {
-#       id
-#       invitees {
-#         name
-#         id
-#       }
-#     }
-#   }
-# }
+query ViewConversation($id: ID!) {
+  viewConversation(id: $id) {
+    conversation {
+      id
+      invitees {
+        name
+      }
+    }
+    userError {
+      message
+    }
+  }
+}

@@ -48,6 +48,22 @@ export const Edit = (sources: Sources) => {
     tag("conversation$")
   )
 
+  // const result$ = submit$.pipe(
+  //   withLatestFrom(collected$),
+  //   tag("submit$ w/ inputValue$"),
+  //   switchMap(([_, { me, value, attr }]) =>
+  //     updateProfile$({
+  //       id: me.id,
+  //       prop: attr,
+  //       value,
+  //     }).pipe(tag("updateProfile$"))
+  //   ),
+  //   tag("result$"),
+  //   share()
+  // )
+  // const _$ = result$.pipe(filterResultOk())
+  // const userError$ = result$.pipe(filterResultErr(), tag("userError$"))
+
   const options = contacts$.pipe(
     map((contacts) =>
       contacts.map(({ id, name }, idx, _) => {

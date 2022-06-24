@@ -38,6 +38,7 @@ defmodule AppWeb.Graph.Conversations do
 
   object :conversation_payload do
     field(:conversation, :conversation)
+    field(:user_error, :user_error)
   end
 
   object :conversations_mutations do
@@ -48,7 +49,7 @@ defmodule AppWeb.Graph.Conversations do
   end
 
   object :conversations_queries do
-    field :conversation, :conversation do
+    field :view_conversation, :conversation_payload do
       arg(:id, non_null(:id))
       resolve(&Conversations.find_conversation/3)
     end
