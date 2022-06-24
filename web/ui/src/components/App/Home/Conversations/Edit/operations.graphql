@@ -11,7 +11,7 @@ mutation UpsertConversation($input: ConversationInput!) {
 }
 
 query ViewConversation($id: ID!) {
-  viewConversation(id: $id) {
+  getConversation(id: $id) {
     conversation {
       id
       invitees {

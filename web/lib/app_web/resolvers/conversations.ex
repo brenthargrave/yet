@@ -33,15 +33,18 @@ defmodule AppWeb.Resolvers.Conversations do
     |> fmap(&%ConversationPayload{conversation: &1})
   end
 
-  defun find_conversation(
+  defun get_conversation(
           _parent,
           %{id: id} = _args,
           %{context: %{customer: customer}} = _resolution
         ) :: resolver_result(ConversationPayload.t()) do
-    Conversations.find_conversation(id, customer)
+    Conversations.get_conversation(id, customer)
     |> fmap(&%ConversationPayload{conversation: &1})
     |> convert_error(:not_found, %ConversationPayload{
       user_error: %UserError{message: "Not found"}
+    })
+    |> convert_error(:unauthorized, %ConversationPayload{
+      user_error: %UserError{message: "Unauthorized"}
     })
   end
 end

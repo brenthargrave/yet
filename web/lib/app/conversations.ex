@@ -50,7 +50,7 @@ defmodule App.Conversations do
     |> bind(&Repo.insert_or_update(&1))
   end
 
-  defun find_conversation(
+  defun get_conversation(
           id :: id(),
           viewer :: Customer.t()
         ) :: Brex.Result.s(Conversation.t()) do

@@ -49,9 +49,9 @@ defmodule AppWeb.Graph.Conversations do
   end
 
   object :conversations_queries do
-    field :view_conversation, :conversation_payload do
+    field :get_conversation, :conversation_payload do
       arg(:id, non_null(:id))
-      resolve(&Conversations.find_conversation/3)
+      resolve(&Conversations.get_conversation/3)
     end
 
     field :contacts, non_null(list_of(non_null(:contact))) do

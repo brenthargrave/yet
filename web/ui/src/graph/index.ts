@@ -265,7 +265,7 @@ export const getConversation$ = (id: string) =>
   ).pipe(
     map(({ data, errors }) => {
       if (errors) throw new GraphError(JSON.stringify(errors))
-      const { userError, conversation } = data!.viewConversation!
+      const { userError, conversation } = data!.getConversation!
       return userError ? new Err(userError) : new Ok(conversation!)
     }),
     tag("track$")
