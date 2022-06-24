@@ -17,6 +17,7 @@ defmodule App.Types do
       # lib
       @type e164() :: String.t()
       @type ulid() :: Ecto.ULID.t()
+      @type id() :: ulid()
     end
   end
 end

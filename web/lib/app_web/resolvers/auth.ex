@@ -27,19 +27,19 @@ defmodule AppWeb.Resolvers.Auth do
     {:ok, customer}
   end
 
-  defun token(
-          _parent,
-          _args,
-          %{context: %{customer: customer}} = _resolution
-        ) :: resolver_result() do
+  def token(
+        _parent,
+        _args,
+        %{context: %{customer: customer}} = _resolution
+      ) do
     {:ok, %{token: %{value: customer.token}}}
   end
 
-  defun token(
-          _parent,
-          _args,
-          _resolution
-        ) :: resolver_result() do
+  def token(
+        _parent,
+        _args,
+        _resolution
+      ) do
     {:ok, %{token: nil}}
   end
 end

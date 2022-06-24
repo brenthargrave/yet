@@ -49,4 +49,13 @@ defmodule App.Conversations do
     |> fmap(&Conversation.changeset(&1, attrs))
     |> bind(&Repo.insert_or_update(&1))
   end
+
+  defun find_conversation(
+          id :: id(),
+          viewer :: Customer.t()
+        ) :: Brex.Result.t(Conversation.t()) do
+    Repo.get(Conversation, id)
+    |> lift(nil, :not_found)
+    |> bind(&if &1.creator != viewer, do: ok(&1), else: error(:unauthorized))
+  end
 end

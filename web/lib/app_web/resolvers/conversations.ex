@@ -32,4 +32,12 @@ defmodule AppWeb.Resolvers.Conversations do
     Conversations.upsert_conversation(customer, input)
     |> fmap(&%ConversationPayload{conversation: &1})
   end
+
+  defun find_conversation(
+          _parent,
+          %{id: id} = _args,
+          %{context: %{customer: customer}} = _resolution
+        ) :: resolver_result(Conversation.t()) do
+    Conversations.find_conversation(id, customer)
+  end
 end

@@ -48,6 +48,11 @@ defmodule AppWeb.Graph.Conversations do
   end
 
   object :conversations_queries do
+    field :conversation, :conversation do
+      arg(:id, non_null(:id))
+      resolve(&Conversations.find_conversation/3)
+    end
+
     field :contacts, non_null(list_of(non_null(:contact))) do
       resolve(fn _parents, _args, _resolution -> {:ok, []} end)
     end

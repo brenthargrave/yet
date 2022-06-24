@@ -124,8 +124,14 @@ export type RootQueryType = {
   __typename?: 'RootQueryType';
   checkToken?: Maybe<TokenPayload>;
   contacts: Array<Contact>;
+  conversation?: Maybe<Conversation>;
   events: Array<Event>;
   me?: Maybe<Customer>;
+};
+
+
+export type RootQueryTypeConversationArgs = {
+  id: Scalars['ID'];
 };
 
 export type SubmitCodeInput = {
