@@ -261,6 +261,7 @@ export const getConversation$ = (id: string) =>
     client.query({
       query: ViewConversationDocument,
       variables: { id },
+      fetchPolicy: "no-cache",
     })
   ).pipe(
     map(({ data, errors }) => {
@@ -268,5 +269,5 @@ export const getConversation$ = (id: string) =>
       const { userError, conversation } = data!.getConversation!
       return userError ? new Err(userError) : new Ok(conversation!)
     }),
-    tag("track$")
+    tag("getConversation$")
   )

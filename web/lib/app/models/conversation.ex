@@ -15,11 +15,9 @@ defmodule App.Conversation do
 
   def changeset(record, attrs) do
     record
-    |> cast(attrs, [])
+    |> cast(attrs, [:id])
+    |> put_assoc(:creator, attrs[:creator])
     |> cast_embed(:invitees, with: &invitee_changeset/2)
-
-    # |> cast_assoc(:creator_id, required: true)
-    # |> validate_required(:creator_id)
   end
 
   def invitee_changeset(record, attrs) do

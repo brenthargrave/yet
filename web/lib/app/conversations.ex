@@ -6,32 +6,14 @@ defmodule App.Conversations do
   alias App.Conversation
   alias App.Repo
 
-  @type input :: {
-          id :: ulid()
-        }
-
-  # defun upsert_conversation(
-  #         customer :: Customer.t(),
-  #         %{id: id} = input :: input()
-  #       ) :: Brex.Result.s(Conversation.t()) do
-  #   case Repo.get(Conversaton, id) do
-  #     nil -> %Conversation{id: id}
-  #     conversation -> conversation
-  #   end
-  #   |> lift(&(customer.id != &1.creator_id), :unauthorized)
-  #   |> fmap(&Conversation.changeset(&1, input))
-  #   |> fmap(&Repo.insert_or_update(&1))
-  # end
-  def upsert_conversation(
-        customer,
-        %{id: id, invitees: invitees} = input
-      ) do
-    IO.inspect(input)
-
+  defun upsert_conversation(
+          customer,
+          %{id: id, invitees: invitees} = _input
+        ) :: Brex.Result.s(Conversation.t()) do
     attrs = %{
+      creator: customer,
       id: id,
-      invitees: invitees,
-      creator: customer
+      invitees: invitees
     }
 
     Conversation
@@ -46,6 +28,9 @@ defmodule App.Conversations do
           do: error(:unauthorized),
           else: ok(conversation)
     end
+    # |> lift(nil, :not_found)
+    # |> convert_error(:not_found, %Conversation{})
+    # |> bind(&if &1.creator != customer, do: error(:unauthorized), else: ok(&1))
     |> fmap(&Conversation.changeset(&1, attrs))
     |> bind(&Repo.insert_or_update(&1))
   end

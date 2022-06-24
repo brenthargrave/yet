@@ -7,28 +7,20 @@ defmodule AppWeb.Resolvers.Conversations do
   alias App.Conversations
   alias App.Conversation
   alias App.UserError
+  require Logger
 
   typedstruct module: ConversationPayload do
     field :conversation, Conversation.t()
     field :user_error, UserError.t()
   end
 
-  # defun upsert_conversation(
-  #         _parent,
-  #         %{input: input} = _args,
-  #         %{context: %{customer: customer}} = _resolution
-  #       ) :: resolver_result(ConversationPayload.t()) do
-  #   IO.puts("INPUT")
-  #   IO.puts(inspect(input))
+  defun upsert_conversation(
+          _parent,
+          %{input: input} = _args,
+          %{context: %{customer: customer}} = _resolution
+        ) :: resolver_result(ConversationPayload.t()) do
+    IO.puts(inspect(input))
 
-  #   Conversations.upsert_conversation(customer, input)
-  #   |> fmap(&%ConversationPayload{conversation: &1})
-  # end
-  def upsert_conversation(
-        _parent,
-        %{input: input} = _args,
-        %{context: %{customer: customer}} = _resolution
-      ) do
     Conversations.upsert_conversation(customer, input)
     |> fmap(&%ConversationPayload{conversation: &1})
   end
