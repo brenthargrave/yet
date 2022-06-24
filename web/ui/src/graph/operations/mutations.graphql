@@ -33,15 +33,3 @@ mutation TrackEvent($input: TrackEventInput!) {
     anonId
   }
 }
-
-mutation UpsertConversation($input: ConversationInput!) {
-  upsertConversation(input: $input) {
-    conversation {
-      id
-      invitees {
-        name
-        id
-      }
-    }
-  }
-}

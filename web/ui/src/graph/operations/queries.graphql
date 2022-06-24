@@ -32,17 +32,3 @@ query Contacts {
     role
   }
 }
-
-query ViewConversation($id: ID!) {
-  viewConversation(id: $id) {
-    conversation {
-      id
-      invitees {
-        name
-      }
-    }
-    userError {
-      message
-    }
-  }
-}

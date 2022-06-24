@@ -1,3 +1,4 @@
 *lock.json binary
 *.lock binary
 *.ico binary
+**/generated/*ts binary
