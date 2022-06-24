@@ -1,6 +1,7 @@
 import { h, ReactSource } from "@cycle/react"
 import {
   combineLatest,
+  distinctUntilChanged,
   EMPTY,
   map,
   merge,
@@ -12,9 +13,15 @@ import {
   switchMap,
 } from "rxjs"
 import { match } from "ts-pattern"
+import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { isPresent } from "~/fp"
-import { Source as GraphSource, upsertConversation$ } from "~/graph"
+import {
+  getConversation$,
+  Source as GraphSource,
+  upsertConversation$,
+} from "~/graph"
 import { makeTagger } from "~/log"
+import { error } from "~/notice"
 import { Source as RouterSource } from "~/router"
 import { makeObservableCallback } from "~/rx"
 import { Option as ContactOption, View } from "./View"
@@ -39,30 +46,16 @@ export const Edit = (sources: Sources) => {
         .with({ name: "editConversation" }, ({ params }) => of(params.id))
         .otherwise(() => EMPTY)
     ),
+    distinctUntilChanged(),
     tag("id$")
   )
 
-  const conversation$ = id.pipe(
-    // switchMap(id => graphQLResultHasError.)
-    // TODO: graph.conversation$(id)
-    tag("conversation$")
+  const get$ = id.pipe(
+    switchMap((id) => getConversation$(id)),
+    tag("getConversation$")
   )
-
-  // const result$ = submit$.pipe(
-  //   withLatestFrom(collected$),
-  //   tag("submit$ w/ inputValue$"),
-  //   switchMap(([_, { me, value, attr }]) =>
-  //     updateProfile$({
-  //       id: me.id,
-  //       prop: attr,
-  //       value,
-  //     }).pipe(tag("updateProfile$"))
-  //   ),
-  //   tag("result$"),
-  //   share()
-  // )
-  // const _$ = result$.pipe(filterResultOk())
-  // const userError$ = result$.pipe(filterResultErr(), tag("userError$"))
+  const conversation$ = get$.pipe(filterResultOk())
+  const userError$ = get$.pipe(filterResultErr())
 
   const options = contacts$.pipe(
     map((contacts) =>
@@ -107,8 +100,12 @@ export const Edit = (sources: Sources) => {
   const react = combineLatest({ options, value, isSyncing }).pipe(
     map((valueProps) => h(View, { ...valueProps, onSelect }))
   )
+  const notice = userError$.pipe(
+    map(({ message }) => error({ description: message }))
+  )
 
   return {
     react,
+    notice,
   }
 }

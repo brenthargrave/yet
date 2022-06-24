@@ -269,7 +269,7 @@ export const upsertConversation$ = (input: ConversationInput) => {
   )
 }
 
-export const viewConversation$ = (id: string) =>
+export const getConversation$ = (id: string) =>
   from(
     client.query({
       query: ViewConversationDocument,

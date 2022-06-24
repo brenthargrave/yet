@@ -16,7 +16,7 @@ export const Home = (sources: Sources) => {
     react: conversationsView$,
     router,
     track,
-    ...converstions
+    notice,
   } = Conversations(sources)
 
   const react = conversationsView$.pipe(map((subview) => h(View, [subview])))
@@ -25,5 +25,6 @@ export const Home = (sources: Sources) => {
     react,
     router,
     track,
+    notice,
   }
 }
