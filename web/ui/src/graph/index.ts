@@ -130,6 +130,18 @@ export const setToken = (token: string | null | undefined) => {
   }
 }
 
+export const checkToken$ = () => {
+  return from(
+    client.query({ query: CheckTokenDocument, fetchPolicy: "network-only" })
+  ).pipe(
+    map(({ data, errors }) => {
+      if (errors) throw new GraphError(JSON.stringify(errors))
+      return data!.checkToken?.token
+    }),
+    tag("checkToken$")
+  )
+}
+
 // NOTE: emits null until token set
 export const me$ = token$.pipe(
   switchMap((token) => {
@@ -253,17 +265,5 @@ export const upsertConversation$ = (input: ConversationInput) => {
       return data!.upsertConversation!
     }),
     tag("track$")
-  )
-}
-
-export const checkToken$ = () => {
-  return from(
-    client.query({ query: CheckTokenDocument, fetchPolicy: "network-only" })
-  ).pipe(
-    map(({ data, errors }) => {
-      if (errors) throw new GraphError(JSON.stringify(errors))
-      return data!.checkToken?.token
-    }),
-    tag("checkToken$")
   )
 }

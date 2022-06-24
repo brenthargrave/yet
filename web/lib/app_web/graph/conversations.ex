@@ -23,7 +23,7 @@ defmodule AppWeb.Graph.Conversations do
   object :conversation do
     field(:id, non_null(:string))
     field(:invitees, non_null(list_of(non_null(:invitee))))
-    field(:state, non_null(:conversation_state))
+    # TODO # field(:state, non_null(:conversation_state))
   end
 
   input_object :invitee_input do

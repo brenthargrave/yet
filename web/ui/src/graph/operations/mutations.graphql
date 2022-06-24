@@ -38,7 +38,6 @@ mutation UpsertConversation($input: ConversationInput!) {
   upsertConversation(input: $input) {
     conversation {
       id
-      state
       invitees {
         name
         id

@@ -33,7 +33,7 @@ export const Edit = (sources: Sources) => {
     router: { history$ },
   } = sources
 
-  const id$ = history$.pipe(
+  const id = history$.pipe(
     mergeMap((route) =>
       match(route)
         .with({ name: "editConversation" }, ({ params }) => of(params.id))
@@ -42,7 +42,7 @@ export const Edit = (sources: Sources) => {
     tag("id$")
   )
 
-  const conversation$ = id$.pipe(
+  const conversation$ = id.pipe(
     // switchMap(id => graphQLResultHasError.)
     // TODO: graph.conversation$(id)
     tag("conversation$")
@@ -73,7 +73,7 @@ export const Edit = (sources: Sources) => {
     tag(`invitees`)
   )
 
-  const payload = combineLatest({ id: id$, invitees }).pipe(
+  const payload = combineLatest({ id, invitees }).pipe(
     skip(1), // skip initial load
     tag("payload$")
   )
