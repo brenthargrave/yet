@@ -7,28 +7,21 @@ import {
   map,
   merge,
   mergeMap,
-  Observable,
   of,
-  partition,
   pluck,
+  share,
   shareReplay,
-  skip,
   startWith,
   switchMap,
+  takeUntil,
 } from "rxjs"
 import { match } from "ts-pattern"
-import {
-  filterResultErr,
-  filterResultOk,
-  resultMap,
-  resultMapErr,
-} from "ts-results/rxjs-operators"
-import { isPresent } from "~/fp"
+import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import {
   Contact,
   getConversation$,
+  Invitee,
   Source as GraphSource,
-  upsertConversation$,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
@@ -48,6 +41,10 @@ const contactsToOptions = (contacts: Contact[]): SelectedOption[] =>
   contacts.map(({ id, name }, idx, _) => {
     return { label: name, value: id }
   })
+const inviteesToOptions = (invitees: Invitee[]): SelectedOption[] =>
+  invitees.map(({ id, name }, idx, _) => {
+    return { label: name, value: id }
+  })
 
 export const Edit = (sources: Sources) => {
   const {
@@ -65,63 +62,79 @@ export const Edit = (sources: Sources) => {
     tag("id$")
   )
 
-  const getConv$ = id.pipe(
+  const getRecord$ = id.pipe(
     switchMap((id) => getConversation$(id)),
     tag("getConversation$")
   )
-  const conversation$ = getConv$.pipe(filterResultOk())
-  const userError$ = getConv$.pipe(filterResultErr())
+  const record$ = getRecord$.pipe(filterResultOk())
+  const userError$ = getRecord$.pipe(filterResultErr())
 
-  const savedInvitees$ = conversation$.pipe(
-    pluck("invitees"),
-    tag("savedInvitees$")
+  const recordInvitees$ = record$.pipe(pluck("invitees"))
+  const inviteesAsOptions$ = recordInvitees$.pipe(
+    map(inviteesToOptions),
+    tag("inviteesAsOptions$"),
+    share()
   )
 
-  const { $: selections, cb: onSelect } =
+  const { $: _onSelect$, cb: onSelect } =
     makeObservableCallback<ContactOption[]>()
+  const onSelect$ = _onSelect$.pipe(tag("onSelect$"), share())
 
-  const value = selections.pipe(startWith([]), tag("value"), shareReplay())
+  const selectedOptions$ = merge(
+    inviteesAsOptions$.pipe(takeUntil(onSelect$)),
+    onSelect$
+  ).pipe(tag("selectedOptions$"), share())
 
-  const options = combineLatest({
-    contacts: contacts$,
-    invitees: savedInvitees$,
-  }).pipe(
-    map(
-      ({ contacts, invitees }) => contacts
-      // unionWith(eqBy(prop("id")), contacts, invitees)
-    ),
+  const options$ = contacts$.pipe(
+    map(contactsToOptions),
     startWith([]),
-    tag("options"),
+    tag("options$"),
     shareReplay()
   )
+  // TODO: merge in prior selections
+  //  combineLatest({
+  //   contacts: contacts$.pipe(map(contactsToOptions)),
+  //   invitees: inviteesAsOptions$,
+  // }).pipe(
+  //   map(({ contacts, invitees }) => {
+  //     // @ts-ignore
+  //     unionWith(eqBy(prop("id")), contacts, invitees)
+  //   }),
+  //   startWith([]),
+  //   tag("options$"),
+  //   shareReplay()
+  // )
 
-  const invitees = value.pipe(
-    map((selections) =>
-      selections.map(({ label, value, __isNew__ }, idx, all) => {
-        return { name: label, id: value }
-      })
-    ),
-    tag(`invitees`)
-  )
+  // const invitees = value.pipe(
+  //   map((selections) =>
+  //     selections.map(({ label, value, __isNew__ }, idx, all) => {
+  //       return { name: label, id: value }
+  //     })
+  //   ),
+  //   tag(`invitees`)
+  // )
 
-  const payload = combineLatest({ id, invitees }).pipe(
-    skip(1), // skip initial load
-    tag("payload$")
-  )
+  // const payload = combineLatest({ id, invitees }).pipe(
+  //   skip(1), // skip initial load
+  //   tag("payload$")
+  // )
 
-  const response = payload.pipe(
-    switchMap((input) => upsertConversation$(input)),
-    tag("response")
-  )
+  // const response = payload.pipe(
+  //   switchMap((input) => upsertConversation$(input)),
+  //   tag("response")
+  // )
 
-  const isSyncing = merge(
-    payload.pipe(map((_) => true)),
-    response.pipe(map((_) => false))
-  ).pipe(startWith(false), tag("isSyncing"), shareReplay())
+  // const isSyncing = merge(
+  //   payload.pipe(map((_) => true)),
+  //   response.pipe(map((_) => false))
+  // ).pipe(startWith(false), tag("isSyncing"), shareReplay())
+  const isSyncing$ = of(false)
 
-  const react = combineLatest({ options, value, isSyncing }).pipe(
-    map((valueProps) => h(View, { ...valueProps, onSelect }))
-  )
+  const react = combineLatest({
+    options: options$,
+    selectedOptions: selectedOptions$,
+    isSyncing: isSyncing$,
+  }).pipe(map((valueProps) => h(View, { ...valueProps, onSelect })))
   const notice = userError$.pipe(
     map(({ message }) => error({ description: message }))
   )

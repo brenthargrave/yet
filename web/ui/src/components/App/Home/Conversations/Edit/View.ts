@@ -15,7 +15,7 @@ export type SelectedOption = Omit<Option, "__isNew__">
 export interface Props {
   options: Option[]
   onSelect: (option: Option) => void
-  value: SelectedOption[]
+  selectedOptions: SelectedOption[]
   // onCreateOption: (value: string) => void
   notes?: NoteProps[]
   isSyncing: boolean
@@ -23,7 +23,13 @@ export interface Props {
 
 const size = "md"
 
-export const View = ({ options, onSelect, value, notes, isSyncing }: Props) =>
+export const View = ({
+  options,
+  onSelect,
+  selectedOptions,
+  notes,
+  isSyncing,
+}: Props) =>
   h(
     Stack,
     {
@@ -55,7 +61,7 @@ export const View = ({ options, onSelect, value, notes, isSyncing }: Props) =>
             onChange: (newValue, _meta) => onSelect(newValue),
             options,
             noOptionsMessage: (_inputValue) => "No results.",
-            value,
+            value: selectedOptions,
           }),
         ]),
       ]),

@@ -66,12 +66,12 @@ export type EventProperties = {
 
 export type Invitee = {
   __typename?: 'Invitee';
-  id?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
   name: Scalars['String'];
 };
 
 export type InviteeInput = {
-  id?: InputMaybe<Scalars['String']>;
+  id: Scalars['String'];
   name: Scalars['String'];
 };
 
@@ -198,14 +198,14 @@ export type UpsertConversationMutationVariables = Exact<{
 }>;
 
 
-export type UpsertConversationMutation = { __typename?: 'RootMutationType', upsertConversation?: { __typename?: 'ConversationPayload', conversation?: { __typename?: 'Conversation', id: string, invitees: Array<{ __typename?: 'Invitee', name: string, id?: string | null }> } | null } | null };
+export type UpsertConversationMutation = { __typename?: 'RootMutationType', upsertConversation?: { __typename?: 'ConversationPayload', conversation?: { __typename?: 'Conversation', id: string, invitees: Array<{ __typename?: 'Invitee', name: string, id: string }> } | null } | null };
 
 export type ViewConversationQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type ViewConversationQuery = { __typename?: 'RootQueryType', getConversation?: { __typename?: 'ConversationPayload', conversation?: { __typename?: 'Conversation', id: string, invitees: Array<{ __typename?: 'Invitee', id?: string | null, name: string }> } | null, userError?: { __typename?: 'UserError', message: string } | null } | null };
+export type ViewConversationQuery = { __typename?: 'RootQueryType', getConversation?: { __typename?: 'ConversationPayload', conversation?: { __typename?: 'Conversation', id: string, invitees: Array<{ __typename?: 'Invitee', id: string, name: string }> } | null, userError?: { __typename?: 'UserError', message: string } | null } | null };
 
 export type UpdateProfileMutationVariables = Exact<{
   input: ProfileInput;

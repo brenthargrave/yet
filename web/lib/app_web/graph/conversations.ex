@@ -11,7 +11,7 @@ defmodule AppWeb.Graph.Conversations do
 
   object :invitee do
     field(:name, non_null(:string))
-    field(:id, :string)
+    field(:id, non_null(:string))
   end
 
   enum :conversation_state do
@@ -28,7 +28,7 @@ defmodule AppWeb.Graph.Conversations do
 
   input_object :invitee_input do
     field(:name, non_null(:string))
-    field(:id, :string)
+    field(:id, non_null(:string))
   end
 
   input_object :conversation_input do
