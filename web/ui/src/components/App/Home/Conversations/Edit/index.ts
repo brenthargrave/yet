@@ -1,4 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
+import { eqBy, prop, unionWith } from "ramda"
 import {
   combineLatest,
   distinctUntilChanged,
@@ -6,8 +7,10 @@ import {
   map,
   merge,
   mergeMap,
+  Observable,
   of,
   partition,
+  pluck,
   shareReplay,
   skip,
   startWith,
@@ -22,6 +25,7 @@ import {
 } from "ts-results/rxjs-operators"
 import { isPresent } from "~/fp"
 import {
+  Contact,
   getConversation$,
   Source as GraphSource,
   upsertConversation$,
@@ -30,7 +34,7 @@ import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { Source as RouterSource } from "~/router"
 import { makeObservableCallback } from "~/rx"
-import { Option as ContactOption, View } from "./View"
+import { Option as ContactOption, SelectedOption, View } from "./View"
 
 const tag = makeTagger("Conversation/Edit")
 
@@ -39,6 +43,11 @@ interface Sources {
   router: RouterSource
   graph: GraphSource
 }
+
+const contactsToOptions = (contacts: Contact[]): SelectedOption[] =>
+  contacts.map(({ id, name }, idx, _) => {
+    return { label: name, value: id }
+  })
 
 export const Edit = (sources: Sources) => {
   const {
@@ -56,33 +65,40 @@ export const Edit = (sources: Sources) => {
     tag("id$")
   )
 
-  const get$ = id.pipe(
+  const getConv$ = id.pipe(
     switchMap((id) => getConversation$(id)),
     tag("getConversation$")
   )
-  const conversation$ = get$.pipe(filterResultOk())
-  const userError$ = get$.pipe(filterResultErr())
+  const conversation$ = getConv$.pipe(filterResultOk())
+  const userError$ = getConv$.pipe(filterResultErr())
 
-  const options = contacts$.pipe(
-    map((contacts) =>
-      contacts.map(({ id, name }, idx, _) => {
-        return { label: name, value: id }
-      })
-    ),
-    tag("options"),
-    shareReplay()
+  const savedInvitees$ = conversation$.pipe(
+    pluck("invitees"),
+    tag("savedInvitees$")
   )
 
   const { $: selections, cb: onSelect } =
     makeObservableCallback<ContactOption[]>()
 
-  // TODO: set value on initial load
-  const value = selections.pipe(startWith([]), tag("selections"), shareReplay())
+  const value = selections.pipe(startWith([]), tag("value"), shareReplay())
+
+  const options = combineLatest({
+    contacts: contacts$,
+    invitees: savedInvitees$,
+  }).pipe(
+    map(
+      ({ contacts, invitees }) => contacts
+      // unionWith(eqBy(prop("id")), contacts, invitees)
+    ),
+    startWith([]),
+    tag("options"),
+    shareReplay()
+  )
 
   const invitees = value.pipe(
     map((selections) =>
       selections.map(({ label, value, __isNew__ }, idx, all) => {
-        return { name: label, id: isPresent(__isNew__) ? null : value }
+        return { name: label, id: value }
       })
     ),
     tag(`invitees`)

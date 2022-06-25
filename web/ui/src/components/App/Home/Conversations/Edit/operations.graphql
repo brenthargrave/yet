@@ -15,6 +15,7 @@ query ViewConversation($id: ID!) {
     conversation {
       id
       invitees {
+        id
         name
       }
     }
