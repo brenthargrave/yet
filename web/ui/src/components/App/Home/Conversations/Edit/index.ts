@@ -1,5 +1,4 @@
 import { h, ReactSource } from "@cycle/react"
-import { eqBy, prop, unionWith } from "ramda"
 import {
   combineLatest,
   distinctUntilChanged,
@@ -11,6 +10,7 @@ import {
   pluck,
   share,
   shareReplay,
+  skipUntil,
   startWith,
   switchMap,
   takeUntil,
@@ -22,6 +22,7 @@ import {
   getConversation$,
   Invitee,
   Source as GraphSource,
+  upsertConversation$,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
@@ -46,23 +47,29 @@ const inviteesToOptions = (invitees: Invitee[]): SelectedOption[] =>
     return { label: name, value: id }
   })
 
+const optionsToInvitees = (options: ContactOption[]): Invitee[] =>
+  options.map(({ label, value }) => {
+    return { name: label, id: value }
+  })
+
 export const Edit = (sources: Sources) => {
   const {
     graph: { contacts$ },
     router: { history$ },
   } = sources
 
-  const id = history$.pipe(
+  const id$ = history$.pipe(
     mergeMap((route) =>
       match(route)
         .with({ name: "editConversation" }, ({ params }) => of(params.id))
         .otherwise(() => EMPTY)
     ),
     distinctUntilChanged(),
-    tag("id$")
+    tag("id$"),
+    shareReplay()
   )
 
-  const getRecord$ = id.pipe(
+  const getRecord$ = id$.pipe(
     switchMap((id) => getConversation$(id)),
     tag("getConversation$")
   )
@@ -105,30 +112,23 @@ export const Edit = (sources: Sources) => {
   //   shareReplay()
   // )
 
-  // const invitees = value.pipe(
-  //   map((selections) =>
-  //     selections.map(({ label, value, __isNew__ }, idx, all) => {
-  //       return { name: label, id: value }
-  //     })
-  //   ),
-  //   tag(`invitees`)
-  // )
-
-  // const payload = combineLatest({ id, invitees }).pipe(
-  //   skip(1), // skip initial load
-  //   tag("payload$")
-  // )
-
-  // const response = payload.pipe(
-  //   switchMap((input) => upsertConversation$(input)),
-  //   tag("response")
-  // )
-
-  // const isSyncing = merge(
-  //   payload.pipe(map((_) => true)),
-  //   response.pipe(map((_) => false))
-  // ).pipe(startWith(false), tag("isSyncing"), shareReplay())
-  const isSyncing$ = of(false)
+  const invitees$ = selectedOptions$.pipe(
+    map(optionsToInvitees),
+    tag("invitees$")
+  )
+  const payload = combineLatest({ id: id$, invitees: invitees$ }).pipe(
+    skipUntil(onSelect$), // TODO: until *any* form input changes
+    tag("payload$"),
+    share()
+  )
+  const response = payload.pipe(
+    switchMap((input) => upsertConversation$(input)),
+    tag("response")
+  )
+  const isSyncing$ = merge(
+    payload.pipe(map((_) => true)),
+    response.pipe(map((_) => false))
+  ).pipe(startWith(false), tag("isSyncing"), shareReplay())
 
   const react = combineLatest({
     options: options$,

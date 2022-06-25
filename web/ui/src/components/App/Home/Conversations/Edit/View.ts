@@ -16,7 +16,6 @@ export interface Props {
   options: Option[]
   onSelect: (option: Option) => void
   selectedOptions: SelectedOption[]
-  // onCreateOption: (value: string) => void
   notes?: NoteProps[]
   isSyncing: boolean
 }
@@ -65,7 +64,7 @@ export const View = ({
           }),
         ]),
       ]),
-      // TODO: optional, editable fields for when / where
+      // TODO: optional fields for: when, where
       h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
         ...(notes || []).map(({ value, ...props }, idx, notesProps) =>
           h(NoteView, { value })
