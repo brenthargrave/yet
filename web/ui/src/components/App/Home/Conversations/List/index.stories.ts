@@ -4,7 +4,7 @@ import { Props, View } from "./View"
 import { ContainerView } from "../../index.stories"
 
 export default {
-  title: "Components/App/Home/Conversations",
+  title: "Components/Conversations/List",
   component: View,
   parameters: {
     controls: { hideNoControlsWarning: true },
