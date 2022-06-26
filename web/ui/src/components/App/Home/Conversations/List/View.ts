@@ -7,24 +7,31 @@ import { EmptyView, OnClickNew } from "../EmptyView"
 import { Conversation } from "~/graph"
 import { routes } from "~/router"
 
-interface RowProps {
-  cid: string
-}
-const RowView: FC<RowProps> = ({ cid }) =>
-  h(ListItem, {}, [a({ href: routes.editConversation({ id: cid }).href }, cid)])
+type OnClickConversation = (cid: string) => void
 
 export interface Props {
   conversations: Conversation[]
   onClickNew?: OnClickNew
+  onClickConversation: OnClickConversation
 }
 
-export const View: FC<Props> = ({ conversations, onClickNew }) =>
+export const View: FC<Props> = ({
+  conversations,
+  onClickNew,
+  onClickConversation,
+}) =>
   isEmpty(conversations)
     ? h(EmptyView, { onClickNew })
     : h(
         List,
         {},
-        conversations.map((c) => h(RowView, { cid: c.id }))
+        conversations.map(({ id }) =>
+          h(
+            ListItem,
+            { style: { cursor: "pointer" }, onClick: onClickConversation(id) },
+            [id]
+          )
+        )
       )
 
 View.displayName = "Conversation.View"

@@ -36,10 +36,13 @@ export const List = (sources: Sources) => {
     )
   )
 
-  // const conversations: Conversation[] = []
-  // const react = of(h(View, { conversations, onClickNew }))
+  const onClickConversation = (cid: string) => console.debug(cid)
+  // routes.editConversation({ id: cid }).href
+
   const react = conversations$.pipe(
-    map((conversations) => h(View, { conversations, onClickNew }))
+    map((conversations) =>
+      h(View, { conversations, onClickNew, onClickConversation })
+    )
   )
 
   const router = merge(newConvo$)
