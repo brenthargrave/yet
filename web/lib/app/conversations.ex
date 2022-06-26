@@ -43,4 +43,11 @@ defmodule App.Conversations do
     |> lift(nil, :not_found)
     |> bind(&if &1.creator != viewer, do: ok(&1), else: error(:unauthorized))
   end
+
+  @type conversations :: list(Converstion.t())
+  defun get_conversations(viewer :: Customer.t()) :: Brex.Result.s(conversations) do
+    Conversation
+    |> Repo.get_by(creator_id: viewer.id)
+    |> lift(nil, :not_found)
+  end
 end

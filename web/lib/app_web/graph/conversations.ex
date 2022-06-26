@@ -41,6 +41,10 @@ defmodule AppWeb.Graph.Conversations do
     field(:user_error, :user_error)
   end
 
+  object :conversations_payload do
+    field(:conversations, non_null(list_of(non_null(:conversation))))
+  end
+
   object :conversations_mutations do
     field :upsert_conversation, :conversation_payload do
       arg(:input, non_null(:conversation_input))
@@ -52,6 +56,10 @@ defmodule AppWeb.Graph.Conversations do
     field :get_conversation, :conversation_payload do
       arg(:id, non_null(:id))
       resolve(&Conversations.get_conversation/3)
+    end
+
+    field :get_conversations, :conversations_payload do
+      resolve(&Conversations.get_conversations/3)
     end
 
     field :contacts, non_null(list_of(non_null(:contact))) do

@@ -30,6 +30,7 @@ import {
   Event,
   EventName,
   EventProperties,
+  GetConversationsDocument,
   Maybe,
   MeDocument,
   ProfileInput,
@@ -272,3 +273,37 @@ export const getConversation$ = (id: string) =>
     }),
     tag("getConversation$")
   )
+
+export type { Conversation } from "./generated"
+
+export const conversations$ = token$.pipe(
+  filter(isNotNullish),
+  switchMap((token) => {
+    return zenToRx(client.watchQuery({ query: GetConversationsDocument })).pipe(
+      map(
+        ({
+          data,
+          error,
+          errors,
+          loading,
+          networkStatus,
+          partial,
+          ...result
+        }) => {
+          // NOTE: throw will create endless loop upon resubscription
+          if (error) captureException(error)
+          if (errors) captureException(JSON.stringify(errors))
+          return data.getConversations?.conversations
+        }
+      ),
+      filter(isNotNullish),
+      tag("watchQuery(conversations)")
+    )
+  }),
+  catchError((error, _caught$) => {
+    throw new GraphWatchError(error.message)
+  }),
+  startWith([]),
+  tag("conversations$"),
+  shareReplay()
+)

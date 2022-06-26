@@ -5,7 +5,7 @@ import { EventName, Source as GraphSource, track$ } from "~/graph"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
 import { makeObservableCallback } from "~/rx"
-import { Conversation, View } from "./View"
+import { View } from "./View"
 
 const tag = makeTagger("Conversation/List")
 
@@ -17,7 +17,7 @@ interface Sources {
 export const List = (sources: Sources) => {
   const {
     router: { history$ },
-    graph: { me$ },
+    graph: { me$, conversations$ },
   } = sources
 
   const { $: _clickNew$, cb: onClickNew } = makeObservableCallback()
@@ -36,8 +36,12 @@ export const List = (sources: Sources) => {
     )
   )
 
-  const conversations: Conversation[] = []
-  const react = of(h(View, { conversations, onClickNew }))
+  // const conversations: Conversation[] = []
+  // const react = of(h(View, { conversations, onClickNew }))
+  const react = conversations$.pipe(
+    map((conversations) => h(View, { conversations, onClickNew }))
+  )
+
   const router = merge(newConvo$)
 
   return {

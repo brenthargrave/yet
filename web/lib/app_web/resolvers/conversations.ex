@@ -39,4 +39,17 @@ defmodule AppWeb.Resolvers.Conversations do
       user_error: %UserError{message: "Unauthorized"}
     })
   end
+
+  typedstruct module: ConversationsPayload do
+    field :conversations, list(Conversation.t())
+  end
+
+  defun get_conversations(
+          _parent,
+          _args,
+          %{context: %{customer: customer}} = _resolution
+        ) :: resolver_result(ConversationsPayload.t()) do
+    Conversations.get_conversations(customer)
+    |> fmap(&%ConversationsPayload{conversations: &1})
+  end
 end

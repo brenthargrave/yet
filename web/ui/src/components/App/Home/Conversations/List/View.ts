@@ -1,8 +1,9 @@
+import { List, ListItem } from "@chakra-ui/react"
 import { h } from "@cycle/react"
+import { isEmpty } from "ramda"
 import { FC } from "react"
 import { EmptyView, OnClickNew } from "../EmptyView"
-
-export interface Conversation {}
+import { Conversation } from "~/graph"
 
 export interface Props {
   conversations: Conversation[]
@@ -10,7 +11,12 @@ export interface Props {
 }
 
 export const View: FC<Props> = ({ conversations, onClickNew }) =>
-  // TODO: isEmpty(conversations) ? emptyView : listView
-  h(EmptyView, { onClickNew })
+  isEmpty(conversations)
+    ? h(EmptyView, { onClickNew })
+    : h(
+        List,
+        {},
+        conversations.map((c) => h(ListItem, c.id))
+      )
 
 View.displayName = "Conversation.View"
