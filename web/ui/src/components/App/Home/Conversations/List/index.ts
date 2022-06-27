@@ -36,8 +36,12 @@ export const List = (sources: Sources) => {
     )
   )
 
-  const onClickConversation = (cid: string) => console.debug(cid)
-  // routes.editConversation({ id: cid }).href
+  const { $: _clickConversation$, cb: onClickConversation } =
+    makeObservableCallback<string>()
+  const clickConversation$ = _clickConversation$.pipe(tag("clickNew$"), share())
+  const editConvo$ = clickConversation$.pipe(
+    map((id) => push(routes.editConversation({ id })))
+  )
 
   const react = conversations$.pipe(
     map((conversations) =>
@@ -45,7 +49,7 @@ export const List = (sources: Sources) => {
     )
   )
 
-  const router = merge(newConvo$)
+  const router = merge(newConvo$, editConvo$)
 
   return {
     react,

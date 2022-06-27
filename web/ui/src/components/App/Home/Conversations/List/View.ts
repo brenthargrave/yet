@@ -26,7 +26,10 @@ export const View: FC<Props> = ({
         conversations.map(({ id }) =>
           h(
             ListItem,
-            { style: { cursor: "pointer" }, onClick: onClickConversation(id) },
+            {
+              style: { cursor: "pointer" },
+              onClick: () => onClickConversation(id),
+            },
             [
               // TODO:
               // names
