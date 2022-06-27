@@ -23,6 +23,7 @@ defmodule AppWeb.Graph.Conversations do
   object :conversation do
     field(:id, non_null(:string))
     field(:invitees, non_null(list_of(non_null(:invitee))))
+    field(:note, :string)
     # TODO # field(:state, non_null(:conversation_state))
   end
 
@@ -34,6 +35,7 @@ defmodule AppWeb.Graph.Conversations do
   input_object :conversation_input do
     field(:id, non_null(:string))
     field(:invitees, non_null(list_of(non_null(:invitee_input))))
+    field(:note, :string)
   end
 
   object :conversation_payload do

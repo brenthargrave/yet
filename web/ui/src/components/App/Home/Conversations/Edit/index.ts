@@ -6,6 +6,7 @@ import {
   map,
   merge,
   mergeMap,
+  Observable,
   of,
   pluck,
   share,
@@ -116,6 +117,17 @@ export const Edit = (sources: Sources) => {
     map(optionsToInvitees),
     tag("invitees$")
   )
+
+  const recordNote$ = record$.pipe(pluck("note"), tag("recordNote$"))
+  const { $: _onChangeNote$, cb: onChangeNote } =
+    makeObservableCallback<string>()
+  const onChangeNote$ = _onChangeNote$.pipe(tag("_onChangeNote$$"), share())
+
+  const note$: Observable<string> = merge(
+    recordNote$.pipe(takeUntil(onChangeNote$)),
+    onChangeNote$
+  ).pipe(tag("note$"), share())
+
   const payload = combineLatest({ id: id$, invitees: invitees$ }).pipe(
     skipUntil(onSelect$), // TODO: until *any* form input changes
     tag("payload$"),
@@ -134,7 +146,10 @@ export const Edit = (sources: Sources) => {
     options: options$,
     selectedOptions: selectedOptions$,
     isSyncing: isSyncing$,
-  }).pipe(map((valueProps) => h(View, { ...valueProps, onSelect })))
+    note: note$,
+  }).pipe(
+    map((valueProps) => h(View, { ...valueProps, onSelect, onChangeNote }))
+  )
   const notice = userError$.pipe(
     map(({ message }) => error({ description: message }))
   )

@@ -2,6 +2,7 @@ mutation UpsertConversation($input: ConversationInput!) {
   upsertConversation(input: $input) {
     conversation {
       id
+      note
       invitees {
         name
         id
@@ -14,6 +15,7 @@ query ViewConversation($id: ID!) {
   getConversation(id: $id) {
     conversation {
       id
+      note
       invitees {
         id
         name

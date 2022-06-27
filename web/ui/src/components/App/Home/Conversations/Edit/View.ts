@@ -17,7 +17,9 @@ export interface Props {
   options: Option[]
   onSelect: (option: Option) => void
   selectedOptions: SelectedOption[]
-  notes?: NoteProps[]
+  // notes?: NoteProps[]
+  note?: string
+  onChangeNote: (note: string) => void
   isSyncing: boolean
 }
 
@@ -27,7 +29,8 @@ export const View = ({
   options,
   onSelect,
   selectedOptions,
-  notes,
+  note,
+  onChangeNote,
   isSyncing,
 }: Props) =>
   h(
@@ -67,11 +70,11 @@ export const View = ({
       ]),
       // TODO: optional fields for: when, where
       h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
-        // ...(notes || []).map(({ value, ...props }, idx, notesProps) =>
-        //   h(NoteView, { value })
-        // ),
-        h(AutosizeTextarea, { minRows: 10 }),
-
+        h(AutosizeTextarea, {
+          minRows: 2,
+          value: note,
+          onChange: (event) => onChangeNote(event.target.value),
+        }),
         h(Divider, {}),
         h(
           Stack,
