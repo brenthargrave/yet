@@ -1,4 +1,3 @@
-import { isNil } from "ramda"
 import { Subject, Observable, share, OperatorFunction } from "rxjs"
 import { Observable as ZenObservable } from "zen-observable-ts"
 

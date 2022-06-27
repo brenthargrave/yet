@@ -1,23 +1,17 @@
 import { ReactSource } from "@cycle/react"
-import { isEmpty, of } from "ramda"
 import {
-  switchMap,
+  distinctUntilChanged,
+  filter,
+  map,
   merge,
   Observable,
-  map,
-  startWith,
   shareReplay,
-  filter,
-  distinctUntilChanged,
-  mergeMap,
-  EMPTY,
+  startWith,
+  switchMap,
 } from "rxjs"
 import { isNotNullish, isNullish } from "rxjs-etc"
 import { match } from "ts-pattern"
-import { isNullOrUndefined } from "util"
-import { isPresent } from "~/fp"
-import { token$, loggedOut, VerificationStatus, checkToken$ } from "~/graph"
-
+import { checkToken$, loggedOut, token$, VerificationStatus } from "~/graph"
 import { makeTagger } from "~/log"
 import { isRoute, push, routes, Source as RouterSource } from "~/router"
 import { PhoneSubmit } from "./PhoneSubmit"

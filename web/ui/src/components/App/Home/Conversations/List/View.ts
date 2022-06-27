@@ -1,11 +1,9 @@
 import { List, ListItem } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { isEmpty } from "ramda"
 import { FC } from "react"
-import { a } from "@cycle/react-dom"
+import { isEmpty } from "~/fp"
 import { EmptyView, OnClickNew } from "../EmptyView"
 import { Conversation } from "~/graph"
-import { routes } from "~/router"
 
 type OnClickConversation = (cid: string) => void
 

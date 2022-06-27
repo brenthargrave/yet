@@ -3,7 +3,6 @@
 /* eslint max-classes-per-file: 0 */
 
 import { captureException } from "@sentry/react"
-import { isNil, none, not, propSatisfies, toLower } from "ramda"
 import {
   BehaviorSubject,
   catchError,
@@ -18,6 +17,7 @@ import {
 import { isNotNullish } from "rxjs-etc"
 import { switchMap } from "rxjs/operators"
 import { Err, Ok, Result } from "ts-results"
+import { isNil, none, not, propSatisfies, toLower } from "~/fp"
 import { makeTagger } from "~/log"
 import { zenToRx } from "~/rx"
 import { getId } from "./anon"

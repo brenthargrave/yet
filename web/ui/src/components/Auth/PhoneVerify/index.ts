@@ -1,38 +1,37 @@
 import { h, ReactSource } from "@cycle/react"
-import { not } from "ramda"
 import {
-  combineLatest,
-  map,
-  Observable,
-  switchMap,
-  withLatestFrom,
-  merge,
-  startWith,
-  shareReplay,
-  share,
-  filter,
   BehaviorSubject,
-  tap,
   catchError,
+  combineLatest,
+  filter,
+  map,
+  merge,
+  Observable,
+  share,
+  shareReplay,
+  startWith,
+  switchMap,
+  tap,
+  withLatestFrom,
 } from "rxjs"
-import { match } from "ts-pattern"
 import { pairwiseStartWith, pluck } from "rxjs-etc/dist/esm/operators"
-
+import { match } from "ts-pattern"
+import { not } from "~/fp"
 import {
+  Customer,
   loggedIn,
-  verifyCode$,
-  VerificationStatus,
+  SubmitCodePayload,
+  SubmitCodeResult,
   UserError,
   Verification,
-  Customer,
-  SubmitCodeResult,
-  SubmitCodePayload,
+  VerificationStatus,
+  verifyCode$,
 } from "~/graph"
 import { makeTagger } from "~/log"
+import { error } from "~/notice"
+import { push, routes } from "~/router"
 import { makeObservableCallback } from "~/rx"
 import { View } from "./View"
-import { push, routes } from "~/router"
-import { error } from "~/notice"
 
 const tag = makeTagger("PhoneVerify")
 

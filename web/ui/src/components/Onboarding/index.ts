@@ -1,5 +1,4 @@
 import { h, ReactSource } from "@cycle/react"
-import { find, isNil, none, prop, propSatisfies, toLower, trim } from "ramda"
 import {
   BehaviorSubject,
   combineLatest,
@@ -16,6 +15,7 @@ import {
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
+import { find, isNil, none, prop, propSatisfies, toLower, trim } from "~/fp"
 import {
   Customer,
   ProfileProp,

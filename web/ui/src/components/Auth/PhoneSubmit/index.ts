@@ -1,31 +1,28 @@
 import { h, ReactSource } from "@cycle/react"
 import { phone as validatePhone } from "phone"
 import {
-  Observable,
   combineLatest,
+  filter,
   map,
   merge,
+  Observable,
   share,
   shareReplay,
   startWith,
   switchMap,
-  tap,
   withLatestFrom,
-  filter,
-  pluck,
 } from "rxjs"
-import { not } from "ramda"
-
-import { View } from "./View"
+import { not } from "~/fp"
 import {
+  submitPhone$,
   UserError,
   Verification,
   VerificationStatus,
-  submitPhone$,
 } from "~/graph"
 import { makeTagger } from "~/log"
-import { makeObservableCallback } from "~/rx"
 import { error } from "~/notice"
+import { makeObservableCallback } from "~/rx"
+import { View } from "./View"
 
 export { View }
 
