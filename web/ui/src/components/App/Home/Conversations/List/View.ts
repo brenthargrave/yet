@@ -27,7 +27,12 @@ export const View: FC<Props> = ({
           h(
             ListItem,
             { style: { cursor: "pointer" }, onClick: onClickConversation(id) },
-            [id]
+            [
+              // TODO:
+              // names
+              // smaller text... elipsis   [date]
+              id,
+            ]
           )
         )
       )
