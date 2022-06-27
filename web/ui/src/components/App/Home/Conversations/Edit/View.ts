@@ -1,9 +1,10 @@
 import { SmallAddIcon } from "@chakra-ui/icons"
-import { Button, Divider, IconButton } from "@chakra-ui/react"
+import { Button, Divider, IconButton, Textarea } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { CreatableSelect } from "chakra-react-select"
+// import TextareaAutosize from "react-textarea-autosize"
 import { Props as NoteProps, View as NoteView } from "~/components/Note/Draft"
-import { Heading, InputGroup, Stack } from "~/system"
+import { Heading, InputGroup, Stack, AutosizeTextarea } from "~/system"
 
 export interface Option {
   value: string
@@ -66,9 +67,11 @@ export const View = ({
       ]),
       // TODO: optional fields for: when, where
       h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
-        ...(notes || []).map(({ value, ...props }, idx, notesProps) =>
-          h(NoteView, { value })
-        ),
+        // ...(notes || []).map(({ value, ...props }, idx, notesProps) =>
+        //   h(NoteView, { value })
+        // ),
+        h(AutosizeTextarea, { minRows: 10 }),
+
         h(Divider, {}),
         h(
           Stack,

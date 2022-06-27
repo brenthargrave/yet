@@ -54,3 +54,5 @@ export const PinInputField = (props: PinInputFieldProps) =>
   h(_PinInputField, props)
 
 export * from "./styles"
+
+export * from "./AutosizeTextarea"
