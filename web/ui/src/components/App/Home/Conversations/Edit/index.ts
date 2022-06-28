@@ -78,6 +78,8 @@ export const Edit = (sources: Sources) => {
   )
   const record$ = getRecord$.pipe(filterResultOk())
   const userError$ = getRecord$.pipe(filterResultErr())
+  // TODO: redirect to Home upon :not_found - but this requires surfacing
+  // that value in the erorr payload, not just the user-friendly string
 
   const recordInvitees$ = record$.pipe(pluck("invitees"))
   const inviteesAsOptions$ = recordInvitees$.pipe(
