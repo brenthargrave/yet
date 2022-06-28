@@ -22,9 +22,7 @@ export const List = (sources: Sources) => {
 
   const { $: _clickNew$, cb: onClickNew } = makeObservableCallback()
   const clickNew$ = _clickNew$.pipe(tag("clickNew$"), share())
-  const newConvo$ = clickNew$.pipe(
-    map((_) => push(routes.editConversation({ id: ulid() })))
-  )
+  const newConvo$ = clickNew$.pipe(map((_) => push(routes.newConversation())))
   const track = clickNew$.pipe(
     withLatestFrom(me$),
     mergeMap(([_, me]) =>
@@ -38,7 +36,10 @@ export const List = (sources: Sources) => {
 
   const { $: _clickConversation$, cb: onClickConversation } =
     makeObservableCallback<string>()
-  const clickConversation$ = _clickConversation$.pipe(tag("clickNew$"), share())
+  const clickConversation$ = _clickConversation$.pipe(
+    tag("clickConversation$"),
+    share()
+  )
   const editConvo$ = clickConversation$.pipe(
     map((id) => push(routes.editConversation({ id })))
   )

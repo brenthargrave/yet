@@ -1,8 +1,9 @@
 import { ReactSource } from "@cycle/react"
 import { merge, mergeMap } from "rxjs"
+import { match } from "ts-pattern"
 import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { Source as RouterSource } from "~/router"
+import { routes, Source as RouterSource } from "~/router"
 import { Edit } from "./Edit"
 import { List } from "./List"
 
@@ -35,7 +36,12 @@ export const Conversations = (sources: Sources) => {
 
   const react = history$.pipe(
     mergeMap((route) =>
-      route.name === "editConversation" ? editView$ : listView$
+      match(route.name)
+        .with(routes.newConversation().name, () => listView$)
+        // TODO: route names enum
+        .with("editConversation", () => editView$)
+        .with(routes.conversations().name, () => listView$)
+        .otherwise((_) => listView$)
     )
   )
 
