@@ -72,7 +72,7 @@ export const View = ({
       h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
         h(AutosizeTextarea, {
           minRows: 4,
-          value: note,
+          value: note || "",
           onChange: (event) => onChangeNote(event.target.value),
         }),
         h(Divider, {}),

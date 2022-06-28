@@ -254,7 +254,7 @@ export const upsertConversation$ = (input: ConversationInput) => {
       if (errors) throw new GraphError(JSON.stringify(errors))
       return data!.upsertConversation!
     }),
-    tag("track$")
+    tag("upsertConversation$")
   )
 }
 

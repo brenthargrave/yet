@@ -1,6 +1,7 @@
 import { h, ReactSource } from "@cycle/react"
 import {
   combineLatest,
+  debounceTime,
   distinctUntilChanged,
   EMPTY,
   map,
@@ -126,10 +127,18 @@ export const Edit = (sources: Sources) => {
   const note$: Observable<string> = merge(
     recordNote$.pipe(takeUntil(onChangeNote$)),
     onChangeNote$
-  ).pipe(tag("note$"), share())
+  ).pipe(distinctUntilChanged(), tag("note$"), share())
 
-  const payload = combineLatest({ id: id$, invitees: invitees$ }).pipe(
-    skipUntil(onSelect$), // TODO: until *any* form input changes
+  const payload = combineLatest({
+    id: id$,
+    invitees: invitees$,
+    note: note$,
+  }).pipe(
+    skipUntil(
+      // NOTE: until *any* form input changes
+      merge(onSelect$, onChangeNote$)
+    ),
+    debounceTime(1000),
     tag("payload$"),
     share()
   )
