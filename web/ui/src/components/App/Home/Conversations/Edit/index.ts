@@ -12,6 +12,7 @@ import {
   pluck,
   share,
   shareReplay,
+  skip,
   skipUntil,
   startWith,
   switchMap,
@@ -131,17 +132,9 @@ export const Edit = (sources: Sources) => {
 
   const payload = combineLatest({
     id: id$,
-    invitees: invitees$,
-    note: note$,
-  }).pipe(
-    skipUntil(
-      // NOTE: until *any* form input changes
-      merge(onSelect$, onChangeNote$)
-    ),
-    debounceTime(1000),
-    tag("payload$"),
-    share()
-  )
+    invitees: invitees$.pipe(skipUntil(onSelect$)),
+    note: note$.pipe(skipUntil(onChangeNote$)),
+  }).pipe(debounceTime(1000), tag("payload$"), share())
   const response = payload.pipe(
     switchMap((input) => upsertConversation$(input)),
     tag("response")
