@@ -29,21 +29,21 @@ defmodule App.Customer do
     customer
     |> cast(attrs, [:name])
     |> validate_required(:name, trim: true)
-    |> validate_length(:name, min: 3)
+    |> validate_length(:name, min: 2)
   end
 
   def onboarding_changeset(customer, %{org: _org} = attrs) do
     customer
     |> cast(attrs, [:org])
     |> validate_required(:org, trim: true)
-    |> validate_length(:org, min: 3)
+    |> validate_length(:org, min: 2)
   end
 
   def onboarding_changeset(customer, %{role: _role} = attrs) do
     customer
     |> cast(attrs, [:role])
     |> validate_required(:role, trim: true)
-    |> validate_length(:role, min: 3)
+    |> validate_length(:role, min: 2)
   end
 
   def changeset(record, attrs) do

@@ -96,7 +96,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   ).pipe(startWith(false), tag("isLoading$"), shareReplay())
 
   const isInputInvalid = inputValue$.pipe(
-    map((value) => trim(value).length < 4),
+    map((value) => trim(value).length < 2),
     startWith(true),
     tag("isInputInvalid"),
     shareReplay()
