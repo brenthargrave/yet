@@ -116,6 +116,9 @@ export const setToken = (token: string | null | undefined) => {
   } else {
     localStorage.clear()
     token$$.next(null)
+    // NOTE: call .stop() to avoid error: ""
+    // https://github.com/apollographql/apollo-client/issues/2919#issuecomment-7327464900
+    client.stop()
     client.clearStore()
   }
 }
