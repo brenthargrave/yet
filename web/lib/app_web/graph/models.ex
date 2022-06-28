@@ -5,9 +5,15 @@ defmodule AppWeb.Graph.Models do
     field(:message, non_null(:string))
   end
 
+  enum :error_code do
+    value(:not_found)
+    value(:unauthorized)
+  end
+
   object :user_error do
     is_type_of(:base_error)
     field(:message, non_null(:string))
+    field(:code, :error_code)
   end
 
   object :customer do

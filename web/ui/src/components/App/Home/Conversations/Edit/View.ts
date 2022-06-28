@@ -18,7 +18,7 @@ export interface Props {
   onSelect: (option: Option) => void
   selectedOptions: SelectedOption[]
   // notes?: NoteProps[]
-  note?: string
+  note?: string | null
   onChangeNote: (note: string) => void
   isSyncing: boolean
 }

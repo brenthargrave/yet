@@ -4,15 +4,14 @@ import {
   debounceTime,
   distinctUntilChanged,
   EMPTY,
+  filter,
   map,
   merge,
   mergeMap,
-  Observable,
   of,
   pluck,
   share,
   shareReplay,
-  skip,
   skipUntil,
   startWith,
   switchMap,
@@ -22,6 +21,7 @@ import { match } from "ts-pattern"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import {
   Contact,
+  ErrorCode,
   getConversation$,
   Invitee,
   Source as GraphSource,
@@ -29,7 +29,7 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
-import { Source as RouterSource } from "~/router"
+import { push, routes, Source as RouterSource } from "~/router"
 import { makeObservableCallback } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
 
@@ -78,8 +78,10 @@ export const Edit = (sources: Sources) => {
   )
   const record$ = getRecord$.pipe(filterResultOk())
   const userError$ = getRecord$.pipe(filterResultErr())
-  // TODO: redirect to Home upon :not_found - but this requires surfacing
-  // that value in the erorr payload, not just the user-friendly string
+  const redirectNotFound$ = userError$.pipe(
+    filter(({ code }) => code === ErrorCode.NotFound),
+    map((_) => push(routes.conversations()))
+  )
 
   const recordInvitees$ = record$.pipe(pluck("invitees"))
   const inviteesAsOptions$ = recordInvitees$.pipe(
@@ -127,7 +129,7 @@ export const Edit = (sources: Sources) => {
     makeObservableCallback<string>()
   const onChangeNote$ = _onChangeNote$.pipe(tag("_onChangeNote$$"), share())
 
-  const note$: Observable<string> = merge(
+  const note$ = merge(
     recordNote$.pipe(takeUntil(onChangeNote$)),
     onChangeNote$
   ).pipe(distinctUntilChanged(), tag("note$"), share())
@@ -157,9 +159,11 @@ export const Edit = (sources: Sources) => {
   const notice = userError$.pipe(
     map(({ message }) => error({ description: message }))
   )
+  const router = merge(redirectNotFound$)
 
   return {
     react,
     notice,
+    router,
   }
 }

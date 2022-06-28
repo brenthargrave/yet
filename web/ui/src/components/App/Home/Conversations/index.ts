@@ -26,7 +26,12 @@ export const Conversations = (sources: Sources) => {
     ...list
   } = List(sources)
 
-  const { react: editView$, notice, ...edit } = Edit(sources)
+  const {
+    react: editView$,
+    notice,
+    router: editRouter$,
+    ...edit
+  } = Edit(sources)
 
   const react = history$.pipe(
     mergeMap((route) =>
@@ -35,7 +40,7 @@ export const Conversations = (sources: Sources) => {
   )
 
   // TODO: const router = mergeSinks("router", [list, edit]) // listRouter$)
-  const router = merge(listRouter$)
+  const router = merge(listRouter$, editRouter$)
 
   return {
     react,

@@ -23,6 +23,7 @@ query ViewConversation($id: ID!) {
     }
     userError {
       message
+      code
     }
   }
 }

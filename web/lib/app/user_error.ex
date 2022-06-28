@@ -1,7 +1,8 @@
 defmodule App.UserError do
   use TypedStruct
 
-  typedstruct enforce: true do
-    field :message, String.t()
+  typedstruct do
+    field :message, String.t(), enforce: true
+    field :code, atom()
   end
 end

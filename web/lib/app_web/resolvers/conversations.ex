@@ -31,10 +31,10 @@ defmodule AppWeb.Resolvers.Conversations do
     Conversations.get_conversation(id, customer)
     |> fmap(&%ConversationPayload{conversation: &1})
     |> convert_error(:not_found, %ConversationPayload{
-      user_error: %UserError{message: "Not found"}
+      user_error: %UserError{message: "Not found", code: :not_found}
     })
     |> convert_error(:unauthorized, %ConversationPayload{
-      user_error: %UserError{message: "Unauthorized"}
+      user_error: %UserError{message: "Unauthorized", code: :unauthorized}
     })
   end
 
