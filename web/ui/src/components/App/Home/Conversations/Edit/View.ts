@@ -71,7 +71,7 @@ export const View = ({
       // TODO: optional fields for: when, where
       h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
         h(AutosizeTextarea, {
-          minRows: 2,
+          minRows: 4,
           value: note,
           onChange: (event) => onChangeNote(event.target.value),
         }),
