@@ -37,10 +37,9 @@ export const Conversations = (sources: Sources) => {
   const react = history$.pipe(
     mergeMap((route) =>
       match(route.name)
-        .with(routes.newConversation().name, () => listView$)
-        // TODO: route names enum
-        .with("editConversation", () => editView$)
-        .with(routes.conversations().name, () => listView$)
+        .with(routes.newConversation.name, () => listView$)
+        .with(routes.editConversation.name, () => editView$)
+        .with(routes.conversations.name, () => listView$)
         .otherwise((_) => listView$)
     )
   )
