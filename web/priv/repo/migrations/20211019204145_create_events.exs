@@ -32,6 +32,7 @@ defmodule App.Repo.Migrations.CreateEvents do
     create table(:conversations) do
       add :creator_id, references(:customers)
       add :invitees, :map
+      add :note, :string
       timestamps()
     end
 

@@ -19,8 +19,6 @@ defmodule AppWeb.Resolvers.Conversations do
           %{input: input} = _args,
           %{context: %{customer: customer}} = _resolution
         ) :: resolver_result(ConversationPayload.t()) do
-    IO.puts(inspect(input))
-
     Conversations.upsert_conversation(customer, input)
     |> fmap(&%ConversationPayload{conversation: &1})
   end
