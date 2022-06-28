@@ -5,6 +5,7 @@ defmodule App.Conversations do
   use Brex.Result
   alias App.Conversation
   alias App.Repo
+  import Ecto.Query
 
   defun upsert_conversation(
           customer,
@@ -46,8 +47,6 @@ defmodule App.Conversations do
 
   @type conversations :: list(Converstion.t())
   defun get_conversations(viewer :: Customer.t()) :: Brex.Result.s(conversations) do
-    Conversation
-    |> Repo.get_by(creator_id: viewer.id)
-    |> lift(nil, :not_found)
+    Repo.all(from(c in Conversation, where: c.creator_id == ^viewer.id))
   end
 end
