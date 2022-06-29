@@ -2,11 +2,11 @@ mutation UpsertConversation($input: ConversationInput!) {
   upsertConversation(input: $input) {
     conversation {
       id
-      note
       invitees {
         name
         id
       }
+      note
     }
   }
 }

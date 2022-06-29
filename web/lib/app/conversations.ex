@@ -9,12 +9,13 @@ defmodule App.Conversations do
 
   defun upsert_conversation(
           customer,
-          %{id: id, invitees: invitees} = _input
+          %{id: id, invitees: invitees, note: note} = _input
         ) :: Brex.Result.s(Conversation.t()) do
     attrs = %{
       creator: customer,
       id: id,
-      invitees: invitees
+      invitees: invitees,
+      note: note
     }
 
     Conversation
