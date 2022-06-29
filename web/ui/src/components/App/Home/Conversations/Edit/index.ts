@@ -7,10 +7,13 @@ import {
   filter,
   map,
   merge,
+  NEVER,
   Observable,
   of,
   pluck,
   share,
+  shareReplay,
+  skip,
   skipUntil,
   startWith,
   switchMap,
@@ -18,7 +21,11 @@ import {
 } from "rxjs"
 import { match } from "ts-pattern"
 import { Ok, Result } from "ts-results"
-import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
+import {
+  filterResultErr,
+  filterResultOk,
+  resultSwitchMap,
+} from "ts-results/rxjs-operators"
 import { ulid } from "ulid"
 import {
   Contact,
@@ -34,6 +41,7 @@ import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { push, routes, Source as RouterSource } from "~/router"
 import { makeObservableCallback } from "~/rx"
+import { Conversations } from ".."
 import { Option as ContactOption, SelectedOption, View } from "./View"
 
 const tag = makeTagger("Conversation/Edit")
@@ -97,9 +105,13 @@ export const Edit = (sources: Sources) => {
         .otherwise(() => EMPTY)
     ),
     tag("getRecord$"),
-    share()
+    shareReplay()
   )
-  const record$ = getRecord$.pipe(filterResultOk(), tag("record$"), share())
+  const record$ = getRecord$.pipe(
+    filterResultOk(),
+    tag("record$"),
+    shareReplay()
+  )
   const userError$ = getRecord$.pipe(filterResultErr())
   const redirectNotFound$ = userError$.pipe(
     filter(({ code }) => code === ErrorCode.NotFound),
@@ -111,22 +123,22 @@ export const Edit = (sources: Sources) => {
   const inviteesAsOptions$ = recordInvitees$.pipe(
     map(inviteesToOptions),
     tag("inviteesAsOptions$"),
-    share()
+    shareReplay()
   )
 
   const { $: _onSelect$, cb: onSelect } =
     makeObservableCallback<ContactOption[]>()
-  const onSelect$ = _onSelect$.pipe(tag("onSelect$"), share())
+  const onSelect$ = _onSelect$.pipe(tag("onSelect$"), shareReplay())
 
   const selectedOptions$ = merge(
     inviteesAsOptions$.pipe(takeUntil(onSelect$)),
     onSelect$
-  ).pipe(tag("selectedOptions$"), share())
+  ).pipe(tag("selectedOptions$"), shareReplay())
 
   const options$ = contacts$.pipe(
     map(contactsToOptions),
     tag("options$"),
-    share()
+    shareReplay()
   )
   // TODO: merge in prior selections
   //  combineLatest({
@@ -144,34 +156,43 @@ export const Edit = (sources: Sources) => {
 
   const invitees$ = selectedOptions$.pipe(
     map(optionsToInvitees),
-    tag("invitees$")
+    tag("invitees$"),
+    shareReplay()
   )
 
-  const recordNote$ = record$.pipe(pluck("note"), tag("recordNote$"))
+  const recordNote$ = record$.pipe(
+    pluck("note"),
+    tag("recordNote$"),
+    shareReplay()
+  )
   const { $: _onChangeNote$, cb: onChangeNote } =
     makeObservableCallback<string>()
-  const onChangeNote$ = _onChangeNote$.pipe(tag("_onChangeNote$$"), share())
+  const onChangeNote$ = _onChangeNote$.pipe(
+    tag("_onChangeNote$$"),
+    shareReplay()
+  )
 
   const note$ = merge(
     recordNote$.pipe(takeUntil(onChangeNote$)),
     onChangeNote$
-  ).pipe(distinctUntilChanged(), tag("note$"), share())
+  ).pipe(distinctUntilChanged(), tag("note$"), shareReplay())
 
   const payload$ = combineLatest({
     id: id$,
-    invitees: invitees$.pipe(skipUntil(onSelect$)),
-    note: note$.pipe(skipUntil(onChangeNote$)),
-  }).pipe(debounceTime(1000), tag("payload$"), share())
+    invitees: invitees$,
+    note: note$,
+  }).pipe(skip(1), debounceTime(1000), tag("payload$"), shareReplay())
 
   const response$ = payload$.pipe(
     switchMap((input) => upsertConversation$(input)),
-    tag("response")
+    tag("response$"),
+    shareReplay()
   )
 
   const isSyncing$ = merge(
     payload$.pipe(map((_) => true)),
     response$.pipe(map((_) => false))
-  ).pipe(startWith(false), tag("isSyncing$"), share())
+  ).pipe(startWith(false), tag("isSyncing$"), shareReplay())
 
   const react = combineLatest({
     options: options$,
