@@ -1,10 +1,8 @@
 import { SmallAddIcon } from "@chakra-ui/icons"
-import { Button, Divider, IconButton, Textarea } from "@chakra-ui/react"
+import { Button, Divider, IconButton } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { CreatableSelect } from "chakra-react-select"
-// import TextareaAutosize from "react-textarea-autosize"
-import { Props as NoteProps, View as NoteView } from "~/components/Note/Draft"
-import { Heading, InputGroup, Stack, AutosizeTextarea } from "~/system"
+import { AutosizeTextarea, Heading, InputGroup, Stack } from "~/system"
 
 export interface Option {
   value: string
