@@ -99,7 +99,7 @@ export const Edit = (sources: Sources) => {
         )
         .otherwise(() => EMPTY)
     ),
-    tag("record$"),
+    tag("getRecord$"),
     share()
   )
   const record$ = getRecord$.pipe(filterResultOk(), tag("record$"), share())
@@ -130,7 +130,7 @@ export const Edit = (sources: Sources) => {
     map(contactsToOptions),
     startWith([]),
     tag("options$"),
-    shareReplay()
+    share()
   )
   // TODO: merge in prior selections
   //  combineLatest({
@@ -161,19 +161,21 @@ export const Edit = (sources: Sources) => {
     onChangeNote$
   ).pipe(distinctUntilChanged(), tag("note$"), share())
 
-  const payload = combineLatest({
+  const payload$ = combineLatest({
     id: id$,
     invitees: invitees$.pipe(skipUntil(onSelect$)),
     note: note$.pipe(skipUntil(onChangeNote$)),
   }).pipe(debounceTime(1000), tag("payload$"), share())
-  const response = payload.pipe(
+
+  const response$ = payload$.pipe(
     switchMap((input) => upsertConversation$(input)),
     tag("response")
   )
+
   const isSyncing$ = merge(
-    payload.pipe(map((_) => true)),
-    response.pipe(map((_) => false))
-  ).pipe(startWith(false), tag("isSyncing"), shareReplay())
+    payload$.pipe(map((_) => true)),
+    response$.pipe(map((_) => false))
+  ).pipe(startWith(false), tag("isSyncing$"), share())
 
   const react = combineLatest({
     options: options$,
@@ -181,11 +183,14 @@ export const Edit = (sources: Sources) => {
     isSyncing: isSyncing$,
     note: note$,
   }).pipe(
+    tag("combineLatest"),
     map((valueProps) => h(View, { ...valueProps, onSelect, onChangeNote }))
   )
+
   const notice = userError$.pipe(
     map(({ message }) => error({ description: message }))
   )
+
   const router = merge(redirectNotFound$)
 
   return {
