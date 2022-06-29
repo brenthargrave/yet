@@ -1,6 +1,14 @@
 import { h, ReactSource } from "@cycle/react"
 import { captureException } from "@sentry/react"
-import { catchError, combineLatest, EMPTY, merge, Observable, of } from "rxjs"
+import {
+  catchError,
+  combineLatest,
+  EMPTY,
+  merge,
+  Observable,
+  of,
+  shareReplay,
+} from "rxjs"
 import { map, mergeMap, switchMap } from "rxjs/operators"
 import { match } from "ts-pattern"
 import { Auth } from "~/components/Auth"
@@ -37,7 +45,7 @@ export interface Sources {
 
 export const App = (sources: Sources) => {
   const { history$: _history$ } = sources.router
-  const history$ = _history$.pipe(tag("history$"))
+  const history$ = _history$.pipe(tag("history$"), shareReplay())
 
   const { token$, me$: cachedMe$ } = sources.graph
 
