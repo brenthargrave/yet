@@ -168,7 +168,7 @@ export const Edit = (sources: Sources) => {
   ).pipe(startWith(false), tag("isSyncing$"), shareReplay())
 
   const { $: _onClickBack$, cb: onClickBack } = makeObservableCallback<void>()
-  const onClickBack$ = _onClickBack$.pipe(tag("onClickBack$"), shareReplay())
+  const onClickBack$ = _onClickBack$.pipe(tag("onClickBack$"), share())
   const goBack$ = onClickBack$.pipe(map((_) => back()))
 
   const react = combineLatest({
@@ -178,7 +178,9 @@ export const Edit = (sources: Sources) => {
     note: note$,
   }).pipe(
     tag("combineLatest"),
-    map((valueProps) => h(View, { ...valueProps, onSelect, onChangeNote }))
+    map((valueProps) =>
+      h(View, { ...valueProps, onSelect, onChangeNote, onClickBack })
+    )
   )
 
   const notice = userError$.pipe(

@@ -9,10 +9,10 @@ interface Sources {
 }
 
 export const Header = ({ router: { history$ } }: Sources) => {
-  // const react = of(h(View))
   // const react = history$.pipe(
   //   map((route) => (isRoute(routes.root(), route) ? null : h(View)))
   // )
+  // const react = of(h(View))
   const react = of(null)
 
   return {
