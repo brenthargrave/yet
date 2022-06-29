@@ -1,4 +1,4 @@
-import { ArrowBackIcon, SmallAddIcon } from "@chakra-ui/icons"
+import { ArrowBackIcon, ChevronLeftIcon, SmallAddIcon } from "@chakra-ui/icons"
 import { Button, Divider, IconButton } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { CreatableSelect } from "chakra-react-select"
@@ -39,14 +39,12 @@ export const View = ({
       direction: "column",
       align: "start",
       justifyContent: "flex-start",
-      padding: "4",
-      gap: "2",
     },
     [
-      h(Stack, { direction: "row" }, [
+      h(Stack, { direction: "row", width: "100%" }, [
         h(IconButton, {
-          icon: h(ArrowBackIcon),
-          variant: "ghost",
+          icon: h(ChevronLeftIcon),
+          variant: "unstyled",
           onClick: onClickBack,
         }),
       ]),
