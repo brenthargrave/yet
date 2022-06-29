@@ -8,6 +8,7 @@ import {
   map,
   merge,
   mergeMap,
+  Observable,
   of,
   pluck,
   share,
@@ -16,16 +17,21 @@ import {
   startWith,
   switchMap,
   takeUntil,
+  withLatestFrom,
 } from "rxjs"
 import { match } from "ts-pattern"
+import { Ok, Result } from "ts-results"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
+import { ulid } from "ulid"
 import {
   Contact,
+  Conversation,
   ErrorCode,
   getConversation$,
   Invitee,
   Source as GraphSource,
   upsertConversation$,
+  UserError,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
@@ -61,27 +67,48 @@ export const Edit = (sources: Sources) => {
     router: { history$ },
   } = sources
 
-  const id$ = history$.pipe(
-    mergeMap((route) =>
+  // const id$ = history$.pipe(
+  //   mergeMap((route) =>
+  //     match(route)
+  //       .with({ name: routes.editConversation.name }, ({ params }) =>
+  //         of(params.id)
+  //       )
+  //       .with({ name: routes.newConversation.name }, () => ulid())
+  //       .otherwise(() => EMPTY)
+  //   ),
+  //   distinctUntilChanged(),
+  //   tag("id$"),
+  //   shareReplay()
+  // )
+
+  // const getRecord$ = id$.pipe(
+  //   switchMap((id) => getConversation$(id)),
+  //   tag("getConversation$")
+  // )
+  // const record$ = getRecord$.pipe(filterResultOk())
+
+  const getRecord$: Observable<Result<Conversation, UserError>> = history$.pipe(
+    switchMap((route) =>
       match(route)
-        .with({ name: "editConversation" }, ({ params }) => of(params.id))
+        .with({ name: routes.editConversation.name }, ({ params }) =>
+          getConversation$(params.id)
+        )
+        .with({ name: routes.newConversation.name }, () =>
+          // NOTE: generate empty seed record
+          of(Ok({ id: ulid(), invitees: [], note: null }))
+        )
         .otherwise(() => EMPTY)
     ),
-    distinctUntilChanged(),
-    tag("id$"),
-    shareReplay()
+    tag("record$"),
+    share()
   )
-
-  const getRecord$ = id$.pipe(
-    switchMap((id) => getConversation$(id)),
-    tag("getConversation$")
-  )
-  const record$ = getRecord$.pipe(filterResultOk())
+  const record$ = getRecord$.pipe(filterResultOk(), tag("record$"), share())
   const userError$ = getRecord$.pipe(filterResultErr())
   const redirectNotFound$ = userError$.pipe(
     filter(({ code }) => code === ErrorCode.NotFound),
     map((_) => push(routes.conversations()))
   )
+  const id$ = record$.pipe(pluck("id"), tag("id$"), share())
 
   const recordInvitees$ = record$.pipe(pluck("invitees"))
   const inviteesAsOptions$ = recordInvitees$.pipe(
