@@ -36,6 +36,7 @@ export interface Source {
 
 export enum CommandType {
   push = "push",
+  back = "back",
 }
 export interface Command {
   type: CommandType
@@ -43,6 +44,9 @@ export interface Command {
 }
 export const push = (route: Route): Command => {
   return { type: CommandType.push, route }
+}
+export const back = (): Command => {
+  return { type: CommandType.back }
 }
 
 type Sink = Stream<Command>
@@ -53,6 +57,7 @@ export function makeDriver(): Driver<Sink, Source> {
       next: ({ type, route }) => {
         match(type)
           .with(CommandType.push, () => route?.push())
+          .with(CommandType.back, () => window.history.back())
           .exhaustive()
       },
       error: (error) => console.error(error),

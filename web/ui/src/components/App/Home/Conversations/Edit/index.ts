@@ -33,7 +33,7 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
-import { push, routes, Source as RouterSource } from "~/router"
+import { back, push, routes, Source as RouterSource } from "~/router"
 import { makeObservableCallback } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
 
@@ -167,6 +167,10 @@ export const Edit = (sources: Sources) => {
     response$.pipe(map((_) => false))
   ).pipe(startWith(false), tag("isSyncing$"), shareReplay())
 
+  const { $: _onClickBack$, cb: onClickBack } = makeObservableCallback<void>()
+  const onClickBack$ = _onClickBack$.pipe(tag("onClickBack$"), shareReplay())
+  const goBack$ = onClickBack$.pipe(map((_) => back()))
+
   const react = combineLatest({
     options: options$,
     selectedOptions: selectedOptions$,
@@ -181,7 +185,7 @@ export const Edit = (sources: Sources) => {
     map(({ message }) => error({ description: message }))
   )
 
-  const router = merge(redirectNotFound$)
+  const router = merge(redirectNotFound$, goBack$)
 
   return {
     react,

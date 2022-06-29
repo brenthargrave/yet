@@ -19,6 +19,7 @@ export interface Props {
   note?: string | null
   onChangeNote: (note: string) => void
   isSyncing: boolean
+  onClickBack?: () => void
 }
 
 const size = "md"
@@ -30,6 +31,7 @@ export const View = ({
   note,
   onChangeNote,
   isSyncing,
+  onClickBack,
 }: Props) =>
   h(
     Stack,
@@ -42,10 +44,12 @@ export const View = ({
     },
     [
       h(Stack, { direction: "row" }, [
-        h(IconButton, { icon: h(ArrowBackIcon), variant: "ghost" }),
+        h(IconButton, {
+          icon: h(ArrowBackIcon),
+          variant: "ghost",
+          onClick: onClickBack,
+        }),
       ]),
-      // TODO: how go back w/o deleting note?
-      // ? overthinking this, just add a header element s/ standard back button
       // TODO: Edit vs. New copy
       h(Heading, { size: "lg" }, `Note a new conversation`),
       h(Stack, { direction: "row", alignItems: "center", width: "100%" }, [
