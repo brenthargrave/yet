@@ -4,7 +4,7 @@ import { FC } from "react"
 import { isEmpty, prop, map, join } from "~/fp"
 import { EmptyView, OnClickNew } from "../EmptyView"
 import { Conversation } from "~/graph"
-import { Box, Stack, Text } from "~/system"
+import { Box, Divider, Stack, Text } from "~/system"
 
 type OnClickConversation = (cid: string) => void
 
@@ -14,7 +14,7 @@ export interface Props {
   onClickConversation: OnClickConversation
 }
 
-const spacing = 10
+const spacing = 4
 
 export const View: FC<Props> = ({
   conversations,
@@ -48,6 +48,7 @@ export const View: FC<Props> = ({
                     },
                     [note]
                   ),
+                  h(Divider),
                 ]),
               ]
             )
