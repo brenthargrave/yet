@@ -41,6 +41,7 @@ export const View = ({
       gap: "2",
     },
     [
+      // TODO: Edit vs. New copy
       h(Heading, { size: "lg" }, `Note a new conversation`),
       h(Stack, { direction: "row", alignItems: "center", width: "100%" }, [
         h(InputGroup, [

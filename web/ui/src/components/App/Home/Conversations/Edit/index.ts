@@ -7,25 +7,19 @@ import {
   filter,
   map,
   merge,
-  NEVER,
   Observable,
   of,
   pluck,
   share,
   shareReplay,
   skip,
-  skipUntil,
   startWith,
   switchMap,
   takeUntil,
 } from "rxjs"
 import { match } from "ts-pattern"
 import { Ok, Result } from "ts-results"
-import {
-  filterResultErr,
-  filterResultOk,
-  resultSwitchMap,
-} from "ts-results/rxjs-operators"
+import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { ulid } from "ulid"
 import {
   Contact,
@@ -41,7 +35,6 @@ import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { push, routes, Source as RouterSource } from "~/router"
 import { makeObservableCallback } from "~/rx"
-import { Conversations } from ".."
 import { Option as ContactOption, SelectedOption, View } from "./View"
 
 const tag = makeTagger("Conversation/Edit")
@@ -71,26 +64,6 @@ export const Edit = (sources: Sources) => {
     graph: { contacts$ },
     router: { history$ },
   } = sources
-
-  // const id$ = history$.pipe(
-  //   mergeMap((route) =>
-  //     match(route)
-  //       .with({ name: routes.editConversation.name }, ({ params }) =>
-  //         of(params.id)
-  //       )
-  //       .with({ name: routes.newConversation.name }, () => ulid())
-  //       .otherwise(() => EMPTY)
-  //   ),
-  //   distinctUntilChanged(),
-  //   tag("id$"),
-  //   shareReplay()
-  // )
-
-  // const getRecord$ = id$.pipe(
-  //   switchMap((id) => getConversation$(id)),
-  //   tag("getConversation$")
-  // )
-  // const record$ = getRecord$.pipe(filterResultOk())
 
   const getRecord$: Observable<Result<Conversation, UserError>> = history$.pipe(
     switchMap((route) =>
