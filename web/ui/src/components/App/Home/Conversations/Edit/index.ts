@@ -7,17 +7,14 @@ import {
   filter,
   map,
   merge,
-  mergeMap,
   Observable,
   of,
   pluck,
   share,
-  shareReplay,
   skipUntil,
   startWith,
   switchMap,
   takeUntil,
-  withLatestFrom,
 } from "rxjs"
 import { match } from "ts-pattern"
 import { Ok, Result } from "ts-results"
@@ -128,7 +125,6 @@ export const Edit = (sources: Sources) => {
 
   const options$ = contacts$.pipe(
     map(contactsToOptions),
-    startWith([]),
     tag("options$"),
     share()
   )
