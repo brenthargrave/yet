@@ -1,4 +1,4 @@
-import { SmallAddIcon } from "@chakra-ui/icons"
+import { ArrowBackIcon, SmallAddIcon } from "@chakra-ui/icons"
 import { Button, Divider, IconButton } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { CreatableSelect } from "chakra-react-select"
@@ -41,6 +41,11 @@ export const View = ({
       gap: "2",
     },
     [
+      h(Stack, { direction: "row" }, [
+        h(IconButton, { icon: h(ArrowBackIcon), variant: "ghost" }),
+      ]),
+      // TODO: how go back w/o deleting note?
+      // ? overthinking this, just add a header element s/ standard back button
       // TODO: Edit vs. New copy
       h(Heading, { size: "lg" }, `Note a new conversation`),
       h(Stack, { direction: "row", alignItems: "center", width: "100%" }, [
