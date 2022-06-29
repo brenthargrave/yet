@@ -282,7 +282,12 @@ export type { Conversation } from "./generated"
 export const conversations$ = token$.pipe(
   filter(isNotNullish),
   switchMap((token) => {
-    return zenToRx(client.watchQuery({ query: GetConversationsDocument })).pipe(
+    return zenToRx(
+      client.watchQuery({
+        query: GetConversationsDocument,
+        fetchPolicy: "cache-and-network",
+      })
+    ).pipe(
       map(
         ({
           data,
@@ -306,7 +311,6 @@ export const conversations$ = token$.pipe(
   catchError((error, _caught$) => {
     throw new GraphWatchError(error.message)
   }),
-  startWith([]),
   tag("conversations$"),
   shareReplay()
 )
