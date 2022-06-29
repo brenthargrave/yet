@@ -49,5 +49,6 @@ defmodule App.Conversations do
   @type conversations :: list(Converstion.t())
   defun get_conversations(viewer :: Customer.t()) :: Brex.Result.s(conversations) do
     Repo.all(from(c in Conversation, where: c.creator_id == ^viewer.id))
+    |> lift(nil, :not_found)
   end
 end

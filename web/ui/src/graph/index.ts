@@ -285,7 +285,7 @@ export const conversations$ = token$.pipe(
     return zenToRx(
       client.watchQuery({
         query: GetConversationsDocument,
-        fetchPolicy: "cache-and-network",
+        fetchPolicy: "network-only",
       })
     ).pipe(
       map(
