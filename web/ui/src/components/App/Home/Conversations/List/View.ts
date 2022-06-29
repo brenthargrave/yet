@@ -1,10 +1,10 @@
 import { Heading, List, ListItem } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { isEmpty } from "~/fp"
+import { isEmpty, prop, map, join } from "~/fp"
 import { EmptyView, OnClickNew } from "../EmptyView"
 import { Conversation } from "~/graph"
-import { Box, Stack } from "~/system"
+import { Box, Stack, Text } from "~/system"
 
 type OnClickConversation = (cid: string) => void
 
@@ -14,6 +14,8 @@ export interface Props {
   onClickConversation: OnClickConversation
 }
 
+const spacing = 10
+
 export const View: FC<Props> = ({
   conversations,
   onClickNew,
@@ -21,24 +23,32 @@ export const View: FC<Props> = ({
 }) =>
   isEmpty(conversations)
     ? h(EmptyView, { onClickNew })
-    : h(Stack, { direction: "column", spacing: 2, padding: 4 }, [
-        h(Heading, {}, "Conversations"),
+    : h(Stack, { direction: "column", spacing, padding: 4 }, [
+        h(Heading, { size: "md" }, "Conversations"),
         h(
           List,
-          {},
-          conversations.map(({ id }) =>
+          { spacing },
+          conversations.map(({ id, invitees, note }) =>
             h(
               ListItem,
               {
                 style: { cursor: "pointer" },
                 onClick: () => onClickConversation(id),
-                padding: 2,
+                padding: 0,
               },
               [
-                // TODO:
-                // names
-                // smaller text... elipsis   [date]
-                id,
+                h(Stack, { direction: "column" }, [
+                  h(Heading, { size: "sm" }, [
+                    join(", ", map(prop("name"), invitees)),
+                  ]),
+                  h(
+                    Text,
+                    {
+                      noOfLines: 2,
+                    },
+                    [note]
+                  ),
+                ]),
               ]
             )
           )

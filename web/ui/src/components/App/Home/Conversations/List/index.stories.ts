@@ -14,6 +14,7 @@ export default {
 
 export const Default: Story<Props> = (args) => h(View, args)
 Default.argTypes = {
+  onClickConversation: { control: false, action: "onClickConversation" },
   conversations: {
     defaultValue: [
       // stub
@@ -23,6 +24,16 @@ Default.argTypes = {
           {
             id: "1",
             name: "John Doe",
+          },
+        ],
+        note: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+      },
+      {
+        id: "2",
+        invitees: [
+          {
+            id: "2",
+            name: "Jane Doe",
           },
         ],
         note: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
