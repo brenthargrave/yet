@@ -4,7 +4,7 @@ defmodule App.Conversation do
   import App.Types
 
   typed_schema "conversations" do
-    embeds_many :invitees, Invitee do
+    embeds_many :invitees, Invitee, on_replace: :delete do
       field :name, :string, enforce: true
     end
 
