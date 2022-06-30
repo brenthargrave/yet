@@ -1,4 +1,4 @@
-import { ArrowBackIcon, ChevronLeftIcon, SmallAddIcon } from "@chakra-ui/icons"
+import { ChevronLeftIcon, SmallAddIcon } from "@chakra-ui/icons"
 import { Button, Divider, IconButton } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { CreatableSelect } from "chakra-react-select"
@@ -15,7 +15,6 @@ export interface Props {
   options: Option[]
   onSelect: (option: Option) => void
   selectedOptions: SelectedOption[]
-  // notes?: NoteProps[]
   note?: string | null
   onChangeNote: (note: string) => void
   isSyncing: boolean
@@ -49,53 +48,56 @@ export const View = ({
         }),
       ]),
       // TODO: Edit vs. New copy
-      h(Heading, { size: "lg" }, `Note a new conversation`),
-      h(Stack, { direction: "row", alignItems: "center", width: "100%" }, [
-        h(InputGroup, [
-          h(CreatableSelect, {
-            placeholder: "With whom?",
-            autoFocus: true,
-            size,
-            chakraStyles: {
-              container: (provided, state) => ({
-                ...provided,
-                width: "100%",
-              }),
-            },
-            isClearable: true,
-            isMulti: true,
-            createOptionPosition: "first",
-            formatCreateLabel: (inputValue) => `Add contact: "${inputValue}"`,
-            // @ts-ignore
-            onChange: (newValue, _meta) => onSelect(newValue),
-            options,
-            noOptionsMessage: (_inputValue) => "No results.",
-            value: selectedOptions,
-          }),
+      // ? how distinguish new conversation from old?
+      h(Stack, { direction: "column", width: "100%", padding: 4 }, [
+        h(Heading, { size: "lg" }, `Note a new conversation`),
+        h(Stack, { direction: "row", alignItems: "center", width: "100%" }, [
+          h(InputGroup, [
+            h(CreatableSelect, {
+              placeholder: "With whom?",
+              autoFocus: true,
+              size,
+              chakraStyles: {
+                container: (provided, state) => ({
+                  ...provided,
+                  width: "100%",
+                }),
+              },
+              isClearable: true,
+              isMulti: true,
+              createOptionPosition: "first",
+              formatCreateLabel: (inputValue) => `Add contact: "${inputValue}"`,
+              // @ts-ignore
+              onChange: (newValue, _meta) => onSelect(newValue),
+              options,
+              noOptionsMessage: (_inputValue) => "No results.",
+              value: selectedOptions,
+            }),
+          ]),
         ]),
-      ]),
-      // TODO: optional fields for: when, where
-      h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
-        h(AutosizeTextarea, {
-          minRows: 4,
-          value: note || "",
-          onChange: (event) => onChangeNote(event.target.value),
-        }),
-        h(Divider, {}),
-        h(
-          Stack,
-          {
-            width: "100%",
-            direction: "row",
-            justifyContent: "end",
-          },
-          [
-            h(Stack, { direction: "row" }, [
-              h(IconButton, { icon: h(SmallAddIcon) }),
-              h(Button, {}, `Share`),
-            ]),
-          ]
-        ),
+        // TODO: optional fields for: when, where
+        h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
+          h(AutosizeTextarea, {
+            minRows: 4,
+            value: note || "",
+            onChange: (event) => onChangeNote(event.target.value),
+          }),
+          h(Divider, {}),
+          h(
+            Stack,
+            {
+              width: "100%",
+              direction: "row",
+              justifyContent: "end",
+            },
+            [
+              h(Stack, { direction: "row" }, [
+                h(IconButton, { icon: h(SmallAddIcon) }),
+                h(Button, {}, `Share`),
+              ]),
+            ]
+          ),
+        ]),
       ]),
     ]
   )
