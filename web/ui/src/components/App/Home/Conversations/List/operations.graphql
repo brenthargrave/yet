@@ -3,6 +3,7 @@ query GetConversations {
     conversations {
       id
       note
+      status
       invitees {
         id
         name

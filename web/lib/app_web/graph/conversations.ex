@@ -1,6 +1,7 @@
 defmodule AppWeb.Graph.Conversations do
   use Absinthe.Schema.Notation
   alias AppWeb.Resolvers.Conversations
+  import_types(Absinthe.Type.Custom)
 
   object :contact do
     field(:id, non_null(:string))
@@ -15,8 +16,8 @@ defmodule AppWeb.Graph.Conversations do
   end
 
   enum :conversation_status do
-    value(:draft, as: "draft")
-    value(:deleted, as: "deleted")
+    value(:draft, as: :draft)
+    value(:deleted, as: :deleted)
   end
 
   object :conversation do
