@@ -1,5 +1,5 @@
-import { ChevronLeftIcon, SmallAddIcon } from "@chakra-ui/icons"
-import { Button, Divider, IconButton } from "@chakra-ui/react"
+import { ChevronLeftIcon, DeleteIcon, SmallAddIcon } from "@chakra-ui/icons"
+import { Button, Divider, Flex, IconButton, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { CreatableSelect } from "chakra-react-select"
 import { AutosizeTextarea, Heading, InputGroup, Stack } from "~/system"
@@ -84,7 +84,7 @@ export const View = ({
           }),
           h(Divider, {}),
           h(
-            Stack,
+            Flex,
             {
               width: "100%",
               direction: "row",
@@ -92,8 +92,16 @@ export const View = ({
             },
             [
               h(Stack, { direction: "row" }, [
-                h(IconButton, { icon: h(SmallAddIcon) }),
+                // TODO: multiple notes per convesation
+                // h(IconButton, { icon: h(SmallAddIcon) }),
                 h(Button, {}, `Share`),
+              ]),
+              h(Spacer),
+              h(Stack, {}, [
+                h(IconButton, {
+                  variant: "ghost",
+                  icon: h(DeleteIcon),
+                }),
               ]),
             ]
           ),
