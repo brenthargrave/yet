@@ -13,6 +13,7 @@ import {
   share,
   shareReplay,
   skip,
+  skipUntil,
   startWith,
   switchMap,
   takeUntil,
@@ -160,8 +161,8 @@ export const Edit = (sources: Sources) => {
 
   const payload$ = combineLatest({
     id: id$,
-    invitees: invitees$,
-    note: note$,
+    invitees: invitees$.pipe(skipUntil(onSelect$)),
+    note: note$.pipe(skipUntil(onChangeNote$)),
   }).pipe(skip(1), debounceTime(1000), tag("payload$"), shareReplay())
 
   const response$ = payload$.pipe(
