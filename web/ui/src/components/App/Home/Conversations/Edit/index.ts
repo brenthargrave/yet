@@ -170,7 +170,7 @@ export const Edit = (sources: Sources) => {
   const { $: _onClickBack$, cb: onClickBack } = makeObservableCallback<void>()
   const goBack$ = _onClickBack$.pipe(
     tag("onClickBack$"),
-    map((_) => back()),
+    map((_) => push(routes.conversations())),
     share()
   )
 
