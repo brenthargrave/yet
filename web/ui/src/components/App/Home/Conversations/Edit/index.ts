@@ -161,8 +161,9 @@ export const Edit = (sources: Sources) => {
 
   const payload$ = combineLatest({
     id: id$,
-    invitees: invitees$.pipe(skipUntil(onSelect$)),
-    note: note$.pipe(skipUntil(onChangeNote$)),
+    // TODO: when to sync?
+    invitees: invitees$,
+    note: note$,
   }).pipe(skip(1), debounceTime(1000), tag("payload$"), shareReplay())
 
   const response$ = payload$.pipe(
