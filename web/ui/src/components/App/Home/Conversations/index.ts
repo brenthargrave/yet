@@ -1,5 +1,5 @@
 import { ReactSource } from "@cycle/react"
-import { merge, mergeMap } from "rxjs"
+import { merge, switchMap } from "rxjs"
 import { match } from "ts-pattern"
 import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
@@ -35,7 +35,7 @@ export const Conversations = (sources: Sources) => {
   } = Edit(sources)
 
   const react = history$.pipe(
-    mergeMap((route) =>
+    switchMap((route) =>
       match(route.name)
         .with(routes.newConversation.name, () => editView$)
         .with(routes.editConversation.name, () => editView$)

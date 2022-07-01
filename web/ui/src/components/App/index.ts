@@ -9,7 +9,7 @@ import {
   of,
   shareReplay,
 } from "rxjs"
-import { map, mergeMap, switchMap } from "rxjs/operators"
+import { map, switchMap } from "rxjs/operators"
 import { match } from "ts-pattern"
 import { Auth } from "~/components/Auth"
 import { Landing } from "~/components/Landing"
@@ -104,7 +104,7 @@ export const App = (sources: Sources) => {
   )
 
   const guardedHistory$ = history$.pipe(
-    mergeMap((route) => {
+    switchMap((route) => {
       // redirect unsupported paths to root
       return route.name ? EMPTY : of(push(routes.root()))
     }),

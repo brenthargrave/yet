@@ -87,7 +87,7 @@ export const Edit = (sources: Sources) => {
         .otherwise(() => EMPTY)
     ),
     tag("getRecord$"),
-    shareReplay()
+    share()
   )
   const record$ = getRecord$.pipe(
     filterResultOk(),
