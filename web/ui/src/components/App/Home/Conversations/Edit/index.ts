@@ -168,8 +168,13 @@ export const Edit = (sources: Sources) => {
   ).pipe(startWith(false), tag("isSyncing$"), shareReplay())
 
   const { $: _onClickBack$, cb: onClickBack } = makeObservableCallback<void>()
-  const goBack$ = _onClickBack$.pipe(
-    tag("onClickBack$"),
+  const goBack$ = _onClickBack$.pipe(tag("onClickBack$"), share())
+
+  const { $: _onClickDelete$, cb: onClickDelete } =
+    makeObservableCallback<void>()
+  const onClickDelete$ = _onClickDelete$.pipe(tag("onClickDelete$"), share())
+
+  const goToList$ = merge(goBack$, onClickDelete$).pipe(
     map((_) => push(routes.conversations())),
     share()
   )
@@ -182,7 +187,13 @@ export const Edit = (sources: Sources) => {
   }).pipe(
     tag("combineLatest"),
     map((valueProps) =>
-      h(View, { ...valueProps, onSelect, onChangeNote, onClickBack })
+      h(View, {
+        ...valueProps,
+        onSelect,
+        onChangeNote,
+        onClickBack,
+        onClickDelete,
+      })
     )
   )
 
@@ -190,7 +201,7 @@ export const Edit = (sources: Sources) => {
     map(({ message }) => error({ description: message }))
   )
 
-  const router = merge(redirectNotFound$, goBack$)
+  const router = merge(redirectNotFound$, goToList$)
 
   return {
     react,

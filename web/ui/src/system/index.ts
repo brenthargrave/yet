@@ -18,6 +18,8 @@ import {
   DividerProps,
   Heading as _Heading,
   HeadingProps,
+  IconButton as _IconButton,
+  IconButtonProps,
   Input as _Input,
   InputAddon as _InputAddon,
   InputAddonProps,
@@ -44,6 +46,7 @@ export const Button = (props: ButtonProps) => h(_Button, props)
 export const Center = (props: CenterProps) => h(_Center, props)
 export const Divider = (props: DividerProps) => h(_Divider, props)
 export const Heading = (props: HeadingProps) => h(_Heading, props)
+export const IconButton = (props: IconButtonProps) => h(_IconButton, props)
 export const Input = (props: InputProps) => h(_Input, props)
 export const InputAddon = (props: InputAddonProps) => h(_InputAddon, props)
 export const InputGroup = (props: InputGroupProps) => h(_InputGroup, props)

@@ -1,5 +1,5 @@
 import { ChevronLeftIcon, DeleteIcon, SmallAddIcon } from "@chakra-ui/icons"
-import { Button, Divider, Flex, IconButton, Spacer } from "@chakra-ui/react"
+import { Button, Divider, Flex, Spacer, IconButton } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { CreatableSelect } from "chakra-react-select"
 import { AutosizeTextarea, Heading, InputGroup, Stack } from "~/system"
@@ -19,6 +19,7 @@ export interface Props {
   onChangeNote: (note: string) => void
   isSyncing: boolean
   onClickBack?: () => void
+  onClickDelete?: () => void
 }
 
 const size = "md"
@@ -31,6 +32,7 @@ export const View = ({
   onChangeNote,
   isSyncing,
   onClickBack,
+  onClickDelete,
 }: Props) =>
   h(
     Stack,
@@ -101,6 +103,7 @@ export const View = ({
                 h(IconButton, {
                   variant: "ghost",
                   icon: h(DeleteIcon),
+                  onClick: onClickDelete,
                 }),
               ]),
             ]
