@@ -89,11 +89,7 @@ export const Edit = (sources: Sources) => {
     tag("getRecord$"),
     share()
   )
-  const record$ = getRecord$.pipe(
-    filterResultOk(),
-    tag("record$"),
-    shareReplay()
-  )
+  const record$ = getRecord$.pipe(filterResultOk(), tag("record$"), share())
   const userError$ = getRecord$.pipe(filterResultErr())
   const redirectNotFound$ = userError$.pipe(
     filter(({ code }) => code === ErrorCode.NotFound),
@@ -105,22 +101,22 @@ export const Edit = (sources: Sources) => {
   const inviteesAsOptions$ = recordInvitees$.pipe(
     map(inviteesToOptions),
     tag("inviteesAsOptions$"),
-    shareReplay()
+    share()
   )
 
   const { $: _onSelect$, cb: onSelect } =
     makeObservableCallback<ContactOption[]>()
-  const onSelect$ = _onSelect$.pipe(tag("onSelect$"), shareReplay())
+  const onSelect$ = _onSelect$.pipe(tag("onSelect$"), share())
 
   const selectedOptions$ = merge(
     inviteesAsOptions$.pipe(takeUntil(onSelect$)),
     onSelect$
-  ).pipe(tag("selectedOptions$"), shareReplay())
+  ).pipe(tag("selectedOptions$"), share())
 
   const options$ = contacts$.pipe(
     map(contactsToOptions),
     tag("options$"),
-    shareReplay()
+    share()
   )
   // TODO: merge in prior selections
   //  combineLatest({
@@ -139,43 +135,36 @@ export const Edit = (sources: Sources) => {
   const invitees$ = selectedOptions$.pipe(
     map(optionsToInvitees),
     tag("invitees$"),
-    shareReplay()
+    share()
   )
 
-  const recordNote$ = record$.pipe(
-    pluck("note"),
-    tag("recordNote$"),
-    shareReplay()
-  )
+  const recordNote$ = record$.pipe(pluck("note"), tag("recordNote$"), share())
   const { $: _onChangeNote$, cb: onChangeNote } =
     makeObservableCallback<string>()
-  const onChangeNote$ = _onChangeNote$.pipe(
-    tag("_onChangeNote$$"),
-    shareReplay()
-  )
+  const onChangeNote$ = _onChangeNote$.pipe(tag("_onChangeNote$$"), share())
 
   const note$ = merge(
     recordNote$.pipe(takeUntil(onChangeNote$)),
     onChangeNote$
-  ).pipe(distinctUntilChanged(), tag("note$"), shareReplay())
+  ).pipe(distinctUntilChanged(), tag("note$"), share())
 
   const payload$ = combineLatest({
     id: id$,
     // TODO: when to sync?
     invitees: invitees$,
     note: note$,
-  }).pipe(skip(1), debounceTime(1000), tag("payload$"), shareReplay())
+  }).pipe(skip(1), debounceTime(1000), tag("payload$"), share())
 
   const response$ = payload$.pipe(
     switchMap((input) => upsertConversation$(input)),
     tag("response$"),
-    shareReplay()
+    share()
   )
 
   const isSyncing$ = merge(
     payload$.pipe(map((_) => true)),
     response$.pipe(map((_) => false))
-  ).pipe(startWith(false), tag("isSyncing$"), shareReplay())
+  ).pipe(startWith(false), tag("isSyncing$"), share())
 
   const { $: _onClickBack$, cb: onClickBack } = makeObservableCallback<void>()
   const goBack$ = _onClickBack$.pipe(tag("onClickBack$"), share())
