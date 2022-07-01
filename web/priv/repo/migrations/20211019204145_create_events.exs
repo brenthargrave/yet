@@ -33,6 +33,8 @@ defmodule App.Repo.Migrations.CreateEvents do
       add :creator_id, references(:customers)
       add :invitees, :map
       add :note, :string
+      add :status, :string
+      add :deleted_at, :utc_datetime_usec
       timestamps()
     end
 

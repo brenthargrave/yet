@@ -14,17 +14,16 @@ defmodule AppWeb.Graph.Conversations do
     field(:id, non_null(:string))
   end
 
-  enum :conversation_state do
+  enum :conversation_status do
     value(:draft, as: "draft")
-    value(:abandoned, as: "abandoned")
-    value(:cosigned, as: "cosigned")
+    value(:deleted, as: "deleted")
   end
 
   object :conversation do
     field(:id, non_null(:string))
     field(:invitees, non_null(list_of(non_null(:invitee))))
     field(:note, :string)
-    # TODO # field(:state, non_null(:conversation_state))
+    field(:status, non_null(:conversation_status))
   end
 
   input_object :invitee_input do
@@ -36,6 +35,7 @@ defmodule AppWeb.Graph.Conversations do
     field(:id, non_null(:string))
     field(:invitees, non_null(list_of(non_null(:invitee_input))))
     field(:note, :string)
+    field(:status, :conversation_status)
   end
 
   object :conversation_payload do

@@ -26,12 +26,14 @@ export type Conversation = {
   id: Scalars['String'];
   invitees: Array<Invitee>;
   note?: Maybe<Scalars['String']>;
+  status: ConversationStatus;
 };
 
 export type ConversationInput = {
   id: Scalars['String'];
   invitees: Array<InviteeInput>;
   note?: InputMaybe<Scalars['String']>;
+  status?: InputMaybe<ConversationStatus>;
 };
 
 export type ConversationPayload = {
@@ -39,6 +41,11 @@ export type ConversationPayload = {
   conversation?: Maybe<Conversation>;
   userError?: Maybe<UserError>;
 };
+
+export enum ConversationStatus {
+  Deleted = 'DELETED',
+  Draft = 'DRAFT'
+}
 
 export type ConversationsPayload = {
   __typename?: 'ConversationsPayload';

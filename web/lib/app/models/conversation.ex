@@ -10,6 +10,9 @@ defmodule App.Conversation do
 
     field :note, :string
     belongs_to :creator, App.Customer
+
+    field :status, Ecto.Enum, values: [:draft, :deleted], default: :draft
+    field :deleted_at, :utc_datetime_usec
     timestamps(type: :utc_datetime_usec)
   end
 
