@@ -2,12 +2,13 @@ query GetConversations {
   getConversations {
     conversations {
       id
-      note
-      status
       invitees {
         id
         name
       }
+      note
+      status
+      deletedAt
     }
   }
 }

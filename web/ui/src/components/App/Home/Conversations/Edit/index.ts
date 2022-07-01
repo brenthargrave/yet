@@ -24,6 +24,7 @@ import { ulid } from "ulid"
 import {
   Contact,
   Conversation,
+  ConversationStatus,
   ErrorCode,
   getConversation$,
   Invitee,
@@ -73,7 +74,14 @@ export const Edit = (sources: Sources) => {
         )
         .with({ name: routes.newConversation.name }, () =>
           // NOTE: generate empty seed record
-          of(Ok({ id: ulid(), invitees: [], note: null }))
+          of(
+            Ok({
+              id: ulid(),
+              invitees: [],
+              note: null,
+              status: ConversationStatus.Draft,
+            })
+          )
         )
         .otherwise(() => EMPTY)
     ),

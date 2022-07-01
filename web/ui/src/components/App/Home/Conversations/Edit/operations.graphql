@@ -3,10 +3,12 @@ mutation UpsertConversation($input: ConversationInput!) {
     conversation {
       id
       invitees {
-        name
         id
+        name
       }
       note
+      status
+      deletedAt
     }
   }
 }
@@ -15,11 +17,13 @@ query ViewConversation($id: ID!) {
   getConversation(id: $id) {
     conversation {
       id
-      note
       invitees {
         id
         name
       }
+      note
+      status
+      deletedAt
     }
     userError {
       message
