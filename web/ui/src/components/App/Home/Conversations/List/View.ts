@@ -23,7 +23,7 @@ export const View: FC<Props> = ({
 }) =>
   isEmpty(conversations)
     ? h(EmptyView, { onClickNew })
-    : h(Stack, { direction: "column", spacing, padding: 4 }, [
+    : h(Stack, { direction: "column", spacing: 6, padding: 4 }, [
         h(Heading, { size: "md" }, "Your Conversations"),
         h(
           List,
@@ -38,7 +38,7 @@ export const View: FC<Props> = ({
               },
               [
                 h(Stack, { direction: "column" }, [
-                  h(Heading, { size: "sm" }, [
+                  h(Heading, { size: "xs" }, [
                     join(", ", map(prop("name"), invitees)),
                   ]),
                   h(
