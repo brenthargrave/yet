@@ -326,10 +326,11 @@ export const conversations$ = token$.pipe(
     )
   }),
   tag("conversations$"),
-  map((conversations) =>
-    conversations.filter((c) => c.status !== ConversationStatus.Deleted)
-  ),
-  tag("conversations$ - DELETED"),
+  // TODO: omit deleted
+  // map((conversations) =>
+  //   conversations.filter((c) => c.status !== ConversationStatus.Deleted)
+  // ),
+  // tag("conversations$ - DELETED"),
   catchError((error, _caught$) => {
     throw new GraphWatchError(error.message)
   }),
