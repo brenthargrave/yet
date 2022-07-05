@@ -46,12 +46,6 @@ defmodule App.Conversations do
     |> bind(&if &1.creator != viewer, do: ok(&1), else: error(:unauthorized))
   end
 
-  @type conversations :: list(Converstion.t())
-  defun get_conversations(viewer :: Customer.t()) :: Brex.Result.s(conversations) do
-    Repo.all(from(c in Conversation, where: c.creator_id == ^viewer.id))
-    |> lift(nil, :not_found)
-  end
-
   defun delete_conversation(
           id :: id(),
           viewer :: Customer.t()
@@ -61,5 +55,12 @@ defmodule App.Conversations do
     |> bind(&if &1.creator != viewer, do: ok(&1), else: error(:unauthorized))
     |> fmap(&Conversation.tombstone_changeset(&1))
     |> bind(&Repo.insert_or_update(&1))
+  end
+
+  defun get_conversations(viewer :: Customer.t()) :: Brex.Result.s(list(Converstion.t())) do
+    Repo.all(
+      from(c in Conversation, where: c.creator_id == ^viewer.id, where: c.status != :deleted)
+    )
+    |> lift(nil, :not_found)
   end
 end

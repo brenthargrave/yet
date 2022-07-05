@@ -74,7 +74,6 @@ defmodule AppWeb.Graph.Conversations do
     end
 
     field :get_conversations, :conversations_payload do
-      # arg(:filter )
       resolve(&Conversations.get_conversations/3)
     end
 
