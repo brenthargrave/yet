@@ -12,7 +12,6 @@ import {
   Observable,
   of,
   shareReplay,
-  startWith,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { switchMap } from "rxjs/operators"
@@ -26,6 +25,7 @@ import {
   CheckTokenDocument,
   ContactsDocument,
   ConversationInput,
+  ConversationStatus,
   Customer,
   DeleteConversationDocument,
   DeleteConversationInput,
@@ -54,6 +54,7 @@ import { client as urqlClient } from "./urql"
 export { loggedIn, loggedOut } from "./driver"
 export type { Commands, Source } from "./driver"
 export * from "./generated"
+export type { Conversation } from "./generated"
 
 const tag = makeTagger("graph")
 
@@ -295,8 +296,6 @@ export const getConversation$ = (id: string) =>
     tag("getConversation$")
   )
 
-export type { Conversation } from "./generated"
-
 export const conversations$ = token$.pipe(
   filter(isNotNullish),
   switchMap((token) => {
@@ -326,9 +325,13 @@ export const conversations$ = token$.pipe(
       tag("watchQuery(conversations)")
     )
   }),
+  tag("conversations$"),
+  map((conversations) =>
+    conversations.filter((c) => c.status !== ConversationStatus.Deleted)
+  ),
+  tag("conversations$ - DELETED"),
   catchError((error, _caught$) => {
     throw new GraphWatchError(error.message)
   }),
-  tag("conversations$"),
   shareReplay()
 )
