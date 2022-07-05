@@ -20,6 +20,7 @@ export interface Props {
   isSyncing: boolean
   onClickBack?: () => void
   onClickDelete?: () => void
+  isDeleting?: boolean
 }
 
 const size = "md"
@@ -33,6 +34,7 @@ export const View = ({
   isSyncing,
   onClickBack,
   onClickDelete,
+  isDeleting = false,
 }: Props) =>
   h(
     Stack,
@@ -100,11 +102,17 @@ export const View = ({
               ]),
               h(Spacer),
               h(Stack, {}, [
-                h(IconButton, {
-                  variant: "ghost",
-                  icon: h(DeleteIcon),
-                  onClick: onClickDelete,
-                }),
+                h(
+                  Button,
+                  {
+                    variant: "outline",
+                    onClick: onClickDelete,
+                    isLoading: isDeleting,
+                    loadingText: "Deleting...",
+                    size: "xs",
+                  },
+                  `Delete Conversation`
+                ),
               ]),
             ]
           ),

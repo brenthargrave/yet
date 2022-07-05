@@ -17,7 +17,9 @@ import {
   startWith,
   switchMap,
   takeUntil,
+  withLatestFrom,
 } from "rxjs"
+import { withLatestFromWhen } from "rxjs-etc/dist/esm/operators"
 import { match } from "ts-pattern"
 import { Ok, Result } from "ts-results"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
@@ -26,6 +28,7 @@ import {
   Contact,
   Conversation,
   ConversationStatus,
+  deleteConversation$,
   ErrorCode,
   getConversation$,
   Invitee,
@@ -170,10 +173,21 @@ export const Edit = (sources: Sources) => {
   const goBack$ = _onClickBack$.pipe(tag("onClickBack$"), share())
 
   const { $: _onClickDelete$, cb: onClickDelete } =
-    makeObservableCallback<void>()
+    makeObservableCallback<string>()
   const onClickDelete$ = _onClickDelete$.pipe(tag("onClickDelete$"), share())
 
-  // TODO: delete op
+  const deletedConversation$ = onClickDelete$.pipe(
+    withLatestFrom(id$),
+    switchMap(([_, id]) => deleteConversation$({ id, deletedAt: Date.now() }))
+  )
+  // TODO: dismiss view
+  // TODO: cleanup emptied?
+  // TODO: analtyics
+
+  const isDeleting$: Observable<boolean> = merge(
+    onClickDelete$.pipe(map((_) => true)),
+    deletedConversation$.pipe(map((_) => false))
+  ).pipe(startWith(false), tag("isDeleting$"), share())
 
   const goToList$ = merge(goBack$, onClickDelete$).pipe(
     map((_) => push(routes.conversations())),
@@ -185,6 +199,7 @@ export const Edit = (sources: Sources) => {
     selectedOptions: selectedOptions$,
     isSyncing: isSyncing$,
     note: note$,
+    isDeleting: isDeleting$,
   }).pipe(
     tag("combineLatest"),
     map((valueProps) =>

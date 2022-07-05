@@ -31,3 +31,19 @@ query ViewConversation($id: ID!) {
     }
   }
 }
+
+mutation DeleteConversation($input: DeleteConversationInput!) {
+  deleteConversation(input: $input) {
+    conversation {
+      id
+      invitees {
+        id
+        name
+      }
+      note
+      status
+      insertedAt
+      deletedAt
+    }
+  }
+}

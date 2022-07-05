@@ -27,6 +27,8 @@ import {
   ContactsDocument,
   ConversationInput,
   Customer,
+  DeleteConversationDocument,
+  DeleteConversationInput,
   Event,
   EventName,
   EventProperties,
@@ -258,6 +260,21 @@ export const upsertConversation$ = (input: ConversationInput) => {
       return data!.upsertConversation!
     }),
     tag("upsertConversation$")
+  )
+}
+
+export const deleteConversation$ = (input: DeleteConversationInput) => {
+  return from(
+    client.mutate({
+      mutation: DeleteConversationDocument,
+      variables: { input },
+    })
+  ).pipe(
+    map(({ data, errors, extensions, context }) => {
+      if (errors) throw new GraphError(JSON.stringify(errors))
+      return data!.deleteConversation!
+    }),
+    tag("deleteConversation$")
   )
 }
 
