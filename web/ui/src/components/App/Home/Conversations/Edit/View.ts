@@ -44,13 +44,35 @@ export const View = ({
       justifyContent: "flex-start",
     },
     [
-      h(Stack, { direction: "row", width: "100%" }, [
-        h(IconButton, {
-          icon: h(ChevronLeftIcon),
-          variant: "unstyled",
-          onClick: onClickBack,
-        }),
-      ]),
+      h(
+        Flex,
+        {
+          padding: 1,
+          direction: "row",
+          width: "100%",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        [
+          h(IconButton, {
+            icon: h(ChevronLeftIcon),
+            variant: "unstyled",
+            onClick: onClickBack,
+          }),
+          h(Spacer),
+          // h(
+          //   Button,
+          //   {
+          //     variant: "outline",
+          //     onClick: onClickDelete,
+          //     isLoading: isDeleting,
+          //     loadingText: "Deleting...",
+          //     size: "xs",
+          //   },
+          //   `Delete`
+          // ),
+        ]
+      ),
       // TODO: Edit vs. New copy
       // ? how distinguish new conversation from old?
       h(Stack, { direction: "column", width: "100%", padding: 4 }, [
@@ -111,7 +133,7 @@ export const View = ({
                     loadingText: "Deleting...",
                     size: "xs",
                   },
-                  `Delete Conversation`
+                  `Delete`
                 ),
               ]),
             ]
