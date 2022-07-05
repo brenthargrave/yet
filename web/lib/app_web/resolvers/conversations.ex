@@ -40,8 +40,7 @@ defmodule AppWeb.Resolvers.Conversations do
 
   defun delete_conversation(
           _parent,
-          %{id: id} = _args,
-          # %{input: %{id: id}} = _args,
+          %{input: %{id: id}} = _args,
           %{context: %{customer: customer}} = _resolution
         ) :: resolver_result(ConversationPayload.t()) do
     Conversations.delete_conversation(id, customer)

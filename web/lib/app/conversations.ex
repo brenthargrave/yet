@@ -59,7 +59,7 @@ defmodule App.Conversations do
     Repo.get(Conversation, id)
     |> lift(nil, :not_found)
     |> bind(&if &1.creator != viewer, do: ok(&1), else: error(:unauthorized))
-    |> bind(&Conversation.tombstone_changeset(&1))
+    |> fmap(&Conversation.tombstone_changeset(&1))
     |> bind(&Repo.insert_or_update(&1))
   end
 end
