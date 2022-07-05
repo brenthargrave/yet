@@ -29,7 +29,6 @@ defmodule AppWeb.Resolvers.Conversations do
           %{context: %{customer: customer}} = _resolution
         ) :: resolver_result(ConversationPayload.t()) do
     Conversations.get_conversation(id, customer)
-    |> IO.inspect()
     |> fmap(&%ConversationPayload{conversation: &1})
     |> convert_error(:not_found, %ConversationPayload{
       user_error: %UserError{message: "Not found", code: :not_found}
@@ -45,7 +44,6 @@ defmodule AppWeb.Resolvers.Conversations do
           %{context: %{customer: customer}} = _resolution
         ) :: resolver_result(ConversationPayload.t()) do
     Conversations.delete_conversation(id, customer)
-    |> IO.inspect()
     |> fmap(&%ConversationPayload{conversation: &1})
     |> convert_error(:not_found, %ConversationPayload{
       user_error: %UserError{message: "Not found", code: :not_found}
@@ -65,7 +63,6 @@ defmodule AppWeb.Resolvers.Conversations do
           %{context: %{customer: customer}} = _resolution
         ) :: resolver_result(ConversationsPayload.t()) do
     Conversations.get_conversations(customer)
-    |> IO.inspect()
     |> fmap(&%ConversationsPayload{conversations: &1})
   end
 end

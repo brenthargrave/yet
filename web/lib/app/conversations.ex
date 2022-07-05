@@ -60,8 +60,6 @@ defmodule App.Conversations do
     |> lift(nil, :not_found)
     |> bind(&if &1.creator != viewer, do: ok(&1), else: error(:unauthorized))
     |> bind(&Conversation.tombstone_changeset(&1))
-    |> IO.inspect()
     |> bind(&Repo.insert_or_update(&1))
-    |> IO.inspect()
   end
 end

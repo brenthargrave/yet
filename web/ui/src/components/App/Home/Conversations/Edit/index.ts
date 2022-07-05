@@ -178,17 +178,24 @@ export const Edit = (sources: Sources) => {
 
   const delete$ = onClickDelete$.pipe(
     withLatestFrom(id$),
-    switchMap(([_, id]) => deleteConversation$({ id, deletedAt: Date.now() })),
-    tag("delete$")
+    switchMap(([_, id]) => deleteConversation$({ id })),
+    tag("delete$"),
+    share()
   )
   const deleted$ = delete$.pipe(filterResultOk(), tag("deleted$"), share())
   // TODO: analtyics
-  // TODO: cleanup emptied?
+  // TODO: cleanup emptied
 
   const isDeleting$: Observable<boolean> = merge(
     onClickDelete$.pipe(map((_) => true)),
     delete$.pipe(map((_) => false))
   ).pipe(startWith(false), tag("isDeleting$"), share())
+
+  const isDeleteDisabled$ = isDeleting$.pipe(
+    startWith(false),
+    tag("isDeleteDisabled$"),
+    share()
+  )
 
   const goToList$ = merge(goBack$, deleted$).pipe(
     map((_) => push(routes.conversations())),
@@ -201,6 +208,7 @@ export const Edit = (sources: Sources) => {
     isSyncing: isSyncing$,
     note: note$,
     isDeleting: isDeleting$,
+    isDeleteDisabled: isDeleteDisabled$,
   }).pipe(
     tag("combineLatest"),
     map((valueProps) =>

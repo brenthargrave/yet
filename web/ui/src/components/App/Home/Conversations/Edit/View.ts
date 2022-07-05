@@ -21,6 +21,7 @@ export interface Props {
   onClickBack?: () => void
   onClickDelete?: () => void
   isDeleting?: boolean
+  isDeleteDisabled?: boolean
 }
 
 const size = "md"
@@ -35,6 +36,7 @@ export const View = ({
   onClickBack,
   onClickDelete,
   isDeleting = false,
+  isDeleteDisabled = false,
 }: Props) =>
   h(
     Stack,
@@ -127,11 +129,12 @@ export const View = ({
                 h(
                   Button,
                   {
+                    size: "xs",
                     variant: "outline",
                     onClick: onClickDelete,
                     isLoading: isDeleting,
                     loadingText: "Deleting...",
-                    size: "xs",
+                    isDisabled: isDeleteDisabled,
                   },
                   `Delete`
                 ),
