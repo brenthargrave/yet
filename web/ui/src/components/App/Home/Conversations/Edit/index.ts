@@ -144,7 +144,7 @@ export const Edit = (sources: Sources) => {
   const recordNote$ = record$.pipe(pluck("note"), tag("recordNote$"), share())
   const { $: _onChangeNote$, cb: onChangeNote } =
     makeObservableCallback<string>()
-  const onChangeNote$ = _onChangeNote$.pipe(tag("_onChangeNote$$"), share())
+  const onChangeNote$ = _onChangeNote$.pipe(tag("onChangeNote$"), share())
 
   const note$ = merge(
     recordNote$.pipe(takeUntil(onChangeNote$)),
