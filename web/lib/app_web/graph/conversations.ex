@@ -50,10 +50,20 @@ defmodule AppWeb.Graph.Conversations do
     field(:conversations, non_null(list_of(non_null(:conversation))))
   end
 
+  input_object :delete_conversation_input do
+    field(:id, non_null(:string))
+    field(:deleted_at, :datetime)
+  end
+
   object :conversations_mutations do
     field :upsert_conversation, :conversation_payload do
       arg(:input, non_null(:conversation_input))
       resolve(&Conversations.upsert_conversation/3)
+    end
+
+    field :delete_conversation, :conversation_payload do
+      arg(:input, non_null(:delete_conversation_input))
+      resolve(&Conversations.delete_conversation/3)
     end
   end
 

@@ -10,8 +10,8 @@ defmodule AppWeb.Resolvers.Conversations do
   require Logger
 
   typedstruct module: ConversationPayload do
-    field :conversation, Conversation.t()
-    field :user_error, UserError.t()
+    field(:conversation, Conversation.t())
+    field(:user_error, UserError.t())
   end
 
   defun upsert_conversation(
@@ -39,8 +39,24 @@ defmodule AppWeb.Resolvers.Conversations do
     })
   end
 
+  defun delete_conversation(
+          _parent,
+          %{id: id} = _args,
+          %{context: %{customer: customer}} = _resolution
+        ) :: resolver_result(ConversationPayload.t()) do
+    Conversations.delete_conversation(id, customer)
+    |> IO.inspect()
+    |> fmap(&%ConversationPayload{conversation: &1})
+    |> convert_error(:not_found, %ConversationPayload{
+      user_error: %UserError{message: "Not found", code: :not_found}
+    })
+    |> convert_error(:unauthorized, %ConversationPayload{
+      user_error: %UserError{message: "Unauthorized", code: :unauthorized}
+    })
+  end
+
   typedstruct module: ConversationsPayload do
-    field :conversations, list(Conversation.t())
+    field(:conversations, list(Conversation.t()))
   end
 
   defun get_conversations(

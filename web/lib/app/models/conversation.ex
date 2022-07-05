@@ -29,4 +29,12 @@ defmodule App.Conversation do
     |> validate_required(:name, trim: true)
     |> validate_length(:name, min: 1)
   end
+
+  def tombstone_changeset(record) do
+    record
+    |> change(
+      status: :deleted,
+      deleted_at: DateTime.utc_now()
+    )
+  end
 end

@@ -71,6 +71,11 @@ export type Customer = {
   token: Scalars['String'];
 };
 
+export type DeleteConversationInput = {
+  deletedAt?: InputMaybe<Scalars['DateTime']>;
+  id: Scalars['String'];
+};
+
 export enum ErrorCode {
   NotFound = 'NOT_FOUND',
   Unauthorized = 'UNAUTHORIZED'
@@ -117,11 +122,17 @@ export enum ProfileProp {
 
 export type RootMutationType = {
   __typename?: 'RootMutationType';
+  deleteConversation?: Maybe<ConversationPayload>;
   submitCode?: Maybe<SubmitCodeResult>;
   submitPhone?: Maybe<SubmitPhoneResult>;
   trackEvent?: Maybe<Event>;
   updateProfile?: Maybe<UpdateProfilePayload>;
   upsertConversation?: Maybe<ConversationPayload>;
+};
+
+
+export type RootMutationTypeDeleteConversationArgs = {
+  input: DeleteConversationInput;
 };
 
 

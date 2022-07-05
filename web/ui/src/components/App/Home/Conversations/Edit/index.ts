@@ -173,6 +173,8 @@ export const Edit = (sources: Sources) => {
     makeObservableCallback<void>()
   const onClickDelete$ = _onClickDelete$.pipe(tag("onClickDelete$"), share())
 
+  // TODO: delete op
+
   const goToList$ = merge(goBack$, onClickDelete$).pipe(
     map((_) => push(routes.conversations())),
     share()

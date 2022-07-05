@@ -51,4 +51,17 @@ defmodule App.Conversations do
     Repo.all(from(c in Conversation, where: c.creator_id == ^viewer.id))
     |> lift(nil, :not_found)
   end
+
+  defun delete_conversation(
+          id :: id(),
+          viewer :: Customer.t()
+        ) :: Brex.Result.s(Conversation.t()) do
+    Repo.get(Conversation, id)
+    |> lift(nil, :not_found)
+    |> bind(&if &1.creator != viewer, do: ok(&1), else: error(:unauthorized))
+    |> bind(&Conversation.tombstone_changeset(&1))
+    |> IO.inspect()
+    |> bind(&Repo.insert_or_update(&1))
+    |> IO.inspect()
+  end
 end
