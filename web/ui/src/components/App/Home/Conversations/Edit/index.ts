@@ -176,17 +176,18 @@ export const Edit = (sources: Sources) => {
     makeObservableCallback<string>()
   const onClickDelete$ = _onClickDelete$.pipe(tag("onClickDelete$"), share())
 
-  const deletedConversation$ = onClickDelete$.pipe(
+  const delete$ = onClickDelete$.pipe(
     withLatestFrom(id$),
     switchMap(([_, id]) => deleteConversation$({ id, deletedAt: Date.now() }))
   )
+  const deleted$ = delete$.pipe(filterResultOk(), tag("delete$"), share())
   // TODO: dismiss view
   // TODO: cleanup emptied?
   // TODO: analtyics
 
   const isDeleting$: Observable<boolean> = merge(
     onClickDelete$.pipe(map((_) => true)),
-    deletedConversation$.pipe(map((_) => false))
+    deleteConversation$.pipe(map((_) => false))
   ).pipe(startWith(false), tag("isDeleting$"), share())
 
   const goToList$ = merge(goBack$, onClickDelete$).pipe(
