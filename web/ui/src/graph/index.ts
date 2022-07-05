@@ -272,7 +272,8 @@ export const deleteConversation$ = (input: DeleteConversationInput) => {
   ).pipe(
     map(({ data, errors, extensions, context }) => {
       if (errors) throw new GraphError(JSON.stringify(errors))
-      return data!.deleteConversation!
+      const { userError, conversation } = data!.deleteConversation!
+      return userError ? new Err(userError) : new Ok(conversation!)
     }),
     tag("deleteConversation$")
   )

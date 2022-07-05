@@ -34,6 +34,10 @@ query ViewConversation($id: ID!) {
 
 mutation DeleteConversation($input: DeleteConversationInput!) {
   deleteConversation(input: $input) {
+    userError {
+      code
+      message
+    }
     conversation {
       id
       invitees {
