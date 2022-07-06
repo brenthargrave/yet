@@ -93,10 +93,16 @@ export const Edit = (sources: Sources) => {
     share()
   )
   const record$ = getRecord$.pipe(filterResultOk(), tag("record$"), share())
-  const userError$ = getRecord$.pipe(filterResultErr())
+  const userError$ = getRecord$.pipe(
+    filterResultErr(),
+    tag("userError$"),
+    share()
+  )
   const redirectNotFound$ = userError$.pipe(
     filter(({ code }) => code === ErrorCode.NotFound),
-    map((_) => push(routes.conversations()))
+    map((_) => push(routes.conversations())),
+    tag("redirectNotFound$"),
+    share()
   )
   const id$ = record$.pipe(pluck("id"), tag("id$"), share())
 
