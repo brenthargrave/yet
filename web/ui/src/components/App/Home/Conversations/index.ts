@@ -19,12 +19,7 @@ export const Conversations = (sources: Sources) => {
     router: { history$ },
   } = sources
 
-  const {
-    router: listRouter$,
-    react: listView$,
-    track,
-    ...list
-  } = List(sources)
+  const { router: listRouter$, react: listView$, track } = List(sources)
 
   const { react: editView$, router: editRouter$, notice } = Edit(sources)
 
