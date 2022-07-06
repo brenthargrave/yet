@@ -1,9 +1,10 @@
 import { ReactSource } from "@cycle/react"
-import { merge, of, share } from "rxjs"
+import { EMPTY, merge, of, share, switchMap } from "rxjs"
+import { match } from "ts-pattern"
 import { ulid } from "ulid"
 import { ConversationStatus, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { Source as RouterSource } from "~/router"
+import { routes, Source as RouterSource } from "~/router"
 import { Form } from "../Form"
 
 const tagPrefix = "Conversations/Create"
@@ -20,12 +21,22 @@ export const Main = (sources: Sources) => {
     router: { history$ },
   } = sources
 
-  const record$ = of({
-    id: ulid(),
-    invitees: [],
-    note: null,
-    status: ConversationStatus.Draft,
-  }).pipe(tag("record$"), share())
+  const record$ = history$.pipe(
+    switchMap((route) =>
+      match(route)
+        .with({ name: routes.newConversation.name }, ({ params }) =>
+          of({
+            id: ulid(),
+            invitees: [],
+            note: null,
+            status: ConversationStatus.Draft,
+          })
+        )
+        .otherwise(() => EMPTY)
+    ),
+    tag("record$"),
+    share()
+  )
 
   const { react, router: formRouter$ } = Form(
     {
