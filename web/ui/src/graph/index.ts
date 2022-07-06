@@ -12,6 +12,7 @@ import {
   Observable,
   of,
   shareReplay,
+  merge,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { switchMap } from "rxjs/operators"
@@ -281,15 +282,28 @@ export const deleteConversation$ = (input: DeleteConversationInput) => {
 }
 
 export const getConversation$ = (id: string) =>
-  from(
-    client.query({
-      query: ViewConversationDocument,
-      variables: { id },
-      fetchPolicy: "no-cache",
-    })
+  merge(
+    of(
+      client.readQuery({
+        query: ViewConversationDocument,
+        variables: { id },
+      })
+    ),
+    from(
+      client.query({
+        query: ViewConversationDocument,
+        variables: { id },
+        fetchPolicy: "no-cache",
+      })
+    ).pipe(
+      map((response) => {
+        const { data, errors } = response
+        if (errors) throw new GraphError(JSON.stringify(errors))
+        return data
+      })
+    )
   ).pipe(
-    map(({ data, errors }) => {
-      if (errors) throw new GraphError(JSON.stringify(errors))
+    map((data) => {
       const { userError, conversation } = data!.getConversation!
       return userError ? new Err(userError) : new Ok(conversation!)
     }),
