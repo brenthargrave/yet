@@ -7,8 +7,6 @@ import { routes, Source as RouterSource } from "~/router"
 import { Edit } from "./Edit"
 import { List } from "./List"
 
-const tag = makeTagger("Conversation")
-
 interface Sources {
   react: ReactSource
   router: RouterSource
@@ -29,8 +27,8 @@ export const Conversations = (sources: Sources) => {
 
   const {
     react: editView$,
-    notice,
     router: editRouter$,
+    notice,
     ...edit
   } = Edit(sources)
 
@@ -44,7 +42,6 @@ export const Conversations = (sources: Sources) => {
     )
   )
 
-  // TODO: const router = mergeSinks("router", [list, edit]) // listRouter$)
   const router = merge(listRouter$, editRouter$)
 
   return {
