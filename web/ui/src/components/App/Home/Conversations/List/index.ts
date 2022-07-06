@@ -7,7 +7,7 @@ import { push, routes, Source as RouterSource } from "~/router"
 import { makeObservableCallback } from "~/rx"
 import { View } from "./View"
 
-const tag = makeTagger("Conversation/List")
+const tag = makeTagger("Conversations/List")
 
 interface Sources {
   react: ReactSource

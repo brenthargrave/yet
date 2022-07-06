@@ -6,6 +6,7 @@ import { makeTagger } from "~/log"
 import { routes, Source as RouterSource } from "~/router"
 import { Edit } from "./Edit"
 import { List } from "./List"
+import { Main as Create } from "./Create"
 
 interface Sources {
   react: ReactSource
@@ -25,24 +26,21 @@ export const Conversations = (sources: Sources) => {
     ...list
   } = List(sources)
 
-  const {
-    react: editView$,
-    router: editRouter$,
-    notice,
-    ...edit
-  } = Edit(sources)
+  const { react: editView$, router: editRouter$, notice } = Edit(sources)
+
+  const { react: createView$, router: createRouter$ } = Create(sources)
 
   const react = history$.pipe(
     switchMap((route) =>
       match(route.name)
-        .with(routes.newConversation.name, () => editView$)
+        .with(routes.newConversation.name, () => createView$)
         .with(routes.editConversation.name, () => editView$)
         .with(routes.conversations.name, () => listView$)
         .otherwise((_) => listView$)
     )
   )
 
-  const router = merge(listRouter$, editRouter$)
+  const router = merge(listRouter$, editRouter$, createRouter$)
 
   return {
     react,

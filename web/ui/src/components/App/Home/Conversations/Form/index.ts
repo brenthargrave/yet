@@ -28,8 +28,6 @@ import { push, routes, Source as RouterSource } from "~/router"
 import { makeObservableCallback } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
 
-const tag = makeTagger("Conversations/Form")
-
 interface Props {
   record$: Observable<Conversation>
 }
@@ -55,7 +53,9 @@ const optionsToInvitees = (options: ContactOption[]): Invitee[] =>
     return { name: label, id: value }
   })
 
-export const Form = (sources: Sources) => {
+export const Form = (sources: Sources, tagPrefix?: string) => {
+  const tag = makeTagger(`${tagPrefix}/Form`)
+
   const {
     graph: { contacts$ },
     router: { history$ },

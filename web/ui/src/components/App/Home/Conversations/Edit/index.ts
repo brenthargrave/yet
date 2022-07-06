@@ -15,7 +15,8 @@ import { error } from "~/notice"
 import { push, routes, Source as RouterSource } from "~/router"
 import { Form } from "../Form"
 
-const tag = makeTagger("Conversation/Edit")
+const tagPrefix = "Conversations/Edit"
+const tag = makeTagger(tagPrefix)
 
 interface Sources {
   react: ReactSource
@@ -53,10 +54,13 @@ export const Edit = (sources: Sources) => {
     share()
   )
 
-  const { react, router: formRouter$ } = Form({
-    ...sources,
-    props: { record$ },
-  })
+  const { react, router: formRouter$ } = Form(
+    {
+      ...sources,
+      props: { record$ },
+    },
+    tagPrefix
+  )
   const router = merge(redirectNotFound$, formRouter$)
 
   const notice = userError$.pipe(
