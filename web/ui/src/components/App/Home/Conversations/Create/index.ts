@@ -1,5 +1,5 @@
 import { ReactSource } from "@cycle/react"
-import { EMPTY, merge, of, share, switchMap } from "rxjs"
+import { EMPTY, merge, of, share, shareReplay, switchMap } from "rxjs"
 import { match } from "ts-pattern"
 import { ulid } from "ulid"
 import { ConversationStatus, Source as GraphSource } from "~/graph"
@@ -35,7 +35,7 @@ export const Main = (sources: Sources) => {
         .otherwise(() => EMPTY)
     ),
     tag("record$"),
-    share()
+    shareReplay()
   )
 
   const { react, router: formRouter$ } = Form(
