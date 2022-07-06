@@ -1,5 +1,14 @@
 import { ReactSource } from "@cycle/react"
-import { EMPTY, filter, map, merge, Observable, share, switchMap } from "rxjs"
+import {
+  EMPTY,
+  filter,
+  map,
+  merge,
+  Observable,
+  share,
+  startWith,
+  switchMap,
+} from "rxjs"
 import { match } from "ts-pattern"
 import { Result } from "ts-results"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
@@ -41,6 +50,12 @@ export const Edit = (sources: Sources) => {
     share()
   )
   const record$ = getRecord$.pipe(filterResultOk(), tag("record$"), share())
+
+  // TODO: what to show while this is loading? You need loading UX?
+  const recordLoading$: Observable<boolean> = merge(
+    getRecord$.pipe(map((_) => true)),
+    record$.pipe(map((_) => false))
+  ).pipe(startWith(false), tag("recordReady$"), share())
 
   const userError$ = getRecord$.pipe(
     filterResultErr(),
