@@ -1,5 +1,15 @@
 import { ReactSource } from "@cycle/react"
-import { EMPTY, filter, map, merge, share, shareReplay, switchMap } from "rxjs"
+import {
+  catchError,
+  EMPTY,
+  filter,
+  map,
+  merge,
+  of,
+  share,
+  shareReplay,
+  switchMap,
+} from "rxjs"
 import { match } from "ts-pattern"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { ErrorCode, getConversation$, Source as GraphSource } from "~/graph"
@@ -25,14 +35,23 @@ export const Edit = (sources: Sources) => {
   const id$ = history$.pipe(
     switchMap((route) =>
       match(route)
-        .with({ name: routes.editConversation.name }, ({ params }) => params.id)
+        .with({ name: routes.editConversation.name }, ({ params }) =>
+          of(params.id)
+        )
         .otherwise(() => EMPTY)
     ),
     tag("id$"),
     shareReplay()
   )
   const getRecord$ = id$.pipe(
-    switchMap((id) => getConversation$(id)),
+    switchMap((id) =>
+      getConversation$(id).pipe(
+        catchError((error, caught$) => {
+          console.error(error)
+          return EMPTY
+        })
+      )
+    ),
     tag("getRecord$"),
     shareReplay()
   )

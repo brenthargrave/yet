@@ -166,12 +166,12 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const isDeleting$: Observable<boolean> = merge(
     onClickDelete$.pipe(map((_) => true)),
     delete$.pipe(map((_) => false))
-  ).pipe(startWith(false), tag("isDeleting$"), share())
+  ).pipe(startWith(false), tag("isDeleting$"), shareReplay())
 
   const isDeleteDisabled$ = isDeleting$.pipe(
     startWith(false),
     tag("isDeleteDisabled$"),
-    share()
+    shareReplay()
   )
 
   const goToList$ = merge(goBack$, deleted$).pipe(
@@ -179,7 +179,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const react = combineLatest({
+  const props$ = combineLatest({
     options: options$,
     selectedOptions: selectedOptions$,
     isSyncing: isSyncing$,
@@ -187,8 +187,9 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     isDeleting: isDeleting$,
     isDeleteDisabled: isDeleteDisabled$,
     isRecordReady: isRecordReady$,
-  }).pipe(
-    tag("combineLatest"),
+  }).pipe(tag("props$"), shareReplay())
+
+  const react = props$.pipe(
     map((valueProps) =>
       h(View, {
         ...valueProps,
