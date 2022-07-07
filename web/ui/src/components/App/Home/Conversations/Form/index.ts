@@ -7,6 +7,7 @@ import {
   map,
   merge,
   Observable,
+  of,
   pluck,
   share,
   shareReplay,
@@ -30,17 +31,6 @@ import { push, routes, Source as RouterSource } from "~/router"
 import { makeObservableCallback } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
 
-interface Props {
-  record$: Observable<Conversation>
-}
-
-interface Sources {
-  react: ReactSource
-  router: RouterSource
-  graph: GraphSource
-  props: Props
-}
-
 const contactsToOptions = (contacts: Contact[]): SelectedOption[] =>
   contacts.map(({ id, name }, idx, _) => {
     return { label: name, value: id }
@@ -55,16 +45,33 @@ const optionsToInvitees = (options: ContactOption[]): Invitee[] =>
     return { name: label, id: value }
   })
 
+interface Props {
+  id$: Observable<string>
+  record$: Observable<Conversation>
+}
+interface Sources {
+  react: ReactSource
+  router: RouterSource
+  graph: GraphSource
+  props: Props
+}
+
 export const Form = (sources: Sources, tagPrefix?: string) => {
   const tag = makeTagger(`${tagPrefix}/Form`)
 
   const {
     graph: { contacts$ },
     router: { history$ },
-    props: { record$ },
+    props: { record$, id$ },
   } = sources
 
-  const id$ = record$.pipe(pluck("id"), tag("id$"), shareReplay())
+  const isRecordReady$ = combineLatest({ id: id$, record: record$ }).pipe(
+    tag("combine(id, record.id"),
+    map(({ id, record }) => id === record.id),
+    startWith(false),
+    tag("isRecordReady$"),
+    shareReplay()
+  )
 
   const recordInvitees$ = record$.pipe(pluck("invitees"))
   const inviteesAsOptions$ = recordInvitees$.pipe(
@@ -179,6 +186,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     note: note$,
     isDeleting: isDeleting$,
     isDeleteDisabled: isDeleteDisabled$,
+    isRecordReady: isRecordReady$,
   }).pipe(
     tag("combineLatest"),
     map((valueProps) =>

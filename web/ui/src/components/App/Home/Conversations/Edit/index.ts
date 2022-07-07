@@ -1,24 +1,8 @@
 import { ReactSource } from "@cycle/react"
-import {
-  EMPTY,
-  filter,
-  map,
-  merge,
-  Observable,
-  share,
-  startWith,
-  switchMap,
-} from "rxjs"
+import { EMPTY, filter, map, merge, share, shareReplay, switchMap } from "rxjs"
 import { match } from "ts-pattern"
-import { Result } from "ts-results"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
-import {
-  Conversation,
-  ErrorCode,
-  getConversation$,
-  Source as GraphSource,
-  UserError,
-} from "~/graph"
+import { ErrorCode, getConversation$, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { push, routes, Source as RouterSource } from "~/router"
@@ -38,25 +22,21 @@ export const Edit = (sources: Sources) => {
     router: { history$ },
   } = sources
 
-  const getRecord$: Observable<Result<Conversation, UserError>> = history$.pipe(
+  const id$ = history$.pipe(
     switchMap((route) =>
       match(route)
-        .with({ name: routes.editConversation.name }, ({ params }) =>
-          getConversation$(params.id)
-        )
+        .with({ name: routes.editConversation.name }, ({ params }) => params.id)
         .otherwise(() => EMPTY)
     ),
+    tag("id$"),
+    shareReplay()
+  )
+  const getRecord$ = id$.pipe(
+    switchMap((id) => getConversation$(id)),
     tag("getRecord$"),
-    share()
+    shareReplay()
   )
   const record$ = getRecord$.pipe(filterResultOk(), tag("record$"), share())
-
-  // TODO: what to show while this is loading? You need loading UX?
-  const recordLoading$: Observable<boolean> = merge(
-    getRecord$.pipe(map((_) => true)),
-    record$.pipe(map((_) => false))
-  ).pipe(startWith(false), tag("recordReady$"), share())
-
   const userError$ = getRecord$.pipe(
     filterResultErr(),
     tag("userError$"),
@@ -72,7 +52,7 @@ export const Edit = (sources: Sources) => {
   const { react, router: formRouter$ } = Form(
     {
       ...sources,
-      props: { record$ },
+      props: { id$, record$ },
     },
     tagPrefix
   )

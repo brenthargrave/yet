@@ -1,5 +1,5 @@
 import { ReactSource } from "@cycle/react"
-import { EMPTY, merge, of, share, shareReplay, switchMap } from "rxjs"
+import { EMPTY, map, merge, of, share, shareReplay, switchMap } from "rxjs"
 import { match } from "ts-pattern"
 import { ulid } from "ulid"
 import { ConversationStatus, Source as GraphSource } from "~/graph"
@@ -37,11 +37,16 @@ export const Main = (sources: Sources) => {
     tag("record$"),
     shareReplay()
   )
+  const id$ = record$.pipe(
+    map((record) => record.id),
+    tag("id$"),
+    shareReplay()
+  )
 
   const { react, router: formRouter$ } = Form(
     {
       ...sources,
-      props: { record$ },
+      props: { id$, record$ },
     },
     tagPrefix
   )
