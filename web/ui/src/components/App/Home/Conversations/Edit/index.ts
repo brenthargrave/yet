@@ -7,6 +7,7 @@ import {
   merge,
   of,
   share,
+  shareReplay,
   switchMap,
 } from "rxjs"
 import { match } from "ts-pattern"
@@ -40,7 +41,7 @@ export const Edit = (sources: Sources) => {
         .otherwise(() => EMPTY)
     ),
     tag("id$"),
-    share()
+    shareReplay({ refCount: true, bufferSize: 1 })
   )
   const getRecord$ = id$.pipe(
     switchMap((id) =>
@@ -52,9 +53,13 @@ export const Edit = (sources: Sources) => {
       )
     ),
     tag("getRecord$"),
-    share()
+    shareReplay({ refCount: true, bufferSize: 1 })
   )
-  const record$ = getRecord$.pipe(filterResultOk(), tag("record$"), share())
+  const record$ = getRecord$.pipe(
+    filterResultOk(),
+    tag("record$"),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  )
   const userError$ = getRecord$.pipe(
     filterResultErr(),
     tag("userError$"),

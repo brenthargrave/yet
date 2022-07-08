@@ -8,6 +8,7 @@ import {
   Observable,
   pluck,
   share,
+  shareReplay,
   skip,
   startWith,
   switchMap,
@@ -67,14 +68,14 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     map(({ id, record }) => id === record.id),
     startWith(false),
     tag("isRecordReady$"),
-    share()
+    shareReplay({ refCount: true, bufferSize: 1 })
   )
 
   const recordInvitees$ = record$.pipe(pluck("invitees"))
   const inviteesAsOptions$ = recordInvitees$.pipe(
     map(inviteesToOptions),
     tag("inviteesAsOptions$"),
-    share()
+    shareReplay({ refCount: true, bufferSize: 1 })
   )
 
   const { $: _onSelect$, cb: onSelect } =
@@ -84,12 +85,15 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const selectedOptions$ = merge(
     inviteesAsOptions$.pipe(takeUntil(onSelect$)),
     onSelect$
-  ).pipe(tag("selectedOptions$"), share())
+  ).pipe(
+    tag("selectedOptions$"),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  )
 
   const options$ = contacts$.pipe(
     map(contactsToOptions),
     tag("options$"),
-    share()
+    shareReplay({ refCount: true, bufferSize: 1 })
   )
   // TODO: merge in prior selections
   //  combineLatest({
@@ -108,7 +112,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const invitees$ = selectedOptions$.pipe(
     map(optionsToInvitees),
     tag("invitees$"),
-    share()
+    shareReplay({ refCount: true, bufferSize: 1 })
   )
 
   const recordNote$ = record$.pipe(pluck("note"), tag("recordNote$"), share())
@@ -119,7 +123,11 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const note$ = merge(
     recordNote$.pipe(takeUntil(onChangeNote$)),
     onChangeNote$
-  ).pipe(distinctUntilChanged(), tag("note$"), share())
+  ).pipe(
+    distinctUntilChanged(),
+    tag("note$"),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  )
 
   const payload$ = combineLatest({
     id: id$,

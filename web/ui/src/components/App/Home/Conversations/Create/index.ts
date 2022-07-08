@@ -35,12 +35,12 @@ export const Main = (sources: Sources) => {
         .otherwise(() => EMPTY)
     ),
     tag("record$"),
-    shareReplay()
+    shareReplay({ refCount: true, bufferSize: 1 })
   )
   const id$ = record$.pipe(
     map((record) => record.id),
     tag("id$"),
-    shareReplay()
+    shareReplay({ refCount: true, bufferSize: 1 })
   )
 
   const { react, router: formRouter$ } = Form(
