@@ -112,7 +112,12 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const recordNote$ = record$.pipe(pluck("note"), tag("recordNote$"), share())
+  const recordNote$ = record$.pipe(
+    pluck("note"),
+    distinctUntilChanged(),
+    tag("recordNote$"),
+    shareLatest()
+  )
   const { $: _onChangeNote$, cb: onChangeNote } =
     makeObservableCallback<string>()
   const onChangeNote$ = _onChangeNote$.pipe(tag("onChangeNote$"), share())
@@ -124,7 +129,6 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
 
   const payload$ = combineLatest({
     id: id$,
-    // TODO: when to sync?
     invitees: invitees$,
     note: note$,
   }).pipe(skip(1), debounceTime(1000), tag("payload$"), share())
@@ -138,7 +142,12 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const isSyncing$ = merge(
     payload$.pipe(map((_) => true)),
     response$.pipe(map((_) => false))
-  ).pipe(startWith(false), tag("isSyncing$"), share())
+  ).pipe(
+    startWith(false),
+    distinctUntilChanged(),
+    tag("isSyncing$"),
+    shareLatest()
+  )
 
   const { $: _onClickBack$, cb: onClickBack } = makeObservableCallback<void>()
   const goBack$ = _onClickBack$.pipe(tag("onClickBack$"), share())
@@ -158,12 +167,18 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const isDeleting$: Observable<boolean> = merge(
     onClickDelete$.pipe(map((_) => true)),
     delete$.pipe(map((_) => false))
-  ).pipe(startWith(false), tag("isDeleting$"), share())
+  ).pipe(
+    startWith(false),
+    distinctUntilChanged(),
+    tag("isDeleting$"),
+    shareLatest()
+  )
 
   const isDeleteDisabled$ = isDeleting$.pipe(
     startWith(false),
+    distinctUntilChanged(),
     tag("isDeleteDisabled$"),
-    share()
+    shareLatest()
   )
 
   const goToList$ = merge(goBack$, deleted$).pipe(
