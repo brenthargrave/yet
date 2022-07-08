@@ -133,7 +133,6 @@ export const View = ({
                   {
                     size: "xs",
                     variant: "outline",
-                    color: "lightGray",
                     onClick: onClickDelete,
                     isLoading: isDeleting,
                     loadingText: "Deleting...",
