@@ -26,7 +26,7 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
-import { makeObservableCallback } from "~/rx"
+import { makeObservableCallback, shareLatest } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
 
 const contactsToOptions = (contacts: Contact[]): SelectedOption[] =>
@@ -68,14 +68,14 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     map(({ id, record }) => id === record.id),
     startWith(false),
     tag("isRecordReady$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
+    shareLatest()
   )
 
   const recordInvitees$ = record$.pipe(pluck("invitees"))
   const inviteesAsOptions$ = recordInvitees$.pipe(
     map(inviteesToOptions),
     tag("inviteesAsOptions$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
+    shareLatest()
   )
 
   const { $: _onSelect$, cb: onSelect } =
@@ -85,15 +85,12 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const selectedOptions$ = merge(
     inviteesAsOptions$.pipe(takeUntil(onSelect$)),
     onSelect$
-  ).pipe(
-    tag("selectedOptions$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
-  )
+  ).pipe(tag("selectedOptions$"), shareLatest())
 
   const options$ = contacts$.pipe(
     map(contactsToOptions),
     tag("options$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
+    shareLatest()
   )
   // TODO: merge in prior selections
   //  combineLatest({
@@ -112,7 +109,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const invitees$ = selectedOptions$.pipe(
     map(optionsToInvitees),
     tag("invitees$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
+    shareLatest()
   )
 
   const recordNote$ = record$.pipe(pluck("note"), tag("recordNote$"), share())
@@ -123,11 +120,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const note$ = merge(
     recordNote$.pipe(takeUntil(onChangeNote$)),
     onChangeNote$
-  ).pipe(
-    distinctUntilChanged(),
-    tag("note$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
-  )
+  ).pipe(distinctUntilChanged(), tag("note$"), shareLatest())
 
   const payload$ = combineLatest({
     id: id$,

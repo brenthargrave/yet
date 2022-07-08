@@ -1,10 +1,11 @@
 import { ReactSource } from "@cycle/react"
-import { EMPTY, map, merge, of, share, shareReplay, switchMap } from "rxjs"
+import { EMPTY, map, merge, of, switchMap } from "rxjs"
 import { match } from "ts-pattern"
 import { ulid } from "ulid"
 import { ConversationStatus, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { routes, Source as RouterSource } from "~/router"
+import { shareLatest } from "~/rx"
 import { Form } from "../Form"
 
 const tagPrefix = "Conversations/Create"
@@ -35,12 +36,12 @@ export const Main = (sources: Sources) => {
         .otherwise(() => EMPTY)
     ),
     tag("record$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
+    shareLatest()
   )
   const id$ = record$.pipe(
     map((record) => record.id),
     tag("id$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
+    shareLatest()
   )
 
   const { react, router: formRouter$ } = Form(

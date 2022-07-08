@@ -16,6 +16,7 @@ import { ErrorCode, getConversation$, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { push, routes, Source as RouterSource } from "~/router"
+import { shareLatest } from "~/rx"
 import { Form } from "../Form"
 
 const tagPrefix = "Conversations/Edit"
@@ -41,25 +42,14 @@ export const Edit = (sources: Sources) => {
         .otherwise(() => EMPTY)
     ),
     tag("id$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
+    share()
   )
   const getRecord$ = id$.pipe(
-    switchMap((id) =>
-      getConversation$(id).pipe(
-        catchError((error, caught$) => {
-          console.error(error)
-          return EMPTY
-        })
-      )
-    ),
+    switchMap((id) => getConversation$(id)),
     tag("getRecord$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
+    share()
   )
-  const record$ = getRecord$.pipe(
-    filterResultOk(),
-    tag("record$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
-  )
+  const record$ = getRecord$.pipe(filterResultOk(), tag("record$"), share())
   const userError$ = getRecord$.pipe(
     filterResultErr(),
     tag("userError$"),
