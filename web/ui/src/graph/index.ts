@@ -286,12 +286,12 @@ export const deleteConversation$ = (input: DeleteConversationInput) => {
 
 export const getConversation$ = (id: string) =>
   merge(
-    of(
-      client.readQuery({
-        query: ViewConversationDocument,
-        variables: { id },
-      })
-    ),
+    // of(
+    //   client.readQuery({
+    //     query: ViewConversationDocument,
+    //     variables: { id },
+    //   })
+    // ),
     from(
       client.query({
         query: ViewConversationDocument,

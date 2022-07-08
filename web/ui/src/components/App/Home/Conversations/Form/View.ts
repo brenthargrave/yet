@@ -54,8 +54,8 @@ export const View = ({
           padding: 1,
           direction: "row",
           width: "100%",
-          alignItems: "center",
-          justifyContent: "center",
+          // alignItems: "center",
+          // justifyContent: "center",
         },
         [
           h(IconButton, {
@@ -64,17 +64,18 @@ export const View = ({
             onClick: onClickBack,
           }),
           h(Spacer),
-          // h(
-          //   Button,
-          //   {
-          //     variant: "outline",
-          //     onClick: onClickDelete,
-          //     isLoading: isDeleting,
-          //     loadingText: "Deleting...",
-          //     size: "xs",
-          //   },
-          //   `Delete`
-          // ),
+          h(
+            Button,
+            {
+              size: "xs",
+              variant: "outline",
+              onClick: onClickDelete,
+              isLoading: isDeleting,
+              loadingText: "Deleting...",
+              isDisabled: isDeleteDisabled,
+            },
+            `Delete`
+          ),
         ]
       ),
       // TODO: Edit vs. New copy
