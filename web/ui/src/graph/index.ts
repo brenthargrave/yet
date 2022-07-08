@@ -6,14 +6,14 @@ import { captureException } from "@sentry/react"
 import {
   BehaviorSubject,
   catchError,
+  delay,
   filter,
   from,
   map,
+  merge,
   Observable,
   of,
   shareReplay,
-  merge,
-  EMPTY,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { switchMap } from "rxjs/operators"
@@ -27,7 +27,6 @@ import {
   CheckTokenDocument,
   ContactsDocument,
   ConversationInput,
-  ConversationStatus,
   Customer,
   DeleteConversationDocument,
   DeleteConversationInput,
@@ -59,6 +58,9 @@ export * from "./generated"
 export type { Conversation } from "./generated"
 
 const tag = makeTagger("graph")
+
+// @ts-ignore
+const { VITE_API_ENV: API_ENV } = import.meta.env
 
 export class GraphError extends Error {}
 export class GraphWatchError extends GraphError {}
@@ -297,6 +299,8 @@ export const getConversation$ = (id: string) =>
         fetchPolicy: "no-cache",
       })
     ).pipe(
+      // NOTE: simulate network latency in development
+      delay(API_ENV === "dev" ? 1000 : 0),
       map((response) => {
         const { data, errors } = response
         if (errors) throw new GraphError(JSON.stringify(errors))
