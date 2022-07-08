@@ -3,14 +3,11 @@ import {
   combineLatest,
   debounceTime,
   distinctUntilChanged,
-  filter,
   map,
   merge,
   Observable,
-  of,
   pluck,
   share,
-  shareReplay,
   skip,
   startWith,
   switchMap,
@@ -70,29 +67,29 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     map(({ id, record }) => id === record.id),
     startWith(false),
     tag("isRecordReady$"),
-    shareReplay()
+    share()
   )
 
   const recordInvitees$ = record$.pipe(pluck("invitees"))
   const inviteesAsOptions$ = recordInvitees$.pipe(
     map(inviteesToOptions),
     tag("inviteesAsOptions$"),
-    shareReplay()
+    share()
   )
 
   const { $: _onSelect$, cb: onSelect } =
     makeObservableCallback<ContactOption[]>()
-  const onSelect$ = _onSelect$.pipe(tag("onSelect$"), shareReplay())
+  const onSelect$ = _onSelect$.pipe(tag("onSelect$"), share())
 
   const selectedOptions$ = merge(
     inviteesAsOptions$.pipe(takeUntil(onSelect$)),
     onSelect$
-  ).pipe(tag("selectedOptions$"), shareReplay())
+  ).pipe(tag("selectedOptions$"), share())
 
   const options$ = contacts$.pipe(
     map(contactsToOptions),
     tag("options$"),
-    shareReplay()
+    share()
   )
   // TODO: merge in prior selections
   //  combineLatest({
@@ -105,28 +102,24 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   //   }),
   //   startWith([]),
   //   tag("options$"),
-  //   shareReplay()
+  //   share()
   // )
 
   const invitees$ = selectedOptions$.pipe(
     map(optionsToInvitees),
     tag("invitees$"),
-    shareReplay()
+    share()
   )
 
-  const recordNote$ = record$.pipe(
-    pluck("note"),
-    tag("recordNote$"),
-    shareReplay()
-  )
+  const recordNote$ = record$.pipe(pluck("note"), tag("recordNote$"), share())
   const { $: _onChangeNote$, cb: onChangeNote } =
     makeObservableCallback<string>()
-  const onChangeNote$ = _onChangeNote$.pipe(tag("onChangeNote$"), shareReplay())
+  const onChangeNote$ = _onChangeNote$.pipe(tag("onChangeNote$"), share())
 
   const note$ = merge(
     recordNote$.pipe(takeUntil(onChangeNote$)),
     onChangeNote$
-  ).pipe(distinctUntilChanged(), tag("note$"), shareReplay())
+  ).pipe(distinctUntilChanged(), tag("note$"), share())
 
   const payload$ = combineLatest({
     id: id$,
@@ -144,7 +137,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const isSyncing$ = merge(
     payload$.pipe(map((_) => true)),
     response$.pipe(map((_) => false))
-  ).pipe(startWith(false), tag("isSyncing$"), shareReplay())
+  ).pipe(startWith(false), tag("isSyncing$"), share())
 
   const { $: _onClickBack$, cb: onClickBack } = makeObservableCallback<void>()
   const goBack$ = _onClickBack$.pipe(tag("onClickBack$"), share())
@@ -160,18 +153,16 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     share()
   )
   const deleted$ = delete$.pipe(filterResultOk(), tag("deleted$"), share())
-  // TODO: analtyics
-  // TODO: cleanup emptied
 
   const isDeleting$: Observable<boolean> = merge(
     onClickDelete$.pipe(map((_) => true)),
     delete$.pipe(map((_) => false))
-  ).pipe(startWith(false), tag("isDeleting$"), shareReplay())
+  ).pipe(startWith(false), tag("isDeleting$"), share())
 
   const isDeleteDisabled$ = isDeleting$.pipe(
     startWith(false),
     tag("isDeleteDisabled$"),
-    shareReplay()
+    share()
   )
 
   const goToList$ = merge(goBack$, deleted$).pipe(
@@ -187,7 +178,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     isDeleting: isDeleting$,
     isDeleteDisabled: isDeleteDisabled$,
     isRecordReady: isRecordReady$,
-  }).pipe(tag("props$"), shareReplay())
+  }).pipe(tag("props$"))
 
   const react = props$.pipe(
     map((valueProps) =>
