@@ -29,6 +29,7 @@ import {
   CheckTokenDocument,
   ContactsDocument,
   ConversationInput,
+  ConversationStatus,
   Customer,
   DeleteConversationDocument,
   DeleteConversationInput,
@@ -347,11 +348,10 @@ export const conversations$ = token$.pipe(
     )
   }),
   tag("conversations$"),
-  // TODO: omit deleted
-  // map((conversations) =>
-  //   conversations.filter((c) => c.status !== ConversationStatus.Deleted)
-  // ),
-  // tag("conversations$ - DELETED"),
+  map((conversations) =>
+    conversations.filter((c) => c.status !== ConversationStatus.Deleted)
+  ),
+  tag("conversations$ - DELETED"),
   catchError((error, _caught$) => {
     throw new GraphWatchError(error.message)
   }),
