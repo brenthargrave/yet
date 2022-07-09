@@ -15,6 +15,7 @@ import {
   of,
   shareReplay,
   pluck,
+  EMPTY,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { switchMap } from "rxjs/operators"
@@ -285,39 +286,36 @@ export const deleteConversation$ = (input: DeleteConversationInput) => {
   )
 }
 
-export const getConversation$ = (id: string) =>
-  // TODO: what happens if cache empty?
-  merge(
-    of(
-      client.readQuery({
-        query: ViewConversationDocument,
-        variables: { id },
-      })
-    ),
+export const getConversation$ = (id: string) => {
+  // const cached = client.readQuery({
+  //   query: ViewConversationDocument,
+  //   variables: { id },
+  // })?.getConversation
+  // const cached$ = cached ? of(cached) : EMPTY
+  return merge(
+    // cached$,
     from(
       client.query({
         query: ViewConversationDocument,
         variables: { id },
-        fetchPolicy: "no-cache",
+        fetchPolicy: "cache-first",
       })
     ).pipe(
       // NOTE: simulate network latency in development
-      delay(API_ENV === "dev" ? 1000 : 0),
-      map((response) => {
-        const { data, errors } = response
+      // delay(API_ENV === "dev" ? 1000 : 0),
+      map(({ data, errors }) => {
         if (errors) throw new GraphError(JSON.stringify(errors))
         return data
       })
     )
   ).pipe(
-    // pluck("data", "getConversation"),
-    // filter(isNotNullish),
     map((data) => {
       const { userError, conversation } = data!.getConversation!
       return userError ? new Err(userError) : new Ok(conversation!)
     }),
     tag("getConversation$")
   )
+}
 
 export const conversations$ = token$.pipe(
   filter(isNotNullish),
