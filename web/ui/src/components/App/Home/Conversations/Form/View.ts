@@ -123,7 +123,8 @@ export const View = ({
                 h(
                   Button,
                   {
-                    isLoading: isSyncing,
+                    // isLoading: isSyncing,
+                    isDisabled: isSyncing,
                   },
                   `Share`
                 ),
