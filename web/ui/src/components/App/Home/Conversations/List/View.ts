@@ -4,7 +4,7 @@ import { FC } from "react"
 import { isEmpty, prop, map, join } from "~/fp"
 import { EmptyView, OnClickNew } from "../EmptyView"
 import { Conversation } from "~/graph"
-import { Box, Divider, Stack, Text } from "~/system"
+import { Header, Divider, Stack, Text } from "~/system"
 
 type OnClickConversation = (cid: string) => void
 
@@ -23,11 +23,11 @@ export const View: FC<Props> = ({
 }) =>
   isEmpty(conversations)
     ? h(EmptyView, { onClickNew })
-    : h(Stack, { direction: "column", spacing: 6, padding: 4 }, [
-        h(Heading, { size: "md" }, "Conversations"),
+    : h(Stack, { direction: "column" }, [
+        h(Header, {}, [h(Heading, { size: "md" }, "Conversations")]),
         h(
           List,
-          { spacing },
+          { spacing, padding: 4 },
           conversations.map(({ id, invitees, note }) =>
             h(
               ListItem,
