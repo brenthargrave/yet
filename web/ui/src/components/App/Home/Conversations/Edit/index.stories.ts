@@ -1,6 +1,6 @@
 import { h } from "@cycle/react"
 import { Meta, Story } from "@storybook/react"
-import { Props, View } from "~/components/App/Home/Conversations/Edit/View"
+import { Props, View } from "../Form/View"
 
 export default {
   title: "Components/Conversations/Edit",
