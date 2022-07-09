@@ -52,11 +52,12 @@ export const View = ({
       h(
         Flex,
         {
-          padding: 1,
+          paddingTop: 1,
+          paddingBottom: 1,
+          paddingRight: 4,
           direction: "row",
           width: "100%",
-          // alignItems: "center",
-          // justifyContent: "center",
+          alignItems: "flex-end",
         },
         [
           h(IconButton, {
