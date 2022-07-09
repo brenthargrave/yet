@@ -24,7 +24,7 @@ export const View: FC<Props> = ({
   isEmpty(conversations)
     ? h(EmptyView, { onClickNew })
     : h(Stack, { direction: "column", spacing: 6, padding: 4 }, [
-        h(Heading, { size: "md" }, "Your Conversations"),
+        h(Heading, { size: "md" }, "Conversations"),
         h(
           List,
           { spacing },
