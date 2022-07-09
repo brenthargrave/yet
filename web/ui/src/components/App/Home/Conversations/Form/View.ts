@@ -52,7 +52,8 @@ export const View = ({
         {
           display: "flex",
           direction: "row",
-          alignItems: "flex-end",
+          // alignItems: "flex-end",
+          alignItems: "center",
           width: "100%",
           padding: 4,
         },
@@ -61,7 +62,7 @@ export const View = ({
             icon: h(ChevronLeftIcon),
             variant: "unstyled",
             onClick: onClickBack,
-            size: "xs",
+            size: "sm",
           }),
           h(Spacer),
           h(DeleteButton, {
