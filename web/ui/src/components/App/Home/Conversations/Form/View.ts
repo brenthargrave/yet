@@ -1,6 +1,5 @@
 import { ChevronLeftIcon } from "@chakra-ui/icons"
 import { Box, Button, Divider, IconButton, Spacer } from "@chakra-ui/react"
-import { BeatLoader } from "react-spinners"
 import { h } from "@cycle/react"
 import { CreatableSelect } from "chakra-react-select"
 import { AutosizeTextarea, Heading, InputGroup, Stack } from "~/system"
@@ -60,14 +59,13 @@ export const View = ({
           paddingTop: 1,
           paddingBottom: 1,
           paddingRight: 4,
+          paddingLeft: 4,
         },
         [
           h(IconButton, {
             icon: h(ChevronLeftIcon),
             variant: "unstyled",
             onClick: onClickBack,
-            isLoading: isSyncing,
-            spinner: h(BeatLoader),
           }),
           h(Spacer),
           h(DeleteButton, {
