@@ -1,10 +1,11 @@
-import { Heading, List, ListItem } from "@chakra-ui/react"
+import { Spacer, Heading, List, ListItem } from "@chakra-ui/react"
+import { AddIcon, SmallAddIcon } from "@chakra-ui/icons"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { isEmpty, prop, map, join } from "~/fp"
 import { EmptyView, OnClickNew } from "../EmptyView"
 import { Conversation } from "~/graph"
-import { Header, Divider, Stack, Text } from "~/system"
+import { Header, Divider, Stack, Text, Button } from "~/system"
 
 type OnClickConversation = (cid: string) => void
 
@@ -24,7 +25,20 @@ export const View: FC<Props> = ({
   isEmpty(conversations)
     ? h(EmptyView, { onClickNew })
     : h(Stack, { direction: "column" }, [
-        h(Header, {}, [h(Heading, { size: "md" }, "Conversations")]),
+        h(Header, [
+          h(Heading, { size: "md" }, "Conversations"),
+          h(Spacer),
+          h(
+            Button,
+            {
+              variant: "outline",
+              size: "xs",
+              leftIcon: h(SmallAddIcon),
+              onClick: onClickNew,
+            },
+            `New`
+          ),
+        ]),
         h(
           List,
           { spacing, padding: 4 },
