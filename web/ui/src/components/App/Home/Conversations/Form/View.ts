@@ -18,7 +18,7 @@ export interface Props {
   selectedOptions: SelectedOption[]
   note?: string | null
   onChangeNote: (note: string) => void
-  isSyncing: boolean
+  isSyncing?: boolean
   onClickBack?: () => void
   onClickDelete?: () => void
   isDeleting?: boolean
@@ -34,7 +34,7 @@ export const View = ({
   selectedOptions,
   note,
   onChangeNote,
-  isSyncing,
+  isSyncing = false,
   onClickBack,
   onClickDelete,
   isDeleting = false,
@@ -55,7 +55,6 @@ export const View = ({
           display: "flex",
           direction: "row",
           alignItems: "flex-end",
-          // alignItems: "center",
           width: "100%",
           padding: 4,
         },
@@ -121,9 +120,13 @@ export const View = ({
             },
             [
               h(Stack, { direction: "row" }, [
-                // TODO: multiple notes per convesation
-                // h(IconButton, { icon: h(SmallAddIcon) }),
-                h(Button, {}, `Share`),
+                h(
+                  Button,
+                  {
+                    isLoading: isSyncing,
+                  },
+                  `Share`
+                ),
               ]),
             ]
           ),

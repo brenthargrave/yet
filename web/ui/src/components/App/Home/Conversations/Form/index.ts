@@ -131,9 +131,10 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     id: id$,
     invitees: invitees$,
     note: note$,
-  }).pipe(skip(1), debounceTime(1000), tag("payload$"), share())
+  }).pipe(tag("payload$"), share())
 
   const response$ = payload$.pipe(
+    debounceTime(1000),
     switchMap((input) => upsertConversation$(input)),
     tag("response$"),
     share()
