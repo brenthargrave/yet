@@ -42,12 +42,12 @@ export const Edit = (sources: Sources) => {
         .otherwise(() => EMPTY)
     ),
     tag("id$"),
-    share()
+    shareLatest()
   )
   const getRecord$ = id$.pipe(
     switchMap((id) => getConversation$(id)),
     tag("getRecord$"),
-    share()
+    shareLatest()
   )
   const record$ = getRecord$.pipe(filterResultOk(), tag("record$"), share())
   const userError$ = getRecord$.pipe(
