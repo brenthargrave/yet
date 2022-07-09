@@ -1,9 +1,17 @@
 import { ChevronLeftIcon } from "@chakra-ui/icons"
-import { Button, Divider, Flex, IconButton, Spacer } from "@chakra-ui/react"
+import {
+  Box,
+  Button,
+  Divider,
+  Flex,
+  IconButton,
+  Spacer,
+} from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { CreatableSelect } from "chakra-react-select"
 import { AutosizeTextarea, Heading, InputGroup, Stack } from "~/system"
-import { DeleteButton } from "./DeletedButton"
+import { DeleteButton } from "./DeleteButton"
+import { SyncIcon } from "./SyncIcon"
 
 export interface Option {
   value: string
@@ -50,14 +58,15 @@ export const View = ({
     },
     [
       h(
-        Flex,
+        Box,
         {
+          display: "flex",
+          direction: "row",
+          alignItems: "center",
+          width: "100%",
           paddingTop: 1,
           paddingBottom: 1,
           paddingRight: 4,
-          direction: "row",
-          width: "100%",
-          alignItems: "flex-end",
         },
         [
           h(IconButton, {
@@ -110,11 +119,13 @@ export const View = ({
           }),
           h(Divider, {}),
           h(
-            Flex,
+            Box,
             {
-              width: "100%",
+              display: "flex",
               direction: "row",
-              justifyContent: "end",
+              alignItems: "center",
+              width: "100%",
+              space: 4,
             },
             [
               h(Stack, { direction: "row" }, [
@@ -122,7 +133,6 @@ export const View = ({
                 // h(IconButton, { icon: h(SmallAddIcon) }),
                 h(Button, {}, `Share`),
               ]),
-              h(Spacer),
             ]
           ),
         ]),
