@@ -26,8 +26,6 @@ export interface Props {
   isRecordReady?: boolean
 }
 
-const size = "md"
-
 export const View = ({
   options,
   onSelect,
@@ -82,7 +80,7 @@ export const View = ({
             h(CreatableSelect, {
               placeholder: "With whom?",
               autoFocus: true,
-              size,
+              size: "md",
               chakraStyles: {
                 container: (provided, state) => ({
                   ...provided,
