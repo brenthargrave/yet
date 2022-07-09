@@ -1,8 +1,9 @@
-import { ChevronLeftIcon, DeleteIcon, SmallAddIcon } from "@chakra-ui/icons"
-import { Button, Divider, Flex, Spacer, IconButton } from "@chakra-ui/react"
+import { ChevronLeftIcon } from "@chakra-ui/icons"
+import { Button, Divider, Flex, IconButton, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { CreatableSelect } from "chakra-react-select"
 import { AutosizeTextarea, Heading, InputGroup, Stack } from "~/system"
+import { DeleteButton } from "./DeletedButton"
 
 export interface Option {
   value: string
@@ -64,18 +65,11 @@ export const View = ({
             onClick: onClickBack,
           }),
           h(Spacer),
-          h(
-            Button,
-            {
-              size: "xs",
-              variant: "outline",
-              onClick: onClickDelete,
-              isLoading: isDeleting,
-              loadingText: "Deleting...",
-              isDisabled: isDeleteDisabled,
-            },
-            `Delete`
-          ),
+          h(DeleteButton, {
+            onClick: onClickDelete,
+            isLoading: isDeleting,
+            isDisabled: isDeleteDisabled,
+          }),
         ]
       ),
       // TODO: Edit vs. New copy
@@ -128,20 +122,6 @@ export const View = ({
                 h(Button, {}, `Share`),
               ]),
               h(Spacer),
-              h(Stack, {}, [
-                h(
-                  Button,
-                  {
-                    size: "xs",
-                    variant: "outline",
-                    onClick: onClickDelete,
-                    isLoading: isDeleting,
-                    loadingText: "Deleting...",
-                    isDisabled: isDeleteDisabled,
-                  },
-                  `Delete`
-                ),
-              ]),
             ]
           ),
         ]),
