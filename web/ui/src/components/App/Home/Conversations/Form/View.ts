@@ -1,17 +1,10 @@
 import { ChevronLeftIcon } from "@chakra-ui/icons"
-import {
-  Box,
-  Button,
-  Divider,
-  Flex,
-  IconButton,
-  Spacer,
-} from "@chakra-ui/react"
+import { Box, Button, Divider, IconButton, Spacer } from "@chakra-ui/react"
+import { BeatLoader } from "react-spinners"
 import { h } from "@cycle/react"
 import { CreatableSelect } from "chakra-react-select"
 import { AutosizeTextarea, Heading, InputGroup, Stack } from "~/system"
 import { DeleteButton } from "./DeleteButton"
-import { SyncIcon } from "./SyncIcon"
 
 export interface Option {
   value: string
@@ -73,6 +66,8 @@ export const View = ({
             icon: h(ChevronLeftIcon),
             variant: "unstyled",
             onClick: onClickBack,
+            isLoading: isSyncing,
+            spinner: h(BeatLoader),
           }),
           h(Spacer),
           h(DeleteButton, {
