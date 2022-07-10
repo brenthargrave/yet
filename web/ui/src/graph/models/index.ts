@@ -11,3 +11,6 @@ export const isValidInviteeSet = (invitees: Invitee[]) => isNotEmpty(invitees)
 
 export const isValidConversation = ({ note, invitees }: LocalConversation) =>
   isValidNote(note) || isValidInviteeSet(invitees)
+
+export const isCompleteConversation = ({ note, invitees }: LocalConversation) =>
+  isValidNote(note) && isValidInviteeSet(invitees)

@@ -27,6 +27,7 @@ import {
   upsertConversation$,
   isValidNote,
   isValidConversation,
+  isCompleteConversation,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
@@ -143,6 +144,12 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
+  const isComplete$ = payload$.pipe(
+    map(isCompleteConversation),
+    tag("isComplete$"),
+    shareLatest()
+  )
+
   const response$ = payload$.pipe(
     skip(1), // NOTE: skip first event that fires on form load
     debounceTime(1000),
@@ -205,10 +212,10 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   )
 
   const isShareDisabled$ = combineLatest({
-    isValid: isValid$,
+    isComplete: isComplete$,
     isSyncing: isSyncing$,
   }).pipe(
-    map(({ isValid, isSyncing }) => !isValid || isSyncing),
+    map(({ isComplete, isSyncing }) => !isComplete || isSyncing),
     startWith(false),
     distinctUntilChanged(),
     tag("isShareDisabled$"),
