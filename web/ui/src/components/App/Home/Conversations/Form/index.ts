@@ -177,6 +177,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
 
   const cleanupAbandedRecord$ = goBack$.pipe(
     withLatestFrom(isValid$),
+    tag("withLatestFrom(isValid$)"),
     filter(([_, isValid]) => !isValid),
     tag("cleanupAbandedRecord$"),
     share()
