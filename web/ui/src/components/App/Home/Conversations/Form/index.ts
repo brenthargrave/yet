@@ -13,6 +13,7 @@ import {
   startWith,
   switchMap,
   takeUntil,
+  takeWhile,
   withLatestFrom,
 } from "rxjs"
 import { filterResultOk } from "ts-results/rxjs-operators"
@@ -23,6 +24,8 @@ import {
   Invitee,
   Source as GraphSource,
   upsertConversation$,
+  isValidNote,
+  isValidConversation,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
@@ -132,6 +135,14 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     invitees: invitees$,
     note: note$,
   }).pipe(tag("payload$"), share())
+
+  const isValid$ = payload$.pipe(
+    map(isValidConversation),
+    tag("isValid$"),
+    shareLatest()
+  )
+  // const isDeleteDisabled$ = isValid || isDeleting
+  // const isShareDisabled$ = isValid || isSyncing
 
   const response$ = payload$.pipe(
     skip(1), // NOTE: skip first event that fires on form load

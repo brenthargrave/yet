@@ -6,7 +6,6 @@ import { captureException } from "@sentry/react"
 import {
   BehaviorSubject,
   catchError,
-  delay,
   filter,
   from,
   map,
@@ -14,8 +13,6 @@ import {
   Observable,
   of,
   shareReplay,
-  pluck,
-  EMPTY,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { switchMap } from "rxjs/operators"
@@ -58,7 +55,7 @@ import { client as urqlClient } from "./urql"
 export { loggedIn, loggedOut } from "./driver"
 export type { Commands, Source } from "./driver"
 export * from "./generated"
-export type { Conversation } from "./generated"
+export * from "./models"
 
 const tag = makeTagger("graph")
 
