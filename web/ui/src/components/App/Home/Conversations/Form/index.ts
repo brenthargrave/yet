@@ -3,7 +3,6 @@ import { of } from "ramda"
 import {
   combineLatest,
   debounceTime,
-  distinct,
   distinctUntilChanged,
   EMPTY,
   filter,
@@ -13,12 +12,10 @@ import {
   Observable,
   pluck,
   share,
-  shareReplay,
   skip,
   startWith,
   switchMap,
   takeUntil,
-  takeWhile,
   withLatestFrom,
 } from "rxjs"
 import { filterResultOk } from "ts-results/rxjs-operators"
@@ -27,12 +24,11 @@ import {
   Conversation,
   deleteConversation$,
   Invitee,
+  inviteesDiffer,
+  isCompleteConversation,
+  isValidConversation,
   Source as GraphSource,
   upsertConversation$,
-  isValidNote,
-  isValidConversation,
-  isCompleteConversation,
-  inviteesDiffer,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
