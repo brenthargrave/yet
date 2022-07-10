@@ -3,6 +3,7 @@ import { of } from "ramda"
 import {
   combineLatest,
   debounceTime,
+  distinct,
   distinctUntilChanged,
   EMPTY,
   filter,
@@ -139,16 +140,20 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     id: id$,
     invitees: invitees$,
     note: note$,
-  }).pipe(tag("payload$"), share())
+  }).pipe(tag("payload$"), shareLatest())
 
   const isValid$ = payload$.pipe(
     map(isValidConversation),
+    startWith(false),
+    distinctUntilChanged(),
     tag("isValid$"),
     shareLatest()
   )
 
   const isComplete$ = payload$.pipe(
     map(isCompleteConversation),
+    startWith(false),
+    distinctUntilChanged(),
     tag("isComplete$"),
     shareLatest()
   )
