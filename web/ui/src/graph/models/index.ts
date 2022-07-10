@@ -1,3 +1,4 @@
+import { empty, eqBy, isEmpty, prop, symmetricDifferenceWith } from "ramda"
 import { isNotEmpty } from "~/fp"
 import { Conversation as FullConversation, Invitee } from "../generated"
 
@@ -14,3 +15,9 @@ export const isValidConversation = ({ note, invitees }: LocalConversation) =>
 
 export const isCompleteConversation = ({ note, invitees }: LocalConversation) =>
   isValidNote(note) && isValidInviteeSet(invitees)
+
+export const inviteesDiffer = (current: Invitee[], old: Invitee[]): boolean =>
+  isEmpty(
+    // @ts-ignore
+    symmetricDifferenceWith(eqBy<Invitee>(prop<Invitee>("id")), old, current)
+  )

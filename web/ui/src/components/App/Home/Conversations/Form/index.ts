@@ -32,6 +32,7 @@ import {
   isValidNote,
   isValidConversation,
   isCompleteConversation,
+  inviteesDiffer,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
@@ -117,6 +118,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
 
   const invitees$ = selectedOptions$.pipe(
     map(optionsToInvitees),
+    distinctUntilChanged(inviteesDiffer),
     tag("invitees$"),
     shareLatest()
   )
@@ -140,7 +142,11 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     id: id$,
     invitees: invitees$,
     note: note$,
-  }).pipe(tag("payload$"), shareLatest())
+  }).pipe(
+    // TODO: distinctUntilChanged
+    tag("payload$"),
+    shareLatest()
+  )
 
   const isValid$ = payload$.pipe(
     map(isValidConversation),
@@ -159,8 +165,8 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   )
 
   const sync$ = payload$.pipe(
-    skip(1), // NOTE: skip first event that fires on form load
     withLatestFrom(isValid$),
+    skip(1), // NOTE: skip first event that fires on form load
     mergeMap(([input, isValid]) => (isValid ? of(input) : EMPTY)),
     debounceTime(1000),
     switchMap((input) => upsertConversation$(input)),
