@@ -23,6 +23,7 @@ export interface Props {
   onClickDelete?: () => void
   isDeleting?: boolean
   isDeleteDisabled?: boolean
+  isShareDisabled?: boolean
   isRecordReady?: boolean
 }
 
@@ -37,6 +38,7 @@ export const View = ({
   onClickDelete,
   isDeleting = false,
   isDeleteDisabled = false,
+  isShareDisabled = true,
   isRecordReady = true,
 }: Props) =>
   h(
@@ -124,8 +126,7 @@ export const View = ({
                 h(
                   Button,
                   {
-                    // isLoading: isSyncing,
-                    isDisabled: isSyncing,
+                    isDisabled: isShareDisabled,
                   },
                   `Share`
                 ),

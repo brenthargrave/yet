@@ -141,8 +141,6 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     tag("isValid$"),
     shareLatest()
   )
-  // const isDeleteDisabled$ = isValid || isDeleting
-  // const isShareDisabled$ = isValid || isSyncing
 
   const response$ = payload$.pipe(
     skip(1), // NOTE: skip first event that fires on form load
@@ -187,10 +185,25 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const isDeleteDisabled$ = isDeleting$.pipe(
+  const isDeleteDisabled$ = combineLatest({
+    isValid: isValid$,
+    isDeleting: isDeleting$,
+  }).pipe(
+    map(({ isValid, isDeleting }) => !isValid || isDeleting),
     startWith(false),
     distinctUntilChanged(),
     tag("isDeleteDisabled$"),
+    shareLatest()
+  )
+
+  const isShareDisabled$ = combineLatest({
+    isValid: isValid$,
+    isSyncing: isSyncing$,
+  }).pipe(
+    map(({ isValid, isSyncing }) => !isValid || isSyncing),
+    startWith(false),
+    distinctUntilChanged(),
+    tag("isShareDisabled$"),
     shareLatest()
   )
 
@@ -206,6 +219,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     note: note$,
     isDeleting: isDeleting$,
     isDeleteDisabled: isDeleteDisabled$,
+    isShareDisabled: isShareDisabled$,
     isRecordReady: isRecordReady$,
   }).pipe(tag("props$"))
 
