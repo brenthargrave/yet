@@ -11,8 +11,11 @@ import {
   mergeMap,
   Observable,
   pluck,
+  scan,
   share,
   skip,
+  skipUntil,
+  skipWhile,
   startWith,
   switchMap,
   takeUntil,
@@ -134,15 +137,16 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     onChangeNote$
   ).pipe(distinctUntilChanged(), tag("note$"), shareLatest())
 
+  const formChangeCount$ = merge(onSelect$, onChangeNote$).pipe(
+    scan((acc, curr, idx) => acc + 1, 0),
+    tag("formChangeCount$")
+  )
+
   const payload$ = combineLatest({
     id: id$,
     invitees: invitees$,
     note: note$,
-  }).pipe(
-    // TODO: distinctUntilChanged
-    tag("payload$"),
-    shareLatest()
-  )
+  }).pipe(tag("payload$"), shareLatest())
 
   const isValid$ = payload$.pipe(
     map(isValidConversation),
@@ -160,18 +164,27 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const sync$ = payload$.pipe(
-    withLatestFrom(isValid$),
-    mergeMap(([input, isValid]) => (isValid ? of(input) : EMPTY)),
-    debounceTime(1000),
+  const request$ = combineLatest({
+    payload: payload$,
+    isValid: isValid$,
+    changeCount: formChangeCount$,
+  }).pipe(
+    filter(({ changeCount }) => changeCount >= 1),
+    mergeMap(({ payload, isValid }) => (isValid ? of(payload) : EMPTY)),
+    debounceTime(500),
+    tag("request$"),
+    share()
+  )
+
+  const upsert$ = request$.pipe(
     switchMap((input) => upsertConversation$(input)),
-    tag("sync$"),
+    tag("upsert$"),
     share()
   )
 
   const isSyncing$ = merge(
-    payload$.pipe(map((_) => true)),
-    sync$.pipe(map((_) => false))
+    request$.pipe(map((_) => true)),
+    upsert$.pipe(map((_) => false))
   ).pipe(
     startWith(false),
     distinctUntilChanged(),
