@@ -159,9 +159,9 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   )
 
   const sync$ = payload$.pipe(
+    skip(1), // NOTE: skip first event that fires on form load
     withLatestFrom(isValid$),
     mergeMap(([input, isValid]) => (isValid ? of(input) : EMPTY)),
-    skip(1), // NOTE: skip first event that fires on form load
     debounceTime(1000),
     switchMap((input) => upsertConversation$(input)),
     tag("sync$"),
