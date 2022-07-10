@@ -153,19 +153,19 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const response$ = payload$.pipe(
+  const sync$ = payload$.pipe(
     withLatestFrom(isValid$),
     mergeMap(([input, isValid]) => (isValid ? of(input) : EMPTY)),
     skip(1), // NOTE: skip first event that fires on form load
     debounceTime(1000),
     switchMap((input) => upsertConversation$(input)),
-    tag("response$"),
+    tag("sync$"),
     share()
   )
 
   const isSyncing$ = merge(
     payload$.pipe(map((_) => true)),
-    response$.pipe(map((_) => false))
+    sync$.pipe(map((_) => false))
   ).pipe(
     startWith(false),
     distinctUntilChanged(),
