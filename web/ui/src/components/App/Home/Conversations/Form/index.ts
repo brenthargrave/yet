@@ -134,6 +134,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   }).pipe(tag("payload$"), share())
 
   const response$ = payload$.pipe(
+    skip(1), // NOTE: skip first event that fires on form load
     debounceTime(1000),
     switchMap((input) => upsertConversation$(input)),
     tag("response$"),
