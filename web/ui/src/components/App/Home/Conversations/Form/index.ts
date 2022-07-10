@@ -1,11 +1,14 @@
 import { h, ReactSource } from "@cycle/react"
+import { of } from "ramda"
 import {
   combineLatest,
   debounceTime,
   distinctUntilChanged,
+  EMPTY,
   filter,
   map,
   merge,
+  mergeMap,
   Observable,
   pluck,
   share,
@@ -151,6 +154,8 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   )
 
   const response$ = payload$.pipe(
+    withLatestFrom(isValid$),
+    mergeMap(([input, isValid]) => (isValid ? of(input) : EMPTY)),
     skip(1), // NOTE: skip first event that fires on form load
     debounceTime(1000),
     switchMap((input) => upsertConversation$(input)),
