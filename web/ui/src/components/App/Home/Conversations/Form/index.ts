@@ -169,13 +169,13 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   )
 
   const { $: _onClickBack$, cb: onClickBack } = makeObservableCallback<void>()
-  const goBack$ = _onClickBack$.pipe(tag("onClickBack$"), share())
+  const onClickBack$ = _onClickBack$.pipe(tag("onClickBack$"), share())
 
   const { $: _onClickDelete$, cb: onClickDelete } =
     makeObservableCallback<string>()
   const onClickDelete$ = _onClickDelete$.pipe(tag("onClickDelete$"), share())
 
-  const cleanupAbandedRecord$ = goBack$.pipe(
+  const cleanupAbandedRecord$ = onClickBack$.pipe(
     withLatestFrom(isValid$),
     tag("withLatestFrom(isValid$)"),
     filter(([_, isValid]) => !isValid),
@@ -223,7 +223,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const goToList$ = merge(goBack$, deleted$).pipe(
+  const goToList$ = merge(onClickBack$, deleted$).pipe(
     map((_) => push(routes.conversations())),
     share()
   )
