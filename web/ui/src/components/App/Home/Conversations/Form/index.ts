@@ -3,6 +3,7 @@ import {
   combineLatest,
   debounceTime,
   distinctUntilChanged,
+  filter,
   map,
   merge,
   Observable,
@@ -167,7 +168,14 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     makeObservableCallback<string>()
   const onClickDelete$ = _onClickDelete$.pipe(tag("onClickDelete$"), share())
 
-  const delete$ = onClickDelete$.pipe(
+  const cleanupAbandedRecord$ = goBack$.pipe(
+    withLatestFrom(isValid$),
+    filter(([_, isValid]) => !isValid),
+    tag("cleanupAbandedRecord$"),
+    share()
+  )
+
+  const delete$ = merge(onClickDelete$, cleanupAbandedRecord$).pipe(
     withLatestFrom(id$),
     switchMap(([_, id]) => deleteConversation$({ id })),
     tag("delete$"),
