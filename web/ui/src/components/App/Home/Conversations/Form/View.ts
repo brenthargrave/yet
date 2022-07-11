@@ -2,7 +2,7 @@ import { ChevronLeftIcon } from "@chakra-ui/icons"
 import { Box, Button, Divider, IconButton, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { CreatableSelect } from "chakra-react-select"
-import { AutosizeTextarea, Heading, InputGroup, Stack } from "~/system"
+import { AutosizeTextarea, InputGroup, Stack } from "~/system"
 import { DeleteButton } from "./DeleteButton"
 
 export interface Option {

@@ -9,19 +9,10 @@ export interface Props {
 }
 
 export const DeleteButton = ({ onClick, isLoading, isDisabled }: Props) =>
-  // h(IconButton, {
-  //   icon: h(DeleteIcon),
-  //   size: "xs",
-  //   variant: "ghost",
-  //   onClick,
-  //   isLoading,
-  //   loadingText: "Deleting...",
-  //   isDisabled,
-  // })
-
   h(
     Button,
     {
+      tabIndex: -1, // prevent focus
       leftIcon: h(DeleteIcon),
       size: "xs",
       variant: "ghost",
