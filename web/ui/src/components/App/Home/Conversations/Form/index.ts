@@ -13,12 +13,8 @@ import {
   pluck,
   scan,
   share,
-  skip,
-  skipUntil,
-  skipWhile,
   startWith,
   switchMap,
-  takeUntil,
   withLatestFrom,
 } from "rxjs"
 import { filterResultOk } from "ts-results/rxjs-operators"
@@ -68,7 +64,6 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
 
   const {
     graph: { contacts$ },
-    router: { history$ },
     props: { record$, id$ },
   } = sources
 
@@ -81,9 +76,9 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   )
 
   const recordInvitees$ = record$.pipe(pluck("invitees"))
-  const inviteesAsOptions$ = recordInvitees$.pipe(
+  const recordInviteesAsOptions$ = recordInvitees$.pipe(
     map(inviteesToOptions),
-    tag("inviteesAsOptions$"),
+    tag("recordInviteesAsOptions$"),
     shareLatest()
   )
 
@@ -91,10 +86,10 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     makeObservableCallback<ContactOption[]>()
   const onSelect$ = _onSelect$.pipe(tag("onSelect$"), share())
 
-  const selectedOptions$ = merge(
-    inviteesAsOptions$.pipe(takeUntil(onSelect$)),
-    onSelect$
-  ).pipe(tag("selectedOptions$"), shareLatest())
+  const selectedOptions$ = merge(recordInviteesAsOptions$, onSelect$).pipe(
+    tag("selectedOptions$"),
+    shareLatest()
+  )
 
   const options$ = contacts$.pipe(
     map(contactsToOptions),
@@ -132,10 +127,11 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     makeObservableCallback<string>()
   const onChangeNote$ = _onChangeNote$.pipe(tag("onChangeNote$"), share())
 
-  const note$ = merge(
-    recordNote$.pipe(takeUntil(onChangeNote$)),
-    onChangeNote$
-  ).pipe(distinctUntilChanged(), tag("note$"), shareLatest())
+  const note$ = merge(recordNote$, onChangeNote$).pipe(
+    distinctUntilChanged(),
+    tag("note$"),
+    shareLatest()
+  )
 
   const formChangeCount$ = merge(onSelect$, onChangeNote$).pipe(
     scan((acc, curr, idx) => acc + 1, 0),
