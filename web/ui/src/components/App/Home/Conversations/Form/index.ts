@@ -67,14 +67,6 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     props: { record$, id$ },
   } = sources
 
-  const isRecordReady$ = combineLatest({ id: id$, record: record$ }).pipe(
-    tag("combine(id, record.id"),
-    map(({ id, record }) => id === record.id),
-    startWith(false),
-    tag("isRecordReady$"),
-    shareLatest()
-  )
-
   const recordInvitees$ = record$.pipe(pluck("invitees"))
   const recordInviteesAsOptions$ = recordInvitees$.pipe(
     map(inviteesToOptions),
@@ -256,7 +248,6 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     isDeleting: isDeleting$,
     isDeleteDisabled: isDeleteDisabled$,
     isShareDisabled: isShareDisabled$,
-    isRecordReady: isRecordReady$,
   }).pipe(tag("props$"))
 
   const react = props$.pipe(

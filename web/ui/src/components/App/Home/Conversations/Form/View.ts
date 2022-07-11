@@ -24,7 +24,6 @@ export interface Props {
   isDeleting?: boolean
   isDeleteDisabled?: boolean
   isShareDisabled?: boolean
-  isRecordReady?: boolean
 }
 
 export const View = ({
@@ -39,7 +38,6 @@ export const View = ({
   isDeleting = false,
   isDeleteDisabled = false,
   isShareDisabled = true,
-  isRecordReady = true,
 }: Props) =>
   h(
     Stack,
