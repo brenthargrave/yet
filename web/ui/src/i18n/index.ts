@@ -1,5 +1,7 @@
 import { phone as validatePhone } from "phone"
 
+import { format } from "date-fns"
+
 const shared = {
   continue: `Continue`,
   empty: "",
@@ -42,3 +44,4 @@ export const formatPhone = (e164: string): string => {
     ? `(${e164.slice(2, 5)}) ${e164.slice(5, 8)}-${e164.slice(8, 12)}`
     : ""
 }
+export const formatDateInput = (date: Date) => format(date, "YYYY-MM-DD")

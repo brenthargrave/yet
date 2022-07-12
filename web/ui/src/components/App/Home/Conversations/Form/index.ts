@@ -240,6 +240,18 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
+  const { $: _onChangeOccurredAt$, cb: onChangeOccurredAt } =
+    makeObservableCallback<Date>()
+  const onChangeOccurredAt$ = _onChangeOccurredAt$.pipe(
+    tag("onChangeOccurredAt$"),
+    share()
+  )
+  const occurredAt$ = onChangeOccurredAt$.pipe(
+    startWith(new Date()),
+    tag("occurredAt$"),
+    shareLatest()
+  )
+
   const props$ = combineLatest({
     options: options$,
     selectedOptions: selectedOptions$,
@@ -248,6 +260,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     isDeleting: isDeleting$,
     isDeleteDisabled: isDeleteDisabled$,
     isShareDisabled: isShareDisabled$,
+    occurredAt: occurredAt$,
   }).pipe(tag("props$"))
 
   const react = props$.pipe(
@@ -258,6 +271,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
         onChangeNote,
         onClickBack,
         onClickDelete,
+        onChangeOccurredAt,
       })
     )
   )

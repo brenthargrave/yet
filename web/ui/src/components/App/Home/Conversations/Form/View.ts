@@ -33,6 +33,8 @@ export interface Props {
   isDeleting?: boolean
   isDeleteDisabled?: boolean
   isShareDisabled?: boolean
+  occurredAt?: Date
+  onChangeOccurredAt?: (date: Date) => void
 }
 
 export const View = ({
@@ -47,6 +49,8 @@ export const View = ({
   isDeleting = false,
   isDeleteDisabled = true,
   isShareDisabled = true,
+  occurredAt,
+  onChangeOccurredAt,
 }: Props) =>
   h(
     Stack,
@@ -104,7 +108,10 @@ export const View = ({
             }),
           ]),
         ]),
-        h(When),
+        h(When, {
+          date: occurredAt,
+          onChangeDate: onChangeOccurredAt,
+        }),
         h(Stack, { direction: "row", alignItems: "center", width: "100%" }, [
           h(AutosizeTextarea, {
             minRows: 4,
