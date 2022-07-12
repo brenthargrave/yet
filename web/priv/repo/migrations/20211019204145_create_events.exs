@@ -35,6 +35,7 @@ defmodule App.Repo.Migrations.CreateEvents do
       add :note, :string
       add :status, :string
       add :deleted_at, :utc_datetime_usec
+      add :occurred_at, :utc_datetime_usec
       timestamps()
     end
 

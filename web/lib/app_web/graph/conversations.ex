@@ -25,9 +25,9 @@ defmodule AppWeb.Graph.Conversations do
     field(:invitees, non_null(list_of(non_null(:invitee))))
     field(:note, :string)
     field(:status, non_null(:conversation_status))
+    field(:occurred_at, non_null(:datetime))
     field(:inserted_at, :datetime)
     field(:deleted_at, :datetime)
-    field(:occurred_at, :datetime)
   end
 
   input_object :invitee_input do
@@ -38,9 +38,9 @@ defmodule AppWeb.Graph.Conversations do
   input_object :conversation_input do
     field(:id, non_null(:string))
     field(:invitees, non_null(list_of(non_null(:invitee_input))))
+    field(:occurred_at, non_null(:datetime))
     field(:note, :string)
     field(:status, :conversation_status)
-    field(:occurred_at, :datetime)
   end
 
   object :conversation_payload do

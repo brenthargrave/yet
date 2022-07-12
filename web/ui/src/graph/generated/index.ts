@@ -35,7 +35,7 @@ export type Conversation = {
   insertedAt?: Maybe<Scalars['DateTime']>;
   invitees: Array<Invitee>;
   note?: Maybe<Scalars['String']>;
-  occurredAt?: Maybe<Scalars['DateTime']>;
+  occurredAt: Scalars['DateTime'];
   status: ConversationStatus;
 };
 
@@ -43,7 +43,7 @@ export type ConversationInput = {
   id: Scalars['String'];
   invitees: Array<InviteeInput>;
   note?: InputMaybe<Scalars['String']>;
-  occurredAt?: InputMaybe<Scalars['DateTime']>;
+  occurredAt: Scalars['DateTime'];
   status?: InputMaybe<ConversationStatus>;
 };
 
@@ -236,33 +236,33 @@ export enum VerificationStatus {
   Pending = 'PENDING'
 }
 
-export type ConversationPropsFragment = { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt?: any | null, deletedAt?: any | null, invitees: Array<{ __typename?: 'Invitee', id: string, name: string }> };
+export type ConversationPropsFragment = { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, invitees: Array<{ __typename?: 'Invitee', id: string, name: string }> };
 
 export type UpsertConversationMutationVariables = Exact<{
   input: ConversationInput;
 }>;
 
 
-export type UpsertConversationMutation = { __typename?: 'RootMutationType', upsertConversation?: { __typename?: 'ConversationPayload', conversation?: { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt?: any | null, deletedAt?: any | null, invitees: Array<{ __typename?: 'Invitee', id: string, name: string }> } | null } | null };
+export type UpsertConversationMutation = { __typename?: 'RootMutationType', upsertConversation?: { __typename?: 'ConversationPayload', conversation?: { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, invitees: Array<{ __typename?: 'Invitee', id: string, name: string }> } | null } | null };
 
 export type ViewConversationQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type ViewConversationQuery = { __typename?: 'RootQueryType', getConversation?: { __typename?: 'ConversationPayload', conversation?: { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt?: any | null, deletedAt?: any | null, invitees: Array<{ __typename?: 'Invitee', id: string, name: string }> } | null, userError?: { __typename?: 'UserError', message: string, code?: ErrorCode | null } | null } | null };
+export type ViewConversationQuery = { __typename?: 'RootQueryType', getConversation?: { __typename?: 'ConversationPayload', conversation?: { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, invitees: Array<{ __typename?: 'Invitee', id: string, name: string }> } | null, userError?: { __typename?: 'UserError', message: string, code?: ErrorCode | null } | null } | null };
 
 export type DeleteConversationMutationVariables = Exact<{
   input: DeleteConversationInput;
 }>;
 
 
-export type DeleteConversationMutation = { __typename?: 'RootMutationType', deleteConversation?: { __typename?: 'ConversationPayload', userError?: { __typename?: 'UserError', code?: ErrorCode | null, message: string } | null, conversation?: { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt?: any | null, deletedAt?: any | null, invitees: Array<{ __typename?: 'Invitee', id: string, name: string }> } | null } | null };
+export type DeleteConversationMutation = { __typename?: 'RootMutationType', deleteConversation?: { __typename?: 'ConversationPayload', userError?: { __typename?: 'UserError', code?: ErrorCode | null, message: string } | null, conversation?: { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, invitees: Array<{ __typename?: 'Invitee', id: string, name: string }> } | null } | null };
 
 export type GetConversationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetConversationsQuery = { __typename?: 'RootQueryType', getConversations?: { __typename?: 'ConversationsPayload', conversations: Array<{ __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt?: any | null, deletedAt?: any | null, invitees: Array<{ __typename?: 'Invitee', id: string, name: string }> }> } | null };
+export type GetConversationsQuery = { __typename?: 'RootQueryType', getConversations?: { __typename?: 'ConversationsPayload', conversations: Array<{ __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, invitees: Array<{ __typename?: 'Invitee', id: string, name: string }> }> } | null };
 
 export type UpdateProfileMutationVariables = Exact<{
   input: ProfileInput;
