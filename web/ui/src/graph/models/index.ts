@@ -1,4 +1,4 @@
-import { empty, eqBy, isEmpty, prop, symmetricDifferenceWith } from "ramda"
+import { eqBy, isEmpty, prop, symmetricDifferenceWith } from "ramda"
 import { isNotEmpty } from "~/fp"
 import { Conversation as FullConversation, Invitee } from "../generated"
 

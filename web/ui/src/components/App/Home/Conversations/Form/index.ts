@@ -131,7 +131,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     tag("onChangeOccurredAt$"),
     share()
   )
-  const recordOccurredAt$ = record$.pipe(
+  const recordOccurredAt$: Observable<Date> = record$.pipe(
     pluck("occurredAt"),
     distinctUntilChanged(),
     tag("recordOccurredAt$"),
@@ -157,6 +157,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     id: id$,
     invitees: invitees$,
     note: note$,
+    occurredAt: occurredAt$,
   }).pipe(tag("payload$"), shareLatest())
 
   const isValid$ = payload$.pipe(
