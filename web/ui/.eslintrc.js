@@ -44,6 +44,8 @@ module.exports = {
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": ["off", { argsIgnorePattern: "^_" }],
     "@typescript-eslint/no-empty-interface": "off",
+    // prevent single-line arrays
+    // "array-element-newline": "always",
   },
   settings: {
     "import/resolver": "node",

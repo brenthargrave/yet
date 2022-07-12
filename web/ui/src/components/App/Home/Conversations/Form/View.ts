@@ -1,9 +1,18 @@
 import { ChevronLeftIcon } from "@chakra-ui/icons"
-import { Box, Button, Divider, IconButton, Spacer } from "@chakra-ui/react"
+import {
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  InputLeftAddon,
+  InputLeftElement,
+  Spacer,
+} from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { CreatableSelect } from "chakra-react-select"
 import { AutosizeTextarea, InputGroup, Stack, BackButton } from "~/system"
 import { DeleteButton } from "./DeleteButton"
+import { When } from "./When"
 
 export interface Option {
   value: string
@@ -95,13 +104,15 @@ export const View = ({
             }),
           ]),
         ]),
-        // TODO: optional fields for: when, where
-        h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
+        h(Stack, { direction: "row", width: "100%" }, [h(When)]),
+        h(Stack, { direction: "row", alignItems: "center", width: "100%" }, [
           h(AutosizeTextarea, {
             minRows: 4,
             value: note || "",
             onChange: (event) => onChangeNote(event.target.value),
           }),
+        ]),
+        h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
           h(Divider, {}),
           h(
             Box,
