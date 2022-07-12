@@ -31,7 +31,7 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
-import { makeObservableCallback, shareLatest } from "~/rx"
+import { callback$, makeObservableCallback, shareLatest } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
 
 const contactsToOptions = (contacts: Contact[]): SelectedOption[] =>
@@ -74,9 +74,9 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const { $: _onSelect$, cb: onSelect } =
-    makeObservableCallback<ContactOption[]>()
-  const onSelect$ = _onSelect$.pipe(tag("onSelect$"), share())
+  const { $: onSelect$, cb: onSelect } = callback$<ContactOption[]>(
+    tag("onSelect$")
+  )
 
   const selectedOptions$ = merge(recordInviteesAsOptions$, onSelect$).pipe(
     tag("selectedOptions$"),

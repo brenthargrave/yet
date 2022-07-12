@@ -19,6 +19,17 @@ export function makeObservableCallback<T>(): ObservableCallback<T> {
   return { $: observable, cb: callback }
 }
 
+export function callback$<T>(
+  operator: MonoTypeOperatorFunction<T>
+): ObservableCallback<T> {
+  const subject = new Subject<T>()
+  const callback = (i: T) => {
+    subject.next(i)
+  }
+  const observable = subject.asObservable().pipe(operator, share())
+  return { $: observable, cb: callback }
+}
+
 // NOTE: https://stackoverflow.com/a/66416113
 export const zenToRx = <T>(zenObservable: ZenObservable<T>): Observable<T> =>
   new Observable((observer) => zenObservable.subscribe(observer))

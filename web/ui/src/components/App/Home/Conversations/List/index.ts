@@ -4,7 +4,7 @@ import { ulid } from "ulid"
 import { EventName, Source as GraphSource, track$ } from "~/graph"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
-import { makeObservableCallback } from "~/rx"
+import { makeObservableCallback, callback$ } from "~/rx"
 import { View } from "./View"
 
 const tag = makeTagger("Conversations/List")
@@ -20,8 +20,7 @@ export const List = (sources: Sources) => {
     graph: { me$, conversations$ },
   } = sources
 
-  const { $: _clickNew$, cb: onClickNew } = makeObservableCallback()
-  const clickNew$ = _clickNew$.pipe(tag("clickNew$"), share())
+  const { $: clickNew$, cb: onClickNew } = callback$(tag("clickNew$"))
   const newConvo$ = clickNew$.pipe(map((_) => push(routes.newConversation())))
   const track = clickNew$.pipe(
     withLatestFrom(me$),
@@ -34,11 +33,8 @@ export const List = (sources: Sources) => {
     )
   )
 
-  const { $: _clickConversation$, cb: onClickConversation } =
-    makeObservableCallback<string>()
-  const clickConversation$ = _clickConversation$.pipe(
-    tag("clickConversation$"),
-    share()
+  const { $: clickConversation$, cb: onClickConversation } = callback$<string>(
+    tag("clickConversation$")
   )
   const editConvo$ = clickConversation$.pipe(
     map((id) => push(routes.editConversation({ id })))
