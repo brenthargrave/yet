@@ -125,7 +125,30 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const formChangeCount$ = merge(onSelect$, onChangeNote$).pipe(
+  const { $: _onChangeOccurredAt$, cb: onChangeOccurredAt } =
+    makeObservableCallback<Date>()
+  const onChangeOccurredAt$ = _onChangeOccurredAt$.pipe(
+    tag("onChangeOccurredAt$"),
+    share()
+  )
+  const recordOccurredAt$ = record$.pipe(
+    pluck("occurredAt"),
+    distinctUntilChanged(),
+    tag("recordOccurredAt$"),
+    shareLatest()
+  )
+  const occurredAt$ = merge(recordOccurredAt$, onChangeOccurredAt$).pipe(
+    distinctUntilChanged(),
+    startWith(new Date()),
+    tag("occurredAt$"),
+    shareLatest()
+  )
+
+  const formChangeCount$ = merge(
+    onSelect$,
+    onChangeNote$,
+    onChangeOccurredAt$
+  ).pipe(
     scan((acc, curr, idx) => acc + 1, 0),
     tag("formChangeCount$")
   )
@@ -238,18 +261,6 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const goToList$ = merge(onClickBack$, deleted$).pipe(
     map((_) => push(routes.conversations())),
     share()
-  )
-
-  const { $: _onChangeOccurredAt$, cb: onChangeOccurredAt } =
-    makeObservableCallback<Date>()
-  const onChangeOccurredAt$ = _onChangeOccurredAt$.pipe(
-    tag("onChangeOccurredAt$"),
-    share()
-  )
-  const occurredAt$ = onChangeOccurredAt$.pipe(
-    startWith(new Date()),
-    tag("occurredAt$"),
-    shareLatest()
   )
 
   const props$ = combineLatest({

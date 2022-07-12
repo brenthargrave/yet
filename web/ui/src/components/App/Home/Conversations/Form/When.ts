@@ -1,6 +1,7 @@
 import { Input, InputGroup, Stack } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
+import { isValid } from "date-fns"
 import { formatDateInput, parseDateInput } from "~/i18n"
 
 // TODO: natural language date input
@@ -14,16 +15,21 @@ interface Props {
 
 export const When: FC<Props> = ({ date, onChangeDate }) => {
   const max = formatDateInput(new Date())
-  const defaultValue = formatDateInput(date)
+  const value = formatDateInput(date)
 
   return h(Stack, { width: "100%", direction: "row" }, [
     h(InputGroup, [
       h(Input, {
         type: "date",
         max,
-        defaultValue,
+        value,
         // @ts-ignore
-        onChange: (event) => onChangeDate(parseDateInput(event.target.value)),
+        onChange: (event) => {
+          const parsedDate = parseDateInput(event.target.value)
+          if (isValid(parsedDate)) {
+            onChangeDate(parsedDate)
+          }
+        },
       }),
     ]),
   ])
