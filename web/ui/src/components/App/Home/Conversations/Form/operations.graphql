@@ -1,14 +1,20 @@
+fragment ConversationProps on Conversation {
+  id
+  invitees {
+    id
+    name
+  }
+  note
+  status
+  insertedAt
+  occurredAt
+  deletedAt
+}
+
 mutation UpsertConversation($input: ConversationInput!) {
   upsertConversation(input: $input) {
     conversation {
-      id
-      invitees {
-        id
-        name
-      }
-      note
-      status
-      deletedAt
+     ...ConversationProps
     }
   }
 }
@@ -16,14 +22,7 @@ mutation UpsertConversation($input: ConversationInput!) {
 query ViewConversation($id: ID!) {
   getConversation(id: $id) {
     conversation {
-      id
-      invitees {
-        id
-        name
-      }
-      note
-      status
-      deletedAt
+     ...ConversationProps
     }
     userError {
       message
@@ -39,15 +38,7 @@ mutation DeleteConversation($input: DeleteConversationInput!) {
       message
     }
     conversation {
-      id
-      invitees {
-        id
-        name
-      }
-      note
-      status
-      insertedAt
-      deletedAt
+     ...ConversationProps
     }
   }
 }

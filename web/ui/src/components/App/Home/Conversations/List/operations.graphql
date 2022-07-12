@@ -1,14 +1,7 @@
 query GetConversations {
   getConversations {
     conversations {
-      id
-      invitees {
-        id
-        name
-      }
-      note
-      status
-      deletedAt
+      ...ConversationProps
     }
   }
 }
