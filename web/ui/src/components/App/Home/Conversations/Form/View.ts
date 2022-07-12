@@ -104,7 +104,7 @@ export const View = ({
             }),
           ]),
         ]),
-        h(Stack, { direction: "row", width: "100%" }, [h(When)]),
+        h(When),
         h(Stack, { direction: "row", alignItems: "center", width: "100%" }, [
           h(AutosizeTextarea, {
             minRows: 4,
