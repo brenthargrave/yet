@@ -1,4 +1,4 @@
-import { format, parse } from "date-fns"
+import { format, parse, getYear } from "date-fns"
 import { phone as validatePhone } from "phone"
 
 const shared = {
@@ -34,7 +34,6 @@ const messages: Record<string, string> = {
   "note.empty.cta": `To get started, take some notes on a recent conversation you had with someone.`,
 }
 
-// TODO: typesafe selection
 export const t = (key: string): string => messages[key]
 
 export const formatPhone = (e164: string): string => {
@@ -47,3 +46,11 @@ export const formatPhone = (e164: string): string => {
 export const formatDateInput = (date: Date) => format(date, "YYYY-MM-DD")
 
 export const parseDateInput = (value: string) => parse(value)
+
+const today = new Date()
+const currentYear = getYear(today)
+export const localizeDate = (date: Date) => {
+  return getYear(date) < currentYear
+    ? format(date, "M/DD/YY")
+    : format(date, "MMM Do")
+}

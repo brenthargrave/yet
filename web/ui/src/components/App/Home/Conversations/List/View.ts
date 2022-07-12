@@ -3,6 +3,7 @@ import { h } from "@cycle/react"
 import { FC } from "react"
 import { isEmpty, join, map, prop } from "~/fp"
 import { Conversation } from "~/graph"
+import { localizeDate } from "~/i18n"
 import { CreateButton, Divider, Header, Stack, Text } from "~/system"
 import { EmptyView, OnClickNew } from "../EmptyView"
 
@@ -32,7 +33,7 @@ export const View: FC<Props> = ({
         h(
           List,
           { spacing, padding: 4 },
-          conversations.map(({ id, invitees, note }) =>
+          conversations.map(({ id, invitees, note, occurredAt }) =>
             h(
               ListItem,
               {
@@ -42,13 +43,17 @@ export const View: FC<Props> = ({
               },
               [
                 h(Stack, { direction: "column" }, [
-                  h(Heading, { size: "xs" }, [
-                    join(", ", map(prop("name"), invitees)),
+                  h(Stack, { direction: "row" }, [
+                    h(Heading, { size: "xs" }, [
+                      join(", ", map(prop("name"), invitees)),
+                    ]),
+                    h(Spacer),
+                    h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
                   ]),
                   h(
                     Text,
                     {
-                      noOfLines: 1,
+                      noOfLines: 3,
                       fontSize: "sm",
                     },
                     [note]
