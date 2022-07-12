@@ -1,7 +1,7 @@
 import { Input, InputGroup, Stack } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { formatDateInput } from "~/i18n"
+import { formatDateInput, parseDateInput } from "~/i18n"
 
 // TODO: natural language date input
 // https://github.com/wanasit/chrono/pull/448
@@ -23,7 +23,7 @@ export const When: FC<Props> = ({ date = new Date(), onChangeDate }) => {
         max,
         value,
         // @ts-ignore
-        onChange: (event) => onChange(new Date(event.target.value)),
+        onChange: (event) => onChangeDate(parseDateInput(event.target.value)),
       }),
     ]),
   ])
