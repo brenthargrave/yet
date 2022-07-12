@@ -2,7 +2,7 @@ import { ChevronLeftIcon } from "@chakra-ui/icons"
 import { Box, Button, Divider, IconButton, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { CreatableSelect } from "chakra-react-select"
-import { AutosizeTextarea, InputGroup, Stack } from "~/system"
+import { AutosizeTextarea, InputGroup, Stack, BackButton } from "~/system"
 import { DeleteButton } from "./DeleteButton"
 
 export interface Option {
@@ -36,7 +36,7 @@ export const View = ({
   onClickBack,
   onClickDelete,
   isDeleting = false,
-  isDeleteDisabled = false,
+  isDeleteDisabled = true,
   isShareDisabled = true,
 }: Props) =>
   h(
@@ -58,15 +58,10 @@ export const View = ({
           padding: 4,
         },
         [
-          h(IconButton, {
-            icon: h(ChevronLeftIcon),
-            variant: "unstyled",
+          h(BackButton, {
             onClick: onClickBack,
-            size: "sm",
           }),
           h(Spacer),
-          // h(Heading, { size: "sm" }, `New conversation`),
-          // h(Spacer),
           h(DeleteButton, {
             onClick: onClickDelete,
             isLoading: isDeleting,
@@ -74,8 +69,6 @@ export const View = ({
           }),
         ]
       ),
-      // TODO: Edit vs. New copy
-      // ? how distinguish new conversation from old?
       h(Stack, { direction: "column", width: "100%", padding: 4 }, [
         // h(Heading, { size: "lg" }, `Note a new conversation`),
         h(Stack, { direction: "row", alignItems: "center", width: "100%" }, [
