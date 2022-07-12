@@ -3,6 +3,7 @@ defmodule App.Conversations do
   use Croma
   use TypedStruct
   use Brex.Result
+  use Timex
   alias App.Conversation
   alias App.Repo
   import Ecto.Query
@@ -16,7 +17,7 @@ defmodule App.Conversations do
       id: id,
       invitees: invitees,
       note: note,
-      occurred_at: occurred_at
+      occurred_at: occurred_at || Timex.now()
     }
 
     Conversation

@@ -31,6 +31,7 @@ export const Main = (sources: Sources) => {
             invitees: [],
             note: null,
             status: ConversationStatus.Draft,
+            occurredAt: Date.now(),
           })
         )
         .otherwise(() => EMPTY)

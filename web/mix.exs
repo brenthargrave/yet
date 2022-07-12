@@ -60,7 +60,8 @@ defmodule App.MixProject do
       {:brex_result, github: "brexhq/result"},
       {:shorter_maps, "~> 2.2"},
       {:scribe, "~> 0.10"},
-      {:tabula, "~> 2.1.1"}
+      {:tabula, "~> 2.1.1"},
+      {:timex, "~> 3.0"}
     ]
   end
 

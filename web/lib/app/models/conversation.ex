@@ -13,12 +13,13 @@ defmodule App.Conversation do
 
     field :status, Ecto.Enum, values: [:draft, :deleted], default: :draft
     field :deleted_at, :utc_datetime_usec
+    field :occurred_at, :utc_datetime_usec
     timestamps(type: :utc_datetime_usec)
   end
 
   def changeset(record, attrs) do
     record
-    |> cast(attrs, [:id, :note])
+    |> cast(attrs, [:id, :note, :occurred_at])
     |> put_assoc(:creator, attrs[:creator])
     |> cast_embed(:invitees, with: &invitee_changeset/2)
   end
