@@ -17,7 +17,16 @@ import {
 import { isNotNullish } from "rxjs-etc"
 import { switchMap } from "rxjs/operators"
 import { Err, Ok, Result } from "ts-results"
-import { isNil, none, not, propSatisfies, toLower } from "~/fp"
+import {
+  isNil,
+  none,
+  not,
+  propSatisfies,
+  toLower,
+  filter as _filter,
+  prop,
+  descend,
+} from "~/fp"
 import { makeTagger } from "~/log"
 import { zenToRx } from "~/rx"
 import { getId } from "./anon"
@@ -346,7 +355,9 @@ export const conversations$ = token$.pipe(
   }),
   tag("conversations$"),
   map((conversations) =>
-    conversations.filter((c) => c.status !== ConversationStatus.Deleted)
+    conversations
+      .filter((c) => c.status !== ConversationStatus.Deleted)
+      .sort(descend(prop("occurredAt")))
   ),
   tag("conversations$ - DELETED"),
   catchError((error, _caught$) => {
