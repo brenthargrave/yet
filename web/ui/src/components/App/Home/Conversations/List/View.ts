@@ -42,7 +42,7 @@ export const View: FC<Props> = ({
                 padding: 0,
               },
               [
-                h(Stack, { direction: "column" }, [
+                h(Stack, { direction: "column", paddingBottom: 4 }, [
                   h(Stack, { direction: "row" }, [
                     h(Heading, { size: "xs" }, [
                       join(", ", map(prop("name"), invitees)),
@@ -58,8 +58,8 @@ export const View: FC<Props> = ({
                     },
                     [note]
                   ),
-                  h(Divider),
                 ]),
+                h(Divider),
               ]
             )
           )
