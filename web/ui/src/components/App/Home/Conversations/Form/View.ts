@@ -33,8 +33,8 @@ export interface Props {
   isDeleting?: boolean
   isDeleteDisabled?: boolean
   isShareDisabled?: boolean
-  occurredAt?: Date
-  onChangeOccurredAt?: (date: Date) => void
+  occurredAt: Date
+  onChangeOccurredAt: (date: Date) => void
 }
 
 export const View = ({

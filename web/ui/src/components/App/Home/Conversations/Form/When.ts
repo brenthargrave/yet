@@ -8,20 +8,20 @@ import { formatDateInput, parseDateInput } from "~/i18n"
 // https://github.com/spencermountain/compromise/tree/08f2a85d2d0c8d9b490fea003c3d856dec348a02#dates
 
 interface Props {
-  date?: Date
-  onChangeDate?: (date: Date) => void
+  date: Date
+  onChangeDate: (date: Date) => void
 }
 
-export const When: FC<Props> = ({ date = new Date(), onChangeDate }) => {
+export const When: FC<Props> = ({ date, onChangeDate }) => {
   const max = formatDateInput(new Date())
-  const value = formatDateInput(date)
+  const defaultValue = formatDateInput(date)
 
   return h(Stack, { width: "100%", direction: "row" }, [
     h(InputGroup, [
       h(Input, {
         type: "date",
         max,
-        value,
+        defaultValue,
         // @ts-ignore
         onChange: (event) => onChangeDate(parseDateInput(event.target.value)),
       }),
