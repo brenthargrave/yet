@@ -1,11 +1,11 @@
 import {
-  Subject,
+  MonoTypeOperatorFunction,
   Observable,
   share,
-  OperatorFunction,
   shareReplay,
-  MonoTypeOperatorFunction,
+  Subject,
 } from "rxjs"
+import { Source as WonkaSource, toObservable } from "wonka"
 import { Observable as ZenObservable } from "zen-observable-ts"
 
 export type ObservableCallback<O> = { $: Observable<O>; cb: (t?: any) => void }
@@ -33,6 +33,10 @@ export function callback$<T>(
 // NOTE: https://stackoverflow.com/a/66416113
 export const zenToRx = <T>(zenObservable: ZenObservable<T>): Observable<T> =>
   new Observable((observer) => zenObservable.subscribe(observer))
+
+export const wonkaToRx = <T>(wonkaObservable: WonkaSource<T>): Observable<T> =>
+  // @ts-ignore
+  zenToRx(toObservable(wonkaObservable))
 
 // export function shareLatest<T, R>(
 //   bufferSize?: 1,

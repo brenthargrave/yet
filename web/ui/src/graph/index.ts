@@ -17,18 +17,9 @@ import {
 import { isNotNullish } from "rxjs-etc"
 import { switchMap } from "rxjs/operators"
 import { Err, Ok, Result } from "ts-results"
-import {
-  isNil,
-  none,
-  not,
-  propSatisfies,
-  toLower,
-  filter as _filter,
-  prop,
-  descend,
-} from "~/fp"
+import { descend, isNil, none, not, prop, propSatisfies, toLower } from "~/fp"
 import { makeTagger } from "~/log"
-import { zenToRx } from "~/rx"
+import { wonkaToRx, zenToRx } from "~/rx"
 import { getId } from "./anon"
 import { client, tokenCacheKey } from "./apollo"
 import {
