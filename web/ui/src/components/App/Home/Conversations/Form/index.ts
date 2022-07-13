@@ -144,11 +144,12 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const formChangeCount$ = merge(
-    onSelect$,
-    onChangeNote$,
-    onChangeOccurredAt$
-  ).pipe(
+  const formTouch$ = merge(onSelect$, onChangeNote$, onChangeOccurredAt$).pipe(
+    tag("formTouch$"),
+    share()
+  )
+
+  const formChangeCount$ = formTouch$.pipe(
     scan((acc, curr, idx) => acc + 1, 0),
     tag("formChangeCount$")
   )
@@ -195,7 +196,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   )
 
   const isSyncing$ = merge(
-    request$.pipe(map((_) => true)),
+    formTouch$.pipe(map((_) => true)),
     upsert$.pipe(map((_) => false))
   ).pipe(
     startWith(false),
