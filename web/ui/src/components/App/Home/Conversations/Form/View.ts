@@ -115,7 +115,7 @@ export const View = ({
         h(Stack, { direction: "row", alignItems: "center", width: "100%" }, [
           h(AutosizeTextarea, {
             minRows: 4,
-            value: note || "",
+            defaultValue: note || "",
             onChange: (event) => onChangeNote(event.target.value),
           }),
         ]),
