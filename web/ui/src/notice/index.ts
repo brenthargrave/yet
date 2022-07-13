@@ -20,7 +20,6 @@ export function makeDriver(): Driver<Sink, Source> {
   return function (sink: Sink): Source {
     sink.addListener({
       next: (notice) => {
-        console.debug(notice)
         toast(notice)
       },
       error: (error) => console.error(error),

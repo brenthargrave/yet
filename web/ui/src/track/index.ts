@@ -16,7 +16,6 @@ export function makeDriver(): Driver<Sink, Source> {
   return function (sink: Sink): Source {
     sink.addListener({
       next: (result) => {
-        console.debug(result)
         // match(type)
         //   .with(CommandType.push, () => route?.push())
         //   .exhaustive()

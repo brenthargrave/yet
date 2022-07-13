@@ -20,7 +20,9 @@ export const List = (sources: Sources) => {
   } = sources
 
   const { $: clickNew$, cb: onClickNew } = callback$(tag("clickNew$"))
+
   const newConvo$ = clickNew$.pipe(map((_) => push(routes.newConversation())))
+
   const track = clickNew$.pipe(
     withLatestFrom(me$),
     mergeMap(([_, me]) =>
@@ -35,6 +37,7 @@ export const List = (sources: Sources) => {
   const { $: clickConversation$, cb: onClickConversation } = callback$<string>(
     tag("clickConversation$")
   )
+
   const editConvo$ = clickConversation$.pipe(
     map((id) => push(routes.editConversation({ id })))
   )

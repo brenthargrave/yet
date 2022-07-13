@@ -41,7 +41,6 @@ export function makeDriver(): Driver<Sink, Source> {
   return function (sink: Sink): Source {
     sink.addListener({
       next: (command) => {
-        console.debug(`command: ${command}`)
         match(command[0])
           .with(CommandType.in, () => {
             const token = command[1]

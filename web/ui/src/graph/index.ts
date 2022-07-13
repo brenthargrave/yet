@@ -333,6 +333,7 @@ export const conversations$ = token$.pipe(
         fetchPolicy: "network-only",
       })
     ).pipe(
+      tag("watchQuery(conversations)"),
       map(
         ({
           data,
@@ -350,7 +351,7 @@ export const conversations$ = token$.pipe(
         }
       ),
       filter(isNotNullish),
-      tag("watchQuery(conversations)")
+      tag("watchQuery(conversations) > filter(isNotNullish)")
     )
   }),
   tag("conversations$"),
