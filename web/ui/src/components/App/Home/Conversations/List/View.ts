@@ -57,7 +57,7 @@ export const View: FC<Props> = ({
                     h(Spacer),
                     h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
                   ]),
-                  h(Box, { padding: 1 }, [
+                  h(Box, { padding: 2 }, [
                     h(MarkdownView, { maxLines: 10, md: note ?? "" }),
                   ]),
                 ]),
