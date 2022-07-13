@@ -4,7 +4,14 @@ import { FC } from "react"
 import { isEmpty, join, map, prop } from "~/fp"
 import { Conversation } from "~/graph"
 import { localizeDate } from "~/i18n"
-import { CreateButton, Divider, Header, Stack, Text } from "~/system"
+import {
+  CreateButton,
+  Divider,
+  Header,
+  Stack,
+  Text,
+  MarkdownView,
+} from "~/system"
 import { EmptyView, OnClickNew } from "../EmptyView"
 
 type OnClickConversation = (cid: string) => void
@@ -50,14 +57,7 @@ export const View: FC<Props> = ({
                     h(Spacer),
                     h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
                   ]),
-                  h(
-                    Text,
-                    {
-                      noOfLines: 3,
-                      fontSize: "sm",
-                    },
-                    [note]
-                  ),
+                  h(MarkdownView, { maxLines: 10, md: note ?? "" }),
                 ]),
                 h(Divider),
               ]
