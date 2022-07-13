@@ -267,6 +267,7 @@ export const upsertConversation$ = (input: ConversationInput) => {
     client.mutate({
       mutation: UpsertConversationDocument,
       variables: { input },
+      refetchQueries: [{ query: GetConversationsDocument }],
     })
   ).pipe(
     map(({ data, errors, extensions, context }) => {
@@ -282,6 +283,7 @@ export const deleteConversation$ = (input: DeleteConversationInput) => {
     client.mutate({
       mutation: DeleteConversationDocument,
       variables: { input },
+      refetchQueries: [{ query: GetConversationsDocument }],
     })
   ).pipe(
     map(({ data, errors, extensions, context }) => {
