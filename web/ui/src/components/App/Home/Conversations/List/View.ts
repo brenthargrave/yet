@@ -1,4 +1,4 @@
-import { Heading, List, ListItem, Spacer } from "@chakra-ui/react"
+import { Box, Heading, List, ListItem, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { isEmpty, join, map, prop } from "~/fp"
@@ -50,14 +50,16 @@ export const View: FC<Props> = ({
               },
               [
                 h(Stack, { direction: "column", paddingBottom: 4 }, [
-                  h(Stack, { direction: "row" }, [
+                  h(Stack, { direction: "row", alignItems: "center" }, [
                     h(Heading, { size: "xs" }, [
                       join(", ", map(prop("name"), invitees)),
                     ]),
                     h(Spacer),
                     h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
                   ]),
-                  h(MarkdownView, { maxLines: 10, md: note ?? "" }),
+                  h(Box, { padding: 1 }, [
+                    h(MarkdownView, { maxLines: 10, md: note ?? "" }),
+                  ]),
                 ]),
                 h(Divider),
               ]
