@@ -251,9 +251,8 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
 
   const isShareDisabled$ = combineLatest({
     isComplete: isComplete$,
-    isSyncing: isSyncing$,
   }).pipe(
-    map(({ isComplete, isSyncing }) => !isComplete || isSyncing),
+    map(({ isComplete }) => !isComplete),
     startWith(false),
     distinctUntilChanged(),
     tag("isShareDisabled$"),
