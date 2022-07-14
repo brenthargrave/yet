@@ -8,7 +8,6 @@ import {
   merge,
   Observable,
   share,
-  shareReplay,
   startWith,
   switchMap,
   tap,
@@ -30,7 +29,7 @@ import {
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { push, routes } from "~/router"
-import { makeObservableCallback, shareLatest } from "~/rx"
+import { callback$, makeObservableCallback, shareLatest } from "~/rx"
 import { View } from "./View"
 
 const tag = makeTagger("PhoneVerify")
@@ -57,8 +56,7 @@ export const PhoneVerify = (sources: Sources) => {
     shareLatest()
   )
 
-  const { $: _submit$, cb: onSubmit } = makeObservableCallback()
-  const submit$ = _submit$.pipe(tag("submit$"), share())
+  const { $: submit$, cb: onSubmit } = callback$(tag("submit$"))
 
   const { $: complete, cb: onComplete } = makeObservableCallback<string>()
   const complete$ = complete.pipe(

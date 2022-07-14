@@ -7,7 +7,6 @@ import {
   merge,
   Observable,
   share,
-  shareReplay,
   startWith,
   switchMap,
   withLatestFrom,
@@ -21,7 +20,7 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
-import { makeObservableCallback, shareLatest } from "~/rx"
+import { callback$, makeObservableCallback, shareLatest } from "~/rx"
 import { View } from "./View"
 
 export { View }
@@ -36,10 +35,11 @@ const tag = makeTagger("PhoneSubmit")
 interface Sources {
   react: ReactSource
 }
+
 export const PhoneSubmit = ({ ...sources }: Sources) => {
-  const { $: _phoneInput$, cb: onChangePhoneInput } =
-    makeObservableCallback<string>()
-  const phoneInput$ = _phoneInput$.pipe(tag("phoneInput$"), shareLatest())
+  const { $: phoneInput$, cb: onChangePhoneInput } = callback$<string>(
+    tag("phoneINput$")
+  )
 
   const phoneValidation$ = phoneInput$.pipe(
     map((phone) =>
@@ -69,8 +69,7 @@ export const PhoneSubmit = ({ ...sources }: Sources) => {
     share()
   )
 
-  const { $: _submit$, cb: onSubmit } = makeObservableCallback()
-  const submit$ = _submit$.pipe(tag("submit$"), share())
+  const { $: submit$, cb: onSubmit } = callback$(tag("submit$"))
 
   const result$ = submit$.pipe(
     withLatestFrom(e164$),
@@ -140,71 +139,3 @@ export const PhoneSubmit = ({ ...sources }: Sources) => {
     value,
   }
 }
-
-// interface Props {
-//   context: Context
-//   // notify: Notify
-// }
-// export const PhoneSubmitHooks = ({ context }: Props) => {
-//   const [e164, setE164] = useState("")
-//   const [isButtonDisabled, setButtonDisabled] = useState<boolean>(true)
-//   const [isInputDisabled, setInputDisabled] = useState<boolean>(false)
-//   const [isLoading, setLoading] = useState(false)
-
-//   const onChangePhoneInput = (phone: string) => {
-//     const { isValid, phoneNumber } = validatePhone(phone, {
-//       country: "USA",
-//       strictDetection: true,
-//     })
-//     setButtonDisabled(!isValid || isLoading)
-//     if (isValid && !!phoneNumber) {
-//       setE164(phoneNumber)
-//     }
-//   }
-
-//   const onSubmit = async () => {
-//     setLoading(true)
-//     setButtonDisabled(true)
-//     setInputDisabled(true)
-//     const result = await signin({ e164 })
-//     setInputDisabled(false)
-//     setButtonDisabled(false)
-//     setLoading(false)
-//     match(result)
-//       .with({ __typename: "VerificationError" }, ({ message }) =>
-//         toast({
-//           status: "error",
-//           title: "Verification Failed",
-//           description: message,
-//         })
-//       )
-//       .with({ __typename: "Verification" }, (result) => {
-//         match(result.status)
-//           .with(VerificationStatus.Canceled, () => {
-//             toast({
-//               status: "error",
-//               title: "Verification cancelled",
-//               description: "Please try again",
-//             })
-//           })
-//           .with(VerificationStatus.Approved, () => {
-//             // NOTE: when/why this would happen?
-//             routes.home().push()
-//           })
-//           .with(VerificationStatus.Pending, () => {
-//             // TODO: what happens when verification pendign?
-//             // next view, but we need state somehow
-//             routes.verify().push()
-//           })
-//           .exhaustive()
-//       })
-//   }
-
-//   return h(View, {
-//     onChangePhoneInput,
-//     isSubmitButtonDisabled: isButtonDisabled,
-//     isPhoneInputDisabled: isInputDisabled,
-//     onSubmit,
-//     isLoading,
-//   })
-// }

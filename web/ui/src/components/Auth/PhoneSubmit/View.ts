@@ -1,18 +1,17 @@
 import { h } from "@cycle/react"
 import { form } from "@cycle/react-dom"
-import RestrictedInput from "restricted-input"
 import { useEffectOnce } from "react-use"
-
+import RestrictedInput from "restricted-input"
+import { t } from "~/i18n"
 import {
-  InputAddon,
   Button,
   Center,
-  Stack,
   Heading,
   Input,
+  InputAddon,
   InputGroup,
+  Stack,
 } from "~/system"
-import { t, formatPhone } from "~/i18n"
 
 const size = "lg"
 
