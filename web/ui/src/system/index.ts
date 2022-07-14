@@ -34,6 +34,7 @@ import {
   StackProps,
   Text as _Text,
   TextProps,
+  forwardRef,
 } from "@chakra-ui/react"
 
 export const Alert = (props: AlertProps) => h(_Alert, props)
@@ -47,7 +48,9 @@ export const Center = (props: CenterProps) => h(_Center, props)
 export const Divider = (props: DividerProps) => h(_Divider, props)
 export const Heading = (props: HeadingProps) => h(_Heading, props)
 export const IconButton = (props: IconButtonProps) => h(_IconButton, props)
-export const Input = (props: InputProps) => h(_Input, props)
+export const Input = forwardRef(({ ...rest }: InputProps, ref) =>
+  h(_Input, { ...rest, ref })
+)
 export const InputAddon = (props: InputAddonProps) => h(_InputAddon, props)
 export const InputGroup = (props: InputGroupProps) => h(_InputGroup, props)
 export const Stack = (props: StackProps) => h(_Stack, props)

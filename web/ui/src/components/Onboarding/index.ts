@@ -1,4 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
+import { createRef, Ref } from "react"
 import {
   BehaviorSubject,
   combineLatest,
@@ -11,6 +12,7 @@ import {
   shareReplay,
   startWith,
   switchMap,
+  tap,
   withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
@@ -29,6 +31,8 @@ import { makeObservableCallback, shareLatest } from "~/rx"
 import { State, View } from "./View"
 
 const tag = makeTagger("Onboarding")
+
+const textInputRef = createRef<HTMLInputElement>()
 
 interface Sources {
   react: ReactSource
@@ -84,6 +88,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
         value,
       }).pipe(tag("updateProfile$"))
     ),
+    tap((_) => textInputRef.current?.focus()),
     tag("result$"),
     share()
   )
@@ -126,6 +131,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
       return h(View, {
         attr,
         ...props,
+        textInputRef,
         onChangeInput,
         onSubmit,
         headingCopy: t(`onboarding.${key}.headingCopy`),
