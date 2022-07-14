@@ -50,16 +50,25 @@ export const View: FC<Props> = ({
               },
               [
                 h(Stack, { direction: "column", paddingBottom: 4 }, [
-                  h(Stack, { direction: "row", alignItems: "center" }, [
-                    h(Heading, { size: "xs" }, [
-                      join(", ", map(prop("name"), invitees)),
-                    ]),
-                    h(Spacer),
-                    h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
-                  ]),
-                  h(Box, { padding: 2 }, [
-                    h(MarkdownView, { maxLines: 10, md: note ?? "" }),
-                  ]),
+                  h(
+                    Stack,
+                    {
+                      direction: "row",
+                      alignItems: "center",
+                    },
+                    [
+                      h(Heading, { size: "xs" }, [
+                        join(", ", map(prop("name"), invitees)),
+                      ]),
+                      h(Spacer),
+                      h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
+                    ]
+                  ),
+                  h(
+                    Box,
+                    { padding: 2, borderWidth: "1px", borderRadius: "lg" },
+                    [h(MarkdownView, { maxLines: 10, md: note ?? "" })]
+                  ),
                 ]),
                 h(Divider),
               ]

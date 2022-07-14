@@ -20,8 +20,6 @@ export const MarkdownView: FC<Props> = ({ md, maxLines }) => {
   const truncated = maxLines ? join("\n", take(maxLines, split("\n", md))) : md
   const parsed = marked.parse(truncated)
   const __html = DOMPurify.sanitize(parsed)
-  return h(Prose, {}, [
-    //
-    div({ dangerouslySetInnerHTML: { __html } }),
-  ])
+  return h(Prose, {}, [div({ dangerouslySetInnerHTML: { __html } })])
+  // return div({ dangerouslySetInnerHTML: { __html } })
 }
