@@ -24,14 +24,14 @@ export const NoteEditor: FC<Props> = ({ note, onChangeNote }) =>
         h(Tab, { tabIndex: -1 }, `Preview`),
       ]),
       h(TabPanels, { padding: 0 }, [
-        h(TabPanel, { padding: 0, paddingTop: 2 }, [
+        h(TabPanel, { padding: 0, paddingTop: 4 }, [
           h(AutosizeTextarea, {
             minRows: 4,
             defaultValue: note ?? "",
             onChange: (event) => onChangeNote(event.target.value),
           }),
         ]),
-        h(TabPanel, [
+        h(TabPanel, { padding: 4, paddingTop: 0 }, [
           //
           h(MarkdownView, { md: note ?? "" }),
         ]),
