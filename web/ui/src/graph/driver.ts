@@ -1,16 +1,14 @@
-import { Stream } from "xstream"
 import { Driver } from "@cycle/run"
 import { Observable } from "rxjs"
 import { match } from "ts-pattern"
-import { adapt } from "@cycle/run/lib/adapt"
-
+import { Stream } from "xstream"
 import {
-  Customer,
-  setToken,
-  token$,
-  me$,
   contacts$,
   conversations$,
+  Customer,
+  me$,
+  setToken,
+  token$,
 } from "~/graph"
 import { Contact, Conversation } from "./generated"
 

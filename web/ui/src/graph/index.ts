@@ -19,7 +19,7 @@ import { switchMap } from "rxjs/operators"
 import { Err, Ok, Result } from "ts-results"
 import { descend, isNil, none, not, prop, propSatisfies, toLower } from "~/fp"
 import { makeTagger } from "~/log"
-import { wonkaToRx, zenToRx } from "~/rx"
+import { shareLatest, zenToRx } from "~/rx"
 import { getId } from "./anon"
 import { client, tokenCacheKey } from "./apollo"
 import {
@@ -115,7 +115,7 @@ export const updateProfile$ = (
 const token$$ = new BehaviorSubject<string | null>(
   localStorage.getItem(tokenCacheKey)
 )
-export const token$ = token$$.asObservable().pipe(tag("token$"), shareReplay())
+export const token$ = token$$.asObservable().pipe(tag("token$"), shareLatest())
 export const setToken = (token: string | null | undefined) => {
   if (token) {
     localStorage.setItem(tokenCacheKey, token)
@@ -250,7 +250,7 @@ export const contacts$ = token$.pipe(
   }),
   tag("contacts$"),
   filter(isNotNullish),
-  shareReplay()
+  shareLatest()
 )
 
 export const upsertConversation$ = (input: ConversationInput) => {
@@ -357,5 +357,5 @@ export const conversations$ = token$.pipe(
   catchError((error, _caught$) => {
     throw new GraphWatchError(error.message)
   }),
-  shareReplay()
+  shareLatest()
 )
