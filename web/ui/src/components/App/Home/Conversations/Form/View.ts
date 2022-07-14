@@ -13,6 +13,7 @@ import { CreatableSelect } from "chakra-react-select"
 import { AutosizeTextarea, InputGroup, Stack, BackButton } from "~/system"
 import { DeleteButton } from "./DeleteButton"
 import { When } from "./When"
+import { NoteEditor } from "./NoteEditor"
 
 export interface Option {
   value: string
@@ -112,13 +113,7 @@ export const View = ({
           date: occurredAt,
           onChangeDate: onChangeOccurredAt,
         }),
-        h(Stack, { direction: "row", alignItems: "center", width: "100%" }, [
-          h(AutosizeTextarea, {
-            minRows: 4,
-            defaultValue: note || "",
-            onChange: (event) => onChangeNote(event.target.value),
-          }),
-        ]),
+        h(NoteEditor, { note, onChangeNote }),
         h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
           h(Divider, {}),
           h(
