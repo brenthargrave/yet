@@ -30,7 +30,7 @@ import {
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { push, routes } from "~/router"
-import { makeObservableCallback } from "~/rx"
+import { makeObservableCallback, shareLatest } from "~/rx"
 import { View } from "./View"
 
 const tag = makeTagger("PhoneVerify")
@@ -48,13 +48,13 @@ export const PhoneVerify = (sources: Sources) => {
     props: { e164$ },
   } = sources
   const code$$ = new BehaviorSubject<string>("")
-  const code$ = code$$.asObservable().pipe(tag("code$"), shareReplay())
+  const code$ = code$$.asObservable().pipe(tag("code$"), shareLatest())
   const onChangeCodeInput = (code: string) => code$$.next(code)
 
   const codeLatestPair$ = code$.pipe(
     pairwiseStartWith(""),
     tag("codeLatestPair$"),
-    shareReplay()
+    shareLatest()
   )
 
   const { $: _submit$, cb: onSubmit } = makeObservableCallback()
@@ -118,11 +118,7 @@ export const PhoneVerify = (sources: Sources) => {
   const isLoading$ = merge(
     submit$.pipe(map((_) => true)),
     result$.pipe(map((_) => false))
-  ).pipe(
-    startWith(false),
-    tag("isLoading$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
-  )
+  ).pipe(startWith(false), tag("isLoading$"), shareLatest())
 
   // TODO: ¿canonical location to specify verification code length?
   const validCodeLength = 4

@@ -21,7 +21,7 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
-import { makeObservableCallback } from "~/rx"
+import { makeObservableCallback, shareLatest } from "~/rx"
 import { View } from "./View"
 
 export { View }
@@ -39,10 +39,7 @@ interface Sources {
 export const PhoneSubmit = ({ ...sources }: Sources) => {
   const { $: _phoneInput$, cb: onChangePhoneInput } =
     makeObservableCallback<string>()
-  const phoneInput$ = _phoneInput$.pipe(
-    tag("phoneInput$"),
-    shareReplay({ refCount: true, bufferSize: 1 })
-  )
+  const phoneInput$ = _phoneInput$.pipe(tag("phoneInput$"), shareLatest())
 
   const phoneValidation$ = phoneInput$.pipe(
     map((phone) =>
@@ -59,7 +56,7 @@ export const PhoneSubmit = ({ ...sources }: Sources) => {
     map(({ phoneNumber }) => phoneNumber || ""),
     startWith(""),
     tag("e164$"),
-    shareReplay() // TODO: subscribe from outer component to preserve across views -> share()
+    shareLatest() // TODO: subscribe from outer component to preserve across views -> share()
   )
   const isPhoneValid$ = phoneValidation$.pipe(
     map(({ isValid }) => isValid),
@@ -105,11 +102,7 @@ export const PhoneSubmit = ({ ...sources }: Sources) => {
   const isLoading$ = merge(
     submit$.pipe(map((_) => true)),
     result$.pipe(map((_) => false))
-  ).pipe(
-    startWith(false),
-    tag("isLoading$"),
-    shareReplay({ bufferSize: 1, refCount: true })
-  )
+  ).pipe(startWith(false), tag("isLoading$"), shareLatest())
 
   const isPhoneInputDisabled$ = isLoading$.pipe(tag("isPhoneInputDisabled$"))
 

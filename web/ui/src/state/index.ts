@@ -53,7 +53,7 @@ service.send("TOGGLE")
 //         observer.next(route)
 //       })
 //       return unlisten
-//     }).pipe(tag("history$"), shareReplay({ bufferSize: 1, refCount: true }))
+//     }).pipe(tag("history$"), shareLatest())
 
 //     return {
 //       history$,

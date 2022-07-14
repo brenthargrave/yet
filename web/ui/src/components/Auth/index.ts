@@ -14,6 +14,7 @@ import { match } from "ts-pattern"
 import { checkToken$, loggedOut, token$, VerificationStatus } from "~/graph"
 import { makeTagger } from "~/log"
 import { isRoute, push, routes, Source as RouterSource } from "~/router"
+import { shareLatest } from "~/rx"
 import { PhoneSubmit } from "./PhoneSubmit"
 import { PhoneVerify } from "./PhoneVerify"
 
@@ -57,7 +58,7 @@ export const Auth = (sources: Sources) => {
     ),
     startWith(VerificationStep.Submit),
     tag("step$"),
-    shareReplay()
+    shareLatest()
   )
 
   const react = step$.pipe(

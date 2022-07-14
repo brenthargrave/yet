@@ -171,7 +171,7 @@ export const me$ = token$.pipe(
     throw new GraphWatchError(error.message)
   }),
   tag("me$"),
-  shareReplay()
+  shareLatest()
 )
 
 export const isAuthenticated = (me: Maybe<Customer>) => isNotNullish(me)

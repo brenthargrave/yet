@@ -25,7 +25,7 @@ import {
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
-import { makeObservableCallback } from "~/rx"
+import { makeObservableCallback, shareLatest } from "~/rx"
 import { State, View } from "./View"
 
 const tag = makeTagger("Onboarding")
@@ -41,7 +41,7 @@ const isOnboarded = (me: Customer) =>
   none((attr) => propSatisfies(isNil, toLower(attr), me), attributes)
 
 export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
-  const me$ = _me$.pipe(filter(isNotNullish), tag("me$"), shareReplay())
+  const me$ = _me$.pipe(filter(isNotNullish), tag("me$"), shareLatest())
   const attr$ = me$.pipe(
     map((me) =>
       find((attr) => propSatisfies(isNil, toLower(attr), me), attributes)
@@ -50,19 +50,19 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     startWith(prop(0, attributes)),
     distinctUntilChanged(),
     tag("attr$"),
-    shareReplay({ bufferSize: 1, refCount: true })
+    shareLatest()
   )
   const state$: Observable<State> = me$.pipe(
     map((me) => (isOnboarded(me) ? State.Done : State.Edit)),
     tag("state$"),
-    shareReplay({ bufferSize: 1, refCount: true })
+    shareLatest()
   )
 
   const inputValue$$ = new BehaviorSubject<string>("")
   const inputValue$ = merge(
     inputValue$$.asObservable(),
     attr$.pipe(map((_) => "")) // reset input when new form step changes
-  ).pipe(tag("inputValue$"), shareReplay())
+  ).pipe(tag("inputValue$"), shareLatest())
   const onChangeInput = (value: string) => inputValue$$.next(value)
 
   const { $: _submit$, cb: onSubmit } = makeObservableCallback<void>()
@@ -93,13 +93,13 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   const isLoading = merge(
     submit$.pipe(map((_) => true)),
     result$.pipe(map((_) => false))
-  ).pipe(startWith(false), tag("isLoading$"), shareReplay())
+  ).pipe(startWith(false), tag("isLoading$"), shareLatest())
 
   const isInputInvalid = inputValue$.pipe(
     map((value) => trim(value).length < 2),
     startWith(true),
     tag("isInputInvalid"),
-    shareReplay()
+    shareLatest()
   )
 
   const isInputDisabled = isLoading.pipe(tag("isInputDisabled$"), share())
@@ -110,7 +110,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     map(({ isLoading, isInputInvalid }) => isLoading || isInputInvalid),
     startWith(true),
     tag("loading$ || invalid$"),
-    shareReplay()
+    shareLatest()
   )
 
   const react = combineLatest({

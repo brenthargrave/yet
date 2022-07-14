@@ -5,6 +5,7 @@ import { match } from "ts-pattern"
 import { param, Route as _Route, createRouter, defineRoute } from "type-route"
 import { Stream } from "xstream"
 import { makeTagger } from "~/log"
+import { shareLatest } from "~/rx"
 
 const tag = makeTagger("Router")
 
@@ -70,7 +71,7 @@ export function makeDriver(): Driver<Sink, Source> {
         observer.next(route)
       })
       return unlisten
-    }).pipe(tag("history$"), shareReplay({ bufferSize: 1, refCount: true }))
+    }).pipe(tag("history$"), shareLatest())
 
     return {
       history$,

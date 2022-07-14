@@ -24,6 +24,7 @@ import {
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
+import { shareLatest } from "~/rx"
 import { toast } from "~/toast"
 import { Header } from "./Header"
 import { Home } from "./Home"
@@ -45,7 +46,7 @@ export interface Sources {
 
 export const App = (sources: Sources) => {
   const { history$: _history$ } = sources.router
-  const history$ = _history$.pipe(tag("history$"), shareReplay())
+  const history$ = _history$.pipe(tag("history$"), shareLatest())
 
   const { token$, me$: cachedMe$ } = sources.graph
 

@@ -38,13 +38,6 @@ export const wonkaToRx = <T>(wonkaObservable: WonkaSource<T>): Observable<T> =>
   // @ts-ignore
   zenToRx(toObservable(wonkaObservable))
 
-// export function shareLatest<T, R>(
-//   bufferSize?: 1,
-//   operator?: (source: Observable<T>) => Observable<R>
-// ): OperatorFunction<T, T | R> {
-//   return (source) => source.pipe(shareReplay({ refCount: true, bufferSize }))
-// }
-
 export function shareLatest<T>(bufferSize = 1): MonoTypeOperatorFunction<T> {
   return (source) => source.pipe(shareReplay({ refCount: true, bufferSize }))
 }
