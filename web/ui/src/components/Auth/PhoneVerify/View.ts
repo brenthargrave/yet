@@ -15,6 +15,7 @@ export interface Props {
   isLoading: boolean
   isDisabledCodeInput: boolean
   isDisabledSubmitButton: boolean
+  firstInputRef?: Ref<HTMLInputElement>
 }
 
 const size = "lg"
@@ -28,16 +29,15 @@ export const View = ({
   isLoading,
   isDisabledCodeInput,
   isDisabledSubmitButton,
+  firstInputRef,
 }: Props) => {
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = (event) => {
     event.preventDefault()
     _onSubmit()
   }
 
-  const firstInput = createRef<HTMLInputElement>()
   const onComplete = (value: string) => {
     _onComplete(value)
-    firstInput.current?.focus()
   }
 
   return h(Center, { width: "100vw", height: "100vh" }, [
@@ -63,7 +63,7 @@ export const View = ({
               size,
               otp: true,
               children: [
-                h(PinInputField, { ref: firstInput }),
+                h(PinInputField, { ref: firstInputRef }),
                 h(PinInputField),
                 h(PinInputField),
                 h(PinInputField),

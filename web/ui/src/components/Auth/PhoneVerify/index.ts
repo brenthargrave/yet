@@ -1,4 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
+import { createRef } from "react"
 import {
   BehaviorSubject,
   catchError,
@@ -34,6 +35,8 @@ import { View } from "./View"
 
 const tag = makeTagger("PhoneVerify")
 
+const firstInputRef = createRef<HTMLInputElement>()
+
 interface Props {
   e164$: Observable<string>
 }
@@ -42,6 +45,7 @@ interface Sources {
   react: ReactSource
   props: Props
 }
+
 export const PhoneVerify = (sources: Sources) => {
   const {
     props: { e164$ },
@@ -81,6 +85,7 @@ export const PhoneVerify = (sources: Sources) => {
     withLatestFrom(input$),
     tag("withLatestFrom(input)$"),
     switchMap(([_, input]) => verifyCode$(input).pipe(tag("verifyCode$"))),
+    tap((_) => firstInputRef.current?.focus()),
     catchError((error, _caught$) => {
       code$$.next("")
       throw error
@@ -153,6 +158,7 @@ export const PhoneVerify = (sources: Sources) => {
         onSubmit,
         onComplete,
         onChangeCodeInput,
+        firstInputRef,
       })
     }),
     tag("react")
