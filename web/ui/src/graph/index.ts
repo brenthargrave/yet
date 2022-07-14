@@ -109,7 +109,8 @@ export const updateProfile$ = (
       if (errors) throw new GraphError(JSON.stringify(errors))
       const { userError, me } = data!.updateProfile!
       return userError ? new Err(userError) : new Ok(me!)
-    })
+    }),
+    tag("updateProfile$")
   )
 
 const token$$ = new BehaviorSubject<string | null>(
