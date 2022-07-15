@@ -6,18 +6,17 @@ import { push, routes, Source as RouterSource } from "~/router"
 import { callback$ } from "~/rx"
 import { View } from "./View"
 
-const tag = makeTagger("Conversations/List")
-
 interface Sources {
   react: ReactSource
   router: RouterSource
   graph: GraphSource
 }
-export const List = (sources: Sources) => {
+export const List = (sources: Sources, tagPrefix?: string) => {
   const {
     router: { history$ },
     graph: { me$, conversations$ },
   } = sources
+  const tag = makeTagger(`${tagPrefix}/List`)
 
   const { $: clickNew$, cb: onClickNew } = callback$(tag("clickNew$"))
 

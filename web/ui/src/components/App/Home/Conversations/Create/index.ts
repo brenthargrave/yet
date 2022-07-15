@@ -8,19 +8,19 @@ import { routes, Source as RouterSource } from "~/router"
 import { shareLatest } from "~/rx"
 import { Form } from "../Form"
 
-const tagPrefix = "Conversations/Create"
-const tag = makeTagger(tagPrefix)
-
 interface Sources {
   react: ReactSource
   router: RouterSource
   graph: GraphSource
 }
 
-export const Main = (sources: Sources) => {
+export const Main = (sources: Sources, tagPrefix?: string) => {
   const {
     router: { history$ },
   } = sources
+
+  const tagScope = `${tagPrefix}/Create`
+  const tag = makeTagger(tagScope)
 
   const record$ = history$.pipe(
     switchMap((route) =>
@@ -50,7 +50,7 @@ export const Main = (sources: Sources) => {
       ...sources,
       props: { id$, record$ },
     },
-    tagPrefix
+    tagScope
   )
   const router = merge(formRouter$)
 

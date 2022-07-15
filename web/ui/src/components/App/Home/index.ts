@@ -12,12 +12,14 @@ interface Sources {
 }
 
 export const Home = (sources: Sources) => {
+  const tagScope = "Home"
+
   const {
     react: conversationsView$,
     router,
     track,
     notice,
-  } = Conversations(sources)
+  } = Conversations(sources, tagScope)
 
   const react = conversationsView$.pipe(map((subview) => h(View, [subview])))
 

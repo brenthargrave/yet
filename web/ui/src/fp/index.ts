@@ -1,6 +1,7 @@
 import and from "ramda/es/and"
 import any from "ramda/es/any"
 import ascend from "ramda/es/ascend"
+import compose from "ramda/es/compose"
 import descend from "ramda/es/descend"
 import filter from "ramda/es/filter"
 import find from "ramda/es/find"
@@ -15,13 +16,13 @@ import none from "ramda/es/none"
 import not from "ramda/es/not"
 import prop from "ramda/es/prop"
 import propSatisfies from "ramda/es/propSatisfies"
+import reject from "ramda/es/reject"
 import sort from "ramda/es/sort"
 import split from "ramda/es/split"
 import take from "ramda/es/take"
 import toLower from "ramda/es/toLower"
 import trim from "ramda/es/trim"
 import values from "ramda/es/values"
-import compose from "ramda/es/compose"
 
 const isEmpty = (i: any): boolean => isNil(i) || _isEmpty(i)
 const isNotEmpty = (i: any): boolean => not(isEmpty(i))
@@ -31,6 +32,7 @@ export {
   and,
   any,
   ascend,
+  compose,
   descend,
   filter,
   find,
@@ -53,5 +55,4 @@ export {
   toLower,
   trim,
   values,
-  compose,
 }

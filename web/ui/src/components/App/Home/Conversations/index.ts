@@ -2,11 +2,10 @@ import { ReactSource } from "@cycle/react"
 import { merge, switchMap } from "rxjs"
 import { match } from "ts-pattern"
 import { Source as GraphSource } from "~/graph"
-import { makeTagger } from "~/log"
 import { routes, Source as RouterSource } from "~/router"
+import { Main as Create } from "./Create"
 import { Edit } from "./Edit"
 import { List } from "./List"
-import { Main as Create } from "./Create"
 
 interface Sources {
   react: ReactSource
@@ -14,16 +13,29 @@ interface Sources {
   graph: GraphSource
 }
 
-export const Conversations = (sources: Sources) => {
+export const Conversations = (sources: Sources, tagPrefix?: string) => {
+  const tagScope = `${tagPrefix}/Conversations`
+
   const {
     router: { history$ },
   } = sources
 
-  const { router: listRouter$, react: listView$, track } = List(sources)
+  const {
+    router: listRouter$,
+    react: listView$,
+    track,
+  } = List(sources, tagScope)
 
-  const { react: editView$, router: editRouter$, notice } = Edit(sources)
+  const {
+    react: editView$,
+    router: editRouter$,
+    notice,
+  } = Edit(sources, tagScope)
 
-  const { react: createView$, router: createRouter$ } = Create(sources)
+  const { react: createView$, router: createRouter$ } = Create(
+    sources,
+    tagScope
+  )
 
   const react = history$.pipe(
     switchMap((route) =>
