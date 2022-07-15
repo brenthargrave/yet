@@ -1,7 +1,8 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { AutosizeTextarea, MarkdownView } from "~/system"
+import { NoteView } from "~/components/Note"
+import { AutosizeTextarea } from "~/system"
 
 export interface Props {
   note: string | null | undefined
@@ -26,14 +27,15 @@ export const View: FC<Props> = ({ note, onChangeNote }) =>
       h(TabPanels, { padding: 0 }, [
         h(TabPanel, { padding: 0, paddingTop: 4 }, [
           h(AutosizeTextarea, {
+            paddingTop: 4,
             minRows: 4,
             defaultValue: note ?? "",
             onChange: (event) => onChangeNote(event.target.value),
           }),
         ]),
-        h(TabPanel, { padding: 4, paddingTop: 0 }, [
+        h(TabPanel, { padding: 0, paddingTop: 4 }, [
           //
-          h(MarkdownView, { md: note ?? "" }),
+          h(NoteView, { note }),
         ]),
       ]),
     ]

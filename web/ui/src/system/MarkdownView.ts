@@ -4,7 +4,7 @@ import { Prose } from "@nikolovlazar/chakra-ui-prose"
 import DOMPurify from "dompurify"
 import { marked } from "marked"
 import { FC } from "react"
-import { join, split, take } from "~/fp"
+import { join, split, take, trim } from "~/fp"
 
 marked.setOptions({
   gfm: true,
@@ -17,9 +17,11 @@ interface Props {
 }
 
 export const MarkdownView: FC<Props> = ({ md, maxLines }) => {
-  const truncated = maxLines ? join("\n", take(maxLines, split("\n", md))) : md
+  const truncated = maxLines
+    ? trim(join("\n", take(maxLines, split("\n", md)))).concat("\n...")
+    : md
   const parsed = marked.parse(truncated)
   const __html = DOMPurify.sanitize(parsed)
-  return h(Prose, {}, [div({ dangerouslySetInnerHTML: { __html } })])
   // return div({ dangerouslySetInnerHTML: { __html } })
+  return h(Prose, {}, [div({ dangerouslySetInnerHTML: { __html } })])
 }

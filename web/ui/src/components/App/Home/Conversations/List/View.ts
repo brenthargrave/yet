@@ -1,17 +1,11 @@
-import { Box, Heading, List, ListItem, Spacer } from "@chakra-ui/react"
+import { Heading, List, ListItem, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
+import { NoteView } from "~/components/Note"
 import { isEmpty, join, map, prop } from "~/fp"
 import { Conversation } from "~/graph"
 import { localizeDate } from "~/i18n"
-import {
-  CreateButton,
-  Divider,
-  Header,
-  Stack,
-  Text,
-  MarkdownView,
-} from "~/system"
+import { CreateButton, Divider, Header, Stack, Text } from "~/system"
 import { EmptyView, OnClickNew } from "../EmptyView"
 
 type OnClickConversation = (cid: string) => void
@@ -64,11 +58,7 @@ export const View: FC<Props> = ({
                       h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
                     ]
                   ),
-                  h(
-                    Box,
-                    { padding: 2, borderWidth: "1px", borderRadius: "lg" },
-                    [h(MarkdownView, { maxLines: 10, md: note ?? "" })]
-                  ),
+                  h(NoteView, { note, maxLines: 10 }),
                 ]),
                 h(Divider),
               ]

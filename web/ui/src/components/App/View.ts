@@ -8,11 +8,12 @@ import { Stack } from "~/system"
 const theme = extendTheme(
   {},
   withProse({
-    // baseStyle: {
-    //   p: {
-    // lineHeight: 5,
-    //   },
-    // },
+    baseStyle: {
+      p: {
+        padding: "0px",
+        marginTop: "0px",
+      },
+    },
   })
 )
 
