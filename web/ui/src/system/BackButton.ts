@@ -14,3 +14,5 @@ export const BackButton: FC<Props> = ({ onClick }) =>
     onClick,
     size: "sm",
   })
+
+BackButton.displayName = "BackButton"

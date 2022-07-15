@@ -23,3 +23,5 @@ export const DeleteButton = ({ onClick, isLoading, isDisabled }: Props) =>
     },
     `Delete`
   )
+
+DeleteButton.displayName = "DeleteButton"
