@@ -1,12 +1,13 @@
-import { Box, Button, Divider, Spacer } from "@chakra-ui/react"
+import { Divider, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { BackButton, Header, Stack } from "~/system"
+import { Props as ActionBarProps, View as ActionBar } from "./ActionBar"
 import { DeleteButton } from "./DeleteButton"
 import { NoteEditor } from "./NoteEditor"
 import { When } from "./When"
 import { Props as WhoProps, View as Who } from "./Who"
 
-export type Props = WhoProps & {
+export type Props = {
   note?: string | null
   onChangeNote: (note: string) => void
   isSyncing?: boolean
@@ -14,10 +15,10 @@ export type Props = WhoProps & {
   onClickDelete?: () => void
   isDeleting?: boolean
   isDeleteDisabled?: boolean
-  isShareDisabled?: boolean
   occurredAt: Date
   onChangeOccurredAt: (date: Date) => void
-}
+} & WhoProps &
+  ActionBarProps
 
 export const View = ({
   options,
@@ -60,30 +61,8 @@ export const View = ({
         }),
         h(Who, { onSelect, options, selectedOptions }),
         h(NoteEditor, { note, onChangeNote }),
-        h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
-          h(Divider, {}),
-          h(
-            Box,
-            {
-              display: "flex",
-              direction: "row",
-              alignItems: "center",
-              width: "100%",
-              space: 4,
-            },
-            [
-              h(Stack, { direction: "row" }, [
-                h(
-                  Button,
-                  {
-                    isDisabled: isShareDisabled,
-                  },
-                  `Share`
-                ),
-              ]),
-            ]
-          ),
-        ]),
+        h(Divider, {}),
+        h(ActionBar, { isShareDisabled }),
       ]),
     ]
   )
