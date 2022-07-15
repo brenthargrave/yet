@@ -4,20 +4,20 @@ import { BackButton, Header, Stack } from "~/system"
 import { Props as ActionBarProps, View as ActionBar } from "./ActionBar"
 import { DeleteButton } from "./DeleteButton"
 import { View as NoteEditor, Props as NoteEditorProps } from "./NoteEditor"
-import { When } from "./When"
+import { View as When, Props as WhenProps } from "./When"
 import { Props as WhoProps, View as Who } from "./Who"
 
-export type Props = {
+export interface Props
+  extends WhenProps,
+    NoteEditorProps,
+    WhoProps,
+    ActionBarProps {
   isSyncing?: boolean
   onClickBack?: () => void
   onClickDelete?: () => void
   isDeleting?: boolean
   isDeleteDisabled?: boolean
-  occurredAt: Date
-  onChangeOccurredAt: (date: Date) => void
-} & NoteEditorProps &
-  WhoProps &
-  ActionBarProps
+}
 
 export const View = ({
   options,

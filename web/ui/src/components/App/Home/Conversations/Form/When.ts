@@ -8,14 +8,14 @@ import { formatDateInput, parseDateInput } from "~/i18n"
 // https://github.com/wanasit/chrono/pull/448
 // https://github.com/spencermountain/compromise/tree/08f2a85d2d0c8d9b490fea003c3d856dec348a02#dates
 
-interface Props {
-  date: Date
-  onChangeDate: (date: Date) => void
+export interface Props {
+  occurredAt: Date
+  onChangeOccurredAt: (date: Date) => void
 }
 
-export const When: FC<Props> = ({ date, onChangeDate }) => {
+export const View: FC<Props> = ({ occurredAt, onChangeOccurredAt }) => {
   const max = formatDateInput(new Date())
-  const value = formatDateInput(date)
+  const value = formatDateInput(occurredAt)
 
   return h(Stack, { width: "100%", direction: "row" }, [
     h(InputGroup, [
@@ -27,7 +27,7 @@ export const When: FC<Props> = ({ date, onChangeDate }) => {
         onChange: (event) => {
           const parsedDate = parseDateInput(event.target.value)
           if (isValid(parsedDate)) {
-            onChangeDate(parsedDate)
+            onChangeOccurredAt(parsedDate)
           }
         },
       }),
