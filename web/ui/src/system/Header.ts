@@ -14,3 +14,5 @@ export const Header: FC = ({ children }) =>
     },
     [children]
   )
+
+Header.displayName = "Header"

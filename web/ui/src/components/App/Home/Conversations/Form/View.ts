@@ -1,31 +1,12 @@
-import { ChevronLeftIcon } from "@chakra-ui/icons"
-import {
-  Box,
-  Button,
-  Divider,
-  IconButton,
-  InputLeftAddon,
-  InputLeftElement,
-  Spacer,
-} from "@chakra-ui/react"
+import { Box, Button, Divider, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { CreatableSelect } from "chakra-react-select"
-import { AutosizeTextarea, InputGroup, Stack, BackButton } from "~/system"
+import { BackButton, Header, Stack } from "~/system"
 import { DeleteButton } from "./DeleteButton"
-import { When } from "./When"
 import { NoteEditor } from "./NoteEditor"
+import { When } from "./When"
+import { Props as WhoProps, View as Who } from "./Who"
 
-export interface Option {
-  value: string
-  label: string
-  __isNew__?: boolean
-}
-export type SelectedOption = Omit<Option, "__isNew__">
-
-export interface Props {
-  options: Option[]
-  onSelect: (option: Option) => void
-  selectedOptions: SelectedOption[]
+export type Props = WhoProps & {
   note?: string | null
   onChangeNote: (note: string) => void
   isSyncing?: boolean
@@ -61,58 +42,23 @@ export const View = ({
       justifyContent: "flex-start",
     },
     [
-      h(
-        Box,
-        {
-          display: "flex",
-          direction: "row",
-          // alignItems: "flex-end",
-          alignItems: "center",
-          width: "100%",
-          padding: 4,
-        },
-        [
-          h(BackButton, {
-            onClick: onClickBack,
-          }),
-          h(Spacer),
-          h(DeleteButton, {
-            onClick: onClickDelete,
-            isLoading: isDeleting,
-            isDisabled: isDeleteDisabled,
-          }),
-        ]
-      ),
+      h(Header, [
+        h(BackButton, {
+          onClick: onClickBack,
+        }),
+        h(Spacer),
+        h(DeleteButton, {
+          onClick: onClickDelete,
+          isLoading: isDeleting,
+          isDisabled: isDeleteDisabled,
+        }),
+      ]),
       h(Stack, { direction: "column", width: "100%", padding: 4 }, [
-        // h(Heading, { size: "lg" }, `Note a new conversation`),
-        h(Stack, { direction: "row", alignItems: "center", width: "100%" }, [
-          h(InputGroup, [
-            h(CreatableSelect, {
-              placeholder: "With whom?",
-              autoFocus: true,
-              size: "md",
-              chakraStyles: {
-                container: (provided, state) => ({
-                  ...provided,
-                  width: "100%",
-                }),
-              },
-              isClearable: true,
-              isMulti: true,
-              createOptionPosition: "first",
-              formatCreateLabel: (inputValue) => `Add contact: "${inputValue}"`,
-              // @ts-ignore
-              onChange: (newValue, _meta) => onSelect(newValue),
-              options,
-              noOptionsMessage: (_inputValue) => "No results.",
-              value: selectedOptions,
-            }),
-          ]),
-        ]),
         h(When, {
           date: occurredAt,
           onChangeDate: onChangeOccurredAt,
         }),
+        h(Who, { onSelect, options, selectedOptions }),
         h(NoteEditor, { note, onChangeNote }),
         h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
           h(Divider, {}),
