@@ -6,7 +6,6 @@ import {
   filter,
   map,
   merge,
-  Observable,
   share,
   startWith,
   switchMap,
@@ -14,18 +13,13 @@ import {
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
-import { find, isNil, none, prop, propSatisfies, toLower, trim } from "~/fp"
-import {
-  Customer,
-  ProfileProp,
-  Source as GraphSource,
-  updateProfile$,
-} from "~/graph"
+import { find, isNil, prop, propSatisfies, toLower, trim } from "~/fp"
+import { ProfileProp, Source as GraphSource, updateProfile$ } from "~/graph"
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { callback$, shareLatest } from "~/rx"
-import { State, View } from "./View"
+import { View } from "./View"
 
 const tag = makeTagger("Onboarding")
 
@@ -35,9 +29,6 @@ interface Sources {
 }
 
 const attributes = [ProfileProp.Name, ProfileProp.Org, ProfileProp.Role]
-
-const isOnboarded = (me: Customer) =>
-  none((attr) => propSatisfies(isNil, toLower(attr), me), attributes)
 
 export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"), shareLatest())
@@ -49,11 +40,6 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     startWith(prop(0, attributes)),
     distinctUntilChanged(),
     tag("attr$"),
-    shareLatest()
-  )
-  const state$: Observable<State> = me$.pipe(
-    map((me) => (isOnboarded(me) ? State.Done : State.Edit)),
-    tag("state$"),
     shareLatest()
   )
 
@@ -112,7 +98,6 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   )
 
   const react = combineLatest({
-    state: state$,
     attr: attr$,
     inputValue: inputValue$,
     isSubmitButtonDisabled,

@@ -30,7 +30,7 @@ defmodule App.Repo.Migrations.CreateEvents do
     create(index(:events, [:customer_id]))
 
     create table(:conversations) do
-      add :creator_id, references(:customers)
+      add :creator_id, references(:customers, on_delete: :delete_all)
       add :invitees, :map
       add :note, :text
       add :status, :string

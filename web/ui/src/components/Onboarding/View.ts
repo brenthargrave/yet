@@ -2,16 +2,10 @@ import { h } from "@cycle/react"
 import { form, h1 } from "@cycle/react-dom"
 import { Button, Center, Heading, Input, InputGroup, Stack } from "~/system"
 
-export enum State {
-  Edit = "edit",
-  Done = "done",
-}
-
 const size = "lg"
 
 export interface Props {
   attr: string
-  state: State
   onChangeInput: (text: string) => void
   inputValue: string
   isSubmitButtonDisabled: boolean
@@ -24,7 +18,6 @@ export interface Props {
 }
 export const View = ({
   attr,
-  state = State.Edit,
   onChangeInput,
   inputValue: value,
   isSubmitButtonDisabled,
@@ -46,35 +39,33 @@ export const View = ({
   }
   return h(Center, { width: "100%", height: "100%" }, [
     form({ onSubmit }, [
-      state === State.Done && h1("Done"),
-      state === State.Edit &&
-        h(Center, { width: "100vw", height: "100vh" }, [
-          h(Stack, { direction: "column", align: "center", gap: 2 }, [
-            h(Heading, { size }, headingCopy),
-            h(InputGroup, { size }, [
-              h(Input, {
-                key,
-                value,
-                autoFocus: true,
-                placeholder: inputPlaceholder,
-                isRequired: true,
-                onChange,
-                isDisabled: isInputDisabled,
-              }),
-            ]),
-            h(
-              Button,
-              {
-                isDisabled: isSubmitButtonDisabled,
-                size,
-                width: "100%",
-                isLoading,
-                type: "submit",
-              },
-              submitButtonCopy
-            ),
+      h(Center, { width: "100vw", height: "100vh" }, [
+        h(Stack, { direction: "column", align: "center", gap: 2 }, [
+          h(Heading, { size }, headingCopy),
+          h(InputGroup, { size }, [
+            h(Input, {
+              key,
+              value,
+              autoFocus: true,
+              placeholder: inputPlaceholder,
+              isRequired: true,
+              onChange,
+              isDisabled: isInputDisabled,
+            }),
           ]),
+          h(
+            Button,
+            {
+              isDisabled: isSubmitButtonDisabled,
+              size,
+              width: "100%",
+              isLoading,
+              type: "submit",
+            },
+            submitButtonCopy
+          ),
         ]),
+      ]),
     ]),
   ])
 }

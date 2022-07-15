@@ -1,14 +1,6 @@
 import { h, ReactSource } from "@cycle/react"
 import { captureException } from "@sentry/react"
-import {
-  catchError,
-  combineLatest,
-  EMPTY,
-  merge,
-  Observable,
-  of,
-  shareReplay,
-} from "rxjs"
+import { catchError, combineLatest, EMPTY, merge, Observable, of } from "rxjs"
 import { map, switchMap } from "rxjs/operators"
 import { match } from "ts-pattern"
 import { Auth } from "~/components/Auth"
@@ -29,9 +21,6 @@ import { toast } from "~/toast"
 import { Header } from "./Header"
 import { Home } from "./Home"
 import { View as AppView } from "./View"
-
-export type CycleComponent<T> = (sources: T) => Record<string, Observable<any>>
-export type CC<T> = CycleComponent<T>
 
 const tag = makeTagger("App")
 
