@@ -35,4 +35,4 @@ export const View: FC<Props> = ({ occurredAt, onChangeOccurredAt }) => {
   ])
 }
 
-When.displayName = "When"
+View.displayName = "When"

@@ -5,7 +5,9 @@ import { Props as ActionBarProps, View as ActionBar } from "./ActionBar"
 import { DeleteButton } from "./DeleteButton"
 import { View as NoteEditor, Props as NoteEditorProps } from "./NoteEditor"
 import { View as When, Props as WhenProps } from "./When"
-import { Props as WhoProps, View as Who } from "./Who"
+import { View as Who, Props as WhoProps } from "./Who"
+
+export type { Option, SelectedOption } from "./Who"
 
 export interface Props
   extends WhenProps,
@@ -54,10 +56,7 @@ export const View = ({
         }),
       ]),
       h(Stack, { direction: "column", width: "100%", padding: 4 }, [
-        h(When, {
-          date: occurredAt,
-          onChangeDate: onChangeOccurredAt,
-        }),
+        h(When, { occurredAt, onChangeOccurredAt }),
         h(Who, { onSelect, options, selectedOptions }),
         h(NoteEditor, { note, onChangeNote }),
         h(Divider, {}),
