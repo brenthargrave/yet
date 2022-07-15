@@ -34,3 +34,5 @@ export const When: FC<Props> = ({ date, onChangeDate }) => {
     ]),
   ])
 }
+
+When.displayName = "When"
