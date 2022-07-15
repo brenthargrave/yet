@@ -22,6 +22,9 @@ import { Header } from "./Header"
 import { Home } from "./Home"
 import { View as AppView } from "./View"
 
+export type CycleComponent<T> = (sources: T) => Record<string, Observable<any>>
+export type CC<T> = CycleComponent<T>
+
 const tag = makeTagger("App")
 
 // @ts-ignore
