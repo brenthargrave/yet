@@ -3,12 +3,12 @@ import { h } from "@cycle/react"
 import { FC } from "react"
 import { AutosizeTextarea, MarkdownView } from "~/system"
 
-interface Props {
+export interface Props {
   note: string | null | undefined
   onChangeNote: (note: string) => void
 }
 
-export const NoteEditor: FC<Props> = ({ note, onChangeNote }) =>
+export const View: FC<Props> = ({ note, onChangeNote }) =>
   h(
     Tabs,
     {
@@ -38,3 +38,5 @@ export const NoteEditor: FC<Props> = ({ note, onChangeNote }) =>
       ]),
     ]
   )
+
+View.displayName = "NoteEditor"

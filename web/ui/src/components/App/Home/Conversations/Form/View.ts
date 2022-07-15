@@ -3,13 +3,11 @@ import { h } from "@cycle/react"
 import { BackButton, Header, Stack } from "~/system"
 import { Props as ActionBarProps, View as ActionBar } from "./ActionBar"
 import { DeleteButton } from "./DeleteButton"
-import { NoteEditor } from "./NoteEditor"
+import { View as NoteEditor, Props as NoteEditorProps } from "./NoteEditor"
 import { When } from "./When"
 import { Props as WhoProps, View as Who } from "./Who"
 
 export type Props = {
-  note?: string | null
-  onChangeNote: (note: string) => void
   isSyncing?: boolean
   onClickBack?: () => void
   onClickDelete?: () => void
@@ -17,7 +15,8 @@ export type Props = {
   isDeleteDisabled?: boolean
   occurredAt: Date
   onChangeOccurredAt: (date: Date) => void
-} & WhoProps &
+} & NoteEditorProps &
+  WhoProps &
   ActionBarProps
 
 export const View = ({
