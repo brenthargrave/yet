@@ -8,9 +8,17 @@ interface Props {
   maxLines?: number
 }
 
-export const View: FC<Props> = ({ note, maxLines }) =>
-  h(Box, { padding: 4, borderWidth: "1px", borderRadius: "lg" }, [
-    h(MarkdownView, { maxLines, md: note ?? "" }),
-  ])
+export const View: FC<Props> = ({ note, maxLines, ...rest }) =>
+  h(
+    Box,
+    {
+      //
+      padding: 4,
+      borderWidth: "1px",
+      borderRadius: "lg",
+      ...rest,
+    },
+    [h(MarkdownView, { maxLines, md: note ?? "" })]
+  )
 
 View.displayName = "NoteView"
