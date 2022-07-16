@@ -4,10 +4,11 @@ import { FC } from "react"
 import { Stack } from "~/system"
 
 export interface Props {
-  isShareDisabled: boolean
+  isPublishDisabled: boolean
+  // participantNames?: string[]
 }
 
-export const View: FC<Props> = ({ isShareDisabled }) =>
+export const View: FC<Props> = ({ isPublishDisabled }) =>
   h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
     h(
       Box,
@@ -23,9 +24,9 @@ export const View: FC<Props> = ({ isShareDisabled }) =>
           h(
             Button,
             {
-              isDisabled: isShareDisabled,
+              isDisabled: isPublishDisabled,
             },
-            `Share`
+            `Publish`
           ),
         ]),
       ]

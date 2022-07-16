@@ -32,9 +32,9 @@ export const View = ({
   onClickDelete,
   isDeleting = false,
   isDeleteDisabled = true,
-  isShareDisabled = true,
   occurredAt,
   onChangeOccurredAt,
+  isPublishDisabled = true,
 }: Props) =>
   h(
     Stack,
@@ -60,7 +60,7 @@ export const View = ({
         h(Who, { onSelect, options, selectedOptions }),
         h(NoteEditor, { note, onChangeNote }),
         h(Divider, {}),
-        h(ActionBar, { isShareDisabled }),
+        h(ActionBar, { isPublishDisabled }),
       ]),
     ]
   )

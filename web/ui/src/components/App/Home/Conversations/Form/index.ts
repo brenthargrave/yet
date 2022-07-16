@@ -248,7 +248,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const isShareDisabled$ = combineLatest({
+  const isPublishDisabled$ = combineLatest({
     isComplete: isComplete$,
   }).pipe(
     map(({ isComplete }) => !isComplete),
@@ -270,7 +270,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     note: note$,
     isDeleting: isDeleting$,
     isDeleteDisabled: isDeleteDisabled$,
-    isShareDisabled: isShareDisabled$,
+    isPublishDisabled: isPublishDisabled$,
     occurredAt: occurredAt$,
   }).pipe(tag("props$"))
 
