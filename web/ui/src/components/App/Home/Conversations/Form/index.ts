@@ -9,6 +9,7 @@ import {
   merge,
   mergeMap,
   Observable,
+  of,
   pluck,
   scan,
   share,
@@ -17,6 +18,7 @@ import {
   withLatestFrom,
 } from "rxjs"
 import { filterResultOk } from "ts-results/rxjs-operators"
+import { not } from "~/fp"
 import {
   Contact,
   Conversation,
@@ -30,9 +32,8 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
-import { callback$, makeObservableCallback, shareLatest } from "~/rx"
+import { callback$, shareLatest } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
-import { not } from "~/fp"
 
 const contactsToOptions = (contacts: Contact[]): SelectedOption[] =>
   contacts.map(({ id, name }, idx, _) => {

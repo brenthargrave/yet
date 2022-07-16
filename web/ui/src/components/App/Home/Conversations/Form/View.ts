@@ -6,6 +6,10 @@ import { DeleteButton } from "./DeleteButton"
 import { View as NoteEditor, Props as NoteEditorProps } from "./NoteEditor"
 import { View as When, Props as WhenProps } from "./When"
 import { View as Who, Props as WhoProps } from "./Who"
+import {
+  View as InviteView,
+  Props as InviteViewProps,
+} from "../Edit/InviteView"
 
 export type { Option, SelectedOption } from "./Who"
 
@@ -64,5 +68,6 @@ export const View = ({
         h(Divider, {}),
         h(ActionBar, { isPublishDisabled }),
       ]),
+      h(InviteView, { isOpen: true, onClose: () => console.debug("close") }),
     ]
   )
