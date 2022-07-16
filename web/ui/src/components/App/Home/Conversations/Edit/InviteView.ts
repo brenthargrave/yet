@@ -16,7 +16,7 @@ export interface Props {
   onClose: () => void
 }
 
-export const View: FC<Props> = ({ isOpen = false, onClose }) =>
+export const View: FC<Props> = ({ isOpen, onClose }) =>
   h(Modal, {
     isCentered: true,
     autoFocus: true,
@@ -26,13 +26,12 @@ export const View: FC<Props> = ({ isOpen = false, onClose }) =>
     isOpen,
     onClose,
     children: [
-      h(ModalOverlay),
-      h(ModalContent, {}, [
-        h(ModalHeader, {}, ""),
-        h(ModalCloseButton),
-        h(ModalBody, [`Hello, world!`]),
-        h(ModalFooter, [
-          //
+      h(ModalOverlay, { key: "overlay" }),
+      h(ModalContent, { key: "content" }, [
+        h(ModalHeader, { key: "header" }, ""),
+        h(ModalCloseButton, { key: "closeButton" }),
+        h(ModalBody, { key: "body" }, [`Hello, world!`]),
+        h(ModalFooter, { key: "footer" }, [
           h(Button, { onClick: onClose }, `TODO`),
         ]),
       ]),

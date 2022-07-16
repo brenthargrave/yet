@@ -40,7 +40,8 @@ export const View = ({
   occurredAt,
   onChangeOccurredAt,
   isPublishDisabled = true,
-  displayInvite = false,
+  displayInvite,
+  onClickPublish,
 }: Props) =>
   h(
     Stack,
@@ -66,8 +67,11 @@ export const View = ({
         h(Who, { onSelect, options, selectedOptions }),
         h(NoteEditor, { note, onChangeNote }),
         h(Divider, {}),
-        h(ActionBar, { isPublishDisabled }),
+        h(ActionBar, { isPublishDisabled, onClickPublish }),
       ]),
-      h(InviteView, { isOpen: true, onClose: () => console.debug("close") }),
+      h(InviteView, {
+        isOpen: displayInvite,
+        onClose: () => console.debug("close"),
+      }),
     ]
   )

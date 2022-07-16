@@ -273,6 +273,11 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   )
 
   // TODO:?
+  const displayInvite$ = onClickPublish$.pipe(
+    map((_) => true),
+    startWith(false),
+    tag("displayInvite$")
+  )
 
   const props$ = combineLatest({
     options: options$,
@@ -281,8 +286,9 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     note: note$,
     isDeleting: isDeleting$,
     isDeleteDisabled: isDeleteDisabled$,
-    isPublishDisabled: isPublishDisabled$,
     occurredAt: occurredAt$,
+    isPublishDisabled: isPublishDisabled$,
+    displayInvite: displayInvite$,
   }).pipe(tag("props$"))
 
   const react = props$.pipe(
