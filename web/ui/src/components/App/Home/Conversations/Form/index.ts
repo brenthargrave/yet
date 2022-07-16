@@ -115,9 +115,10 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     tag("recordNote$"),
     shareLatest()
   )
-  const { $: _onChangeNote$, cb: onChangeNote } =
-    makeObservableCallback<string>()
-  const onChangeNote$ = _onChangeNote$.pipe(tag("onChangeNote$"), share())
+
+  const { $: onChangeNote$, cb: onChangeNote } = callback$<string>(
+    tag("onChangeNote$")
+  )
 
   const note$ = merge(recordNote$, onChangeNote$).pipe(
     distinctUntilChanged(),
@@ -125,18 +126,17 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const { $: _onChangeOccurredAt$, cb: onChangeOccurredAt } =
-    makeObservableCallback<Date>()
-  const onChangeOccurredAt$ = _onChangeOccurredAt$.pipe(
-    tag("onChangeOccurredAt$"),
-    share()
+  const { $: onChangeOccurredAt$, cb: onChangeOccurredAt } = callback$<Date>(
+    tag("onChangeOccurredAt$")
   )
+
   const recordOccurredAt$: Observable<Date> = record$.pipe(
     pluck("occurredAt"),
     distinctUntilChanged(),
     tag("recordOccurredAt$"),
     shareLatest()
   )
+
   const occurredAt$ = merge(recordOccurredAt$, onChangeOccurredAt$).pipe(
     distinctUntilChanged(),
     startWith(new Date()),
@@ -205,12 +205,11 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const { $: _onClickBack$, cb: onClickBack } = makeObservableCallback<void>()
-  const onClickBack$ = _onClickBack$.pipe(tag("onClickBack$"), share())
+  const { $: onClickBack$, cb: onClickBack } = callback$(tag("onClickBack$"))
 
-  const { $: _onClickDelete$, cb: onClickDelete } =
-    makeObservableCallback<string>()
-  const onClickDelete$ = _onClickDelete$.pipe(tag("onClickDelete$"), share())
+  const { $: onClickDelete$, cb: onClickDelete } = callback$(
+    tag("onClickDelete$")
+  )
 
   const cleanupAbandedRecord$ = onClickBack$.pipe(
     withLatestFrom(isValid$),
