@@ -1,6 +1,6 @@
 import { Heading, List, ListItem, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { FC } from "react"
+import { BaseSyntheticEvent, EventHandler, FC, MouseEventHandler } from "react"
 import { NoteView } from "~/components/Note"
 import { isEmpty, join, map, prop } from "~/fp"
 import { Conversation } from "~/graph"
@@ -40,9 +40,14 @@ export const View: FC<Props> = ({
             h(
               ListItem,
               {
-                style: { cursor: "pointer" },
-                onClick: () => onClickConversation(id),
                 padding: 0,
+                style: { cursor: "pointer" },
+                onClick: (event: MouseEvent) => {
+                  // NOTE: ignore markdown link clicks
+                  // @ts-ignore
+                  const { href } = event.target
+                  if (!href) onClickConversation(id)
+                },
               },
               [
                 h(Stack, { direction: "column", paddingBottom: 4 }, [
