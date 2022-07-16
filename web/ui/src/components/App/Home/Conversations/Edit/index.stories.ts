@@ -1,5 +1,6 @@
 import { h } from "@cycle/react"
 import { Meta, Story } from "@storybook/react"
+import { type } from "os"
 import { Props, View } from "../Form/View"
 
 export default {
@@ -14,4 +15,7 @@ export const Default: Story<Props> = (args) => h(View, args)
 Default.argTypes = {
   onSelect: { control: false, action: "onSelect" },
   options: [{ value: "1", label: "Brent Hargrave" }],
+  displayInvite: {
+    control: { type: "boolean", defaultValue: false },
+  },
 }

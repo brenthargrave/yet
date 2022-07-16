@@ -19,6 +19,7 @@ export interface Props
   onClickDelete?: () => void
   isDeleting?: boolean
   isDeleteDisabled?: boolean
+  displayInvite?: boolean
 }
 
 export const View = ({
@@ -35,6 +36,7 @@ export const View = ({
   occurredAt,
   onChangeOccurredAt,
   isPublishDisabled = true,
+  displayInvite = false,
 }: Props) =>
   h(
     Stack,
