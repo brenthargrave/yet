@@ -1,9 +1,13 @@
 import { h } from "@cycle/react"
+import { a } from "@cycle/react-dom"
 import { FC } from "react"
 import ReactMarkdown from "react-markdown"
 import remarkBreaks from "remark-breaks"
 import remarkGfm from "remark-gfm"
+import { style } from "typestyle"
 import { join, split, take, trim } from "~/fp"
+
+const className = style({ textDecoration: "underline" })
 
 interface Props {
   md: string
@@ -23,5 +27,9 @@ export const MarkdownView: FC<Props> = ({ md, maxLines }) => {
     remarkPlugins: [remarkBreaks, remarkGfm],
     linkTarget: "_blank",
     skipHtml: false,
+    components: {
+      a: ({ node, href, children, ...props }) =>
+        a({ href, className, ...props }, children),
+    },
   })
 }
