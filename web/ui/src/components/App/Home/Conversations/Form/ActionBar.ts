@@ -3,12 +3,15 @@ import { h } from "@cycle/react"
 import { FC } from "react"
 import { Stack } from "~/system"
 
+export type OnClickPublish = () => void
+
 export interface Props {
   isPublishDisabled: boolean
+  onClickPublish?: OnClickPublish
   // participantNames?: string[]
 }
 
-export const View: FC<Props> = ({ isPublishDisabled }) =>
+export const View: FC<Props> = ({ isPublishDisabled, onClickPublish }) =>
   h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
     h(
       Box,
@@ -25,6 +28,7 @@ export const View: FC<Props> = ({ isPublishDisabled }) =>
             Button,
             {
               isDisabled: isPublishDisabled,
+              onClick: onClickPublish,
             },
             `Publish`
           ),

@@ -1,5 +1,4 @@
 import { h, ReactSource } from "@cycle/react"
-import { of } from "ramda"
 import {
   combineLatest,
   debounceTime,
@@ -33,6 +32,7 @@ import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
 import { callback$, makeObservableCallback, shareLatest } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
+import { not } from "~/fp"
 
 const contactsToOptions = (contacts: Contact[]): SelectedOption[] =>
   contacts.map(({ id, name }, idx, _) => {
@@ -248,20 +248,30 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const isPublishDisabled$ = combineLatest({
+  const isPublishable$ = combineLatest({
     isComplete: isComplete$,
   }).pipe(
-    map(({ isComplete }) => !isComplete),
-    startWith(false),
+    map(({ isComplete }) => isComplete),
+    startWith(true),
     distinctUntilChanged(),
-    tag("isShareDisabled$"),
+    tag("isPublishable$"),
     shareLatest()
+  )
+  const isPublishDisabled$ = isPublishable$.pipe(
+    map((publishable) => not(publishable)),
+    tag("isPublishDisabled$")
   )
 
   const goToList$ = merge(onClickBack$, deleted$).pipe(
     map((_) => push(routes.conversations())),
     share()
   )
+
+  const { cb: onClickPublish, $: onClickPublish$ } = callback$(
+    tag("onClickPublish$")
+  )
+
+  // TODO:?
 
   const props$ = combineLatest({
     options: options$,
@@ -283,6 +293,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
         onClickBack,
         onClickDelete,
         onChangeOccurredAt,
+        onClickPublish,
       })
     )
   )
