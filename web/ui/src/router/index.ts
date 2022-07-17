@@ -16,6 +16,10 @@ const editConversation = conversations.extend(
   { id: param.path.string },
   (p) => `/${p.id}/edit`
 )
+const showConversation = conversations.extend(
+  { id: param.path.string },
+  (p) => `/${p.id}`
+)
 
 export const { routes, useRoute, RouteProvider, session } = createRouter({
   in: defineRoute("/in"),
@@ -24,6 +28,7 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
   conversations,
   newConversation,
   editConversation,
+  showConversation,
 })
 
 export type Route = _Route<typeof routes>

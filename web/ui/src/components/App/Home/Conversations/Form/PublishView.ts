@@ -1,40 +1,56 @@
+import { CopyIcon, CheckIcon } from "@chakra-ui/icons"
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
+  Divider,
+  IconButton,
+  InputRightElement,
+  useClipboard,
 } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
+import { Heading, Input, InputGroup, Stack, Text } from "~/system"
+import { Props as ModalProps, View as Modal } from "./Modal"
 
-export interface Props {
-  isOpen: boolean
-  onClose: () => void
+export interface Props extends ModalProps {
+  shareURL?: string
 }
 
-export const View: FC<Props> = ({ isOpen, onClose }) =>
-  h(Modal, {
-    // isCentered: true,
-    autoFocus: true,
-    closeOnEsc: true,
-    closeOnOverlayClick: true,
-    isOpen,
-    onClose,
-    children: [
-      h(ModalOverlay, { key: "overlay" }),
-      h(ModalContent, { key: "content" }, [
-        h(ModalHeader, { key: "header" }, ""),
-        h(ModalCloseButton, { key: "closeButton" }),
-        h(ModalBody, { key: "body" }, [`Hello, world!`]),
-        h(ModalFooter, { key: "footer" }, [
-          h(Button, { onClick: onClose }, `TODO`),
+const size = "md"
+
+export const View: FC<Props> = ({ isOpen, onClose, shareURL }) => {
+  const { hasCopied, onCopy } = useClipboard(shareURL ?? "")
+
+  return h(Modal, { isOpen, onClose }, [
+    h(Stack, { direction: "column", gap: 4 }, [
+      h(Heading, { size: "sm" }, `Now share your notes with X, Y & Z!`),
+      h(
+        Text,
+        `When cosigned they become visible to your combined networks, and you'll get attribution for any mentioned opportunities, leads, etc.`
+      ),
+      h(Divider),
+      h(Stack, { direction: "column" }, [
+        h(Heading, { size: "xs" }, `Copy share link to clipboard`),
+        h(InputGroup, { size }, [
+          h(Input, {
+            value: shareURL,
+            isReadOnly: true,
+            size,
+            // @ts-ignore
+            onClick: (event) => event?.target?.select(),
+            focusBorderColor: "none",
+          }),
+          h(InputRightElement, { size }, [
+            h(IconButton, {
+              icon: h(hasCopied ? CheckIcon : CopyIcon),
+              onClick: onCopy,
+              size,
+            }),
+          ]),
         ]),
       ]),
-    ],
-  })
+      h(Divider),
+      // Share button
+    ]),
+  ])
+}
 
 View.displayName = "PublishView"

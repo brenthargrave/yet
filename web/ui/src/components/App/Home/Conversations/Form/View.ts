@@ -22,6 +22,7 @@ export interface Props
   isDeleteDisabled?: boolean
   isOpenPublish: boolean
   onClosePublish: () => void
+  shareURL?: string
 }
 
 export const View = ({
@@ -41,6 +42,7 @@ export const View = ({
   isOpenPublish = false,
   onClickPublish,
   onClosePublish,
+  shareURL,
 }: Props) =>
   h(
     Stack,
@@ -71,6 +73,7 @@ export const View = ({
       h(PublishModal, {
         isOpen: isOpenPublish,
         onClose: onClosePublish,
+        shareURL,
       }),
     ]
   )

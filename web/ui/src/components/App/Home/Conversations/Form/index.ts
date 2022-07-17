@@ -276,6 +276,16 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     onClosePublish$.pipe(map((_) => false))
   ).pipe(startWith(true), tag("isOpenPublish$"), share())
 
+  const shareURL$ = id$.pipe(
+    map(
+      (id) =>
+        new URL(routes.showConversation({ id }).href, window.location.origin)
+          .href
+    ),
+    tag("shareURL$"),
+    shareLatest()
+  )
+
   const props$ = combineLatest({
     options: options$,
     selectedOptions: selectedOptions$,
@@ -286,6 +296,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     occurredAt: occurredAt$,
     isPublishDisabled: isPublishDisabled$,
     isOpenPublish: isOpenPublish$,
+    shareURL: shareURL$,
   }).pipe(tag("props$"))
 
   const react = props$.pipe(
