@@ -18,7 +18,7 @@ export interface Props {
 
 export const View: FC<Props> = ({ isOpen, onClose }) =>
   h(Modal, {
-    isCentered: true,
+    // isCentered: true,
     autoFocus: true,
     closeOnEsc: true,
     closeOnOverlayClick: true,

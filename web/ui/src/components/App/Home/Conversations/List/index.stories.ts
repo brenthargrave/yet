@@ -13,7 +13,7 @@ export default {
   decorators: [(Story) => h(ContainerView, [h(Story)])],
 } as Meta
 
-const defaultValue: Omit<Conversation, "status">[] = [
+const value: Omit<Conversation, "status">[] = [
   // stub
   {
     id: "1",
@@ -42,5 +42,5 @@ const defaultValue: Omit<Conversation, "status">[] = [
 export const Default: Story<Props> = (args) => h(View, args)
 Default.argTypes = {
   onClickConversation: { control: false, action: "onClickConversation" },
-  conversations: { defaultValue },
+  conversations: { value },
 }
