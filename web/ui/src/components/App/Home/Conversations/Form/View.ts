@@ -24,6 +24,7 @@ export interface Props
   onClosePublish: () => void
   shareURL?: string
   onShareURLCopied?: () => void
+  onClickShare?: () => void
 }
 
 export const View = ({
@@ -45,6 +46,7 @@ export const View = ({
   onClosePublish,
   shareURL,
   onShareURLCopied,
+  onClickShare,
 }: Props) =>
   h(
     Stack,
@@ -77,6 +79,7 @@ export const View = ({
         onClose: onClosePublish,
         shareURL,
         onShareURLCopied,
+        onClickShare,
       }),
     ]
   )

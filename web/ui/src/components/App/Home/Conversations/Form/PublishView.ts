@@ -1,4 +1,4 @@
-import { CopyIcon, CheckIcon } from "@chakra-ui/icons"
+import { CopyIcon, CheckIcon, ChatIcon } from "@chakra-ui/icons"
 import {
   Button,
   Divider,
@@ -14,6 +14,7 @@ import { Props as ModalProps, View as Modal } from "./Modal"
 export interface Props extends ModalProps {
   shareURL?: string
   onShareURLCopied?: () => void
+  onClickShare?: () => void
 }
 
 const size = "md"
@@ -23,15 +24,19 @@ export const View: FC<Props> = ({
   onClose,
   shareURL,
   onShareURLCopied,
+  onClickShare: _onClickShare,
 }) => {
   const { hasCopied, onCopy } = useClipboard(shareURL ?? "")
 
-  const url = "https://google.com"
+  const url = shareURL
   let canShare = false
   if (!!navigator && !!navigator.canShare) {
     canShare = navigator.canShare({ url })
   }
-  const onClickShare = () => navigator.share({ url })
+  const onClickShare = () => {
+    navigator.share({ url })
+    onClickShare()
+  }
 
   return h(Modal, { isOpen, onClose }, [
     h(Stack, { direction: "column", gap: 4 }, [
@@ -69,7 +74,12 @@ export const View: FC<Props> = ({
       canShare && h(Divider),
       canShare &&
         h(Stack, { direction: "column" }, [
-          h(Button, { onClick: onClickShare }, `Share`),
+          h(
+            Heading,
+            { size: "xs" },
+            `Or share through app (SMS, email, encrypted chat, etc.)`
+          ),
+          h(Button, { leftIcon: h(ChatIcon), onClick: onClickShare }, `Share`),
         ]),
     ]),
   ])

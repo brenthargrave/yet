@@ -293,6 +293,9 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     tag("shareURLCopiedNotice$")
   )
 
+  const [onClickShare, onClickShare$] = cb$(tag("onClickShare$"))
+  // TODO: ?0
+
   const props$ = combineLatest({
     options: options$,
     selectedOptions: selectedOptions$,
