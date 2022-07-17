@@ -14,7 +14,7 @@ import { Props as ModalProps, View as Modal } from "./Modal"
 export interface Props extends ModalProps {
   shareURL?: string
   onShareURLCopied?: () => void
-  onClickShare?: () => void
+  onClickShare: () => void
 }
 
 const size = "md"
@@ -24,18 +24,14 @@ export const View: FC<Props> = ({
   onClose,
   shareURL,
   onShareURLCopied,
-  onClickShare: _onClickShare,
+  onClickShare,
 }) => {
   const { hasCopied, onCopy } = useClipboard(shareURL ?? "")
 
   const url = shareURL
   let canShare = false
   if (!!navigator && !!navigator.canShare) {
-    canShare = navigator.canShare({ url })
-  }
-  const onClickShare = () => {
-    navigator.share({ url })
-    onClickShare()
+    canShare = navigator.canShare({ url, title: "Conversation" })
   }
 
   return h(Modal, { isOpen, onClose }, [
@@ -43,7 +39,7 @@ export const View: FC<Props> = ({
       h(Heading, { size: "sm" }, `Now share your notes with X, Y & Z!`),
       h(
         Text,
-        `When cosigned they become visible to your combined networks, and you'll get attribution for any mentioned opportunities, leads, etc.`
+        `Once cosigned they become visible to your combined networks, and you'll get attribution for any mentioned opportunities, leads, etc.`
       ),
       h(Divider),
       h(Stack, { direction: "column" }, [
@@ -74,12 +70,21 @@ export const View: FC<Props> = ({
       canShare && h(Divider),
       canShare &&
         h(Stack, { direction: "column" }, [
+          h(Heading, { size: "xs" }, `Or share via app`),
           h(
-            Heading,
-            { size: "xs" },
-            `Or share through app (SMS, email, encrypted chat, etc.)`
+            Button,
+            {
+              leftIcon: h(ChatIcon),
+              onClick: async () => {
+                await navigator
+                  .share({ url })
+                  // eslint-disable-next-line no-alert
+                  .catch((error) => alert(error))
+                  .finally(() => onClickShare())
+              },
+            },
+            `SMS, email, encrypted chat, etc.`
           ),
-          h(Button, { leftIcon: h(ChatIcon), onClick: onClickShare }, `Share`),
         ]),
     ]),
   ])

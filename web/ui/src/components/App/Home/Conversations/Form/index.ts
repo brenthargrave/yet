@@ -321,6 +321,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
         onClickPublish,
         onClosePublish,
         onShareURLCopied,
+        onClickShare,
       })
     )
   )

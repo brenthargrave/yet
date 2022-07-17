@@ -24,7 +24,7 @@ export interface Props
   onClosePublish: () => void
   shareURL?: string
   onShareURLCopied?: () => void
-  onClickShare?: () => void
+  onClickShare: () => void
 }
 
 export const View = ({
