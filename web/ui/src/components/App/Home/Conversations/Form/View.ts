@@ -40,6 +40,7 @@ export const View = ({
   isDeleteDisabled = true,
   occurredAt,
   onChangeOccurredAt,
+  participantNames,
   isPublishDisabled = true,
   isOpenPublish = false,
   onClickPublish,
@@ -72,7 +73,7 @@ export const View = ({
         h(Who, { onSelect, options, selectedOptions }),
         h(NoteEditor, { note, onChangeNote }),
         h(Divider, {}),
-        h(ActionBar, { isPublishDisabled, onClickPublish }),
+        h(ActionBar, { participantNames, isPublishDisabled, onClickPublish }),
       ]),
       h(PublishModal, {
         isOpen: isOpenPublish,

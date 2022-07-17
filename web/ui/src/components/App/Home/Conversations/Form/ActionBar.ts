@@ -1,18 +1,24 @@
 import { Box, Button } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
+import { isEmpty } from "~/fp"
 import { Stack } from "~/system"
+import { toSentence } from "~/i18n"
 
 export type OnClickPublish = () => void
 
 export interface Props {
   isPublishDisabled: boolean
   onClickPublish?: OnClickPublish
-  // participantNames?: string[]
+  participantNames?: string[]
 }
 
-export const View: FC<Props> = ({ isPublishDisabled, onClickPublish }) =>
-  h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
+export const View: FC<Props> = ({
+  isPublishDisabled,
+  onClickPublish,
+  participantNames = [],
+}) => {
+  return h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
     h(
       Box,
       {
@@ -30,11 +36,14 @@ export const View: FC<Props> = ({ isPublishDisabled, onClickPublish }) =>
               isDisabled: isPublishDisabled,
               onClick: onClickPublish,
             },
-            `Publish`
+            isEmpty(participantNames)
+              ? `Publish`
+              : `Publish with ${toSentence(participantNames)}`
           ),
         ]),
       ]
     ),
   ])
+}
 
 View.displayName = "ActionBar"

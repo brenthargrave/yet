@@ -1,5 +1,7 @@
 import { format, parse, getYear } from "date-fns"
 import { phone as validatePhone } from "phone"
+import "@formatjs/intl-listformat/polyfill"
+import "@formatjs/intl-listformat/locale-data/en" // locale-data for en
 
 const shared = {
   continue: `Continue`,
@@ -54,3 +56,13 @@ export const localizeDate = (date: Date) => {
     ? format(date, "M/DD/YY")
     : format(date, "MMM Do")
 }
+
+// NOTE: assumes polyfill imports above work
+// https://formatjs.io/docs/polyfills/intl-listformat/
+// @ts-ignore
+const lf = new Intl.ListFormat("en", {
+  localeMatcher: "best fit", // other values: "lookup"
+  type: "conjunction", // "conjunction", "disjunction" or "unit"
+  style: "long", // other values: "short" or "narrow"
+})
+export const toSentence = (arr: string[]) => lf.format(arr)

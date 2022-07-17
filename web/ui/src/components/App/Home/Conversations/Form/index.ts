@@ -18,7 +18,7 @@ import {
   withLatestFrom,
 } from "rxjs"
 import { filterResultOk } from "ts-results/rxjs-operators"
-import { not } from "~/fp"
+import { not, prop, map as _map } from "~/fp"
 import {
   Contact,
   Conversation,
@@ -293,8 +293,14 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     tag("shareURLCopiedNotice$")
   )
 
+  // TODO: what do upon share? change state somehow?
   const [onClickShare, onClickShare$] = cb$(tag("onClickShare$"))
-  // TODO: ?0
+
+  const participantNames$ = invitees$.pipe(
+    map(_map(prop("name"))),
+    tag("participantNames$"),
+    share()
+  )
 
   const props$ = combineLatest({
     options: options$,
@@ -307,6 +313,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     isPublishDisabled: isPublishDisabled$,
     isOpenPublish: isOpenPublish$,
     shareURL: shareURL$,
+    participantNames: participantNames$,
   }).pipe(tag("props$"))
 
   const react = props$.pipe(
