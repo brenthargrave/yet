@@ -31,6 +31,7 @@ import {
   upsertConversation$,
 } from "~/graph"
 import { makeTagger } from "~/log"
+import { info } from "~/notice"
 import { push, routes, Source as RouterSource } from "~/router"
 import { callback$, cb$, shareLatest } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
@@ -286,6 +287,12 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
+  const [onShareURLCopied, onShareURLCopied$] = cb$(tag("onShareURLCopied$"))
+  const shareURLCopiedNotice$ = onShareURLCopied$.pipe(
+    map((_) => info({ description: "Copied!" })),
+    tag("shareURLCopiedNotice$")
+  )
+
   const props$ = combineLatest({
     options: options$,
     selectedOptions: selectedOptions$,
@@ -310,14 +317,17 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
         onChangeOccurredAt,
         onClickPublish,
         onClosePublish,
+        onShareURLCopied,
       })
     )
   )
 
   const router = merge(goToList$)
+  const notice = merge(shareURLCopiedNotice$)
 
   return {
     react,
     router,
+    notice,
   }
 }

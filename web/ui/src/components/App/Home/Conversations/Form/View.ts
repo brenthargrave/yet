@@ -23,6 +23,7 @@ export interface Props
   isOpenPublish: boolean
   onClosePublish: () => void
   shareURL?: string
+  onShareURLCopied?: () => void
 }
 
 export const View = ({
@@ -43,6 +44,7 @@ export const View = ({
   onClickPublish,
   onClosePublish,
   shareURL,
+  onShareURLCopied,
 }: Props) =>
   h(
     Stack,
@@ -74,6 +76,7 @@ export const View = ({
         isOpen: isOpenPublish,
         onClose: onClosePublish,
         shareURL,
+        onShareURLCopied,
       }),
     ]
   )

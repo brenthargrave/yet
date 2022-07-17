@@ -41,3 +41,11 @@ export const error = ({ title, description }: NoticeConfig): Notice => {
     description,
   }
 }
+
+export const info = ({ title, description }: NoticeConfig): Notice => {
+  return {
+    status: "info",
+    title,
+    description,
+  }
+}

@@ -12,11 +12,17 @@ import { Props as ModalProps, View as Modal } from "./Modal"
 
 export interface Props extends ModalProps {
   shareURL?: string
+  onShareURLCopied?: () => void
 }
 
 const size = "md"
 
-export const View: FC<Props> = ({ isOpen, onClose, shareURL }) => {
+export const View: FC<Props> = ({
+  isOpen,
+  onClose,
+  shareURL,
+  onShareURLCopied,
+}) => {
   const { hasCopied, onCopy } = useClipboard(shareURL ?? "")
 
   return h(Modal, { isOpen, onClose }, [
@@ -41,7 +47,12 @@ export const View: FC<Props> = ({ isOpen, onClose, shareURL }) => {
           h(InputRightElement, { size }, [
             h(IconButton, {
               icon: h(hasCopied ? CheckIcon : CopyIcon),
-              onClick: onCopy,
+              onClick: () => {
+                onCopy()
+                if (onShareURLCopied) {
+                  onShareURLCopied()
+                }
+              },
               size,
             }),
           ]),

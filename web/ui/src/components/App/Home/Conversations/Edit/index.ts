@@ -62,7 +62,11 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const { react, router: formRouter$ } = Form(
+  const {
+    react,
+    router: formRouter$,
+    notice: formNotice$,
+  } = Form(
     {
       ...sources,
       props: { id$, record$ },
@@ -71,9 +75,11 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
   )
   const router = merge(redirectNotFound$, formRouter$)
 
-  const notice = userError$.pipe(
+  const userErrorNotice$ = userError$.pipe(
     map(({ message }) => error({ description: message }))
   )
+
+  const notice = merge(userErrorNotice$, formNotice$)
 
   return {
     react,
