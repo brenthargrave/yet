@@ -37,4 +37,4 @@ export const View: FC<Props> = ({ isOpen, onClose }) =>
     ],
   })
 
-View.displayName = "InviteView"
+View.displayName = "PublishView"

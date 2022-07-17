@@ -6,10 +6,7 @@ import { DeleteButton } from "./DeleteButton"
 import { View as NoteEditor, Props as NoteEditorProps } from "./NoteEditor"
 import { View as When, Props as WhenProps } from "./When"
 import { View as Who, Props as WhoProps } from "./Who"
-import {
-  View as InviteView,
-  Props as InviteViewProps,
-} from "../Edit/InviteView"
+import { View as PublishModal } from "./PublishView"
 
 export type { Option, SelectedOption } from "./Who"
 
@@ -23,7 +20,8 @@ export interface Props
   onClickDelete?: () => void
   isDeleting?: boolean
   isDeleteDisabled?: boolean
-  displayInvite?: boolean
+  isOpenPublish: boolean
+  onClosePublish: () => void
 }
 
 export const View = ({
@@ -40,8 +38,9 @@ export const View = ({
   occurredAt,
   onChangeOccurredAt,
   isPublishDisabled = true,
-  displayInvite = false,
+  isOpenPublish = false,
   onClickPublish,
+  onClosePublish,
 }: Props) =>
   h(
     Stack,
@@ -69,9 +68,9 @@ export const View = ({
         h(Divider, {}),
         h(ActionBar, { isPublishDisabled, onClickPublish }),
       ]),
-      h(InviteView, {
-        isOpen: displayInvite,
-        onClose: () => console.debug("close"),
+      h(PublishModal, {
+        isOpen: isOpenPublish,
+        onClose: onClosePublish,
       }),
     ]
   )

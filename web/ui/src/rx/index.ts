@@ -9,6 +9,7 @@ import { Source as WonkaSource, toObservable } from "wonka"
 import { Observable as ZenObservable } from "zen-observable-ts"
 
 export type ObservableCallback<O> = { $: Observable<O>; cb: (t?: any) => void }
+export type ObservableCallbackTuple<O> = [(t?: any) => void, Observable<O>]
 
 export function makeObservableCallback<T>(): ObservableCallback<T> {
   const subject = new Subject<T>()
@@ -28,6 +29,13 @@ export function callback$<T>(
   }
   const observable = subject.asObservable().pipe(operator, share())
   return { $: observable, cb: callback }
+}
+
+export function cb$<T>(
+  operator: MonoTypeOperatorFunction<T>
+): ObservableCallbackTuple<T> {
+  const { cb, $ } = callback$(operator)
+  return [cb, $]
 }
 
 // NOTE: https://stackoverflow.com/a/66416113

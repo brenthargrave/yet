@@ -32,7 +32,7 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
-import { callback$, shareLatest } from "~/rx"
+import { callback$, cb$, shareLatest } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
 
 const contactsToOptions = (contacts: Contact[]): SelectedOption[] =>
@@ -268,16 +268,13 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const { cb: onClickPublish, $: onClickPublish$ } = callback$(
-    tag("onClickPublish$")
-  )
+  const [onClickPublish, onClickPublish$] = cb$(tag("onClickPublish$"))
+  const [onClosePublish, onClosePublish$] = cb$(tag("onClosePublish$"))
 
-  // TODO:?
-  const displayInvite$ = onClickPublish$.pipe(
-    map((_) => true),
-    startWith(false),
-    tag("displayInvite$")
-  )
+  const isOpenPublish$ = merge(
+    onClickPublish$.pipe(map((_) => true)),
+    onClosePublish$.pipe(map((_) => false))
+  ).pipe(startWith(false), tag("isOpenPublish$"), share())
 
   const props$ = combineLatest({
     options: options$,
@@ -288,7 +285,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     isDeleteDisabled: isDeleteDisabled$,
     occurredAt: occurredAt$,
     isPublishDisabled: isPublishDisabled$,
-    displayInvite: displayInvite$,
+    isOpenPublish: isOpenPublish$,
   }).pipe(tag("props$"))
 
   const react = props$.pipe(
@@ -301,6 +298,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
         onClickDelete,
         onChangeOccurredAt,
         onClickPublish,
+        onClosePublish,
       })
     )
   )

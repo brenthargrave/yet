@@ -15,7 +15,7 @@ export const Default: Story<Props> = (args) => h(View, args)
 Default.argTypes = {
   onSelect: { control: false, action: "onSelect" },
   options: [{ value: "1", label: "Brent Hargrave" }],
-  displayInvite: {
+  isOpenPublish: {
     control: { type: "boolean", defaultValue: false },
   },
 }
