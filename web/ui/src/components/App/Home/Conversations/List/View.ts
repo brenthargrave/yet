@@ -1,12 +1,12 @@
 import { Heading, List, ListItem, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { BaseSyntheticEvent, EventHandler, FC, MouseEventHandler } from "react"
+import { FC } from "react"
 import { NoteView } from "~/components/Note"
 import { isEmpty, join, map, prop } from "~/fp"
 import { Conversation } from "~/graph"
 import { localizeDate } from "~/i18n"
 import { CreateButton, Divider, Header, Stack, Text } from "~/system"
-import { EmptyView, OnClickNew } from "../EmptyView"
+import { EmptyView, OnClickNew } from "./EmptyView"
 
 type OnClickConversation = (cid: string) => void
 

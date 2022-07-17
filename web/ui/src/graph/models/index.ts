@@ -1,5 +1,6 @@
 import { eqBy, isEmpty, prop, symmetricDifferenceWith } from "ramda"
-import { isNotEmpty } from "~/fp"
+import { faker } from "@faker-js/faker"
+import { isNotEmpty, join } from "~/fp"
 import { Conversation as FullConversation, Invitee } from "../generated"
 
 type LocalConversation = Omit<FullConversation, "status">
@@ -21,3 +22,24 @@ export const inviteesDiffer = (current: Invitee[], old: Invitee[]): boolean =>
     // @ts-ignore
     symmetricDifferenceWith(eqBy<Invitee>(prop<Invitee>("id")), old, current)
   )
+
+const makeId = () => faker.datatype.uuid()
+const makeName = () =>
+  join(" ", [faker.name.firstName(), faker.name.lastName()])
+const makeDate = () => faker.date.recent()
+
+export const makeInvitee = (): Invitee => {
+  return {
+    id: makeId(),
+    name: makeName(),
+  }
+}
+
+export const makeConversation = (): LocalConversation => {
+  return {
+    id: makeId(),
+    occurredAt: makeDate(),
+    invitees: [makeInvitee(), makeInvitee()],
+    note: faker.lorem.paragraph(),
+  }
+}
