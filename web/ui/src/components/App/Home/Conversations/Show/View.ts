@@ -3,13 +3,20 @@ import { h } from "@cycle/react"
 import { FC } from "react"
 import { Conversation } from "~/graph"
 import { localizeDate } from "~/i18n"
-import { BackButton, Header, Heading, Stack, Text } from "~/system"
+import {
+  BackButton,
+  Header,
+  Heading,
+  MarkdownView,
+  Stack,
+  Text,
+} from "~/system"
 
 export interface Props {
   conversation: Conversation
 }
 
-export const View: FC<Props> = ({ conversation }) =>
+export const View: FC<Props> = ({ conversation: { occurredAt, note } }) =>
   h(
     Stack,
     {
@@ -24,15 +31,12 @@ export const View: FC<Props> = ({ conversation }) =>
         //   onClick: onClickBack,
         // }),
         h(Spacer),
-        h(Text, {}, localizeDate(conversation.occurredAt)),
+        h(Text, {}, localizeDate(occurredAt)),
       ]),
       h(Stack, { direction: "column", width: "100%", padding: 4 }, [
-        // h(Stack, { direction: "row" }, [
-        //   h(Heading, {}, "Conversation"),
-        //   h(Spacer),
-        // ]),
-        // Conversation
-        // <Creator> with <names>
+        h(MarkdownView, { md: note ?? "" }),
+        // TODO: <Creator>
+        // with <participants>
         // note view
       ]),
     ]
