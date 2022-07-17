@@ -22,7 +22,6 @@ export const View: FC<Props> = ({ isOpen, onClose }) =>
     autoFocus: true,
     closeOnEsc: true,
     closeOnOverlayClick: true,
-    // finalFocusRef: TODO:
     isOpen,
     onClose,
     children: [

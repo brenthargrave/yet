@@ -40,7 +40,7 @@ export const View = ({
   occurredAt,
   onChangeOccurredAt,
   isPublishDisabled = true,
-  displayInvite,
+  displayInvite = false,
   onClickPublish,
 }: Props) =>
   h(
