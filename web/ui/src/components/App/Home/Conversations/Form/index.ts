@@ -280,7 +280,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const shareURL$ = id$.pipe(
     map(
       (id) =>
-        new URL(routes.showConversation({ id }).href, window.location.origin)
+        new URL(routes.signConversation({ id }).href, window.location.origin)
           .href
     ),
     tag("shareURL$"),

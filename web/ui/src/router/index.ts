@@ -12,14 +12,12 @@ const tag = makeTagger("Router")
 const root = defineRoute("/")
 const conversations = root.extend("/c")
 const newConversation = conversations.extend("/new")
-const editConversation = conversations.extend(
-  { id: param.path.string },
-  (p) => `/${p.id}/edit`
-)
-const showConversation = conversations.extend(
+const conversation = conversations.extend(
   { id: param.path.string },
   (p) => `/${p.id}`
 )
+const editConversation = conversation.extend("/edit")
+const signConversation = conversation.extend("/sign")
 
 export const { routes, useRoute, RouteProvider, session } = createRouter({
   in: defineRoute("/in"),
@@ -28,7 +26,7 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
   conversations,
   newConversation,
   editConversation,
-  showConversation,
+  signConversation,
 })
 
 export type Route = _Route<typeof routes>

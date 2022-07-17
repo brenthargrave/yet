@@ -121,16 +121,3 @@ export const App = (sources: Sources) => {
     track,
   }
 }
-
-// import * as React from "react"
-// import * as ReactDOM from "react-dom"
-// export const App = () => {
-//   const route = useRoute()
-//   return h(View, [
-//     match(route.name)
-//       .with("home", () => h(Landing))
-//       .with("in", () => h(PhoneSubmit))
-//       .otherwise(() => h(Landing)),
-//     // TODO: .exhaustive()
-//   ])
-// }
