@@ -275,7 +275,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const isOpenPublish$ = merge(
     onClickPublish$.pipe(map((_) => true)),
     onClosePublish$.pipe(map((_) => false))
-  ).pipe(startWith(true), tag("isOpenPublish$"), share())
+  ).pipe(startWith(false), tag("isOpenPublish$"), share())
 
   const shareURL$ = id$.pipe(
     map(

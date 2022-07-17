@@ -10,8 +10,10 @@ import { h } from "@cycle/react"
 import { FC } from "react"
 import { Heading, Input, InputGroup, Stack, Text } from "~/system"
 import { Props as ModalProps, View as Modal } from "./Modal"
+import { toSentence } from "~/i18n"
 
 export interface Props extends ModalProps {
+  participantNames?: string[]
   shareURL?: string
   onShareURLCopied?: () => void
   onClickShare: () => void
@@ -19,7 +21,8 @@ export interface Props extends ModalProps {
 
 const size = "md"
 
-export const View: FC<Props> = ({
+export const PublishView: FC<Props> = ({
+  participantNames = [],
   isOpen,
   onClose,
   shareURL,
@@ -36,7 +39,11 @@ export const View: FC<Props> = ({
 
   return h(Modal, { isOpen, onClose }, [
     h(Stack, { direction: "column", gap: 4 }, [
-      h(Heading, { size: "sm" }, `Now share your notes with X, Y & Z!`),
+      h(
+        Heading,
+        { size: "sm" },
+        `Now share your notes with ${toSentence(participantNames)}`
+      ),
       h(
         Text,
         `Once cosigned they become visible to your combined networks, and you'll get attribution for any mentioned opportunities, leads, etc.`
@@ -90,4 +97,4 @@ export const View: FC<Props> = ({
   ])
 }
 
-View.displayName = "PublishView"
+PublishView.displayName = "PublishView"

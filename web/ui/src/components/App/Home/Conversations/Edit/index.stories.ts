@@ -16,6 +16,6 @@ Default.argTypes = {
   onSelect: { control: false, action: "onSelect" },
   options: [{ value: "1", label: "Brent Hargrave" }],
   isOpenPublish: {
-    control: { type: "boolean", value: true },
+    control: { type: "boolean" },
   },
 }

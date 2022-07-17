@@ -6,7 +6,7 @@ import { DeleteButton } from "./DeleteButton"
 import { View as NoteEditor, Props as NoteEditorProps } from "./NoteEditor"
 import { View as When, Props as WhenProps } from "./When"
 import { View as Who, Props as WhoProps } from "./Who"
-import { View as PublishModal } from "./PublishView"
+import { PublishView } from "./PublishView"
 
 export type { Option, SelectedOption } from "./Who"
 
@@ -75,7 +75,8 @@ export const View = ({
         h(Divider, {}),
         h(ActionBar, { participantNames, isPublishDisabled, onClickPublish }),
       ]),
-      h(PublishModal, {
+      h(PublishView, {
+        participantNames,
         isOpen: isOpenPublish,
         onClose: onClosePublish,
         shareURL,
