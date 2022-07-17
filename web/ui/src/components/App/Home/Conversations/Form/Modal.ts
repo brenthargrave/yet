@@ -30,10 +30,9 @@ export const View: FC<Props> = ({ isOpen, onClose, children }) =>
         h(ModalHeader, { key: "header" }, ""),
         h(ModalCloseButton, { key: "closeButton" }),
         h(ModalBody, { key: "body" }, [children]),
-        // TODO: need modal footer?
-        // h(ModalFooter, { key: "footer" }, [
-        //   h(Button, { onClick: onClose }, `TODO`),
-        // ]),
+        h(ModalFooter, { key: "footer" }, [
+          // ?
+        ]),
       ]),
     ],
   })

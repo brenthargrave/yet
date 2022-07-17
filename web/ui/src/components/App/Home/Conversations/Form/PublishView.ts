@@ -1,5 +1,6 @@
 import { CopyIcon, CheckIcon } from "@chakra-ui/icons"
 import {
+  Button,
   Divider,
   IconButton,
   InputRightElement,
@@ -24,6 +25,13 @@ export const View: FC<Props> = ({
   onShareURLCopied,
 }) => {
   const { hasCopied, onCopy } = useClipboard(shareURL ?? "")
+
+  const url = "https://google.com"
+  let canShare = false
+  if (!!navigator && !!navigator.canShare) {
+    canShare = navigator.canShare({ url })
+  }
+  const onClickShare = () => navigator.share({ url })
 
   return h(Modal, { isOpen, onClose }, [
     h(Stack, { direction: "column", gap: 4 }, [
@@ -58,8 +66,11 @@ export const View: FC<Props> = ({
           ]),
         ]),
       ]),
-      h(Divider),
-      // Share button
+      canShare && h(Divider),
+      canShare &&
+        h(Stack, { direction: "column" }, [
+          h(Button, { onClick: onClickShare }, `Share`),
+        ]),
     ]),
   ])
 }
