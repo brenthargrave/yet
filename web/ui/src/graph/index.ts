@@ -290,22 +290,14 @@ export const deleteConversation$ = (input: DeleteConversationInput) => {
 }
 
 export const getConversation$ = (id: string) => {
-  // const cached = client.readQuery({
-  //   query: ViewConversationDocument,
-  //   variables: { id },
-  // })?.getConversation
-  // const cached$ = cached ? of(cached) : EMPTY
   return merge(
-    // cached$,
     from(
       client.query({
         query: ViewConversationDocument,
         variables: { id },
-        fetchPolicy: "cache-first",
+        fetchPolicy: "no-cache",
       })
     ).pipe(
-      // NOTE: simulate network latency in development
-      // delay(API_ENV === "dev" ? 1000 : 0),
       map(({ data, errors }) => {
         if (errors) throw new GraphError(JSON.stringify(errors))
         return data

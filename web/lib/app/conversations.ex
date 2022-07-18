@@ -20,21 +20,11 @@ defmodule App.Conversations do
       occurred_at: occurred_at || Timex.now()
     }
 
-    Conversation
-    |> Repo.get(id)
+    Repo.get(Conversation, id)
     |> Repo.preload(:creator)
-    |> case do
-      nil ->
-        ok(%Conversation{})
-
-      conversation ->
-        if conversation.creator != customer,
-          do: error(:unauthorized),
-          else: ok(conversation)
-    end
-    # |> lift(nil, :not_found)
-    # |> convert_error(:not_found, %Conversation{})
-    # |> bind(&if &1.creator != customer, do: error(:unauthorized), else: ok(&1))
+    |> lift(nil, :not_found)
+    |> convert_error(:not_found, %Conversation{})
+    |> bind(&if &1.creator_id != customer.id, do: error(:unauthorized), else: ok(&1))
     |> fmap(&Conversation.changeset(&1, attrs))
     |> bind(&Repo.insert_or_update(&1))
   end
@@ -44,8 +34,9 @@ defmodule App.Conversations do
           viewer :: Customer.t()
         ) :: Brex.Result.s(Conversation.t()) do
     Repo.get(Conversation, id)
+    |> Repo.preload(:creator)
     |> lift(nil, :not_found)
-    |> bind(&if &1.creator != viewer, do: ok(&1), else: error(:unauthorized))
+    |> bind(&if &1.creator_id == viewer.id, do: ok(&1), else: error(:unauthorized))
   end
 
   defun delete_conversation(
@@ -54,7 +45,7 @@ defmodule App.Conversations do
         ) :: Brex.Result.s(Conversation.t()) do
     Repo.get(Conversation, id)
     |> lift(nil, :not_found)
-    |> bind(&if &1.creator != viewer, do: ok(&1), else: error(:unauthorized))
+    |> bind(&if &1.creator == viewer, do: ok(&1), else: error(:unauthorized))
     |> fmap(&Conversation.tombstone_changeset(&1))
     |> bind(&Repo.insert_or_update(&1))
   end
