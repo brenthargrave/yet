@@ -294,7 +294,7 @@ export const getConversation$ = (id: string) => {
       client.query({
         query: ViewConversationDocument,
         variables: { id },
-        fetchPolicy: "cache-first",
+        fetchPolicy: "network-only",
       })
     ).pipe(
       map(({ data, errors }) => {
