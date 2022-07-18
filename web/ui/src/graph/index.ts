@@ -14,7 +14,6 @@ import {
   MonoTypeOperatorFunction,
   Observable,
   of,
-  shareReplay,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { switchMap } from "rxjs/operators"
@@ -295,7 +294,7 @@ export const getConversation$ = (id: string) => {
       client.query({
         query: ViewConversationDocument,
         variables: { id },
-        fetchPolicy: "no-cache",
+        fetchPolicy: "cache-first",
       })
     ).pipe(
       map(({ data, errors }) => {
