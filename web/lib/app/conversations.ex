@@ -61,7 +61,11 @@ defmodule App.Conversations do
 
   defun get_conversations(viewer :: Customer.t()) :: Brex.Result.s(list(Converstion.t())) do
     Repo.all(
-      from(c in Conversation, where: c.creator_id == ^viewer.id, where: c.status != :deleted)
+      from(c in Conversation,
+        preload: :creator,
+        where: c.creator_id == ^viewer.id,
+        where: c.status != :deleted
+      )
     )
     |> lift(nil, :not_found)
   end
