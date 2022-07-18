@@ -12,6 +12,7 @@ import {
   isLurking,
   isOnboarding,
   Source as GraphSource,
+  eatUnrecoverableError,
 } from "~/graph"
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
@@ -80,18 +81,13 @@ export const App = (sources: Sources) => {
 
   const react = combineLatest({ header: headerView$, body: bodyView$ }).pipe(
     map(({ header, body }) => h(AppView, { header, body })),
-    catchError((error, caught$) => {
+    eatUnrecoverableError((error, caught$) => {
       captureException(error)
       toast({
         title: t("default.error.title"),
         description: t("default.error.description"),
         status: "error",
       })
-      // NOTE: graph watch errors are fatal, will loop indefinitely if resubscribed
-      if (error instanceof GraphDefaultQueryError) return EMPTY
-      // TODO: replace w/ exp. backoff?
-      if (VITE_API_ENV === "dev") return EMPTY
-      return caught$.pipe(tag("caught$"))
     }),
     tag("react$")
   )
@@ -103,15 +99,12 @@ export const App = (sources: Sources) => {
     }),
     tag("guardedHistory$")
   )
-  // NOTE: ignore errors & resubscribe in all drivers
   const router = merge(guardedHistory$, authRouter, homeRouter$).pipe(
-    catchError((error, caught$) => caught$)
+    eatUnrecoverableError()
   )
-  const notice = merge(authNotice, homeNotice$).pipe(
-    catchError((error, caught$) => caught$)
-  )
-  const graph = merge(authGraph$).pipe(catchError((error, caught$) => caught$))
-  const track = merge(home.track).pipe(catchError((error, caught$) => caught$))
+  const notice = merge(authNotice, homeNotice$).pipe(eatUnrecoverableError())
+  const graph = merge(authGraph$).pipe(eatUnrecoverableError())
+  const track = merge(home.track).pipe(eatUnrecoverableError())
 
   return {
     react,

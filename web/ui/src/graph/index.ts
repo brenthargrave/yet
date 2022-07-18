@@ -6,10 +6,12 @@ import { captureException } from "@sentry/react"
 import {
   BehaviorSubject,
   catchError,
+  EMPTY,
   filter,
   from,
   map,
   merge,
+  MonoTypeOperatorFunction,
   Observable,
   of,
   shareReplay,
@@ -363,3 +365,18 @@ export const conversations$ = token$.pipe(
   }),
   shareLatest()
 )
+
+export function eatUnrecoverableError<T>(
+  callback?: (error: Error, caught: Observable<T>) => void
+): MonoTypeOperatorFunction<T> {
+  return (source) =>
+    source.pipe(
+      catchError((error, caught$) => {
+        if (callback) callback(error, caught$)
+        // NOTE: graph watch errors are fatal, will loop indefinitely if resubscribed
+        return error instanceof GraphDefaultQueryError
+          ? EMPTY
+          : caught$.pipe(tag("caught$"))
+      })
+    )
+}
