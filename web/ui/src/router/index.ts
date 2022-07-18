@@ -24,8 +24,8 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
   out: defineRoute("/out"),
   root,
   conversations,
-  conversation,
   newConversation,
+  conversation,
   editConversation,
   signConversation,
 })
