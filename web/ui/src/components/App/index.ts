@@ -8,7 +8,7 @@ import { Landing } from "~/components/Landing"
 import { Onboarding } from "~/components/Onboarding"
 import {
   Customer,
-  GraphWatchError,
+  GraphDefaultQueryError,
   isLurking,
   isOnboarding,
   Source as GraphSource,
@@ -88,7 +88,7 @@ export const App = (sources: Sources) => {
         status: "error",
       })
       // NOTE: graph watch errors are fatal, will loop indefinitely if resubscribed
-      if (error instanceof GraphWatchError) return EMPTY
+      if (error instanceof GraphDefaultQueryError) return EMPTY
       // TODO: replace w/ exp. backoff?
       if (VITE_API_ENV === "dev") return EMPTY
       return caught$.pipe(tag("caught$"))

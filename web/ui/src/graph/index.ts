@@ -63,7 +63,7 @@ const tag = makeTagger("graph")
 const { VITE_API_ENV: API_ENV } = import.meta.env
 
 export class GraphError extends Error {}
-export class GraphWatchError extends GraphError {}
+export class GraphDefaultQueryError extends GraphError {}
 
 export const submitPhone$ = (
   input: SubmitPhoneInput
@@ -169,7 +169,7 @@ export const me$ = token$.pipe(
     )
   }),
   catchError((error, _caught$) => {
-    throw new GraphWatchError(error.message)
+    throw new GraphDefaultQueryError(error.message)
   }),
   tag("me$"),
   shareLatest()
@@ -247,7 +247,7 @@ export const contacts$ = token$.pipe(
     )
   }),
   catchError((error, _caught$) => {
-    throw new GraphWatchError(error.message)
+    throw new GraphDefaultQueryError(error.message)
   }),
   tag("contacts$"),
   filter(isNotNullish),
@@ -314,6 +314,9 @@ export const getConversation$ = (id: string) => {
       const { userError, conversation } = data!.getConversation!
       return userError ? new Err(userError) : new Ok(conversation!)
     }),
+    catchError((error, _caught$) => {
+      throw new GraphDefaultQueryError(error.message)
+    }),
     tag("getConversation$")
   )
 }
@@ -356,7 +359,7 @@ export const conversations$ = token$.pipe(
   ),
   tag("conversations$ - DELETED"),
   catchError((error, _caught$) => {
-    throw new GraphWatchError(error.message)
+    throw new GraphDefaultQueryError(error.message)
   }),
   shareLatest()
 )

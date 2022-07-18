@@ -71,6 +71,7 @@ export const Auth = (sources: Sources) => {
   const tokenInvalidated$ = token$.pipe(
     filter(isNotNullish),
     distinctUntilChanged(),
+    tag("tokenInvalidated$ > distinctUntilChanged"),
     switchMap((_) => checkToken$()),
     filter((token) => isNullish(token?.value)),
     tag("tokenInvalidated$")
