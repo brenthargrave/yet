@@ -1,5 +1,9 @@
 fragment ConversationProps on Conversation {
   id
+  creator {
+    id
+    name
+  }
   invitees {
     id
     name

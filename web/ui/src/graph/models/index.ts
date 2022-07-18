@@ -1,7 +1,11 @@
 import { eqBy, isEmpty, prop, symmetricDifferenceWith } from "ramda"
 import { faker } from "@faker-js/faker"
 import { isNotEmpty, join } from "~/fp"
-import { Conversation as FullConversation, Invitee } from "../generated"
+import {
+  Conversation as FullConversation,
+  Invitee,
+  Participant,
+} from "../generated"
 
 type LocalConversation = Omit<FullConversation, "status">
 
@@ -28,6 +32,13 @@ const makeName = () =>
   join(" ", [faker.name.firstName(), faker.name.lastName()])
 const makeDate = () => faker.date.recent()
 
+export const makeParticipant = (): Participant => {
+  return {
+    id: makeId(),
+    name: makeName(),
+  }
+}
+
 export const makeInvitee = (): Invitee => {
   return {
     id: makeId(),
@@ -39,6 +50,7 @@ export const makeConversation = (): LocalConversation => {
   return {
     id: makeId(),
     occurredAt: makeDate(),
+    creator: makeParticipant(),
     invitees: [makeInvitee(), makeInvitee()],
     note: faker.lorem.paragraph(),
   }

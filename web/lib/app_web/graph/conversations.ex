@@ -20,8 +20,14 @@ defmodule AppWeb.Graph.Conversations do
     value(:deleted, as: :deleted)
   end
 
+  object :participant do
+    field(:name, non_null(:string))
+    field(:id, non_null(:string))
+  end
+
   object :conversation do
     field(:id, non_null(:string))
+    field(:creator, non_null(:participant))
     field(:invitees, non_null(list_of(non_null(:invitee))))
     field(:note, :string)
     field(:status, non_null(:conversation_status))

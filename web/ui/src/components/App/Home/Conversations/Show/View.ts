@@ -16,7 +16,9 @@ export interface Props {
   conversation: Conversation
 }
 
-export const View: FC<Props> = ({ conversation: { occurredAt, note } }) =>
+export const View: FC<Props> = ({
+  conversation: { occurredAt, note, creator, invitees },
+}) =>
   h(
     Stack,
     {
