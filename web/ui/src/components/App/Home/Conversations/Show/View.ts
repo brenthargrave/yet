@@ -1,16 +1,19 @@
-import { Divider, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { Conversation } from "~/graph"
-import { localizeDate } from "~/i18n"
+import { localizeDate, toSentence } from "~/i18n"
 import {
-  BackButton,
+  Divider,
   Header,
   Heading,
   MarkdownView,
+  Spacer,
   Stack,
   Text,
 } from "~/system"
+import { pluck, map } from "~/fp"
+
+const bold = (inner: string) => `**${inner}**`
 
 export interface Props {
   conversation: Conversation
@@ -28,18 +31,29 @@ export const View: FC<Props> = ({
     },
     [
       h(Header, [
-        h(Heading, { size: "md" }, "Conversation"),
-        // h(BackButton, {
-        //   onClick: onClickBack,
-        // }),
+        // h(BackButton, { onClick }),
         h(Spacer),
-        h(Text, {}, localizeDate(occurredAt)),
       ]),
-      h(Stack, { direction: "column", width: "100%", padding: 4 }, [
+      h(Stack, { direction: "column", width: "100%", padding: 4, gap: 2 }, [
+        h(Stack, { direction: "row" }, [
+          h(Heading, { size: "md" }, "Conversation"),
+          h(Spacer),
+          h(Text, {}, localizeDate(occurredAt)),
+        ]),
+        h(Stack, { direction: "row" }, [
+          // h(Text, { as: "b" }, creator.name),
+          // h(Spacer),
+          h(MarkdownView, {
+            md: `${bold(creator.name)} with ${toSentence(
+              map(bold, pluck("name", invitees))
+            )}`,
+          }),
+          // h(Text, {}, localizeDate(occurredAt)),
+        ]),
+        h(Stack, { direction: "row" }, [
+          // h(Text, { as: "b" }, toSentence(pluck("name", invitees))),
+        ]),
         h(MarkdownView, { md: note }),
-        // TODO: <Creator>
-        // with <participants>
-        // note view
       ]),
     ]
   )

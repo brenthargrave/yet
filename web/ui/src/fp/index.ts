@@ -14,9 +14,9 @@ import join from "ramda/es/join"
 import map from "ramda/es/map"
 import none from "ramda/es/none"
 import not from "ramda/es/not"
+import pluck from "ramda/es/pluck"
 import prop from "ramda/es/prop"
 import propSatisfies from "ramda/es/propSatisfies"
-import reject from "ramda/es/reject"
 import sort from "ramda/es/sort"
 import split from "ramda/es/split"
 import take from "ramda/es/take"
@@ -47,6 +47,7 @@ export {
   map,
   none,
   not,
+  pluck,
   prop,
   propSatisfies,
   sort,
