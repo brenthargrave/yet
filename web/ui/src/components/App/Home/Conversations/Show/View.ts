@@ -36,7 +36,7 @@ export const View: FC<Props> = ({
         h(Text, {}, localizeDate(occurredAt)),
       ]),
       h(Stack, { direction: "column", width: "100%", padding: 4 }, [
-        h(MarkdownView, { md: note ?? "" }),
+        h(MarkdownView, { md: note }),
         // TODO: <Creator>
         // with <participants>
         // note view

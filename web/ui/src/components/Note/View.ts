@@ -18,7 +18,7 @@ export const View: FC<Props> = ({ note, maxLines, ...rest }) =>
       borderRadius: "lg",
       ...rest,
     },
-    [h(MarkdownView, { maxLines, md: note ?? "" })]
+    [h(MarkdownView, { maxLines, md: note })]
   )
 
 View.displayName = "NoteView"

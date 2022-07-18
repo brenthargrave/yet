@@ -10,14 +10,15 @@ import { join, split, take, trim } from "~/fp"
 const className = style({ textDecoration: "underline" })
 
 interface Props {
-  md: string
+  md?: string | null
   maxLines?: number
 }
 
 export const MarkdownView: FC<Props> = ({ md, maxLines }) => {
+  const mkd = md ?? ""
   const truncated = maxLines
-    ? trim(join("\n", take(maxLines, split("\n", md)))).concat("\n...")
-    : md
+    ? trim(join("\n", take(maxLines, split("\n", mkd)))).concat("\n...")
+    : mkd
   // NOTE: otherwise consecutive newlines don't generated breaks
   // TODO: PR fix on remarkBreaks lib
   // https://github.com/remarkjs/react-markdown/issues/278#issuecomment-628264062
