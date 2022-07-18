@@ -12,6 +12,7 @@ import {
   Text,
 } from "~/system"
 import { pluck, map } from "~/fp"
+import { NoteView } from "~/components/Note"
 
 const bold = (inner: string) => `**${inner}**`
 
@@ -34,26 +35,20 @@ export const View: FC<Props> = ({
         // h(BackButton, { onClick }),
         h(Spacer),
       ]),
-      h(Stack, { direction: "column", width: "100%", padding: 4, gap: 2 }, [
+      h(Stack, { direction: "column", width: "100%", padding: 4, gap: 4 }, [
         h(Stack, { direction: "row" }, [
           h(Heading, { size: "md" }, "Conversation"),
           h(Spacer),
           h(Text, {}, localizeDate(occurredAt)),
         ]),
-        h(Stack, { direction: "row" }, [
-          // h(Text, { as: "b" }, creator.name),
-          // h(Spacer),
+        h(Stack, { direction: "column", gap: 1 }, [
           h(MarkdownView, {
             md: `${bold(creator.name)} with ${toSentence(
               map(bold, pluck("name", invitees))
             )}`,
           }),
-          // h(Text, {}, localizeDate(occurredAt)),
+          h(NoteView, { note }),
         ]),
-        h(Stack, { direction: "row" }, [
-          // h(Text, { as: "b" }, toSentence(pluck("name", invitees))),
-        ]),
-        h(MarkdownView, { md: note }),
       ]),
     ]
   )
