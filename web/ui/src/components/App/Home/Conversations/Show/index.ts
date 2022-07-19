@@ -15,7 +15,7 @@ interface Sources {
   graph: GraphSource
 }
 
-export const Main = (sources: Sources, tagPrefix?: string) => {
+export const Sign = (sources: Sources, tagPrefix?: string) => {
   const {
     router: { history$ },
   } = sources
