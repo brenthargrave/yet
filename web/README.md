@@ -29,12 +29,12 @@ heroku local:run -e .env.dev mix ecto.create
 heroku local:run -e .env.dev mix ecto.migrate
 heroku local -e .env.dev
 
-# optional: `https://yet.wip` using `puma-dev`
+# optional: `https://trawler.wip` using `puma-dev`
 sudo puma-dev -uninstall && puma-dev -setup
 echo 5000 > .port
-wd=$(pwd) && (cd ~/.puma-dev/ && ln -s $wd/.port yet)
+wd=$(pwd) && (cd ~/.puma-dev/ && ln -s $wd/.port trawler)
 puma-dev -install -debug -d test:wip:localhost -launchd
-open https://yet.wip
+open https://trawler.wip
 ```
 
 ## Deployment
