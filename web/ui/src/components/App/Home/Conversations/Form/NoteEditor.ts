@@ -20,7 +20,7 @@ export const View: FC<Props> = ({ note, onChangeNote }) => {
     const previewHeight = document.getElementById(noteInputsId)?.offsetHeight
     if (!!noteInputsHeight && !!previewHeight) {
       const _minHeight = Math.max(noteInputsHeight, previewHeight)
-      setMinHeight(_minHeight + 90)
+      setMinHeight(_minHeight + 80)
     }
   }, [note])
 

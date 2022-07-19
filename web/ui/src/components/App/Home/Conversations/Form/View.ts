@@ -72,7 +72,7 @@ export const View = ({
         h(When, { occurredAt, onChangeOccurredAt }),
         h(Who, { onSelect, options, selectedOptions }),
         h(NoteEditor, { note, onChangeNote }),
-        h(Divider, {}),
+        // h(Divider, {}),
         h(ActionBar, { participantNames, isPublishDisabled, onClickPublish }),
       ]),
       h(PublishView, {
