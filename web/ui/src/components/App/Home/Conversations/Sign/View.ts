@@ -1,18 +1,12 @@
+import { resultKeyNameFromField } from "@apollo/client/utilities"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { Conversation } from "~/graph"
-import { localizeDate, toSentence } from "~/i18n"
-import {
-  Divider,
-  Header,
-  Heading,
-  MarkdownView,
-  Spacer,
-  Stack,
-  Text,
-} from "~/system"
-import { pluck, map } from "~/fp"
+import { Result } from "ts-results"
 import { NoteView } from "~/components/Note"
+import { map, pluck } from "~/fp"
+import { Conversation, UserError } from "~/graph"
+import { localizeDate, toSentence } from "~/i18n"
+import { Header, Heading, MarkdownView, Spacer, Stack, Text } from "~/system"
 
 const bold = (inner: string) => `**${inner}**`
 
@@ -21,7 +15,7 @@ export interface Props {
 }
 
 export const View: FC<Props> = ({
-  conversation: { occurredAt, note, creator, invitees },
+  conversation: { occurredAt, invitees, creator, note },
 }) =>
   h(
     Stack,

@@ -6,7 +6,7 @@ import { routes, Source as RouterSource } from "~/router"
 import { Main as Create } from "./Create"
 import { Edit } from "./Edit"
 import { List } from "./List"
-import { Sign } from "./Show"
+import { Sign } from "./Sign"
 
 interface Sources {
   react: ReactSource

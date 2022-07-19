@@ -38,6 +38,16 @@ defmodule AppWeb.Resolvers.Conversations do
     })
   end
 
+  defun get_conversation(
+          _parent,
+          _args,
+          _resolution
+        ) :: resolver_result(ConversationPayload.t()) do
+    ok(%ConversationPayload{
+      user_error: %UserError{message: "Not found", code: :not_found}
+    })
+  end
+
   defun delete_conversation(
           _parent,
           %{input: %{id: id}} = _args,

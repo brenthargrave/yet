@@ -1,5 +1,14 @@
 import { h, ReactSource } from "@cycle/react"
-import { EMPTY, filter, map, merge, of, share, switchMap } from "rxjs"
+import {
+  EMPTY,
+  filter,
+  map,
+  merge,
+  of,
+  share,
+  startWith,
+  switchMap,
+} from "rxjs"
 import { match } from "ts-pattern"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { ErrorCode, getConversation$, Source as GraphSource } from "~/graph"
@@ -20,30 +29,28 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
     router: { history$ },
   } = sources
 
-  const tagScope = `${tagPrefix}/Show`
+  const tagScope = `${tagPrefix}/Sign`
   const tag = makeTagger(tagScope)
 
   // ! TODO: dedupe w/ Edit? id, getRecord, not-found/redirect
   const id$ = history$.pipe(
     switchMap((route) =>
       match(route)
-        .with({ name: routes.conversation.name }, ({ params }) => of(params.id))
+        .with({ name: routes.signConversation.name }, ({ params }) =>
+          of(params.id)
+        )
         .otherwise(() => EMPTY)
     ),
     tag("id$"),
     shareLatest()
   )
-  const getRecord$ = id$.pipe(
+  const result$ = id$.pipe(
     switchMap((id) => getConversation$(id)),
-    tag("getRecord$"),
+    tag("result$"),
     shareLatest()
   )
-  const record$ = getRecord$.pipe(filterResultOk(), tag("record$"), share())
-  const userError$ = getRecord$.pipe(
-    filterResultErr(),
-    tag("userError$"),
-    share()
-  )
+  const record$ = result$.pipe(filterResultOk(), tag("record$"), share())
+  const userError$ = result$.pipe(filterResultErr(), tag("userError$"), share())
   const userErrorNotice$ = userError$.pipe(
     map(({ message }) => error({ description: message }))
   )
@@ -57,6 +64,7 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
   // ! unique logic begins here
   const react = record$.pipe(
     map((conversation) => h(View, { conversation })),
+    startWith(null),
     tag("react")
   )
 
