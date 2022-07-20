@@ -21,38 +21,25 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
     router: { history$ },
   } = sources
 
-  const {
-    router: listRouter$,
-    react: listView$,
-    track,
-  } = List(sources, tagScope)
-
-  const {
-    react: editView$,
-    router: editRouter$,
-    notice: editNotice$,
-  } = Edit(sources, tagScope)
-
+  const list = List(sources, tagScope)
+  const edit = Edit(sources, tagScope)
+  const create = Create(sources, tagScope)
   const sign = Sign(sources, tagScope)
-
-  const { react: createView$, router: createRouter$ } = Create(
-    sources,
-    tagScope
-  )
 
   const react = history$.pipe(
     switchMap((route) =>
       match(route.name)
-        .with(routes.newConversation.name, () => createView$)
-        .with(routes.editConversation.name, () => editView$)
-        .with(routes.conversations.name, () => listView$)
+        .with(routes.newConversation.name, () => create.react)
+        .with(routes.editConversation.name, () => edit.react)
+        .with(routes.conversations.name, () => list.react)
         .with(routes.signConversation.name, () => sign.react)
-        .otherwise((_) => listView$)
+        .otherwise((_) => list.react)
     )
   )
 
-  const router = merge(listRouter$, editRouter$, createRouter$)
-  const notice = merge(editNotice$, sign.notice)
+  const { track } = list
+  const router = merge(list.router, edit.router, create.router)
+  const notice = merge(edit.notice, sign.notice)
 
   return {
     react,
