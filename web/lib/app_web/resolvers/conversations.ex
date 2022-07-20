@@ -31,10 +31,10 @@ defmodule AppWeb.Resolvers.Conversations do
     Conversations.get_conversation(id, customer)
     |> fmap(&%ConversationPayload{conversation: &1})
     |> convert_error(:not_found, %ConversationPayload{
-      user_error: %UserError{message: "Not found", code: :not_found}
+      user_error: UserError.not_found()
     })
     |> convert_error(:unauthorized, %ConversationPayload{
-      user_error: %UserError{message: "Unauthorized", code: :unauthorized}
+      user_error: UserError.unauthorized()
     })
   end
 
@@ -44,7 +44,7 @@ defmodule AppWeb.Resolvers.Conversations do
           _resolution
         ) :: resolver_result(ConversationPayload.t()) do
     ok(%ConversationPayload{
-      user_error: %UserError{message: "Not found", code: :not_found}
+      user_error: UserError.not_found()
     })
   end
 
@@ -56,10 +56,10 @@ defmodule AppWeb.Resolvers.Conversations do
     Conversations.delete_conversation(id, customer)
     |> fmap(&%ConversationPayload{conversation: &1})
     |> convert_error(:not_found, %ConversationPayload{
-      user_error: %UserError{message: "Not found", code: :not_found}
+      user_error: UserError.not_found()
     })
     |> convert_error(:unauthorized, %ConversationPayload{
-      user_error: %UserError{message: "Unauthorized", code: :unauthorized}
+      user_error: UserError.unauthorized()
     })
   end
 
