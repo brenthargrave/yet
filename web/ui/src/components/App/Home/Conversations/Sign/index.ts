@@ -17,6 +17,7 @@ import { error } from "~/notice"
 import { push, routes, Source as RouterSource } from "~/router"
 import { shareLatest } from "~/rx"
 import { View } from "./View"
+import { ErrorView } from "~/components/App/ErrorView"
 
 interface Sources {
   react: ReactSource
@@ -62,18 +63,14 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
   )
 
   // ! unique logic begins here
-  // const react = record$.pipe(
-  //   map((conversation) => h(View, { conversation })),
-  //   startWith(null),
-  //   tag("react")
-  // )
   const react = merge(
     record$.pipe(map((conversation) => h(View, { conversation }))),
-    userError$.pipe(map((_) => null))
-  ).pipe(tag("react"))
+    userError$.pipe(map((error) => h(ErrorView, { error })))
+  ).pipe(startWith(null), tag("react"))
 
   const router = merge(redirectNotFound$)
   const notice = merge(userErrorNotice$)
+
   return {
     react,
     router,
