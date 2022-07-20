@@ -12,12 +12,15 @@ const bold = (inner: string) => `**${inner}**`
 
 export interface Props {
   conversation: Conversation
+  // result: Result<Conversation, UserError>
 }
 
 export const View: FC<Props> = ({
   conversation: { occurredAt, invitees, creator, note },
-}) =>
-  h(
+  // result,
+}) => {
+  // const conversation = result.unwrapOr(null)
+  return h(
     Stack,
     {
       direction: "column",
@@ -46,3 +49,4 @@ export const View: FC<Props> = ({
       ]),
     ]
   )
+}

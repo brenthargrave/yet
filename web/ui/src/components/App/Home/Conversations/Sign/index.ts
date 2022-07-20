@@ -62,11 +62,15 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
   )
 
   // ! unique logic begins here
-  const react = record$.pipe(
-    map((conversation) => h(View, { conversation })),
-    startWith(null),
-    tag("react")
-  )
+  // const react = record$.pipe(
+  //   map((conversation) => h(View, { conversation })),
+  //   startWith(null),
+  //   tag("react")
+  // )
+  const react = merge(
+    record$.pipe(map((conversation) => h(View, { conversation }))),
+    userError$.pipe(map((_) => null))
+  ).pipe(tag("react"))
 
   const router = merge(redirectNotFound$)
   const notice = merge(userErrorNotice$)

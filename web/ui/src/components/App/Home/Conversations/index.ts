@@ -30,7 +30,7 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
   const {
     react: editView$,
     router: editRouter$,
-    notice,
+    notice: editNotice$,
   } = Edit(sources, tagScope)
 
   const sign = Sign(sources, tagScope)
@@ -52,6 +52,7 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
   )
 
   const router = merge(listRouter$, editRouter$, createRouter$)
+  const notice = merge(editNotice$, sign.notice)
 
   return {
     react,
