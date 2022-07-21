@@ -12,11 +12,13 @@ const bold = (inner: string) => `**${inner}**`
 export interface Props {
   conversation: Conversation
   requiresAuth?: boolean
+  onClickAuth?: () => void
 }
 
 export const View: FC<Props> = ({
   conversation: { occurredAt, invitees, creator, note },
   requiresAuth = false,
+  onClickAuth,
 }) => {
   const creatorName = creator.name
   const occurredAtDesc = localizeDate(occurredAt)
@@ -32,6 +34,7 @@ export const View: FC<Props> = ({
         isOpen: requiresAuth,
         creatorName,
         occurredAtDesc,
+        onClickAuth,
       }),
       h(Header, [
         // h(BackButton, { onClick }),

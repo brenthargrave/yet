@@ -8,7 +8,8 @@ import {
 } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { Button, MarkdownView, Stack } from "~/system"
+import { px } from "csx"
+import { Button, MarkdownView, Stack, Center, maxWidth } from "~/system"
 
 export interface Props {
   isOpen: boolean
@@ -25,33 +26,44 @@ export const View: FC<Props> = ({
   occurredAtDesc = "???",
 }) => {
   return h(Drawer, {
+    key: "drawer",
     isOpen,
     placement: "top",
     onClose: () => {
       /* NOTE: no-cop */
     },
     children: [
-      h(DrawerOverlay),
-      h(DrawerContent, [
-        h(DrawerHeader, ``),
-        h(DrawerBody, [
-          h(MarkdownView, {
-            md: `**${creatorName}** wants to share their notes from your conversation on **${occurredAtDesc}**
+      h(DrawerOverlay, { key: "drawer-overlay" }),
+      h(
+        DrawerContent,
+        {
+          key: "drawer-content",
+        },
+        [
+          h(DrawerHeader, { key: "drawer-header" }, ``),
+          h(DrawerBody, { key: "drawer-body" }, [
+            h(Center, {}, [
+              h(Stack, { maxWidth }, [
+                h(MarkdownView, {
+                  md: `**${creatorName}** wants to share their notes from your conversation on **${occurredAtDesc}**.
 
             Sign in below to review them`,
-          }),
-        ]),
-        h(DrawerFooter, [
-          h(
-            Stack,
-            { direction: "column", alignItems: "center", width: "100%" },
-            [
-              //
-              h(Button, { onClick: onClickAuth }, `Sign in / Sign up`),
-            ]
-          ),
-        ]),
-      ]),
+                }),
+              ]),
+            ]),
+          ]),
+          h(DrawerFooter, { key: "drawer-footer" }, [
+            h(
+              Stack,
+              { direction: "column", alignItems: "center", width: "100%" },
+              [
+                //
+                h(Button, { onClick: onClickAuth }, `Sign in / Sign up`),
+              ]
+            ),
+          ]),
+        ]
+      ),
     ],
   })
 }

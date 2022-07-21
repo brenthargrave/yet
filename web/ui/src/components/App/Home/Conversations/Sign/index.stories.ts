@@ -1,8 +1,7 @@
 import { h } from "@cycle/react"
 import { Meta, Story } from "@storybook/react"
-import { boolean } from "ts-pattern/dist/patterns"
-import { Props, View } from "./View"
 import { makeConversation } from "~/graph/models"
+import { Props, View } from "./View"
 
 export default {
   title: "Components/Conversations/Sign",
