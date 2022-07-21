@@ -68,7 +68,8 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
     userError$.pipe(map((error) => h(ErrorView, { error })))
   ).pipe(startWith(null), tag("react"))
 
-  const router = merge(redirectNotFound$)
+  // const router = merge(redirectNotFound$)
+  const router = merge(EMPTY)
   const notice = merge(userErrorNotice$)
 
   return {

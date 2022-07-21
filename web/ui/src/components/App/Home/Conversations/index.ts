@@ -38,7 +38,7 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
   )
 
   const { track } = list
-  const router = merge(list.router, edit.router, create.router)
+  const router = merge(list.router, edit.router, create.router, sign.router)
   const notice = merge(edit.notice, sign.notice)
 
   return {
