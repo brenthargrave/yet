@@ -1,13 +1,9 @@
-import { eqBy, isEmpty, prop, symmetricDifferenceWith } from "ramda"
 import { faker } from "@faker-js/faker"
+import { eqBy, isEmpty, prop, symmetricDifferenceWith } from "ramda"
 import { isNotEmpty, join } from "~/fp"
-import {
-  Conversation as FullConversation,
-  Invitee,
-  Participant,
-} from "../generated"
+import { Conversation, Invitee, MakeOptional, Participant } from "../generated"
 
-type LocalConversation = Omit<FullConversation, "status">
+export type DraftConversation = MakeOptional<Conversation, "status" | "creator">
 
 type Note = string | null | undefined
 
@@ -15,10 +11,10 @@ export const isValidNote = (note: Note) => isNotEmpty(note)
 
 export const isValidInviteeSet = (invitees: Invitee[]) => isNotEmpty(invitees)
 
-export const isValidConversation = ({ note, invitees }: LocalConversation) =>
+export const isValidConversation = ({ note, invitees }: DraftConversation) =>
   isValidNote(note) || isValidInviteeSet(invitees)
 
-export const isCompleteConversation = ({ note, invitees }: LocalConversation) =>
+export const isCompleteConversation = ({ note, invitees }: DraftConversation) =>
   isValidNote(note) && isValidInviteeSet(invitees)
 
 export const inviteesDiffer = (current: Invitee[], old: Invitee[]): boolean =>
@@ -46,7 +42,7 @@ export const makeInvitee = (): Invitee => {
   }
 }
 
-export const makeConversation = (): LocalConversation => {
+export const makeConversation = (): DraftConversation => {
   return {
     id: makeId(),
     occurredAt: makeDate(),

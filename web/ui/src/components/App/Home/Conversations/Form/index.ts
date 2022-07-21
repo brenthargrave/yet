@@ -18,11 +18,11 @@ import {
   withLatestFrom,
 } from "rxjs"
 import { filterResultOk } from "ts-results/rxjs-operators"
-import { not, prop, map as _map } from "~/fp"
+import { map as _map, not, prop } from "~/fp"
 import {
   Contact,
-  Conversation,
   deleteConversation$,
+  DraftConversation,
   Invitee,
   inviteesDiffer,
   isCompleteConversation,
@@ -52,7 +52,7 @@ const optionsToInvitees = (options: ContactOption[]): Invitee[] =>
 
 interface Props {
   id$: Observable<string>
-  record$: Observable<Conversation>
+  record$: Observable<DraftConversation>
 }
 interface Sources {
   react: ReactSource
