@@ -54,7 +54,7 @@ const currentYear = getYear(today)
 export const localizeDate = (date: Date) => {
   return getYear(date) < currentYear
     ? format(date, "M/DD/YY")
-    : format(date, "MMM Do")
+    : format(date, "MMMM Do")
 }
 
 // NOTE: assumes polyfill imports above work

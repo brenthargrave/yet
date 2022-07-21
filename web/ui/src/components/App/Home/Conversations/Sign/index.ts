@@ -55,12 +55,6 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
   const userErrorNotice$ = userError$.pipe(
     map(({ message }) => error({ description: message }))
   )
-  const redirectNotFound$ = userError$.pipe(
-    filter(({ code }) => code === ErrorCode.NotFound),
-    map((_) => push(routes.conversations())),
-    tag("redirectNotFound$"),
-    share()
-  )
 
   // ! unique logic begins here
   const react = merge(
@@ -68,9 +62,8 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
     userError$.pipe(map((error) => h(ErrorView, { error })))
   ).pipe(startWith(null), tag("react"))
 
-  // const router = merge(redirectNotFound$)
-  const router = merge(EMPTY)
   const notice = merge(userErrorNotice$)
+  const router = merge(EMPTY)
 
   return {
     react,

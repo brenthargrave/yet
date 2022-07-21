@@ -5,16 +5,21 @@ import { map, pluck } from "~/fp"
 import { Conversation } from "~/graph"
 import { localizeDate, toSentence } from "~/i18n"
 import { Header, Heading, MarkdownView, Spacer, Stack, Text } from "~/system"
+import { View as AuthPrompt } from "./AuthPrompt"
 
 const bold = (inner: string) => `**${inner}**`
 
 export interface Props {
   conversation: Conversation
+  requiresAuth?: boolean
 }
 
 export const View: FC<Props> = ({
   conversation: { occurredAt, invitees, creator, note },
+  requiresAuth = false,
 }) => {
+  const creatorName = creator.name
+  const occurredAtDesc = localizeDate(occurredAt)
   return h(
     Stack,
     {
@@ -23,6 +28,11 @@ export const View: FC<Props> = ({
       justifyContent: "flex-start",
     },
     [
+      h(AuthPrompt, {
+        isOpen: requiresAuth,
+        creatorName,
+        occurredAtDesc,
+      }),
       h(Header, [
         // h(BackButton, { onClick }),
         h(Spacer),
@@ -35,9 +45,10 @@ export const View: FC<Props> = ({
           padding: 4,
           gap: 4,
           style: {
-            // TODO: blur on initial prompt?
-            // color: "transparent",
-            // textShadow: "0 0 10px rgba(0,0,0,0.5)",
+            ...(requiresAuth && {
+              color: "transparent",
+              textShadow: "0 0 10px rgba(0,0,0,0.5)",
+            }),
           },
         },
         [
@@ -48,12 +59,12 @@ export const View: FC<Props> = ({
           h(Stack, { direction: "column", gap: 1 }, [
             h(Stack, { direction: "row" }, [
               h(MarkdownView, {
-                md: `${bold(creator.name)} with ${toSentence(
+                md: `${bold(creatorName)} with ${toSentence(
                   map(bold, pluck("name", invitees))
                 )}`,
               }),
               h(Spacer),
-              h(Text, localizeDate(occurredAt)),
+              h(Text, { width: "100px", size: "xs" }, occurredAtDesc),
             ]),
             h(NoteView, { note }),
           ]),
