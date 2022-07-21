@@ -27,21 +27,38 @@ export const View: FC<Props> = ({
         // h(BackButton, { onClick }),
         h(Spacer),
       ]),
-      h(Stack, { direction: "column", width: "100%", padding: 4, gap: 4 }, [
-        h(Stack, { direction: "row" }, [
-          h(Heading, { size: "md" }, "Conversation"),
-          h(Spacer),
-          h(Text, {}, localizeDate(occurredAt)),
-        ]),
-        h(Stack, { direction: "column", gap: 1 }, [
-          h(MarkdownView, {
-            md: `${bold(creator.name)} with ${toSentence(
-              map(bold, pluck("name", invitees))
-            )}`,
-          }),
-          h(NoteView, { note }),
-        ]),
-      ]),
+      h(
+        Stack,
+        {
+          direction: "column",
+          width: "100%",
+          padding: 4,
+          gap: 4,
+          style: {
+            // TODO: blur on initial prompt?
+            // color: "transparent",
+            // textShadow: "0 0 10px rgba(0,0,0,0.5)",
+          },
+        },
+        [
+          h(Stack, { direction: "row" }, [
+            h(Heading, { size: "md" }, "Conversation"),
+            h(Spacer),
+          ]),
+          h(Stack, { direction: "column", gap: 1 }, [
+            h(Stack, { direction: "row" }, [
+              h(MarkdownView, {
+                md: `${bold(creator.name)} with ${toSentence(
+                  map(bold, pluck("name", invitees))
+                )}`,
+              }),
+              h(Spacer),
+              h(Text, localizeDate(occurredAt)),
+            ]),
+            h(NoteView, { note }),
+          ]),
+        ]
+      ),
     ]
   )
 }

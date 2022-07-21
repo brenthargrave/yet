@@ -29,14 +29,10 @@ defmodule App.Conversations do
     |> bind(&Repo.insert_or_update(&1))
   end
 
-  defun get_conversation(
-          id :: id(),
-          viewer :: Customer.t()
-        ) :: Brex.Result.s(Conversation.t()) do
+  defun get_conversation(id :: id()) :: Brex.Result.s(Conversation.t()) do
     Repo.get(Conversation, id)
     |> Repo.preload(:creator)
     |> lift(nil, :not_found)
-    |> bind(&if &1.creator_id == viewer.id, do: ok(&1), else: error(:unauthorized))
   end
 
   defun delete_conversation(

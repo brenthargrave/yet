@@ -26,26 +26,11 @@ defmodule AppWeb.Resolvers.Conversations do
   defun get_conversation(
           _parent,
           %{id: id} = _args,
-          %{context: %{customer: customer}} = _resolution
-        ) :: resolver_result(ConversationPayload.t()) do
-    Conversations.get_conversation(id, customer)
-    |> fmap(&%ConversationPayload{conversation: &1})
-    |> convert_error(:not_found, %ConversationPayload{
-      user_error: UserError.not_found()
-    })
-    |> convert_error(:unauthorized, %ConversationPayload{
-      user_error: UserError.unauthorized()
-    })
-  end
-
-  defun get_conversation(
-          _parent,
-          _args,
           _resolution
         ) :: resolver_result(ConversationPayload.t()) do
-    ok(%ConversationPayload{
-      user_error: UserError.not_found()
-    })
+    Conversations.get_conversation(id)
+    |> fmap(&%ConversationPayload{conversation: &1})
+    |> convert_error(:not_found, %ConversationPayload{user_error: UserError.not_found()})
   end
 
   defun delete_conversation(
@@ -55,12 +40,8 @@ defmodule AppWeb.Resolvers.Conversations do
         ) :: resolver_result(ConversationPayload.t()) do
     Conversations.delete_conversation(id, customer)
     |> fmap(&%ConversationPayload{conversation: &1})
-    |> convert_error(:not_found, %ConversationPayload{
-      user_error: UserError.not_found()
-    })
-    |> convert_error(:unauthorized, %ConversationPayload{
-      user_error: UserError.unauthorized()
-    })
+    |> convert_error(:not_found, %ConversationPayload{user_error: UserError.not_found()})
+    |> convert_error(:unauthorized, %ConversationPayload{user_error: UserError.unauthorized()})
   end
 
   typedstruct module: ConversationsPayload do
