@@ -13,14 +13,18 @@ query CheckToken {
   }
 }
 
+fragment AuthenticatedCustomerProps on Customer {
+  id
+  token
+  e164
+  name
+  org
+  role
+}
+
 query Me {
   me {
-    id
-    token
-    e164
-    name
-    org
-    role
+    ...AuthenticatedCustomerProps
   }
 }
 

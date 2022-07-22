@@ -81,7 +81,8 @@ export const PhoneVerify = (sources: Sources) => {
     share()
   )
 
-  const result$: Observable<SubmitCodeResult> = merge(submit$, complete$).pipe(
+  const request$ = merge(submit$, complete$)
+  const result$: Observable<SubmitCodeResult> = request$.pipe(
     withLatestFrom(input$),
     tag("withLatestFrom(input)$"),
     switchMap(([_, input]) => verifyCode$(input).pipe(tag("verifyCode$"))),
@@ -119,7 +120,7 @@ export const PhoneVerify = (sources: Sources) => {
   )
 
   const isLoading$ = merge(
-    submit$.pipe(map((_) => true)),
+    request$.pipe(map((_) => true)),
     result$.pipe(map((_) => false))
   ).pipe(startWith(false), tag("isLoading$"), shareLatest())
 
