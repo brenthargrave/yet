@@ -44,13 +44,16 @@ export const App = (sources: Sources) => {
   const { token$, me$: cachedMe$ } = sources.graph
 
   const { react: headerView$ } = Header(sources)
+
   const { react: landingView$ } = Landing(sources)
+
   const {
     react: homeView$,
     router: homeRouter$,
     notice: homeNotice$,
     ...home
   } = Home(sources)
+
   const {
     graph: authGraph$,
     react: authView$,

@@ -31,6 +31,8 @@ interface Sources {
 }
 
 export const Auth = (sources: Sources) => {
+  //
+
   const {
     react: submitView$,
     notice: submitNotice$,

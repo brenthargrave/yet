@@ -3,12 +3,10 @@ import { FC } from "react"
 import { NoteView } from "~/components/Note"
 import { map, pluck } from "~/fp"
 import { Conversation } from "~/graph"
-import { t, localizeDate, toSentence } from "~/i18n"
+import { localizeDate, t, toSentence } from "~/i18n"
 import {
   Button,
-  Divider,
   Flex,
-  Header,
   Heading,
   MarkdownView,
   Spacer,
