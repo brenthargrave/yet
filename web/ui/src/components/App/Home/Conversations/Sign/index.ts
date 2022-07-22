@@ -73,13 +73,17 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
+  const [onClickSign, onClickSign$] = cb$(tag("onClickSign$"))
+
   const props$ = combineLatest({
     conversation: record$,
     requiresAuth: requiresAuth$,
   }).pipe(tag("props$"))
 
   const react = merge(
-    props$.pipe(map((props) => h(View, { ...props, onClickAuth }))),
+    props$.pipe(
+      map((props) => h(View, { ...props, onClickAuth, onClickSign }))
+    ),
     userError$.pipe(map((error) => h(ErrorView, { error })))
   ).pipe(startWith(null), tag("react"))
 

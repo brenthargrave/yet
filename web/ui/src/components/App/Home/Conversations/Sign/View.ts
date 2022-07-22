@@ -3,7 +3,7 @@ import { FC } from "react"
 import { NoteView } from "~/components/Note"
 import { map, pluck } from "~/fp"
 import { Conversation } from "~/graph"
-import { localizeDate, toSentence } from "~/i18n"
+import { t, localizeDate, toSentence } from "~/i18n"
 import {
   Button,
   Divider,
@@ -23,12 +23,14 @@ export interface Props {
   conversation: Conversation
   requiresAuth?: boolean
   onClickAuth?: () => void
+  onClickSign?: () => void
 }
 
 export const View: FC<Props> = ({
   conversation: { occurredAt, invitees, creator, note },
   requiresAuth = false,
   onClickAuth,
+  onClickSign,
 }) => {
   const creatorName = creator.name
   const occurredAtDesc = localizeDate(occurredAt)
@@ -46,10 +48,25 @@ export const View: FC<Props> = ({
         occurredAtDesc,
         onClickAuth,
       }),
-      h(Header, [
-        // h(BackButton, { onClick }),
-        h(Spacer),
-      ]),
+      !requiresAuth &&
+        h(
+          Stack,
+          {
+            direction: "column",
+            justifyContent: "start",
+            backgroundColor: "#fafafa",
+            padding: 4,
+          },
+          [
+            h(MarkdownView, {
+              md: `**${bold(
+                creatorName
+              )}** requested that you cosign these notes.
+             ${t(`conversations.sign.once-signed`)}
+            `,
+            }),
+          ]
+        ),
       h(
         Stack,
         {
@@ -87,7 +104,7 @@ export const View: FC<Props> = ({
           !requiresAuth &&
             h(Stack, { direction: "row" }, [
               //
-              h(Button, {}, `Cosign these notes`),
+              h(Button, { onClick: onClickSign }, `Cosign notes`),
             ]),
         ]
       ),

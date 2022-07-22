@@ -34,6 +34,7 @@ const messages: Record<string, string> = {
   "note.draft.placeholder": "What did you learn?\nLinks, notes, etc.",
   "note.empty.buttonCopy": "Note a conversation",
   "note.empty.cta": `To get started, take some notes on a recent conversation you had with someone.`,
+  "conversations.sign.once-signed": `Once cosigned they become visible to your combined networks, and you'll get attribution for any mentioned opportunities, leads, etc.`,
 }
 
 export const t = (key: string): string => messages[key]

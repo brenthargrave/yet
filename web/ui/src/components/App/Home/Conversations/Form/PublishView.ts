@@ -10,7 +10,7 @@ import { h } from "@cycle/react"
 import { FC } from "react"
 import { Heading, Input, InputGroup, Stack, Text } from "~/system"
 import { Props as ModalProps, View as Modal } from "./Modal"
-import { toSentence } from "~/i18n"
+import { t, toSentence } from "~/i18n"
 
 export interface Props extends ModalProps {
   participantNames?: string[]
@@ -44,10 +44,7 @@ export const PublishView: FC<Props> = ({
         { size: "sm" },
         `Now share your notes with ${toSentence(participantNames)}`
       ),
-      h(
-        Text,
-        `Once cosigned they become visible to your combined networks, and you'll get attribution for any mentioned opportunities, leads, etc.`
-      ),
+      h(Text, t(`conversations.sign.once-signed`)),
       h(Divider),
       h(Stack, { direction: "column" }, [
         h(Heading, { size: "xs" }, `Copy share link to clipboard`),
