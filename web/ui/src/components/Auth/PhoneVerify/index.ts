@@ -4,10 +4,12 @@ import {
   BehaviorSubject,
   catchError,
   combineLatest,
+  EMPTY,
   filter,
   map,
   merge,
   Observable,
+  of,
   share,
   startWith,
   switchMap,
@@ -29,7 +31,6 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
-import { push, routes } from "~/router"
 import { callback$, makeObservableCallback, shareLatest } from "~/rx"
 import { View } from "./View"
 
@@ -124,7 +125,6 @@ export const PhoneVerify = (sources: Sources) => {
     result$.pipe(map((_) => false))
   ).pipe(startWith(false), tag("isLoading$"), shareLatest())
 
-  // TODO: ¿canonical location to specify verification code length?
   const validCodeLength = 4
   const codeIsInvalid$ = code$.pipe(
     map((code) => code.length === validCodeLength),
@@ -165,13 +165,17 @@ export const PhoneVerify = (sources: Sources) => {
     tag("react")
   )
 
-  const router = verification$.pipe(
+  const router = of(EMPTY)
+
+  const verified$ = verification$.pipe(
     map(({ status }) =>
       match(status)
-        .with(VerificationStatus.Approved, () => push(routes.root()))
+        .with(VerificationStatus.Approved, () => true)
         .run()
     ),
-    tag("router")
+    startWith(false),
+    tag("verified$"),
+    shareLatest()
   )
 
   const notice = userError$.pipe(
@@ -179,7 +183,7 @@ export const PhoneVerify = (sources: Sources) => {
     tag("notice")
   )
 
-  const value = { me$ }
+  const value = { me$, verified$ }
 
   const graph = token$.pipe(map((token) => loggedIn(token)))
 

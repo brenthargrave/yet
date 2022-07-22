@@ -8,8 +8,10 @@ import {
   shareReplay,
   startWith,
   switchMap,
+  withLatestFrom,
 } from "rxjs"
 import { isNotNullish, isNullish } from "rxjs-etc"
+import { pairwiseStartWith } from "rxjs-etc/dist/esm/operators"
 import { match } from "ts-pattern"
 import { checkToken$, loggedOut, token$, VerificationStatus } from "~/graph"
 import { makeTagger } from "~/log"
@@ -31,7 +33,9 @@ interface Sources {
 }
 
 export const Auth = (sources: Sources) => {
-  //
+  const {
+    router: { history$ },
+  } = sources
 
   const {
     react: submitView$,
@@ -46,7 +50,7 @@ export const Auth = (sources: Sources) => {
     router: verifyRouter$,
     notice: verifyNotice$,
     graph: verifyGraph$,
-    value,
+    value: { me$, verified$ },
   } = PhoneVerify({
     props: { e164$ },
     ...sources,
@@ -88,12 +92,25 @@ export const Auth = (sources: Sources) => {
   )
   const redirectToRoot$ = logout$.pipe(
     map((_) => push(routes.root())),
-    tag("redirectToRoot$")
+    tag("redirectToRootRoute$")
+  )
+
+  const priorAndCurrentRoute$ = history$.pipe(
+    pairwiseStartWith(routes.root()),
+    tag("priorAndCurrentRoute$")
+  )
+
+  const redirectAfterAuth$ = verified$.pipe(
+    filter((isVerified) => isVerified),
+    withLatestFrom(priorAndCurrentRoute$),
+    map(([_, [priorRoute, currentRoute]]) => push(priorRoute ?? routes.root())),
+    tag("redirectToPriorOrRootRoute$")
   )
 
   const graph = merge(verifyGraph$, logout$)
-  const router = merge(verifyRouter$, redirectToRoot$)
+  const router = merge(verifyRouter$, redirectToRoot$, redirectAfterAuth$)
   const notice = merge(verifyNotice$, submitNotice$)
+  const value = { me$ }
 
   return {
     react,
