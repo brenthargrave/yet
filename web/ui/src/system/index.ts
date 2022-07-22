@@ -16,6 +16,8 @@ import {
   CenterProps,
   Divider as _Divider,
   DividerProps,
+  Flex as _Flex,
+  FlexProps,
   Heading as _Heading,
   HeadingProps,
   IconButton as _IconButton,
@@ -48,6 +50,7 @@ export const Box = (props: BoxProps) => h(_Box, props)
 export const Button = (props: ButtonProps) => h(_Button, props)
 export const Center = (props: CenterProps) => h(_Center, props)
 export const Divider = (props: DividerProps) => h(_Divider, props)
+export const Flex = (props: FlexProps) => h(_Flex, props)
 export const Heading = (props: HeadingProps) => h(_Heading, props)
 export const IconButton = (props: IconButtonProps) => h(_IconButton, props)
 export const Input = forwardRef(({ ...rest }: InputProps, ref) =>

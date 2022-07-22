@@ -26,7 +26,7 @@ export const inviteesDiffer = (current: Invitee[], old: Invitee[]): boolean =>
 const makeId = () => faker.datatype.uuid()
 const makeName = () =>
   join(" ", [faker.name.firstName(), faker.name.lastName()])
-const makeDate = () => faker.date.recent()
+const makeDate = () => faker.date.past()
 
 export const makeParticipant = (): Participant => {
   return {
