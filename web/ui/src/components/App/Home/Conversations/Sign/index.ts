@@ -2,7 +2,6 @@ import { h, ReactSource } from "@cycle/react"
 import {
   combineLatest,
   EMPTY,
-  filter,
   map,
   merge,
   of,
@@ -12,18 +11,17 @@ import {
 } from "rxjs"
 import { match } from "ts-pattern"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
+import { ErrorView } from "~/components/App/ErrorView"
 import {
-  ErrorCode,
   getConversation$,
   isAuthenticated,
   Source as GraphSource,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
-import { push, routes, Source as RouterSource } from "~/router"
+import { routes, Source as RouterSource, push } from "~/router"
 import { cb$, shareLatest } from "~/rx"
 import { View } from "./View"
-import { ErrorView } from "~/components/App/ErrorView"
 
 interface Sources {
   react: ReactSource
@@ -40,7 +38,6 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
   const tagScope = `${tagPrefix}/Sign`
   const tag = makeTagger(tagScope)
 
-  // ! TODO: dedupe w/ Edit? id, getRecord, not-found/redirect
   const id$ = history$.pipe(
     switchMap((route) =>
       match(route)
@@ -63,8 +60,12 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
     map(({ message }) => error({ description: message }))
   )
 
-  // ! unique logic begins here
   const [onClickAuth, onClickAuth$] = cb$(tag("onClickAuth$"))
+  const redirectToAuth$ = onClickAuth$.pipe(
+    map((_) => push(routes.in())),
+    tag("redirectToAuth$"),
+    share()
+  )
 
   const requiresAuth$ = me$.pipe(
     map((me) => !isAuthenticated(me)),
@@ -88,7 +89,7 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
   ).pipe(startWith(null), tag("react"))
 
   const notice = merge(userErrorNotice$)
-  const router = merge(EMPTY)
+  const router = merge(redirectToAuth$)
 
   return {
     react,
