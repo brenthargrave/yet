@@ -5,6 +5,8 @@ import { map, pluck } from "~/fp"
 import { Conversation } from "~/graph"
 import { localizeDate, toSentence } from "~/i18n"
 import {
+  Button,
+  Divider,
   Flex,
   Header,
   Heading,
@@ -80,9 +82,13 @@ export const View: FC<Props> = ({
                 occurredAtDesc
               ),
             ]),
-
             h(NoteView, { note }),
           ]),
+          !requiresAuth &&
+            h(Stack, { direction: "row" }, [
+              //
+              h(Button, {}, `Cosign these notes`),
+            ]),
         ]
       ),
     ]
