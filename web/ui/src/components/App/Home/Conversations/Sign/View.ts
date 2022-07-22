@@ -4,7 +4,15 @@ import { NoteView } from "~/components/Note"
 import { map, pluck } from "~/fp"
 import { Conversation } from "~/graph"
 import { localizeDate, toSentence } from "~/i18n"
-import { Header, Heading, MarkdownView, Spacer, Stack, Text } from "~/system"
+import {
+  Flex,
+  Header,
+  Heading,
+  MarkdownView,
+  Spacer,
+  Stack,
+  Text,
+} from "~/system"
 import { View as AuthPrompt } from "./AuthPrompt"
 
 const bold = (inner: string) => `**${inner}**`
@@ -60,12 +68,19 @@ export const View: FC<Props> = ({
             h(Spacer),
           ]),
           h(Stack, { direction: "column", gap: 1 }, [
-            h(Text, { size: "xs" }, occurredAtDesc),
-            h(MarkdownView, {
-              md: `${bold(creatorName)} with ${toSentence(
-                map(bold, pluck("name", invitees))
-              )}`,
-            }),
+            h(Flex, { justifyContent: "space-between", gap: 4 }, [
+              h(MarkdownView, {
+                md: `${bold(creatorName)} with ${toSentence(
+                  map(bold, pluck("name", invitees))
+                )}`,
+              }),
+              h(
+                Text,
+                { size: "xs", style: { whiteSpace: "nowrap" } },
+                occurredAtDesc
+              ),
+            ]),
+
             h(NoteView, { note }),
           ]),
         ]
