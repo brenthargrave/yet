@@ -1,6 +1,7 @@
 import { h, ReactSource } from "@cycle/react"
 import {
   combineLatest,
+  debounceTime,
   EMPTY,
   map,
   merge,
@@ -19,7 +20,7 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
-import { routes, Source as RouterSource, push } from "~/router"
+import { push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
 import { View } from "./View"
 
@@ -69,7 +70,8 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
 
   const requiresAuth$ = me$.pipe(
     map((me) => !isAuthenticated(me)),
-    startWith(true),
+    startWith(false),
+    debounceTime(100),
     tag("requiresAuth$"),
     shareLatest()
   )

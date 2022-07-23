@@ -1,6 +1,14 @@
 import { h, ReactSource } from "@cycle/react"
 import { captureException } from "@sentry/react"
-import { catchError, combineLatest, EMPTY, merge, Observable, of } from "rxjs"
+import {
+  debounceTime,
+  catchError,
+  combineLatest,
+  EMPTY,
+  merge,
+  Observable,
+  of,
+} from "rxjs"
 import { map, switchMap } from "rxjs/operators"
 import { match } from "ts-pattern"
 import { Auth } from "~/components/Auth"
@@ -69,6 +77,7 @@ export const App = (sources: Sources) => {
   )
 
   const bodyView$ = combineLatest({ route: history$, me: me$ }).pipe(
+    debounceTime(100),
     switchMap(({ route, me }) => {
       return match(route.name)
         .with("in", () => authView$)
