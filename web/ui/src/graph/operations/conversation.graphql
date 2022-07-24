@@ -1,51 +1,3 @@
-mutation SubmitPhone($input: SubmitPhoneInput!) {
-  submitPhone(input: $input) {
-    ...on Verification {
-      status
-    }
-    ...on UserError {
-      message
-    }
-  }
-}
-
-mutation SubmitCode($input: SubmitCodeInput!) {
-  submitCode(input: $input) {
-    ...on SubmitCodePayload {
-      me {
-       ...AuthenticatedCustomerProps
-      }
-      verification {
-        status
-      }
-    }
-    ...on UserError {
-      message
-    }
-  }
-}
-
-mutation TrackEvent($input: TrackEventInput!) {
-  trackEvent(input: $input) {
-    name
-    anonId
-  }
-}
-
-mutation UpdateProfile($input: ProfileInput!) {
-  updateProfile(input: $input) {
-    me {
-      id
-      name
-      org
-      role
-    }
-    userError {
-      message
-    }
-  }
-}
-
 fragment ConversationProps on Conversation {
   id
   creator {
@@ -64,6 +16,7 @@ fragment ConversationProps on Conversation {
   signatures {
     id
     signedAt
+    conversationId
     signer {
       id
       name
@@ -73,6 +26,25 @@ fragment ConversationProps on Conversation {
   }
 }
 
+query GetConversations {
+  getConversations {
+    conversations {
+      ...ConversationProps
+    }
+  }
+}
+
+query ViewConversation($id: ID!) {
+  getConversation(id: $id) {
+    conversation {
+     ...ConversationProps
+    }
+    userError {
+      message
+      code
+    }
+  }
+}
 
 mutation UpsertConversation($input: ConversationInput!) {
   upsertConversation(input: $input) {
@@ -103,5 +75,14 @@ mutation SignConversation($input: SignInput!) {
       code
       message
     }
+  }
+}
+
+query Contacts {
+  contacts {
+    id
+    name
+    org
+    role
   }
 }

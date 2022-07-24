@@ -1,0 +1,63 @@
+query CheckToken {
+  checkToken {
+    token {
+      value
+    }
+  }
+}
+
+fragment AuthenticatedCustomerProps on Customer {
+  id
+  token
+  e164
+  name
+  org
+  role
+}
+
+query Me {
+  me {
+    ...AuthenticatedCustomerProps
+  }
+}
+
+mutation SubmitPhone($input: SubmitPhoneInput!) {
+  submitPhone(input: $input) {
+    ...on Verification {
+      status
+    }
+    ...on UserError {
+      message
+    }
+  }
+}
+
+mutation SubmitCode($input: SubmitCodeInput!) {
+  submitCode(input: $input) {
+    ...on SubmitCodePayload {
+      me {
+       ...AuthenticatedCustomerProps
+      }
+      verification {
+        status
+      }
+    }
+    ...on UserError {
+      message
+    }
+  }
+}
+
+mutation UpdateProfile($input: ProfileInput!) {
+  updateProfile(input: $input) {
+    me {
+      id
+      name
+      org
+      role
+    }
+    userError {
+      message
+    }
+  }
+}

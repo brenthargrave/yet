@@ -27,7 +27,7 @@ defmodule AppWeb.Graph.Conversations do
 
   object :signature do
     field(:id, non_null(:id))
-    field(:conversation, non_null(:conversation))
+    field(:conversation_id, non_null(:id))
     field(:signed_at, non_null(:datetime))
     field(:signer, non_null(:contact))
   end
