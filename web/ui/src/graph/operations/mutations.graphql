@@ -32,6 +32,68 @@ mutation TrackEvent($input: TrackEventInput!) {
   }
 }
 
+mutation UpdateProfile($input: ProfileInput!) {
+  updateProfile(input: $input) {
+    me {
+      id
+      name
+      org
+      role
+    }
+    userError {
+      message
+    }
+  }
+}
+
+fragment ConversationProps on Conversation {
+  id
+  creator {
+    id
+    name
+  }
+  invitees {
+    id
+    name
+  }
+  note
+  status
+  insertedAt
+  occurredAt
+  deletedAt
+  signatures {
+    id
+    signedAt
+    signer {
+      id
+      name
+      org
+      role
+    }
+  }
+}
+
+
+mutation UpsertConversation($input: ConversationInput!) {
+  upsertConversation(input: $input) {
+    conversation {
+     ...ConversationProps
+    }
+  }
+}
+
+mutation DeleteConversation($input: DeleteConversationInput!) {
+  deleteConversation(input: $input) {
+    userError {
+      code
+      message
+    }
+    conversation {
+     ...ConversationProps
+    }
+  }
+}
+
 mutation SignConversation($input: SignInput!) {
   sign(input: $input) {
     conversation {

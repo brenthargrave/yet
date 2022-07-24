@@ -36,3 +36,23 @@ query Contacts {
     role
   }
 }
+
+query GetConversations {
+  getConversations {
+    conversations {
+      ...ConversationProps
+    }
+  }
+}
+
+query ViewConversation($id: ID!) {
+  getConversation(id: $id) {
+    conversation {
+     ...ConversationProps
+    }
+    userError {
+      message
+      code
+    }
+  }
+}

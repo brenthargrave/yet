@@ -1,7 +1,0 @@
-query GetConversations {
-  getConversations {
-    conversations {
-      ...ConversationProps
-    }
-  }
-}

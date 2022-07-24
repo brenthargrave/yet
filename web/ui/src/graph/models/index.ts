@@ -3,7 +3,10 @@ import { eqBy, isEmpty, prop, symmetricDifferenceWith } from "ramda"
 import { isNotEmpty, join } from "~/fp"
 import { Conversation, Invitee, MakeOptional, Participant } from "../generated"
 
-export type DraftConversation = MakeOptional<Conversation, "status" | "creator">
+export type DraftConversation = MakeOptional<
+  Conversation,
+  "status" | "creator" | "signatures"
+>
 
 type Note = string | null | undefined
 
@@ -49,5 +52,6 @@ export const makeConversation = (): DraftConversation => {
     creator: makeParticipant(),
     invitees: [makeInvitee(), makeInvitee()],
     note: faker.lorem.paragraph(),
+    signatures: [],
   }
 }
