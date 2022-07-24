@@ -7,6 +7,8 @@ defmodule App.Conversations do
   alias App.{Repo, Conversation, Signature}
   import Ecto.Query
 
+  @conversation_preloads [:creator, :signatures]
+
   defun upsert_conversation(
           customer,
           %{id: id, invitees: invitees, note: note, occurred_at: occurred_at} = _input
@@ -20,17 +22,21 @@ defmodule App.Conversations do
     }
 
     Repo.get(Conversation, id)
-    |> Repo.preload(:creator)
+    |> Repo.preload(@conversation_preloads)
     |> lift(nil, :not_found)
     |> convert_error(:not_found, %Conversation{})
-    |> bind(&if &1.creator_id != customer.id, do: error(:unauthorized), else: ok(&1))
+    |> bind(
+      &if !is_nil(&1.creator_id) && &1.creator_id != customer.id,
+        do: error(:unauthorized),
+        else: ok(&1)
+    )
     |> fmap(&Conversation.changeset(&1, attrs))
     |> bind(&Repo.insert_or_update(&1))
   end
 
   defun get_conversation(id :: id()) :: Brex.Result.s(Conversation.t()) do
     Repo.get(Conversation, id)
-    |> Repo.preload(:creator)
+    |> Repo.preload(@conversation_preloads)
     |> lift(nil, :not_found)
   end
 
@@ -39,6 +45,7 @@ defmodule App.Conversations do
           viewer :: Customer.t()
         ) :: Brex.Result.s(Conversation.t()) do
     Repo.get(Conversation, id)
+    |> Repo.preload(@conversation_preloads)
     |> lift(nil, :not_found)
     |> bind(&if &1.creator == viewer, do: ok(&1), else: error(:unauthorized))
     |> fmap(&Conversation.tombstone_changeset(&1))
@@ -48,7 +55,7 @@ defmodule App.Conversations do
   defun get_conversations(viewer :: Customer.t()) :: Brex.Result.s(list(Converstion.t())) do
     Repo.all(
       from(c in Conversation,
-        preload: :creator,
+        preload: ^@conversation_preloads,
         where: c.creator_id == ^viewer.id,
         where: c.status != :deleted
       )
@@ -66,7 +73,7 @@ defmodule App.Conversations do
     }
 
     Repo.get(Conversation, id)
-    |> Repo.preload([:creator, :signatures])
+    |> Repo.preload(@conversation_preloads)
     |> lift(nil, :not_found)
     |> fmap(&Map.put(attrs, :conversation, &1))
     |> fmap(&Signature.changeset(%Signature{}, &1))

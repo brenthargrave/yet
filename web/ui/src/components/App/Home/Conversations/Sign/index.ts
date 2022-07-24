@@ -82,7 +82,7 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
   const signResult$ = onClickSign$.pipe(
     withLatestFrom(id$),
     switchMap(([_, id]) => signConversation$({ id })),
-    tag("sigResult$")
+    tag("signResult$")
   )
 
   const isSigningDisabled$ = merge(
