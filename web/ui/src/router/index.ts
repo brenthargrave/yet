@@ -6,7 +6,8 @@ import { Stream } from "xstream"
 import { makeTagger } from "~/log"
 import { shareLatest } from "~/rx"
 
-const tag = makeTagger("Router")
+const tagPrefix = "Router"
+const tag = makeTagger(tagPrefix)
 
 const root = defineRoute("/")
 const conversations = root.extend("/c")
@@ -58,7 +59,9 @@ type Sink = Stream<Command>
 export function makeDriver(): Driver<Sink, Source> {
   return function (sink: Sink): Source {
     sink.addListener({
-      next: ({ type, route }) => {
+      next: (cmd) => {
+        // console.debug(tagPrefix, cmd)
+        const { type, route } = cmd
         match(type)
           .with(CommandType.push, () => route?.push())
           .with(CommandType.back, () => window.history.back())

@@ -165,8 +165,6 @@ export const PhoneVerify = (sources: Sources) => {
     tag("react")
   )
 
-  const router = of(EMPTY)
-
   const verified$ = verification$.pipe(
     map(({ status }) =>
       match(status)
@@ -189,7 +187,6 @@ export const PhoneVerify = (sources: Sources) => {
 
   return {
     react,
-    router,
     notice,
     value,
     graph,

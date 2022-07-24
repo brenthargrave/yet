@@ -47,7 +47,6 @@ export const Auth = (sources: Sources) => {
 
   const {
     react: verifyView$,
-    router: verifyRouter$,
     notice: verifyNotice$,
     graph: verifyGraph$,
     value: { me$, verified$ },
@@ -108,7 +107,7 @@ export const Auth = (sources: Sources) => {
   )
 
   const graph = merge(verifyGraph$, logout$)
-  const router = merge(verifyRouter$, redirectToRoot$, redirectAfterAuth$)
+  const router = merge(redirectToRoot$, redirectAfterAuth$)
   const notice = merge(verifyNotice$, submitNotice$)
   const value = { me$ }
 
