@@ -18,9 +18,9 @@ import { View as AuthPrompt } from "./AuthPrompt"
 const bold = (inner: string) => `**${inner}**`
 
 export enum Step {
-  Auth,
-  Sign,
-  Share,
+  Auth = "auth",
+  Sign = "sign",
+  Share = "share",
 }
 
 export interface Props {
