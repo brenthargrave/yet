@@ -22,7 +22,7 @@ export type Scalars = {
 
 export type Contact = {
   __typename?: 'Contact';
-  id: Scalars['String'];
+  id: Scalars['ID'];
   name: Scalars['String'];
   org: Scalars['String'];
   role: Scalars['String'];
@@ -32,7 +32,7 @@ export type Conversation = {
   __typename?: 'Conversation';
   creator: Participant;
   deletedAt?: Maybe<Scalars['DateTime']>;
-  id: Scalars['String'];
+  id: Scalars['ID'];
   insertedAt?: Maybe<Scalars['DateTime']>;
   invitees: Array<Invitee>;
   note?: Maybe<Scalars['String']>;
@@ -68,7 +68,7 @@ export type ConversationsPayload = {
 export type Customer = {
   __typename?: 'Customer';
   e164: Scalars['String'];
-  id: Scalars['String'];
+  id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
   org?: Maybe<Scalars['String']>;
   role?: Maybe<Scalars['String']>;
@@ -103,7 +103,7 @@ export type EventProperties = {
 
 export type Invitee = {
   __typename?: 'Invitee';
-  id: Scalars['String'];
+  id: Scalars['ID'];
   name: Scalars['String'];
 };
 

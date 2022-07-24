@@ -21,7 +21,7 @@ defmodule AppWeb.Graph.Models do
     field(:e164, non_null(:string))
     field(:token, non_null(:string))
     # profile
-    field(:id, non_null(:string))
+    field(:id, non_null(:id))
     field(:name, :string)
     field(:org, :string)
     field(:role, :string)

@@ -4,7 +4,7 @@ defmodule AppWeb.Graph.Conversations do
   import_types(Absinthe.Type.Custom)
 
   object :contact do
-    field(:id, non_null(:string))
+    field(:id, non_null(:id))
     field(:name, non_null(:string))
     field(:org, non_null(:string))
     field(:role, non_null(:string))
@@ -12,7 +12,7 @@ defmodule AppWeb.Graph.Conversations do
 
   object :invitee do
     field(:name, non_null(:string))
-    field(:id, non_null(:string))
+    field(:id, non_null(:id))
   end
 
   enum :conversation_status do
@@ -33,7 +33,7 @@ defmodule AppWeb.Graph.Conversations do
   end
 
   object :conversation do
-    field(:id, non_null(:string))
+    field(:id, non_null(:id))
     field(:creator, non_null(:participant))
     field(:invitees, non_null(list_of(non_null(:invitee))))
     field(:note, :string)
