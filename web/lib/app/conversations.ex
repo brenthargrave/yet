@@ -32,6 +32,7 @@ defmodule App.Conversations do
     )
     |> fmap(&Conversation.changeset(&1, attrs))
     |> bind(&Repo.insert_or_update(&1))
+    |> fmap(&Repo.preload(&1, @conversation_preloads))
   end
 
   defun get_conversation(id :: id()) :: Brex.Result.s(Conversation.t()) do
