@@ -22,6 +22,7 @@ export interface Props {
   requiresAuth?: boolean
   onClickAuth?: () => void
   onClickSign?: () => void
+  isSigningDisabled?: boolean
 }
 
 export const View: FC<Props> = ({
@@ -29,6 +30,7 @@ export const View: FC<Props> = ({
   requiresAuth = false,
   onClickAuth,
   onClickSign,
+  isSigningDisabled = false,
 }) => {
   const creatorName = creator.name
   const occurredAtDesc = localizeDate(occurredAt)
@@ -101,8 +103,11 @@ export const View: FC<Props> = ({
           ]),
           !requiresAuth &&
             h(Stack, { direction: "row" }, [
-              //
-              h(Button, { onClick: onClickSign }, `Cosign notes`),
+              h(
+                Button,
+                { onClick: onClickSign, disabled: isSigningDisabled },
+                `Cosign notes`
+              ),
             ]),
         ]
       ),

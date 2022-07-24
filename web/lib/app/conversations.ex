@@ -4,8 +4,7 @@ defmodule App.Conversations do
   use TypedStruct
   use Brex.Result
   use Timex
-  alias App.Conversation
-  alias App.Repo
+  alias App.{Repo, Conversation, Signature}
   import Ecto.Query
 
   defun upsert_conversation(
@@ -55,5 +54,22 @@ defmodule App.Conversations do
       )
     )
     |> lift(nil, :not_found)
+  end
+
+  defun sign_conversation(
+          customer,
+          %{id: id, signed_at: signed_at} = _input
+        ) :: Brex.Result.s(Conversation.t()) do
+    attrs = %{
+      customer: customer,
+      signed_at: signed_at || Timex.now()
+    }
+
+    Repo.get(Conversation, id)
+    |> Repo.preload([:creator, :signatures])
+    |> lift(nil, :not_found)
+    |> fmap(&Map.put(attrs, :conversation, &1))
+    |> fmap(&Signature.changeset(%Signature{}, &1))
+    |> bind(&Repo.insert(&1))
   end
 end

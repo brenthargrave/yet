@@ -40,5 +40,14 @@ defmodule App.Repo.Migrations.CreateEvents do
     end
 
     create(index(:conversations, [:creator_id]))
+
+    create table(:signatures) do
+      add :signer_id, references(:customers, on_delete: :delete_all)
+      add :conversation_id, references(:conversations, on_delete: :delete_all)
+      add :signed_at, :utc_datetime_usec
+      timestamps()
+    end
+
+    create(unique_index(:signatures, [:conversation_id, :signer_id]))
   end
 end

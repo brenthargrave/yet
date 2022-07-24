@@ -25,6 +25,13 @@ defmodule AppWeb.Graph.Conversations do
     field(:id, non_null(:string))
   end
 
+  object :signature do
+    field(:id, non_null(:id))
+    field(:conversation, non_null(:conversation))
+    field(:signed_at, non_null(:datetime))
+    field(:signer, non_null(:contact))
+  end
+
   object :conversation do
     field(:id, non_null(:string))
     field(:creator, non_null(:participant))
@@ -34,6 +41,7 @@ defmodule AppWeb.Graph.Conversations do
     field(:occurred_at, non_null(:datetime))
     field(:inserted_at, :datetime)
     field(:deleted_at, :datetime)
+    field(:signatures, non_null(list_of(non_null(:signature))))
   end
 
   input_object :invitee_input do
@@ -63,6 +71,11 @@ defmodule AppWeb.Graph.Conversations do
     field(:deleted_at, :datetime)
   end
 
+  input_object :sign_input do
+    field(:id, non_null(:id))
+    field(:signed_at, :datetime)
+  end
+
   object :conversations_mutations do
     field :upsert_conversation, :conversation_payload do
       arg(:input, non_null(:conversation_input))
@@ -72,6 +85,11 @@ defmodule AppWeb.Graph.Conversations do
     field :delete_conversation, :conversation_payload do
       arg(:input, non_null(:delete_conversation_input))
       resolve(&Conversations.delete_conversation/3)
+    end
+
+    field :sign, :conversation_payload do
+      arg(:input, non_null(:sign_input))
+      resolve(&Conversations.sign_conversation/3)
     end
   end
 

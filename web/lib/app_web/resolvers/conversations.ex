@@ -56,4 +56,13 @@ defmodule AppWeb.Resolvers.Conversations do
     Conversations.get_conversations(customer)
     |> fmap(&%ConversationsPayload{conversations: &1})
   end
+
+  defun sign_conversation(
+          _parent,
+          %{input: input} = _args,
+          %{context: %{customer: customer}} = _resolution
+        ) :: resolver_result(ConversationPayload.t()) do
+    Conversations.sign_conversation(customer, input)
+    |> fmap(&%ConversationPayload{conversation: &1})
+  end
 end

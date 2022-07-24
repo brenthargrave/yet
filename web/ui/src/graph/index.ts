@@ -2,6 +2,7 @@
 /* eslint no-console: 0 */
 /* eslint max-classes-per-file: 0 */
 
+import { gql } from "@apollo/client"
 import { captureException } from "@sentry/react"
 import {
   BehaviorSubject,
@@ -40,6 +41,7 @@ import {
   MeDocument,
   ProfileInput,
   ProfileProp,
+  SignInput,
   SubmitCodeDocument,
   SubmitCodeInput,
   SubmitPhoneDocument,
@@ -286,6 +288,35 @@ export const deleteConversation$ = (input: DeleteConversationInput) => {
       return userError ? new Err(userError) : new Ok(conversation!)
     }),
     tag("deleteConversation$")
+  )
+}
+
+export const signConversation$ = (input: SignInput) => {
+  return from(
+    client.mutate({
+      mutation: gql`
+        mutation SignConversation($input: SignInput!) {
+          sign(input: $input) {
+            conversation {
+              ...ConversationProps
+            }
+            userError {
+              code
+              message
+            }
+          }
+        }
+      `,
+      variables: { input },
+      refetchQueries: [{ query: GetConversationsDocument }],
+    })
+  ).pipe(
+    map(({ data, errors, extensions, context }) => {
+      if (errors) throw new GraphError(JSON.stringify(errors))
+      const { userError, conversation } = data!.deleteConversation!
+      return userError ? new Err(userError) : new Ok(conversation!)
+    }),
+    tag("signConversation$")
   )
 }
 

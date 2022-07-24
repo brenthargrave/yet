@@ -9,6 +9,7 @@ import {
   share,
   startWith,
   switchMap,
+  withLatestFrom,
 } from "rxjs"
 import { match } from "ts-pattern"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
@@ -16,6 +17,7 @@ import { ErrorView } from "~/components/App/ErrorView"
 import {
   getConversation$,
   isAuthenticated,
+  signConversation$,
   Source as GraphSource,
 } from "~/graph"
 import { makeTagger } from "~/log"
@@ -77,10 +79,21 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
   )
 
   const [onClickSign, onClickSign$] = cb$(tag("onClickSign$"))
+  const signResult$ = onClickSign$.pipe(
+    withLatestFrom(id$),
+    switchMap(([_, id]) => signConversation$({ id })),
+    tag("sigResult$")
+  )
+
+  const isSigningDisabled$ = merge(
+    onClickSign$.pipe(map((_) => true)),
+    signResult$.pipe(map((_) => false))
+  ).pipe(startWith(false), tag("isSigningDisabled$"), shareLatest())
 
   const props$ = combineLatest({
     conversation: record$,
     requiresAuth: requiresAuth$,
+    isSigningDisabled: isSigningDisabled$,
   }).pipe(tag("props$"))
 
   const react = merge(

@@ -37,6 +37,7 @@ export type Conversation = {
   invitees: Array<Invitee>;
   note?: Maybe<Scalars['String']>;
   occurredAt: Scalars['DateTime'];
+  signatures: Array<Signature>;
   status: ConversationStatus;
 };
 
@@ -132,6 +133,7 @@ export enum ProfileProp {
 export type RootMutationType = {
   __typename?: 'RootMutationType';
   deleteConversation?: Maybe<ConversationPayload>;
+  sign?: Maybe<ConversationPayload>;
   submitCode?: Maybe<SubmitCodeResult>;
   submitPhone?: Maybe<SubmitPhoneResult>;
   trackEvent?: Maybe<Event>;
@@ -142,6 +144,11 @@ export type RootMutationType = {
 
 export type RootMutationTypeDeleteConversationArgs = {
   input: DeleteConversationInput;
+};
+
+
+export type RootMutationTypeSignArgs = {
+  input: SignInput;
 };
 
 
@@ -182,6 +189,19 @@ export type RootQueryType = {
 
 export type RootQueryTypeGetConversationArgs = {
   id: Scalars['ID'];
+};
+
+export type SignInput = {
+  id: Scalars['ID'];
+  signedAt?: InputMaybe<Scalars['DateTime']>;
+};
+
+export type Signature = {
+  __typename?: 'Signature';
+  conversation: Conversation;
+  id: Scalars['ID'];
+  signedAt: Scalars['DateTime'];
+  signer: Contact;
 };
 
 export type SubmitCodeInput = {
