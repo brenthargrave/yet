@@ -31,3 +31,15 @@ mutation TrackEvent($input: TrackEventInput!) {
     anonId
   }
 }
+
+mutation SignConversation($input: SignInput!) {
+  sign(input: $input) {
+    conversation {
+      ...ConversationProps
+    }
+    userError {
+      code
+      message
+    }
+  }
+}

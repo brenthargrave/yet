@@ -41,6 +41,7 @@ import {
   MeDocument,
   ProfileInput,
   ProfileProp,
+  SignConversationDocument,
   SignInput,
   SubmitCodeDocument,
   SubmitCodeInput,
@@ -294,26 +295,14 @@ export const deleteConversation$ = (input: DeleteConversationInput) => {
 export const signConversation$ = (input: SignInput) => {
   return from(
     client.mutate({
-      mutation: gql`
-        mutation SignConversation($input: SignInput!) {
-          sign(input: $input) {
-            conversation {
-              ...ConversationProps
-            }
-            userError {
-              code
-              message
-            }
-          }
-        }
-      `,
+      mutation: SignConversationDocument,
       variables: { input },
       refetchQueries: [{ query: GetConversationsDocument }],
     })
   ).pipe(
     map(({ data, errors, extensions, context }) => {
       if (errors) throw new GraphError(JSON.stringify(errors))
-      const { userError, conversation } = data!.deleteConversation!
+      const { userError, conversation } = data!.sign!
       return userError ? new Err(userError) : new Ok(conversation!)
     }),
     tag("signConversation$")
