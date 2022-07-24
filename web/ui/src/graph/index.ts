@@ -329,6 +329,7 @@ export const getConversation$ = (id: string) => {
       return userError ? new Err(userError) : new Ok(conversation!)
     }),
     catchError((error, _caught$) => {
+      console.error(error)
       throw new GraphDefaultQueryError(error.message)
     }),
     tag("getConversation$")

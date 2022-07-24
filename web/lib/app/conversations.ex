@@ -7,7 +7,7 @@ defmodule App.Conversations do
   alias App.{Repo, Conversation, Signature}
   import Ecto.Query
 
-  @conversation_preloads [:creator, :signatures]
+  @conversation_preloads [:creator, signatures: [:signer, :conversation]]
 
   defun upsert_conversation(
           customer,
@@ -65,18 +65,20 @@ defmodule App.Conversations do
 
   defun sign_conversation(
           customer,
-          %{id: id, signed_at: signed_at} = _input
+          %{id: id} = input
         ) :: Brex.Result.s(Conversation.t()) do
     attrs = %{
-      customer: customer,
-      signed_at: signed_at || Timex.now()
+      signer: customer,
+      signed_at: Map.get(input, :signed_at) || Timex.now()
     }
 
     Repo.get(Conversation, id)
     |> Repo.preload(@conversation_preloads)
     |> lift(nil, :not_found)
     |> fmap(&Map.put(attrs, :conversation, &1))
+    |> IO.inspect()
     |> fmap(&Signature.changeset(%Signature{}, &1))
     |> bind(&Repo.insert(&1))
+    |> fmap(fn signature -> signature.conversation end)
   end
 end
