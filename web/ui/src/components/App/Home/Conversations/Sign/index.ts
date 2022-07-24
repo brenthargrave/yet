@@ -5,6 +5,7 @@ import {
   EMPTY,
   map,
   merge,
+  Observable,
   of,
   share,
   startWith,
@@ -17,6 +18,7 @@ import { ErrorView } from "~/components/App/ErrorView"
 import {
   getConversation$,
   isAuthenticated,
+  isSignedBy,
   signConversation$,
   Source as GraphSource,
 } from "~/graph"
@@ -24,7 +26,7 @@ import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
-import { View } from "./View"
+import { Step, View } from "./View"
 
 interface Sources {
   react: ReactSource
@@ -78,6 +80,20 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
+  // const step$ = Authenticate, Sign, Share
+  const step$: Observable<Step> = combineLatest({
+    me: me$,
+    conversation: record$,
+  }).pipe(
+    map(({ me, conversation }) => {
+      if (!isAuthenticated(me)) return Step.Auth
+      if (isSignedBy(conversation, me)) return Step.Share
+      return Step.Sign
+    }),
+    startWith(Step.Sign),
+    tag("step$")
+  )
+
   const [onClickSign, onClickSign$] = cb$(tag("onClickSign$"))
   const signResult$ = onClickSign$.pipe(
     withLatestFrom(id$),
@@ -91,6 +107,7 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
   ).pipe(startWith(false), tag("isSigningDisabled$"), shareLatest())
 
   const props$ = combineLatest({
+    step: step$,
     conversation: record$,
     requiresAuth: requiresAuth$,
     isSigningDisabled: isSigningDisabled$,

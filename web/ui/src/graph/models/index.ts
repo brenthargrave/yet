@@ -1,7 +1,13 @@
 import { faker } from "@faker-js/faker"
 import { eqBy, isEmpty, prop, symmetricDifferenceWith } from "ramda"
-import { isNotEmpty, join } from "~/fp"
-import { Conversation, Invitee, MakeOptional, Participant } from "../generated"
+import { isNotEmpty, join, any } from "~/fp"
+import {
+  Conversation,
+  Customer,
+  Invitee,
+  MakeOptional,
+  Participant,
+} from "../generated"
 
 export type DraftConversation = MakeOptional<
   Conversation,
@@ -54,4 +60,12 @@ export const makeConversation = (): DraftConversation => {
     note: faker.lorem.paragraph(),
     signatures: [],
   }
+}
+
+export const isSignedBy = (
+  conversation: Conversation,
+  customer: Customer | null
+) => {
+  if (!customer) return false
+  return any(({ signer }) => customer.id === signer.id, conversation.signatures)
 }

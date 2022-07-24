@@ -17,7 +17,14 @@ import { View as AuthPrompt } from "./AuthPrompt"
 
 const bold = (inner: string) => `**${inner}**`
 
+export enum Step {
+  Auth,
+  Sign,
+  Share,
+}
+
 export interface Props {
+  step?: Step
   conversation: Conversation
   requiresAuth?: boolean
   onClickAuth?: () => void
@@ -26,6 +33,7 @@ export interface Props {
 }
 
 export const View: FC<Props> = ({
+  step = Step.Auth,
   conversation: { occurredAt, invitees, creator, note },
   requiresAuth = false,
   onClickAuth,
@@ -43,12 +51,12 @@ export const View: FC<Props> = ({
     },
     [
       h(AuthPrompt, {
-        isOpen: requiresAuth,
+        isOpen: step === Step.Auth,
         creatorName,
         occurredAtDesc,
         onClickAuth,
       }),
-      !requiresAuth &&
+      step === Step.Sign &&
         h(
           Stack,
           {
@@ -101,7 +109,7 @@ export const View: FC<Props> = ({
             ]),
             h(NoteView, { note }),
           ]),
-          !requiresAuth &&
+          step === Step.Sign &&
             h(Stack, { direction: "row" }, [
               h(
                 Button,
