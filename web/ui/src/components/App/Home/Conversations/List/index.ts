@@ -3,7 +3,7 @@ import { map, merge, mergeMap, withLatestFrom } from "rxjs"
 import { EventName, Source as GraphSource, track$ } from "~/graph"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
-import { callback$ } from "~/rx"
+import { callback$, cb$ } from "~/rx"
 import { View } from "./View"
 
 interface Sources {
@@ -18,7 +18,7 @@ export const List = (sources: Sources, tagPrefix?: string) => {
   } = sources
   const tag = makeTagger(`${tagPrefix}/List`)
 
-  const { $: clickNew$, cb: onClickNew } = callback$(tag("clickNew$"))
+  const [onClickNew, clickNew$] = cb$(tag("clickNew$"))
 
   const newConvo$ = clickNew$.pipe(map((_) => push(routes.newConversation())))
 
@@ -33,11 +33,9 @@ export const List = (sources: Sources, tagPrefix?: string) => {
     )
   )
 
-  const { $: clickConversation$, cb: onClickConversation } = callback$<string>(
-    tag("clickConversation$")
-  )
+  const [onClickConversation, clickConvo$] = cb$<string>(tag("clickConvo$"))
 
-  const editConvo$ = clickConversation$.pipe(
+  const editConvo$ = clickConvo$.pipe(
     map((id) => push(routes.editConversation({ id })))
   )
 
