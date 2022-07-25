@@ -99,15 +99,16 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
     tag("signResult$")
   )
 
-  const isSigningDisabled$ = merge(
+  const isSigningLoading$ = merge(
     onClickSign$.pipe(map((_) => true)),
     signResult$.pipe(map((_) => false))
-  ).pipe(startWith(false), tag("isSigningDisabled$"), shareLatest())
+  ).pipe(startWith(false), tag("isSigningLoading$"), shareLatest())
 
   const props$ = combineLatest({
     step: step$,
     conversation: record$,
-    isSigningDisabled: isSigningDisabled$,
+    // isSigningDisabled: isSigningDisabled$,
+    isSigningLoading: isSigningLoading$,
   }).pipe(tag("props$"))
 
   const react = merge(

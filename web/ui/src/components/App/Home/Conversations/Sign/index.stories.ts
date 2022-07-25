@@ -14,6 +14,10 @@ export default {
 export const Default: Story<Props> = (args) => h(View, args)
 
 Default.argTypes = {
+  step: {
+    control: "radio",
+    options: [Step.Auth, Step.Sign, Step.Share],
+    value: Step.Sign,
+  },
   conversation: { defaultValue: makeConversation() },
-  step: { defautlValue: Step.Sign },
 }

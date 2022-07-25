@@ -29,6 +29,7 @@ export interface Props {
   onClickAuth?: () => void
   onClickSign?: () => void
   isSigningDisabled?: boolean
+  isSigningLoading?: boolean
 }
 
 export const View: FC<Props> = ({
@@ -37,6 +38,7 @@ export const View: FC<Props> = ({
   onClickAuth,
   onClickSign,
   isSigningDisabled = false,
+  isSigningLoading = false,
 }) => {
   const creatorName = creator.name
   const occurredAtDesc = localizeDate(occurredAt)
@@ -111,7 +113,11 @@ export const View: FC<Props> = ({
             h(Stack, { direction: "row" }, [
               h(
                 Button,
-                { onClick: onClickSign, disabled: isSigningDisabled },
+                {
+                  onClick: onClickSign,
+                  disabled: isSigningDisabled,
+                  isLoading: isSigningLoading,
+                },
                 `Cosign notes`
               ),
             ]),
