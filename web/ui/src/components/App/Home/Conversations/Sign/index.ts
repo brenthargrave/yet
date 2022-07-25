@@ -18,6 +18,7 @@ import { ErrorView } from "~/components/App/ErrorView"
 import {
   getConversation$,
   isAuthenticated,
+  isLurking,
   isSignedBy,
   signConversation$,
   Source as GraphSource,
@@ -59,8 +60,12 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
     tag("result$"),
     shareLatest()
   )
-  const record$ = result$.pipe(filterResultOk(), tag("record$"), share())
-  const userError$ = result$.pipe(filterResultErr(), tag("userError$"), share())
+  const record$ = result$.pipe(filterResultOk(), tag("record$"), shareLatest())
+  const userError$ = result$.pipe(
+    filterResultErr(),
+    tag("userError$"),
+    shareLatest()
+  )
   const userErrorNotice$ = userError$.pipe(
     map(({ message }) => error({ description: message }))
   )
@@ -77,7 +82,7 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
     conversation: record$,
   }).pipe(
     map(({ me, conversation }) => {
-      if (!isAuthenticated(me)) return Step.Auth
+      if (isLurking(me)) return Step.Auth
       if (isSignedBy(conversation, me)) return Step.Share
       return Step.Sign
     }),

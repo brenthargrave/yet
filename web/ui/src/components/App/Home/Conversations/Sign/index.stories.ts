@@ -1,7 +1,7 @@
 import { h } from "@cycle/react"
 import { Meta, Story } from "@storybook/react"
 import { makeConversation } from "~/graph/models"
-import { Props, View } from "./View"
+import { Props, View, Step } from "./View"
 
 export default {
   title: "Components/Conversations/Sign",
@@ -15,5 +15,5 @@ export const Default: Story<Props> = (args) => h(View, args)
 
 Default.argTypes = {
   conversation: { defaultValue: makeConversation() },
-  requiresAuth: { type: "boolean" },
+  step: { defautlValue: Step.Sign },
 }

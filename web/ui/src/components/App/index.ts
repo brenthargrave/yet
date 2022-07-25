@@ -1,26 +1,15 @@
 import { h, ReactSource } from "@cycle/react"
 import { captureException } from "@sentry/react"
-import {
-  debounceTime,
-  catchError,
-  combineLatest,
-  EMPTY,
-  merge,
-  Observable,
-  of,
-} from "rxjs"
+import { combineLatest, debounceTime, EMPTY, merge, Observable, of } from "rxjs"
 import { map, switchMap } from "rxjs/operators"
 import { match } from "ts-pattern"
 import { Auth } from "~/components/Auth"
 import { Landing } from "~/components/Landing"
-import { Onboarding } from "~/components/Onboarding"
 import {
   Customer,
-  GraphDefaultQueryError,
-  isLurking,
-  isOnboarding,
-  Source as GraphSource,
   eatUnrecoverableError,
+  isLurking,
+  Source as GraphSource,
 } from "~/graph"
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
@@ -31,6 +20,7 @@ import { Header } from "./Header"
 import { Home } from "./Home"
 import { View as AppView } from "./View"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type CycleComponent<T> = (sources: T) => Record<string, Observable<any>>
 export type CC<T> = CycleComponent<T>
 
@@ -70,8 +60,6 @@ export const App = (sources: Sources) => {
     value: { me$: authMe$ },
   } = Auth(sources)
 
-  const { react: onboardingView$ } = Onboarding(sources)
-
   const me$: Observable<null | Customer> = merge(authMe$, cachedMe$).pipe(
     tag("me$")
   )
@@ -81,11 +69,7 @@ export const App = (sources: Sources) => {
     switchMap(({ route, me }) => {
       return match(route.name)
         .with("in", () => authView$)
-        .with("root", () => {
-          if (isLurking(me)) return landingView$
-          if (isOnboarding(me)) return onboardingView$
-          return homeView$
-        })
+        .with("root", () => (isLurking(me) ? landingView$ : homeView$))
         .otherwise(() => homeView$)
     }),
     tag("bodyView$")
