@@ -26,7 +26,6 @@ export enum Step {
 export interface Props {
   step?: Step
   conversation: Conversation
-  requiresAuth?: boolean
   onClickAuth?: () => void
   onClickSign?: () => void
   isSigningDisabled?: boolean
@@ -35,7 +34,6 @@ export interface Props {
 export const View: FC<Props> = ({
   step = Step.Auth,
   conversation: { occurredAt, invitees, creator, note },
-  requiresAuth = false,
   onClickAuth,
   onClickSign,
   isSigningDisabled = false,
@@ -83,7 +81,7 @@ export const View: FC<Props> = ({
           padding: 4,
           gap: 4,
           style: {
-            ...(requiresAuth && {
+            ...(step === Step.Auth && {
               color: "transparent",
               textShadow: "0 0 10px rgba(0,0,0,0.5)",
             }),

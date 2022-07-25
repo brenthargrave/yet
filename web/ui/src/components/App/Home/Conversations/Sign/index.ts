@@ -72,15 +72,6 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const requiresAuth$ = me$.pipe(
-    map((me) => !isAuthenticated(me)),
-    startWith(false),
-    debounceTime(100),
-    tag("requiresAuth$"),
-    shareLatest()
-  )
-
-  // const step$ = Authenticate, Sign, Share
   const step$: Observable<Step> = combineLatest({
     me: me$,
     conversation: record$,
@@ -91,7 +82,9 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
       return Step.Sign
     }),
     startWith(Step.Sign),
-    tag("step$")
+    debounceTime(100),
+    tag("step$"),
+    shareLatest()
   )
 
   const [onClickSign, onClickSign$] = cb$(tag("onClickSign$"))
@@ -109,7 +102,6 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
   const props$ = combineLatest({
     step: step$,
     conversation: record$,
-    requiresAuth: requiresAuth$,
     isSigningDisabled: isSigningDisabled$,
   }).pipe(tag("props$"))
 
