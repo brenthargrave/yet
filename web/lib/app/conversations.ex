@@ -77,9 +77,8 @@ defmodule App.Conversations do
     |> Repo.preload(@conversation_preloads)
     |> lift(nil, :not_found)
     |> fmap(&Map.put(attrs, :conversation, &1))
-    |> IO.inspect()
     |> fmap(&Signature.changeset(%Signature{}, &1))
     |> bind(&Repo.insert(&1))
-    |> fmap(fn signature -> signature.conversation end)
+    |> fmap(& &1.conversation)
   end
 end

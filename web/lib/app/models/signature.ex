@@ -34,7 +34,7 @@ defmodule App.Signature do
       creator_id = conversation.creator_id
 
       if signer_id == creator_id do
-        [{:conversation, "creator cannot also sign it."}]
+        [conversation: "creator cannot also sign it."]
       else
         []
       end
@@ -47,7 +47,7 @@ defmodule App.Signature do
       {:ok, sigCount} = Enumerable.count(conversation.signatures)
 
       if sigCount >= inviteeCount do
-        [{:conversation, "has already been signed by all participants."}]
+        [conversation: "has already been signed by all participants."]
       else
         []
       end
