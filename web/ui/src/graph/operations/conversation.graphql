@@ -26,6 +26,20 @@ fragment ConversationProps on Conversation {
   }
 }
 
+fragment UserErrorProps on UserError {
+  code
+  message
+}
+
+fragment ConversationPayloadProps on ConversationPayload {
+  conversation {
+    ...ConversationProps
+  }
+  userError {
+    ...UserErrorProps
+  }
+}
+
 query GetConversations {
   getConversations {
     conversations {
@@ -36,45 +50,25 @@ query GetConversations {
 
 query ViewConversation($id: ID!) {
   getConversation(id: $id) {
-    conversation {
-     ...ConversationProps
-    }
-    userError {
-      message
-      code
-    }
+    ...ConversationPayloadProps
   }
 }
 
 mutation UpsertConversation($input: ConversationInput!) {
   upsertConversation(input: $input) {
-    conversation {
-     ...ConversationProps
-    }
+    ...ConversationPayloadProps
   }
 }
 
 mutation DeleteConversation($input: DeleteConversationInput!) {
   deleteConversation(input: $input) {
-    userError {
-      code
-      message
-    }
-    conversation {
-     ...ConversationProps
-    }
+    ...ConversationPayloadProps
   }
 }
 
 mutation SignConversation($input: SignInput!) {
   sign(input: $input) {
-    conversation {
-      ...ConversationProps
-    }
-    userError {
-      code
-      message
-    }
+    ...ConversationPayloadProps
   }
 }
 
