@@ -26,7 +26,7 @@ export const View: FC<Props> = ({
 }) => {
   const onClose = () => null
   return h(Modal, {
-    // isCentered: true,
+    isCentered: true,
     autoFocus: true,
     closeOnEsc: true,
     closeOnOverlayClick: true,
@@ -42,7 +42,7 @@ export const View: FC<Props> = ({
               h(MarkdownView, {
                 md: `**${creatorName}** wants to share their notes from your conversation on **${occurredAtDesc}**.
 
-            Sign in below to review them`,
+               Sign in below to review them.`,
               }),
             ]),
           ]),

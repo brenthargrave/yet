@@ -105,7 +105,7 @@ export const View: FC<Props> = ({
                 occurredAtDesc
               ),
             ]),
-            h(NoteView, { note }),
+            h(NoteView, { note, isObscured: step === Step.Auth }),
           ]),
           step === Step.Sign &&
             h(Stack, { direction: "row" }, [

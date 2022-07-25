@@ -6,9 +6,15 @@ import { MarkdownView } from "~/system"
 interface Props {
   note: string | null | undefined
   maxLines?: number
+  isObscured?: boolean
 }
 
-export const View: FC<Props> = ({ note, maxLines, ...rest }) =>
+export const View: FC<Props> = ({
+  note,
+  maxLines,
+  isObscured = false,
+  ...rest
+}) =>
   h(
     Box,
     {
@@ -16,6 +22,9 @@ export const View: FC<Props> = ({ note, maxLines, ...rest }) =>
       padding: 4,
       borderWidth: "1px",
       borderRadius: "lg",
+      ...(isObscured && {
+        borderWidth: "0px",
+      }),
       ...rest,
     },
     [h(MarkdownView, { maxLines, md: note })]
