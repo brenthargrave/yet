@@ -220,7 +220,12 @@ export const track$ = (_input: Omit<TrackEventInput, "anonId">) => {
 export const contacts$ = token$.pipe(
   switchMap((token) => {
     if (!token) return of(null)
-    return zenToRx(client.watchQuery({ query: ContactsDocument })).pipe(
+    return zenToRx(
+      client.watchQuery({
+        query: ContactsDocument,
+        fetchPolicy: "network-only",
+      })
+    ).pipe(
       map(
         ({
           data,

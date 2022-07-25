@@ -104,7 +104,7 @@ defmodule AppWeb.Graph.Conversations do
     end
 
     field :contacts, non_null(list_of(non_null(:contact))) do
-      resolve(fn _parents, _args, _resolution -> {:ok, []} end)
+      resolve(&Conversations.get_contacts/3)
     end
   end
 end

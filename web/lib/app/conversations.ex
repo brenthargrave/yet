@@ -4,7 +4,7 @@ defmodule App.Conversations do
   use TypedStruct
   use Brex.Result
   use Timex
-  alias App.{Repo, Conversation, Signature}
+  alias App.{Repo, Conversation, Signature, Contact}
   import Ecto.Query
 
   @conversation_preloads [:creator, signatures: [:signer, :conversation]]
@@ -54,7 +54,7 @@ defmodule App.Conversations do
     |> bind(&Repo.insert_or_update(&1))
   end
 
-  defun get_conversations(viewer :: Customer.t()) :: Brex.Result.s(list(Converstion.t())) do
+  defun get_conversations(viewer :: Customer.t()) :: Brex.Result.s(list(Conversation.t())) do
     Repo.all(
       from(c in Conversation,
         preload: ^@conversation_preloads,
@@ -89,5 +89,16 @@ defmodule App.Conversations do
     |> Ecto.Changeset.traverse_errors(fn {message, _opts} -> message end)
     |> Enum.map(fn {k, v} -> "#{k} #{v}" end)
     |> error()
+  end
+
+  defun get_contacts(viewer :: Customer.t()) :: Brex.Result.s(list(term())) do
+    Repo.all(
+      from(contact in Contact,
+        join: sig in assoc(contact, :signatures),
+        join: convo in assoc(sig, :conversation),
+        where: convo.creator_id == ^viewer.id,
+        where: convo.status != :deleted
+      )
+    )
   end
 end
