@@ -18,7 +18,7 @@ import { ProfileProp, Source as GraphSource, updateProfile$ } from "~/graph"
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
-import { callback$, shareLatest } from "~/rx"
+import { cb$, shareLatest } from "~/rx"
 import { View } from "./View"
 
 const tag = makeTagger("Onboarding")
@@ -32,6 +32,7 @@ const attributes = [ProfileProp.Name, ProfileProp.Org, ProfileProp.Role]
 
 export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"), shareLatest())
+
   const attr$ = me$.pipe(
     map((me) =>
       find((attr) => propSatisfies(isNil, toLower(attr), me), attributes)
@@ -50,7 +51,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   ).pipe(tag("inputValue$"), shareLatest())
   const onChangeInput = (value: string) => inputValue$$.next(value)
 
-  const { $: submit$, cb: onSubmit } = callback$(tag("submit$"))
+  const [onSubmit, submit$] = cb$(tag("submit$"))
 
   const collected$ = combineLatest({
     me: me$,
@@ -93,7 +94,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   }).pipe(
     map(({ isLoading, isInputInvalid }) => isLoading || isInputInvalid),
     startWith(true),
-    tag("loading$ || invalid$"),
+    tag("isSubmitButtonDisabled$"),
     shareLatest()
   )
 
