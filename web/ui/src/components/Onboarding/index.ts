@@ -1,4 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
+import { createRef } from "react"
 import {
   BehaviorSubject,
   combineLatest,
@@ -9,6 +10,7 @@ import {
   share,
   startWith,
   switchMap,
+  tap,
   withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
@@ -22,6 +24,8 @@ import { cb$, shareLatest } from "~/rx"
 import { View } from "./View"
 
 const tag = makeTagger("Onboarding")
+
+const inputRef = createRef<HTMLInputElement>()
 
 interface Sources {
   react: ReactSource
@@ -47,7 +51,8 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   const inputValue$$ = new BehaviorSubject<string>("")
   const inputValue$ = merge(
     inputValue$$.asObservable(),
-    attr$.pipe(map((_) => "")) // reset input when new form step changes
+    // reset input when new form step changes
+    attr$.pipe(map((_) => ""))
   ).pipe(tag("inputValue$"), shareLatest())
   const onChangeInput = (value: string) => inputValue$$.next(value)
 
@@ -115,9 +120,13 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
         headingCopy: t(`onboarding.${key}.headingCopy`),
         inputPlaceholder: t(`onboarding.${key}.inputPlaceholer`),
         submitButtonCopy: t(`onboarding.${key}.submitButtonCopy`),
+        inputRef,
       })
     }),
-    tag("react")
+    tag("react"),
+    tap(() => {
+      inputRef.current?.focus()
+    })
   )
 
   const notice = userError$.pipe(

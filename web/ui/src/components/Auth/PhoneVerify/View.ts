@@ -1,10 +1,9 @@
-import { createRef, Ref } from "react"
+import { HStack, PinInput, PinInputField } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { form } from "@cycle/react-dom"
-import { HStack, PinInput, PinInputField } from "@chakra-ui/react"
-import { Button, Center, Stack, Heading, InputGroup, Text } from "~/system"
-
-import { t, formatPhone } from "~/i18n"
+import { Ref } from "react"
+import { formatPhone, t } from "~/i18n"
+import { Button, Center, Heading, InputGroup, Stack, Text } from "~/system"
 
 export interface Props {
   e164: string
