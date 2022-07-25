@@ -33,6 +33,7 @@ defmodule App.Conversations do
     |> fmap(&Conversation.changeset(&1, attrs))
     |> bind(&Repo.insert_or_update(&1))
     |> fmap(&Repo.preload(&1, @conversation_preloads))
+    |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 
   defun get_conversation(id :: id()) :: Brex.Result.s(Conversation.t()) do
@@ -80,5 +81,13 @@ defmodule App.Conversations do
     |> fmap(&Signature.changeset(%Signature{}, &1))
     |> bind(&Repo.insert(&1))
     |> fmap(& &1.conversation)
+    |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
+  end
+
+  defp format_ecto_errors(%Ecto.Changeset{} = changeset) do
+    changeset
+    |> Ecto.Changeset.traverse_errors(fn {message, _opts} -> message end)
+    |> Enum.map(fn {k, v} -> "#{k} #{v}" end)
+    |> error()
   end
 end

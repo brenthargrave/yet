@@ -107,14 +107,14 @@ export const View: FC<Props> = ({
             ]),
             h(NoteView, { note, isObscured: step === Step.Auth }),
           ]),
-          step === Step.Sign &&
-            h(Stack, { direction: "row" }, [
-              h(
-                Button,
-                { onClick: onClickSign, disabled: isSigningDisabled },
-                `Cosign notes`
-              ),
-            ]),
+          // step === Step.Sign &&
+          h(Stack, { direction: "row" }, [
+            h(
+              Button,
+              { onClick: onClickSign, disabled: isSigningDisabled },
+              `Cosign notes`
+            ),
+          ]),
         ]
       ),
     ]
