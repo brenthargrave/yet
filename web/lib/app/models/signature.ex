@@ -8,9 +8,9 @@ defmodule App.Signature do
   alias Ecto.Changeset
 
   typed_schema "signatures" do
-    belongs_to :conversation, Conversation
-    belongs_to :signer, Customer
-    field :signed_at, :utc_datetime_usec
+    belongs_to(:conversation, Conversation)
+    belongs_to(:signer, Customer)
+    field(:signed_at, :utc_datetime_usec)
     timestamps(type: :utc_datetime_usec)
   end
 
@@ -20,34 +20,34 @@ defmodule App.Signature do
     |> put_assoc(:signer, attrs[:signer])
     |> put_assoc(:conversation, attrs[:conversation])
     |> validate_required([:conversation, :signer, :signed_at])
-    # TODO: validate signable
-    # |> validate_signer()
-    # |> validate_conversation_is_signable()
+    |> validate_signer()
+    |> validate_conversation_is_signable()
     |> unique_constraint([:conversation_id, :signer_id])
   end
 
-  defun validate_signer(changeset :: Changeset.t()) :: Changeset.t() do
-    validate_change(changeset, :conversation, fn :conversation, conversation ->
-      signer = get_field(changeset, :signer)
-      IO.inspect(signer)
-      signer_id = signer.id
-      creator_id = conversation.creator_id
+  defun validate_conversation_is_signable(changeset :: Changeset.t()) :: Changeset.t() do
+    validate_change(changeset, :conversation, fn :conversation, value ->
+      conversation = get_field(changeset, :conversation)
+      inviteeCount = Enum.count(conversation.invitees)
+      sigCount = Enum.count(conversation.signatures)
 
-      if signer_id == creator_id do
-        [conversation: "creator cannot also sign it."]
+      if sigCount >= inviteeCount do
+        [conversation: "has already been signed by all participants."]
       else
         []
       end
     end)
   end
 
-  defun validate_conversation_is_signable(changeset :: Changeset.t()) :: Changeset.t() do
-    validate_change(changeset, :conversation, fn :conversation, conversation ->
-      {:ok, inviteeCount} = Enumerable.count(conversation.invitees)
-      {:ok, sigCount} = Enumerable.count(conversation.signatures)
+  defun validate_signer(changeset :: Changeset.t()) :: Changeset.t() do
+    validate_change(changeset, :conversation, fn :conversation, _value ->
+      signer = get_field(changeset, :signer)
+      conversation = get_field(changeset, :conversation)
+      signer_id = signer.id
+      creator_id = conversation.creator_id
 
-      if sigCount >= inviteeCount do
-        [conversation: "has already been signed by all participants."]
+      if signer_id == creator_id do
+        [conversation: "creator cannot also sign it."]
       else
         []
       end
