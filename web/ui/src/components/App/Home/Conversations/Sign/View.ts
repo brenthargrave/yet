@@ -12,6 +12,7 @@ import {
   Spacer,
   Stack,
   Text,
+  Header,
 } from "~/system"
 import { View as AuthPrompt } from "./AuthPrompt"
 
@@ -56,6 +57,8 @@ export const View: FC<Props> = ({
         occurredAtDesc,
         onClickAuth,
       }),
+      // TODO: universal under Home, extract
+      h(Header, {}, []),
       step === Step.Sign &&
         h(
           Stack,
