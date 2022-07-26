@@ -21,8 +21,7 @@ export const Home = (sources: Sources) => {
     graph: { me$: me },
   } = sources
 
-  // NOTE: force onboarding everywhere in app, but only if auth'd
-  // unauthenticated on *some* subviews... should what?
+  // NOTE: force onboarding everywhere in main app after auth
   const onboarding = Onboarding(sources)
 
   const {

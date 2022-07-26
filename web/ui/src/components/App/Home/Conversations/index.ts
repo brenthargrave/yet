@@ -7,6 +7,7 @@ import { Main as Create } from "./Create"
 import { Edit } from "./Edit"
 import { List } from "./List"
 import { Sign } from "./Sign"
+import { Show } from "./Show"
 
 interface Sources {
   react: ReactSource
@@ -25,6 +26,7 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
   const edit = Edit(sources, tagScope)
   const create = Create(sources, tagScope)
   const sign = Sign(sources, tagScope)
+  const show = Show(sources, tagScope)
 
   const react = history$.pipe(
     switchMap((route) =>
@@ -33,6 +35,7 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
         .with(routes.editConversation.name, () => edit.react)
         .with(routes.conversations.name, () => list.react)
         .with(routes.signConversation.name, () => sign.react)
+        .with(routes.conversation.name, () => show.react)
         .otherwise((_) => list.react)
     )
   )
