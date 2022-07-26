@@ -30,6 +30,7 @@ defmodule App.Signature do
       conversation = get_field(changeset, :conversation)
       inviteeCount = Enum.count(conversation.invitees)
       sigCount = Enum.count(conversation.signatures)
+      IO.puts("sigs #{sigCount} >= invitees #{inviteeCount}")
 
       if sigCount >= inviteeCount do
         [conversation: "has already been signed by all participants."]

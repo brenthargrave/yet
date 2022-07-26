@@ -3,6 +3,7 @@ import {
   combineLatest,
   debounceTime,
   EMPTY,
+  filter,
   map,
   merge,
   Observable,
@@ -68,6 +69,15 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
   )
   const userErrorNotice$ = userError$.pipe(
     map(({ message }) => error({ description: message }))
+  )
+
+  const redirectCreatorToShow$ = combineLatest({
+    me: me$,
+    record: record$,
+  }).pipe(
+    filter(({ me, record }) => me?.id === record.creator.id),
+    map(({ me, record: { id } }) => push(routes.conversation({ id }))),
+    tag("redirectCreatorToShow$")
   )
 
   const [onClickAuth, onClickAuth$] = cb$(tag("onClickAuth$"))
@@ -137,7 +147,11 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
   ).pipe(startWith(null), tag("react"))
 
   const notice = merge(userErrorNotice$, signUserError$, alertSigned$)
-  const router = merge(redirectToAuth$, redirectSignedToShow$)
+  const router = merge(
+    redirectCreatorToShow$,
+    redirectToAuth$,
+    redirectSignedToShow$
+  )
 
   return {
     react,

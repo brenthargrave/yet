@@ -101,4 +101,10 @@ defmodule App.Conversations do
       )
     )
   end
+
+  ## Helpers
+
+  def clear_signatures(conversation_id) do
+    Repo.delete_all(from(s in Signature, where: s.conversation_id == ^conversation_id))
+  end
 end
