@@ -20,7 +20,6 @@ const bold = (inner: string) => `**${inner}**`
 export enum Step {
   Auth = "auth",
   Sign = "sign",
-  Share = "share",
 }
 
 export interface Props {

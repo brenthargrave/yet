@@ -93,11 +93,7 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
     me: me$,
     conversation: record$,
   }).pipe(
-    map(({ me, conversation }) => {
-      if (isLurking(me)) return Step.Auth
-      if (isSignedBy(conversation, me)) return Step.Share
-      return Step.Sign
-    }),
+    map(({ me, conversation }) => (isLurking(me) ? Step.Auth : Step.Sign)),
     startWith(Step.Sign),
     debounceTime(100),
     tag("step$"),
