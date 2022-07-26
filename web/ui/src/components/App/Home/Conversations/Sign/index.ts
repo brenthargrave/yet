@@ -18,7 +18,6 @@ import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { ErrorView } from "~/components/App/ErrorView"
 import {
   getConversation$,
-  isAuthenticated,
   isLurking,
   isSignedBy,
   signConversation$,
@@ -68,7 +67,9 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
   const userErrorNotice$ = userError$.pipe(
-    map(({ message }) => error({ description: message }))
+    map(({ message }) => error({ description: message })),
+    tag("userErrorNotice$"),
+    share()
   )
 
   const redirectCreatorToShow$ = combineLatest({
@@ -77,7 +78,8 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
   }).pipe(
     filter(({ me, record }) => me?.id === record.creator.id),
     map(({ me, record: { id } }) => push(routes.conversation({ id }))),
-    tag("redirectCreatorToShow$")
+    tag("redirectCreatorToShow$"),
+    share()
   )
 
   const [onClickAuth, onClickAuth$] = cb$(tag("onClickAuth$"))
@@ -106,13 +108,19 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
   const signResult$ = onClickSign$.pipe(
     withLatestFrom(id$),
     switchMap(([_, id]) => signConversation$({ id })),
-    tag("signResult$")
+    tag("signResult$"),
+    share()
   )
 
-  const signError$ = signResult$.pipe(filterResultErr(), tag("userError$"))
+  const signError$ = signResult$.pipe(
+    filterResultErr(),
+    tag("userError$"),
+    share()
+  )
   const signUserError$ = signError$.pipe(
     map(({ message }) => error({ description: message })),
-    tag("signUserError$")
+    tag("signUserError$"),
+    share()
   )
   const signRecord$ = signResult$.pipe(
     filterResultOk(),
@@ -121,11 +129,13 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
   )
   const alertSigned$ = signRecord$.pipe(
     map((_) => info({ description: "Cosigned!" })),
-    tag("alertSigned$")
+    tag("alertSigned$"),
+    share()
   )
   const redirectSignedToShow$ = signRecord$.pipe(
     map(({ id }) => push(routes.conversation({ id }))),
-    tag("redirectSignedToShow$")
+    tag("redirectSignedToShow$"),
+    share()
   )
 
   const isSigningLoading$ = merge(
