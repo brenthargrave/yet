@@ -38,25 +38,24 @@ export const View: FC<Props> = ({
         h(ModalHeader, { key: "header" }, ""),
         h(ModalBody, { key: "body" }, [
           h(Center, {}, [
-            h(Stack, { maxWidth }, [
+            h(Stack, { maxWidth, width: "100%", direction: "column", gap: 6 }, [
               h(MarkdownView, {
                 md: `**${creatorName}** wants to share their notes from your conversation on **${occurredAtDesc}**.
 
-               Sign in below to review them.`,
+               Please sign in to review them.`,
               }),
+              h(
+                Stack,
+                { direction: "column", alignItems: "center", width: "100%" },
+                [
+                  //
+                  h(Button, { onClick: onClickAuth }, `Sign in / Sign up`),
+                ]
+              ),
             ]),
           ]),
         ]),
-        h(ModalFooter, { key: "footer" }, [
-          h(
-            Stack,
-            { direction: "column", alignItems: "center", width: "100%" },
-            [
-              //
-              h(Button, { onClick: onClickAuth }, `Sign in / Sign up`),
-            ]
-          ),
-        ]),
+        h(ModalFooter, { key: "footer" }, []),
       ]),
     ],
   })
