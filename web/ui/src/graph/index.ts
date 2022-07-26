@@ -70,6 +70,21 @@ const { VITE_API_ENV: API_ENV } = import.meta.env
 export class GraphError extends Error {}
 export class GraphDefaultQueryError extends GraphError {}
 
+export function eatUnrecoverableError<T>(
+  callback?: (error: Error, caught: Observable<T>) => void
+): MonoTypeOperatorFunction<T> {
+  return (source) =>
+    source.pipe(
+      catchError((error, caught$) => {
+        if (callback) callback(error, caught$)
+        // NOTE: graph watch errors are fatal, will loop indefinitely if resubscribed
+        return error instanceof GraphDefaultQueryError
+          ? EMPTY
+          : caught$.pipe(tag("caught$"))
+      })
+    )
+}
+
 export const submitPhone$ = (
   input: SubmitPhoneInput
 ): Observable<SubmitPhoneResult> =>
@@ -373,18 +388,3 @@ export const conversations$ = token$.pipe(
   }),
   shareLatest()
 )
-
-export function eatUnrecoverableError<T>(
-  callback?: (error: Error, caught: Observable<T>) => void
-): MonoTypeOperatorFunction<T> {
-  return (source) =>
-    source.pipe(
-      catchError((error, caught$) => {
-        if (callback) callback(error, caught$)
-        // NOTE: graph watch errors are fatal, will loop indefinitely if resubscribed
-        return error instanceof GraphDefaultQueryError
-          ? EMPTY
-          : caught$.pipe(tag("caught$"))
-      })
-    )
-}
