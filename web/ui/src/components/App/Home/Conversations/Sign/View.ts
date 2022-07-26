@@ -12,7 +12,6 @@ import {
   Spacer,
   Stack,
   Text,
-  Header,
 } from "~/system"
 import { View as AuthPrompt } from "./AuthPrompt"
 
@@ -29,8 +28,7 @@ export interface Props {
   conversation: Conversation
   onClickAuth?: () => void
   onClickSign?: () => void
-  isSigningDisabled?: boolean
-  isSigningLoading?: boolean
+  isSignLoading?: boolean
 }
 
 export const View: FC<Props> = ({
@@ -38,8 +36,7 @@ export const View: FC<Props> = ({
   conversation: { occurredAt, invitees, creator, note },
   onClickAuth,
   onClickSign,
-  isSigningDisabled = false,
-  isSigningLoading = false,
+  isSignLoading = false,
 }) => {
   const creatorName = creator.name
   const occurredAtDesc = localizeDate(occurredAt)
@@ -57,8 +54,6 @@ export const View: FC<Props> = ({
         occurredAtDesc,
         onClickAuth,
       }),
-      // TODO: universal under Home, extract
-      h(Header, {}, []),
       step === Step.Sign &&
         h(
           Stack,
@@ -118,10 +113,9 @@ export const View: FC<Props> = ({
                 Button,
                 {
                   onClick: onClickSign,
-                  disabled: isSigningDisabled,
-                  isLoading: isSigningLoading,
+                  isLoading: isSignLoading,
                 },
-                `Cosign notes`
+                `Cosign`
               ),
             ]),
         ]

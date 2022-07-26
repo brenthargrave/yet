@@ -107,8 +107,7 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
   const props$ = combineLatest({
     step: step$,
     conversation: record$,
-    // isSigningDisabled: isSigningDisabled$,
-    isSigningLoading: isSigningLoading$,
+    isSignLoading: isSigningLoading$,
   }).pipe(tag("props$"))
 
   const react = merge(
