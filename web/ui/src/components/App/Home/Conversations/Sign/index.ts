@@ -24,7 +24,7 @@ import {
   Source as GraphSource,
 } from "~/graph"
 import { makeTagger } from "~/log"
-import { error } from "~/notice"
+import { error, info } from "~/notice"
 import { push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
 import { Step, View } from "./View"
@@ -99,6 +99,25 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
     tag("signResult$")
   )
 
+  const signError$ = signResult$.pipe(filterResultErr(), tag("userError$"))
+  const signUserError$ = signError$.pipe(
+    map(({ message }) => error({ description: message })),
+    tag("signUserError$")
+  )
+  const signRecord$ = signResult$.pipe(
+    filterResultOk(),
+    tag("record$"),
+    share()
+  )
+  const alertSigned$ = signRecord$.pipe(
+    map((_) => info({ description: "Cosigned!" })),
+    tag("alertSigned$")
+  )
+  const redirectSignedToShow$ = signRecord$.pipe(
+    map(({ id }) => push(routes.conversation({ id }))),
+    tag("redirectSignedToShow$")
+  )
+
   const isSigningLoading$ = merge(
     onClickSign$.pipe(map((_) => true)),
     signResult$.pipe(map((_) => false))
@@ -117,8 +136,8 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
     userError$.pipe(map((error) => h(ErrorView, { error })))
   ).pipe(startWith(null), tag("react"))
 
-  const notice = merge(userErrorNotice$)
-  const router = merge(redirectToAuth$)
+  const notice = merge(userErrorNotice$, signUserError$, alertSigned$)
+  const router = merge(redirectToAuth$, redirectSignedToShow$)
 
   return {
     react,
