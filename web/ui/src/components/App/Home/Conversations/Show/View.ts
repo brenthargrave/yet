@@ -40,6 +40,7 @@ export interface Props {
   onClickAuth?: () => void
   onClickSign?: () => void
   isSignLoading?: boolean
+  onClickShare?: () => void
 }
 
 export const View: FC<Props> = ({
@@ -49,6 +50,7 @@ export const View: FC<Props> = ({
   onClickAuth,
   onClickSign,
   isSignLoading = false,
+  onClickShare,
 }) => {
   const creatorName = creator.name
   const occurredAtDesc = localizeDate(occurredAt)
@@ -128,7 +130,7 @@ export const View: FC<Props> = ({
               }),
             isReading(intent) &&
               //
-              h(ShareButton, {}),
+              h(ShareButton, { onClickShare }),
           ]),
         ]
       ),

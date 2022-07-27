@@ -1,6 +1,6 @@
-import { AddIcon } from "@chakra-ui/icons"
-import { Button } from "@chakra-ui/react"
+import { CheckIcon } from "@chakra-ui/icons"
 import { h } from "@cycle/react"
+import { ActionButton } from "~/system"
 
 export interface Props {
   onClick?: () => void
@@ -9,15 +9,12 @@ export interface Props {
 }
 
 export const SignButton = ({ onClick, isDisabled, isLoading }: Props) =>
-  h(
-    Button,
-    {
-      rightIcon: h(AddIcon),
-      onClick,
-      isDisabled,
-      isLoading,
-    },
-    `Cosign`
-  )
+  h(ActionButton, {
+    cta: "Cosign",
+    rightIcon: h(CheckIcon),
+    onClick,
+    isDisabled,
+    isLoading,
+  })
 
 SignButton.displayName = "SignButton"

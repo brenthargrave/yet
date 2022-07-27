@@ -4,6 +4,7 @@ import { FC, ReactNode } from "react"
 
 export interface Props {
   cta: string
+  leftIcon?: ReactNode
   rightIcon?: ReactNode
   onClick?: () => void
   isDisabled?: boolean
@@ -12,6 +13,7 @@ export interface Props {
 
 export const ActionButton: FC<Props> = ({
   cta,
+  leftIcon,
   rightIcon,
   onClick,
   isDisabled,
@@ -20,6 +22,7 @@ export const ActionButton: FC<Props> = ({
   h(
     Button,
     {
+      leftIcon,
       rightIcon,
       onClick,
       isDisabled,
