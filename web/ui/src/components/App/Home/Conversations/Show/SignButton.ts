@@ -3,18 +3,18 @@ import { h } from "@cycle/react"
 import { ActionButton } from "~/system"
 
 export interface Props {
-  onClick?: () => void
+  onClickSign?: () => void
   isDisabled?: boolean
-  isLoading?: boolean
+  isSignLoading?: boolean
 }
 
-export const SignButton = ({ onClick, isDisabled, isLoading }: Props) =>
+export const SignButton = ({ onClickSign, isDisabled, isSignLoading }: Props) =>
   h(ActionButton, {
     cta: "Cosign",
     rightIcon: h(CheckIcon),
-    onClick,
+    onClick: onClickSign,
+    isLoading: isSignLoading,
     isDisabled,
-    isLoading,
   })
 
 SignButton.displayName = "SignButton"

@@ -4,15 +4,7 @@ import { NoteView } from "~/components/Note"
 import { map, pluck } from "~/fp"
 import { Conversation } from "~/graph"
 import { localizeDate, t, toSentence } from "~/i18n"
-import {
-  Button,
-  Flex,
-  Heading,
-  MarkdownView,
-  Spacer,
-  Stack,
-  Text,
-} from "~/system"
+import { Flex, Heading, MarkdownView, Spacer, Stack, Text } from "~/system"
 import { View as AuthPrompt } from "./AuthPrompt"
 import { ShareButton } from "./ShareButton"
 import { SignButton } from "./SignButton"
@@ -123,11 +115,7 @@ export const View: FC<Props> = ({
           ]),
           h(Stack, { direction: "row" }, [
             isSigningStep(intent, step, Step.Sign) &&
-              h(SignButton, {
-                //
-                onClick: onClickSign,
-                isLoading: isSignLoading,
-              }),
+              h(SignButton, { onClickSign, isSignLoading }),
             isReading(intent) &&
               //
               h(ShareButton, { onClickShare }),
