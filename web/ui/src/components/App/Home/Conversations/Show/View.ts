@@ -51,6 +51,8 @@ export const View: FC<Props> = ({
   isOpenShare = false,
   onCloseShare = () => null,
 }) => {
+  const isConversationBlurred =
+    isSigningStep(intent, step, Step.Auth) || isOpenShare
   const creatorName = creator.name
   const occurredAtDesc = localizeDate(occurredAt)
   return h(
@@ -98,7 +100,7 @@ export const View: FC<Props> = ({
           padding: 4,
           gap: 4,
           style: {
-            ...(isSigningStep(intent, step, Step.Auth) && {
+            ...(isConversationBlurred && {
               color: "transparent",
               textShadow: "0 0 10px rgba(0,0,0,0.5)",
             }),
