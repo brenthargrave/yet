@@ -8,6 +8,7 @@ import { Flex, Heading, MarkdownView, Spacer, Stack, Text } from "~/system"
 import { View as AuthPrompt } from "./AuthPrompt"
 import { ShareButton } from "./ShareButton"
 import { SignButton } from "./SignButton"
+import { ShareView } from "./ShareView"
 
 const bold = (inner: string) => `**${inner}**`
 
@@ -29,10 +30,14 @@ export interface Props {
   intent?: Intent
   step?: Step
   conversation: Conversation
+  // sign
   onClickAuth?: () => void
   onClickSign?: () => void
   isSignLoading?: boolean
+  // read
   onClickShare?: () => void
+  isOpenShare?: boolean
+  onCloseShare: () => void
 }
 
 export const View: FC<Props> = ({
@@ -43,6 +48,8 @@ export const View: FC<Props> = ({
   onClickSign,
   isSignLoading = false,
   onClickShare,
+  isOpenShare = false,
+  onCloseShare = () => null,
 }) => {
   const creatorName = creator.name
   const occurredAtDesc = localizeDate(occurredAt)
@@ -54,6 +61,10 @@ export const View: FC<Props> = ({
       justifyContent: "flex-start",
     },
     [
+      h(ShareView, {
+        isOpen: isReading(intent) && isOpenShare,
+        onClose: onCloseShare,
+      }),
       h(AuthPrompt, {
         isOpen: isSigningStep(intent, step, Step.Auth),
         creatorName,

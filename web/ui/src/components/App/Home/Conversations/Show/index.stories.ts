@@ -14,6 +14,7 @@ export default {
 export const Default: Story<Props> = (args) => h(View, args)
 
 Default.argTypes = {
+  conversation: { defaultValue: makeConversation() },
   intent: {
     control: "radio",
     options: [Intent.Read, Intent.Sign],
@@ -24,5 +25,8 @@ Default.argTypes = {
     options: [Step.Auth, Step.Sign],
     value: Step.Sign,
   },
-  conversation: { defaultValue: makeConversation() },
+  //  read
+  isOpenShare: {
+    control: "boolean",
+  },
 }
