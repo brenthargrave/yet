@@ -15,6 +15,7 @@ import {
   ShareModal,
   Header,
   BackButton,
+  Status,
 } from "~/system"
 import { View as AuthPrompt } from "./AuthPrompt"
 import { ShareButton } from "./ShareButton"
@@ -54,7 +55,7 @@ export interface Props {
 export const View: FC<Props> = ({
   intent = Intent.Read,
   step = Step.Auth,
-  conversation: { id, occurredAt, invitees, creator, note },
+  conversation: { id, status, occurredAt, invitees, creator, note },
   onClickAuth,
   onClickSign,
   isSignLoading = false,
@@ -131,13 +132,20 @@ export const View: FC<Props> = ({
                   map(bold, pluck("name", invitees))
                 )}`,
               }),
-              h(
-                Text,
-                { size: "xs", style: { whiteSpace: "nowrap" } },
-                occurredAtDesc
-              ),
+              h(Stack, { direction: "column" }, [
+                h(
+                  Text,
+                  { size: "xs", style: { whiteSpace: "nowrap" } },
+                  occurredAtDesc
+                ),
+              ]),
             ]),
             h(NoteView, { note, isObscured }),
+            h(Stack, { direction: "row" }, [
+              //
+              h(Spacer),
+              h(Status, { status }),
+            ]),
           ]),
           h(Stack, { direction: "row" }, [
             isSigningStep(intent, step, Step.Sign) &&

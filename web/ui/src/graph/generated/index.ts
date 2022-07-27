@@ -57,7 +57,9 @@ export type ConversationPayload = {
 
 export enum ConversationStatus {
   Deleted = 'DELETED',
-  Draft = 'DRAFT'
+  Draft = 'DRAFT',
+  Proposed = 'PROPOSED',
+  Signed = 'SIGNED'
 }
 
 export type ConversationsPayload = {

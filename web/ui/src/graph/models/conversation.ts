@@ -2,6 +2,7 @@ import { faker } from "@faker-js/faker"
 import { eqBy, isEmpty, prop, symmetricDifferenceWith } from "ramda"
 import { isNotEmpty, join, any } from "~/fp"
 import { Conversation, Customer, Invitee, MakeOptional, Participant } from ".."
+import { ConversationStatus } from "../generated"
 
 export type DraftConversation = MakeOptional<
   Conversation,
@@ -53,6 +54,12 @@ export const makeConversation = (): DraftConversation => {
     invitees: [makeInvitee(), makeInvitee()],
     note: faker.lorem.paragraph(),
     signatures: [],
+    status: faker.helpers.arrayElement([
+      ConversationStatus.Draft,
+      ConversationStatus.Proposed,
+      ConversationStatus.Signed,
+      ConversationStatus.Deleted,
+    ]),
   }
 }
 
