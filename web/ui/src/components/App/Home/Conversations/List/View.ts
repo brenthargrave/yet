@@ -16,8 +16,6 @@ export interface Props {
   onClickConversation: OnClickConversation
 }
 
-const spacing = 4
-
 const isNotLastItem = (idx: number, all: any[]) => !(idx + 1 === all.length)
 
 export const View: FC<Props> = ({
@@ -35,7 +33,7 @@ export const View: FC<Props> = ({
         ]),
         h(
           List,
-          { spacing, padding: 4 },
+          { spacing: 8, padding: 4 },
           conversations.map(({ id, invitees, note, occurredAt }, idx, all) =>
             h(
               ListItem,
@@ -67,7 +65,7 @@ export const View: FC<Props> = ({
                   ),
                   h(NoteView, { note, maxLines: 10 }),
                 ]),
-                isNotLastItem(idx, all) && h(Divider),
+                // isNotLastItem(idx, all) && h(Divider),
               ]
             )
           )
