@@ -1,5 +1,6 @@
 import { LinkIcon } from "@chakra-ui/icons"
-import { Button } from "@chakra-ui/react"
+import { Icon } from "@chakra-ui/react"
+import { FiShare } from "react-icons/fi"
 import { h } from "@cycle/react"
 import { ActionButton } from "~/system"
 
@@ -10,7 +11,7 @@ export interface Props {
 export const ShareButton = ({ onClickShare }: Props) =>
   h(ActionButton, {
     cta: "Share",
-    rightIcon: h(LinkIcon),
+    leftIcon: h(Icon, { as: FiShare }),
     onClick: onClickShare,
   })
 
