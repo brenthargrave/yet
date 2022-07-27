@@ -14,6 +14,8 @@ import {
   Text,
 } from "~/system"
 import { View as AuthPrompt } from "./AuthPrompt"
+import { ShareButton } from "./ShareButton"
+import { SignButton } from "./SignButton"
 
 const bold = (inner: string) => `**${inner}**`
 
@@ -119,23 +121,14 @@ export const View: FC<Props> = ({
           ]),
           h(Stack, { direction: "row" }, [
             isSigningStep(intent, step, Step.Sign) &&
-              h(
-                Button,
-                {
-                  onClick: onClickSign,
-                  isLoading: isSignLoading,
-                },
-                `Cosign`
-              ),
+              h(SignButton, {
+                //
+                onClick: onClickSign,
+                isLoading: isSignLoading,
+              }),
             isReading(intent) &&
-              h(
-                Button,
-                {
-                  // onClick: onClickSign,
-                  // isLoading: isSignLoading,
-                },
-                `Share`
-              ),
+              //
+              h(ShareButton, {}),
           ]),
         ]
       ),
