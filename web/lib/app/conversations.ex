@@ -55,14 +55,23 @@ defmodule App.Conversations do
   end
 
   defun get_conversations(viewer :: Customer.t()) :: Brex.Result.s(list(Conversation.t())) do
-    Repo.all(
+    signed =
+      from(c in Conversation,
+        preload: ^@conversation_preloads,
+        join: signature in assoc(c, :signatures),
+        where: signature.signer_id == ^viewer.id,
+        where: c.status != :deleted
+      )
+
+    created =
       from(c in Conversation,
         preload: ^@conversation_preloads,
         where: c.creator_id == ^viewer.id,
         where: c.status != :deleted
       )
-    )
-    |> lift(nil, :not_found)
+
+    Repo.all(from(c in created, union: ^signed))
+    |> ok()
   end
 
   defun sign_conversation(
@@ -84,13 +93,6 @@ defmodule App.Conversations do
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 
-  defp format_ecto_errors(%Ecto.Changeset{} = changeset) do
-    changeset
-    |> Ecto.Changeset.traverse_errors(fn {message, _opts} -> message end)
-    |> Enum.map(fn {k, v} -> "#{k} #{v}" end)
-    |> error()
-  end
-
   defun get_contacts(viewer :: Customer.t()) :: Brex.Result.s(list(term())) do
     Repo.all(
       from(contact in Contact,
@@ -103,6 +105,13 @@ defmodule App.Conversations do
   end
 
   ## Helpers
+
+  defp format_ecto_errors(%Ecto.Changeset{} = changeset) do
+    changeset
+    |> Ecto.Changeset.traverse_errors(fn {message, _opts} -> message end)
+    |> Enum.map(fn {k, v} -> "#{k} #{v}" end)
+    |> error()
+  end
 
   def clear_signatures(conversation_id) do
     Repo.delete_all(from(s in Signature, where: s.conversation_id == ^conversation_id))
