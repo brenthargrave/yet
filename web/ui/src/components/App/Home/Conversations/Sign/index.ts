@@ -72,11 +72,13 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const redirectCreatorToShow$ = combineLatest({
+  const redirectCreatorOrCosignerToShow$ = combineLatest({
     me: me$,
     record: record$,
   }).pipe(
-    filter(({ me, record }) => me?.id === record.creator.id),
+    filter(
+      ({ me, record }) => me?.id === record.creator.id || isSignedBy(record, me)
+    ),
     map(({ me, record: { id } }) => push(routes.conversation({ id }))),
     tag("redirectCreatorToShow$"),
     share()
@@ -154,7 +156,7 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
 
   const notice = merge(userErrorNotice$, signUserError$, alertSigned$)
   const router = merge(
-    redirectCreatorToShow$,
+    redirectCreatorOrCosignerToShow$,
     redirectToAuth$,
     redirectSignedToShow$
   )
