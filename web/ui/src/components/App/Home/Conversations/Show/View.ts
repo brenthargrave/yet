@@ -4,6 +4,7 @@ import { NoteView } from "~/components/Note"
 import { map, pluck } from "~/fp"
 import { Conversation } from "~/graph"
 import { localizeDate, t, toSentence } from "~/i18n"
+import { routes, routeURL } from "~/router"
 import {
   Flex,
   Heading,
@@ -44,13 +45,13 @@ export interface Props {
   // read
   onClickShare?: () => void
   isOpenShare?: boolean
-  onCloseShare: () => void
+  onCloseShare?: () => void
 }
 
 export const View: FC<Props> = ({
   intent = Intent.Read,
   step = Step.Auth,
-  conversation: { occurredAt, invitees, creator, note },
+  conversation: { id, occurredAt, invitees, creator, note },
   onClickAuth,
   onClickSign,
   isSignLoading = false,
@@ -72,6 +73,7 @@ export const View: FC<Props> = ({
       h(ShareModal, {
         isOpen: isReading(intent) && isOpenShare,
         onClose: onCloseShare,
+        shareURL: routeURL(routes.conversation({ id })),
       }),
       h(AuthPrompt, {
         isOpen: isSigningStep(intent, step, Step.Auth),

@@ -32,7 +32,7 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { info } from "~/notice"
-import { push, routes, Source as RouterSource } from "~/router"
+import { push, routes, routeURL, Source as RouterSource } from "~/router"
 import { callback$, cb$, shareLatest } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
 
@@ -278,11 +278,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   ).pipe(startWith(false), tag("isOpenPublish$"), share())
 
   const shareURL$ = id$.pipe(
-    map(
-      (id) =>
-        new URL(routes.signConversation({ id }).href, window.location.origin)
-          .href
-    ),
+    map((id) => routeURL(routes.signConversation({ id }))),
     tag("shareURL$"),
     shareLatest()
   )

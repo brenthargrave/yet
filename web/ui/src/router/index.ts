@@ -32,6 +32,9 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
 
 export type Route = _Route<typeof routes>
 
+export const routeURL = (route: Route): string =>
+  new URL(route.href, window.location.origin).href
+
 export const isRoute = (route: Route, expectedRoute: Route): boolean =>
   route.name === expectedRoute.name
 

@@ -82,8 +82,8 @@ export const ShareModal = ({
               onClick: async () => {
                 await navigator
                   .share({ url })
-                  // eslint-disable-next-line no-alert
-                  .catch((error) => alert(error))
+                  // eslint-disable-next-line no-console
+                  .catch((error) => console.error(error))
                   .finally(() => onClickShareViaApp && onClickShareViaApp())
               },
             },
