@@ -9,7 +9,7 @@ import {
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { Heading, Input, InputGroup, Stack, Text } from "~/system"
-import { Props as ModalProps, View as Modal } from "./Modal"
+import { Props as ModalProps, View as Modal } from "~/system/Modal"
 import { t, toSentence } from "~/i18n"
 
 export interface Props extends ModalProps {
