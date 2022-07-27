@@ -13,6 +13,8 @@ import {
   Stack,
   Text,
   ShareModal,
+  Header,
+  BackButton,
 } from "~/system"
 import { View as AuthPrompt } from "./AuthPrompt"
 import { ShareButton } from "./ShareButton"
@@ -46,6 +48,7 @@ export interface Props {
   onClickShare?: () => void
   isOpenShare?: boolean
   onCloseShare?: () => void
+  onClickBack?: () => void
 }
 
 export const View: FC<Props> = ({
@@ -58,6 +61,7 @@ export const View: FC<Props> = ({
   onClickShare,
   isOpenShare = false,
   onCloseShare = () => null,
+  onClickBack,
 }) => {
   const isObscured = isSigningStep(intent, step, Step.Auth) || isOpenShare
   const creatorName = creator.name
@@ -70,6 +74,7 @@ export const View: FC<Props> = ({
       justifyContent: "flex-start",
     },
     [
+      h(Header, {}, [h(BackButton, { cta: "Home", onClick: onClickBack })]),
       h(ShareModal, {
         isOpen: isReading(intent) && isOpenShare,
         onClose: onCloseShare,
