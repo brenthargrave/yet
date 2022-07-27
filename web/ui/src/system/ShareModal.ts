@@ -7,7 +7,6 @@ import {
   useClipboard,
 } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { FC } from "react"
 import {
   Heading,
   Input,
@@ -19,7 +18,6 @@ import {
 } from "~/system"
 
 export interface Props extends ModalProps {
-  participantNames?: string[]
   shareURL?: string
   onShareURLCopied?: () => void
   onClickShareViaApp?: () => void
@@ -29,7 +27,7 @@ export interface Props extends ModalProps {
 
 const size = "md"
 
-export const ShareView: FC<Props> = ({
+export const ShareModal = ({
   isOpen,
   onClose,
   shareURL,
@@ -37,7 +35,7 @@ export const ShareView: FC<Props> = ({
   onClickShareViaApp,
   heading,
   subheading,
-}) => {
+}: Props) => {
   const { hasCopied, onCopy } = useClipboard(shareURL ?? "")
   const url = shareURL
   let canShare = false
@@ -96,4 +94,4 @@ export const ShareView: FC<Props> = ({
   ])
 }
 
-ShareView.displayName = "ShareModal"
+ShareModal.displayName = "ShareModal"

@@ -81,7 +81,7 @@ export const View = ({
         onClose: onClosePublish,
         shareURL,
         onShareURLCopied,
-        onClickShare,
+        onClickShareViaApp: onClickShare,
       }),
     ]
   )

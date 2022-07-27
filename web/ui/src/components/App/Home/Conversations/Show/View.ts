@@ -4,11 +4,18 @@ import { NoteView } from "~/components/Note"
 import { map, pluck } from "~/fp"
 import { Conversation } from "~/graph"
 import { localizeDate, t, toSentence } from "~/i18n"
-import { Flex, Heading, MarkdownView, Spacer, Stack, Text } from "~/system"
+import {
+  Flex,
+  Heading,
+  MarkdownView,
+  Spacer,
+  Stack,
+  Text,
+  ShareModal,
+} from "~/system"
 import { View as AuthPrompt } from "./AuthPrompt"
 import { ShareButton } from "./ShareButton"
 import { SignButton } from "./SignButton"
-import { ShareView } from "./ShareView"
 
 const bold = (inner: string) => `**${inner}**`
 
@@ -62,7 +69,7 @@ export const View: FC<Props> = ({
       justifyContent: "flex-start",
     },
     [
-      h(ShareView, {
+      h(ShareModal, {
         isOpen: isReading(intent) && isOpenShare,
         onClose: onCloseShare,
       }),
