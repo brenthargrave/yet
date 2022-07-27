@@ -17,6 +17,9 @@ defmodule AppWeb.Graph.Conversations do
 
   enum :conversation_status do
     value(:draft, as: :draft)
+    # TODO: proposed, signed states
+    # value(:proposed, as: :proposed)
+    # value(:signed, as: :signed)
     value(:deleted, as: :deleted)
   end
 
