@@ -51,8 +51,7 @@ export const View: FC<Props> = ({
   isOpenShare = false,
   onCloseShare = () => null,
 }) => {
-  const isConversationBlurred =
-    isSigningStep(intent, step, Step.Auth) || isOpenShare
+  const isObscured = isSigningStep(intent, step, Step.Auth) || isOpenShare
   const creatorName = creator.name
   const occurredAtDesc = localizeDate(occurredAt)
   return h(
@@ -100,7 +99,7 @@ export const View: FC<Props> = ({
           padding: 4,
           gap: 4,
           style: {
-            ...(isConversationBlurred && {
+            ...(isObscured && {
               color: "transparent",
               textShadow: "0 0 10px rgba(0,0,0,0.5)",
             }),
@@ -124,7 +123,7 @@ export const View: FC<Props> = ({
                 occurredAtDesc
               ),
             ]),
-            h(NoteView, { note, isObscured: step === Step.Auth }),
+            h(NoteView, { note, isObscured }),
           ]),
           h(Stack, { direction: "row" }, [
             isSigningStep(intent, step, Step.Sign) &&

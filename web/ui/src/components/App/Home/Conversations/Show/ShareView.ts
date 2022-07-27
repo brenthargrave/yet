@@ -1,4 +1,4 @@
-import { CopyIcon, CheckIcon, ChatIcon } from "@chakra-ui/icons"
+import { ChatIcon, CheckIcon, CopyIcon } from "@chakra-ui/icons"
 import {
   Button,
   Divider,
@@ -17,13 +17,14 @@ import {
   Stack,
   Text,
 } from "~/system"
-import { t, toSentence } from "~/i18n"
 
 export interface Props extends ModalProps {
   participantNames?: string[]
   shareURL?: string
   onShareURLCopied?: () => void
-  onClickShare?: () => void
+  onClickShareViaApp?: () => void
+  heading?: string
+  subheading?: string
 }
 
 const size = "md"
@@ -31,13 +32,13 @@ const size = "md"
 export const ShareView: FC<Props> = ({
   isOpen,
   onClose,
-  participantNames = [],
   shareURL,
   onShareURLCopied,
-  onClickShare,
+  onClickShareViaApp,
+  heading,
+  subheading,
 }) => {
   const { hasCopied, onCopy } = useClipboard(shareURL ?? "")
-
   const url = shareURL
   let canShare = false
   if (!!navigator && !!navigator.canShare) {
@@ -46,14 +47,10 @@ export const ShareView: FC<Props> = ({
 
   return h(Modal, { isOpen, onClose }, [
     h(Stack, { direction: "column", gap: 4 }, [
-      h(
-        Heading,
-        { size: "sm" },
-        `Now share your notes with ${toSentence(participantNames)}`
-      ),
-      h(Text, t(`conversations.sign.once-signed`)),
-      h(Divider),
-      h(Stack, { direction: "column" }, [
+      heading && h(Heading, { size: "sm" }, heading),
+      subheading && h(Text, subheading),
+      (heading || subheading) && h(Divider),
+      h(Stack, { direction: "column", gap: 1 }, [
         h(Heading, { size: "xs" }, `Copy share link to clipboard`),
         h(InputGroup, { size }, [
           h(Input, {
@@ -78,7 +75,7 @@ export const ShareView: FC<Props> = ({
       ]),
       canShare && h(Divider),
       canShare &&
-        h(Stack, { direction: "column" }, [
+        h(Stack, { direction: "column", gap: 1 }, [
           h(Heading, { size: "xs" }, `Or share via app`),
           h(
             Button,
@@ -89,7 +86,7 @@ export const ShareView: FC<Props> = ({
                   .share({ url })
                   // eslint-disable-next-line no-alert
                   .catch((error) => alert(error))
-                  .finally(() => onClickShare && onClickShare())
+                  .finally(() => onClickShareViaApp && onClickShareViaApp())
               },
             },
             `SMS, email, encrypted chat, etc.`
