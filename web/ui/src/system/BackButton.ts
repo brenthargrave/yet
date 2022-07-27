@@ -9,12 +9,13 @@ interface Props {
   cta?: string
 }
 
-export const BackButton: FC<Props> = ({ onClick, cta }) =>
+export const BackButton: FC<Props> = ({ onClick, cta = "Back" }) =>
   h(
     Button,
     {
       leftIcon: h(Icon, { as: FaChevronLeft }),
-      variant: "unstyled",
+      // variant: "unstyled",
+      variant: "ghost",
       size: "sm",
       onClick,
     },
