@@ -117,8 +117,8 @@ export const View: FC<Props> = ({
             ]),
             h(NoteView, { note, isObscured: step === Step.Auth }),
           ]),
-          isSigningStep(intent, step, Step.Sign) &&
-            h(Stack, { direction: "row" }, [
+          h(Stack, { direction: "row" }, [
+            isSigningStep(intent, step, Step.Sign) &&
               h(
                 Button,
                 {
@@ -127,7 +127,16 @@ export const View: FC<Props> = ({
                 },
                 `Cosign`
               ),
-            ]),
+            isReading(intent) &&
+              h(
+                Button,
+                {
+                  // onClick: onClickSign,
+                  // isLoading: isSignLoading,
+                },
+                `Share`
+              ),
+          ]),
         ]
       ),
     ]
