@@ -74,7 +74,7 @@ export const View: FC<Props> = ({
       justifyContent: "flex-start",
     },
     [
-      h(Header, {}, [h(BackButton, { cta: "Home", onClick: onClickBack })]),
+      h(Header, {}, [h(BackButton, { onClick: onClickBack })]),
       h(ShareModal, {
         isOpen: isReading(intent) && isOpenShare,
         onClose: onCloseShare,

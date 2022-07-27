@@ -33,7 +33,7 @@ import {
 import { makeTagger } from "~/log"
 import { info } from "~/notice"
 import { push, routes, routeURL, Source as RouterSource } from "~/router"
-import { callback$, cb$, shareLatest } from "~/rx"
+import { cb$, shareLatest } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
 
 const contactsToOptions = (contacts: Contact[]): SelectedOption[] =>
@@ -76,9 +76,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const { $: onSelect$, cb: onSelect } = callback$<ContactOption[]>(
-    tag("onSelect$")
-  )
+  const [onSelect, onSelect$] = cb$<ContactOption[]>(tag("onSelect$"))
 
   const selectedOptions$ = merge(recordInviteesAsOptions$, onSelect$).pipe(
     tag("selectedOptions$"),
@@ -118,9 +116,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const { $: onChangeNote$, cb: onChangeNote } = callback$<string>(
-    tag("onChangeNote$")
-  )
+  const [onChangeNote, onChangeNote$] = cb$<string>(tag("onChangeNote$"))
 
   const note$ = merge(recordNote$, onChangeNote$).pipe(
     distinctUntilChanged(),
@@ -128,7 +124,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const { $: onChangeOccurredAt$, cb: onChangeOccurredAt } = callback$<Date>(
+  const [onChangeOccurredAt, onChangeOccurredAt$] = cb$<Date>(
     tag("onChangeOccurredAt$")
   )
 
@@ -207,11 +203,8 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const { $: onClickBack$, cb: onClickBack } = callback$(tag("onClickBack$"))
-
-  const { $: onClickDelete$, cb: onClickDelete } = callback$(
-    tag("onClickDelete$")
-  )
+  const [onClickBack, onClickBack$] = cb$(tag("onClickBack$"))
+  const [onClickDelete, onClickDelete$] = cb$(tag("onClickDelete$"))
 
   const cleanupAbandedRecord$ = onClickBack$.pipe(
     withLatestFrom(isValid$),

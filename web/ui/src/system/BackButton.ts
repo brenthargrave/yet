@@ -1,6 +1,7 @@
-import { ChevronLeftIcon } from "@chakra-ui/icons"
+import { Icon } from "@chakra-ui/icons"
 import { h } from "@cycle/react"
 import { FC } from "react"
+import { FaChevronLeft } from "react-icons/fa"
 import { Button } from "~/system"
 
 interface Props {
@@ -12,7 +13,7 @@ export const BackButton: FC<Props> = ({ onClick, cta }) =>
   h(
     Button,
     {
-      leftIcon: h(ChevronLeftIcon),
+      leftIcon: h(Icon, { as: FaChevronLeft }),
       variant: "unstyled",
       size: "sm",
       onClick,

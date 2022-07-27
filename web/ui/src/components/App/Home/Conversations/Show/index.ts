@@ -70,6 +70,12 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
+  const [onClickBack, onClickBack$] = cb$(tag("onClickBack$"))
+  const goToList$ = merge(onClickBack$).pipe(
+    map((_) => push(routes.conversations())),
+    share()
+  )
+
   const [onClickShare, onClickShare$] = cb$(tag("onClickShare$"))
   const [onCloseShare, onCloseShare$] = cb$(tag("onCloseShare$"))
   const isOpenShare$ = merge(
@@ -85,19 +91,15 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
 
   const react = merge(
     props$.pipe(
-      map((props) => h(View, { ...props, onClickShare, onCloseShare }))
+      map((props) =>
+        h(View, { ...props, onClickShare, onCloseShare, onClickBack })
+      )
     ),
     userError$.pipe(map((error) => h(ErrorView, { error })))
   ).pipe(startWith(null), tag("react"))
 
-  const notice = merge(
-    userErrorNotice$
-    // signUserError$, alertSigned$
-  )
-  const router = merge()
-  // redirectCreatorOrCosignerToShow$,
-  // redirectToAuth$,
-  // redirectSignedToShow$
+  const notice = merge(userErrorNotice$)
+  const router = merge(goToList$)
 
   return {
     react,
