@@ -1,6 +1,7 @@
 import { ReactSource } from "@cycle/react"
 import {
   catchError,
+  combineLatest,
   EMPTY,
   filter,
   map,
@@ -28,6 +29,7 @@ interface Sources {
 export const Edit = (sources: Sources, tagPrefix?: string) => {
   const {
     router: { history$ },
+    graph: { me$ },
   } = sources
 
   const tagScope = `${tagPrefix}/Edit`
@@ -55,10 +57,24 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
     tag("userError$"),
     share()
   )
+  const userErrorNotice$ = userError$.pipe(
+    map(({ message }) => error({ description: message }))
+  )
+
   const redirectNotFound$ = userError$.pipe(
     filter(({ code }) => code === ErrorCode.NotFound),
     map((_) => push(routes.conversations())),
     tag("redirectNotFound$"),
+    share()
+  )
+
+  const redirectNonCreatorsToShow$ = combineLatest({
+    me: me$,
+    record: record$,
+  }).pipe(
+    filter(({ me, record }) => record.creator.id !== me?.id),
+    map(({ me, record }) => push(routes.conversation({ id: record.id }))),
+    tag("redirectNonCreatorToShow$"),
     share()
   )
 
@@ -74,12 +90,12 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
     },
     tagScope
   )
-  const router = merge(redirectNotFound$, formRouter$)
 
-  const userErrorNotice$ = userError$.pipe(
-    map(({ message }) => error({ description: message }))
+  const router = merge(
+    redirectNotFound$,
+    formRouter$,
+    redirectNonCreatorsToShow$
   )
-
   const notice = merge(userErrorNotice$, formNotice$)
 
   return {
