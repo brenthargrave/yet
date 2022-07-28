@@ -133,20 +133,16 @@ export const View: FC<Props> = ({
                   map(bold, pluck("name", invitees))
                 )}`,
               }),
-              h(Stack, { direction: "column" }, [
+              h(Stack, { direction: "column", alignItems: "end" }, [
                 h(
                   Text,
                   { size: "xs", style: { whiteSpace: "nowrap" } },
                   occurredAtDesc
                 ),
+                h(Status, { status }),
               ]),
             ]),
             h(NoteView, { note, isObscured }),
-            h(Stack, { direction: "row" }, [
-              //
-              h(Spacer),
-              h(Status, { status }),
-            ]),
           ]),
           h(Stack, { direction: "row" }, [
             isSigningStep(intent, step, Step.Sign) &&
