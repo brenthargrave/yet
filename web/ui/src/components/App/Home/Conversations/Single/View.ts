@@ -2,7 +2,7 @@ import { h } from "@cycle/react"
 import { FC } from "react"
 import { NoteView } from "~/components/Note"
 import { map, pluck } from "~/fp"
-import { Conversation } from "~/graph"
+import { Conversation, isSignableStatus } from "~/graph"
 import { localizeDate, t, toSentence } from "~/i18n"
 import { routes, routeURL } from "~/router"
 import {
@@ -75,7 +75,8 @@ export const View: FC<Props> = ({
       justifyContent: "flex-start",
     },
     [
-      h(Header, {}, [h(BackButton, { cta: "", onClick: onClickBack })]),
+      !isSigning(intent) &&
+        h(Header, {}, [h(BackButton, { cta: "", onClick: onClickBack })]),
       h(ShareModal, {
         isOpen: isReading(intent) && isOpenShare,
         onClose: onCloseShare,
