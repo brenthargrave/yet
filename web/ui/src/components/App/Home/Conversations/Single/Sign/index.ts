@@ -28,7 +28,7 @@ import { error, info } from "~/notice"
 import { push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
 // import { Step, View } from "./View"
-import { Intent, Step, View } from "../Single/View"
+import { Intent, Step, View } from "../View"
 
 interface Sources {
   react: ReactSource

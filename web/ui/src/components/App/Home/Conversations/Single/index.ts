@@ -5,8 +5,8 @@ import { ErrorView } from "~/components/App/ErrorView"
 import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { routes, Source as RouterSource } from "~/router"
-import { Main as Show } from "../Show"
-import { Main as Sign } from "../Sign"
+import { Main as Show } from "./Show"
+import { Main as Sign } from "./Sign"
 import { View } from "./View"
 
 interface Sources {
