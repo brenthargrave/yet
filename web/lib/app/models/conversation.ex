@@ -12,7 +12,7 @@ defmodule App.Conversation do
     field :note, :string
     belongs_to :creator, Customer
 
-    field :status, Ecto.Enum, values: [:draft, :deleted], default: :draft
+    field :status, Ecto.Enum, values: [:draft, :proposed, :signed, :deleted], default: :draft
     field :deleted_at, :utc_datetime_usec
     field :occurred_at, :utc_datetime_usec
 
@@ -40,6 +40,22 @@ defmodule App.Conversation do
     |> change(
       status: :deleted,
       deleted_at: DateTime.utc_now()
+    )
+  end
+
+  def proposed_changeset(record) do
+    record
+    |> change(
+      status: :proposed,
+      proposed_at: Timex.now()
+    )
+  end
+
+  def signed_changeset(record) do
+    record
+    |> change(
+      status: :signed,
+      proposed_at: Timex.now()
     )
   end
 end
