@@ -15,7 +15,7 @@ import {
 import { any } from "~/fp"
 import { Conversation, isSignableStatus, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { push, routes, Source as RouterSource } from "~/router"
+import { isRoute, push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
 import { Intent } from "../View"
 
@@ -85,10 +85,14 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   )
 
   const redirectReviewerToSign$ = combineLatest({
+    route: history$,
     isSignable: statusIsSignable$,
     isReviewer: isReviewer$,
   }).pipe(
-    filter(({ isSignable, isReviewer }) => isSignable && isReviewer),
+    filter(
+      ({ route, isSignable, isReviewer }) =>
+        route.name === routes.conversation.name && isSignable && isReviewer
+    ),
     distinctUntilChanged(),
     withLatestFrom(record$),
     map(([_, { id }]) => push(routes.signConversation({ id }))),
