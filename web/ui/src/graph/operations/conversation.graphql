@@ -27,6 +27,7 @@ fragment ConversationProps on Conversation {
   reviews {
     id
     conversationId
+    insertedAt
     reviewer {
       id
       name

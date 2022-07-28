@@ -38,6 +38,7 @@ defmodule AppWeb.Graph.Conversations do
     field(:id, non_null(:id))
     field(:conversation_id, non_null(:id))
     field(:reviewer, non_null(:contact))
+    field(:inserted_at, non_null(:datetime))
   end
 
   object :conversation do

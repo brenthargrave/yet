@@ -95,7 +95,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
       ({ me, record }) => me?.id === record.creator.id || isSignedBy(record, me)
     ),
     map(({ me, record: { id } }) => push(routes.conversation({ id }))),
-    tag("redirectCreatorToShow$"),
+    tag("redirectCreatorOrCosignerToShow$"),
     share()
   )
 

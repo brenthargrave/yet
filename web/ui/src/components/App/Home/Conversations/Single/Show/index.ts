@@ -1,5 +1,6 @@
 import { ReactSource } from "@cycle/react"
 import {
+  filter,
   combineLatest,
   map,
   merge,
@@ -8,7 +9,13 @@ import {
   share,
   startWith,
 } from "rxjs"
-import { Conversation, Source as GraphSource } from "~/graph"
+import {
+  Conversation,
+  ConversationPayloadPropsFragmentDoc,
+  ConversationStatus,
+  isReviewedBy,
+  Source as GraphSource,
+} from "~/graph"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
@@ -30,6 +37,20 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
 
   const tagScope = `${tagPrefix}/Show`
   const tag = makeTagger(tagScope)
+
+  const redirectReviewerToSign$ = combineLatest({
+    me: me$,
+    record: record$,
+  }).pipe(
+    filter(
+      ({ me, record }) =>
+        record.status === ConversationStatus.Proposed &&
+        isReviewedBy(record, me)
+    ),
+    map(({ me, record: { id } }) => push(routes.signConversation({ id }))),
+    tag("redirectReviewerToSign$"),
+    share()
+  )
 
   const [onClickBack, onClickBack$] = cb$(tag("onClickBack$"))
   const goToList$ = merge(onClickBack$).pipe(
@@ -56,7 +77,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     tag("props$")
   )
 
-  const router = merge(goToList$)
+  const router = merge(redirectReviewerToSign$, goToList$)
   const value = { props$ }
 
   return {

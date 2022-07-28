@@ -75,3 +75,14 @@ export const isSignedBy = (
   if (!customer) return false
   return any(({ signer }) => customer.id === signer.id, conversation.signatures)
 }
+
+export const isReviewedBy = (
+  conversation: Conversation,
+  customer: Customer | null
+) => {
+  if (!customer) return false
+  return any(
+    ({ reviewer }) => customer.id === reviewer.id,
+    conversation.reviews
+  )
+}
