@@ -3,10 +3,10 @@ import { h } from "@cycle/react"
 import { BackButton, Header, Stack } from "~/system"
 import { Props as ActionBarProps, View as ActionBar } from "./ActionBar"
 import { DeleteButton } from "./DeleteButton"
-import { View as NoteEditor, Props as NoteEditorProps } from "./NoteEditor"
-import { View as When, Props as WhenProps } from "./When"
-import { View as Who, Props as WhoProps } from "./Who"
+import { Props as NoteEditorProps, View as NoteEditor } from "./NoteEditor"
 import { PublishView } from "./PublishView"
+import { Props as WhenProps, View as When } from "./When"
+import { Props as WhoProps, View as Who } from "./Who"
 
 export type { Option, SelectedOption } from "./Who"
 
@@ -72,7 +72,7 @@ export const View = ({
         h(When, { occurredAt, onChangeOccurredAt }),
         h(Who, { onSelect, options, selectedOptions }),
         h(NoteEditor, { note, onChangeNote }),
-        // h(Divider, {}),
+        h(Divider),
         h(ActionBar, { participantNames, isPublishDisabled, onClickPublish }),
       ]),
       h(PublishView, {

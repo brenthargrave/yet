@@ -4,6 +4,7 @@ import { px } from "csx"
 import { FC, useEffect, useState } from "react"
 import { NoteView } from "~/components/Note"
 import { AutosizeTextarea } from "~/system"
+import { MarkdownLink } from "./MarkdownLink"
 
 export interface Props {
   note: string | null | undefined
@@ -54,6 +55,7 @@ export const View: FC<Props> = ({ note, onChangeNote }) => {
               defaultValue: note ?? "",
               onChange: (event) => onChangeNote(event.target.value),
             }),
+            h(MarkdownLink),
           ]
         ),
         h(
