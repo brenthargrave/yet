@@ -1,10 +1,13 @@
 import { ReactSource } from "@cycle/react"
 import {
+  catchError,
   combineLatest,
   debounceTime,
+  EMPTY,
   filter,
   map,
   merge,
+  mergeMap,
   Observable,
   of,
   share,
@@ -15,14 +18,19 @@ import {
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import {
   Conversation,
+  ConversationStatus,
   isLurking,
   isSignedBy,
+  reviewConversation$,
   signConversation$,
   Source as GraphSource,
+  track$,
+  EventName,
+  isOnboard,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { error, info } from "~/notice"
-import { push, routes, Source as RouterSource } from "~/router"
+import { isRoute, push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
 import { Intent, Step } from "../View"
 
@@ -42,6 +50,41 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
 
   const tagScope = `${tagPrefix}/Sign`
   const tag = makeTagger(tagScope)
+
+  const review$ = combineLatest({
+    route: history$,
+    record: record$,
+    me: me$,
+  }).pipe(
+    tag("review & history"),
+    tag("review > history, record"),
+    filter(
+      ({ route, record, me }) =>
+        isOnboard(me) &&
+        route.name === routes.signConversation.name &&
+        record.status === ConversationStatus.Proposed
+    ),
+    switchMap(({ route, record }) =>
+      reviewConversation$({ id: record.id }).pipe(
+        catchError((error, caugh$) => EMPTY)
+      )
+    ),
+    tag("review$"),
+    share()
+  )
+  const trackReview$ = review$.pipe(
+    filterResultOk(),
+    mergeMap((record) =>
+      track$({
+        name: EventName.ReviewedConversation,
+        properties: {
+          conversation: record.id,
+        },
+      })
+    ),
+    tag("trackReview$"),
+    share()
+  )
 
   const redirectCreatorOrCosignerToShow$ = combineLatest({
     me: me$,
@@ -131,11 +174,13 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     redirectToAuth$,
     redirectSignedToShow$
   )
+  const track = merge(trackReview$)
   const value = { props$ }
 
   return {
     router,
     notice,
     value,
+    track,
   }
 }

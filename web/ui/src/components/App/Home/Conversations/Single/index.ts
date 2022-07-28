@@ -79,10 +79,12 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
 
   const router = merge(sign.router, show.router)
   const notice = merge(userErrorNotice$)
+  const track = merge(sign.track)
 
   return {
     react,
     router,
     notice,
+    track,
   }
 }

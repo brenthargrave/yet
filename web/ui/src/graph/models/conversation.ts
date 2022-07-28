@@ -6,7 +6,7 @@ import { ConversationStatus } from "../generated"
 
 export type DraftConversation = MakeOptional<
   Conversation,
-  "status" | "creator" | "signatures"
+  "status" | "creator" | "signatures" | "reviews"
 >
 
 type Note = string | null | undefined
@@ -58,6 +58,7 @@ export const makeConversation = (): DraftConversation => {
     invitees: [makeInvitee(), makeInvitee()],
     note: faker.lorem.paragraph(),
     signatures: [],
+    reviews: [],
     status: faker.helpers.arrayElement([
       ConversationStatus.Draft,
       ConversationStatus.Proposed,

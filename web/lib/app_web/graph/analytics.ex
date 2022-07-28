@@ -7,6 +7,7 @@ defmodule AppWeb.Graph.Analytics do
     value(:tap_signin, as: "tap_signin")
     value(:tap_new_conversation, as: "tap_new_conversation")
     value(:tap_propose, as: "tap_propose")
+    value(:reviewed_conversation, as: "reviewed_conversation")
   end
 
   input_object :event_properties do

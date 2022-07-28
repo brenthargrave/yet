@@ -34,6 +34,12 @@ defmodule AppWeb.Graph.Conversations do
     field(:signer, non_null(:contact))
   end
 
+  object :review do
+    field(:id, non_null(:id))
+    field(:conversation_id, non_null(:id))
+    field(:reviewer, non_null(:contact))
+  end
+
   object :conversation do
     field(:id, non_null(:id))
     field(:creator, non_null(:participant))
@@ -44,6 +50,7 @@ defmodule AppWeb.Graph.Conversations do
     field(:inserted_at, :datetime)
     field(:deleted_at, :datetime)
     field(:signatures, non_null(list_of(non_null(:signature))))
+    field(:reviews, non_null(list_of(non_null(:review))))
   end
 
   input_object :invitee_input do
@@ -83,6 +90,10 @@ defmodule AppWeb.Graph.Conversations do
     field(:proposed_at, :datetime)
   end
 
+  input_object :review_input do
+    field(:id, non_null(:id))
+  end
+
   object :conversations_mutations do
     field :upsert_conversation, :conversation_payload do
       arg(:input, non_null(:conversation_input))
@@ -102,6 +113,11 @@ defmodule AppWeb.Graph.Conversations do
     field :propose, :conversation_payload do
       arg(:input, non_null(:propose_input))
       resolve(&Conversations.propose_conversation/3)
+    end
+
+    field :review, :conversation_payload do
+      arg(:input, non_null(:review_input))
+      resolve(&Conversations.review_conversation/3)
     end
   end
 

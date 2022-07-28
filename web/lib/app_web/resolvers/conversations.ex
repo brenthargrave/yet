@@ -75,6 +75,15 @@ defmodule AppWeb.Resolvers.Conversations do
     |> fmap(&%ConversationPayload{conversation: &1})
   end
 
+  defun review_conversation(
+          _parent,
+          %{input: input} = _args,
+          %{context: %{customer: customer}} = _resolution
+        ) :: resolver_result(ConversationPayload.t()) do
+    Conversations.review_conversation(customer, input)
+    |> fmap(&%ConversationPayload{conversation: &1})
+  end
+
   defun get_contacts(
           _parent,
           _args,

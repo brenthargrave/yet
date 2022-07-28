@@ -57,5 +57,14 @@ defmodule App.Repo.Migrations.CreateEvents do
     create(index(:signatures, [:signer_id]))
     create(index(:signatures, [:conversation_id]))
     create(index(:signatures, [:signed_at]))
+
+    create table(:reviews) do
+      add :reviewer_id, references(:customers, on_delete: :delete_all)
+      add :conversation_id, references(:conversations, on_delete: :delete_all)
+      timestamps()
+    end
+
+    create(index(:reviews, [:reviewer_id]))
+    create(index(:reviews, [:conversation_id]))
   end
 end

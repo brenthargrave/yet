@@ -4,10 +4,10 @@ defmodule App.Conversations do
   use TypedStruct
   use Brex.Result
   use Timex
-  alias App.{Repo, Conversation, Signature, Contact}
+  alias App.{Repo, Conversation, Signature, Contact, Review}
   import Ecto.Query
 
-  @conversation_preloads [:creator, signatures: [:signer, :conversation]]
+  @conversation_preloads [:creator, signatures: [:signer, :conversation], reviews: [:reviewer, :conversation]]
 
   defun upsert_conversation(
           customer,
@@ -30,6 +30,7 @@ defmodule App.Conversations do
         do: error(:unauthorized),
         else: ok(&1)
     )
+    # TODO: error if no longer draft|proposed
     |> fmap(&Conversation.changeset(&1, attrs))
     |> bind(&Repo.insert_or_update(&1))
     |> fmap(&Repo.preload(&1, @conversation_preloads))
@@ -102,8 +103,25 @@ defmodule App.Conversations do
     Repo.get(Conversation, id)
     |> Repo.preload(@conversation_preloads)
     |> lift(nil, :not_found)
+    |> bind(&if &1.creator == customer, do: ok(&1), else: error(:unauthorized))
     |> fmap(&Conversation.proposed_changeset/1)
     |> bind(&Repo.insert_or_update(&1))
+    |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
+  end
+
+  defun review_conversation(
+          customer,
+          %{id: id} = input
+        ) :: Brex.Result.s(Conversation.t()) do
+    attrs = %{reviewer: customer}
+
+    Repo.get(Conversation, id)
+    |> Repo.preload(@conversation_preloads)
+    |> lift(nil, :not_found)
+    |> fmap(&Map.put(attrs, :conversation, &1))
+    |> fmap(&Review.changeset(%Review{}, &1))
+    |> bind(&Repo.insert(&1))
+    |> fmap(& &1.conversation)
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 

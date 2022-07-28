@@ -45,17 +45,18 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const { react, router: formRouter$ } = Form(
+  const { react, router, notice, track } = Form(
     {
       ...sources,
       props: { id$, record$ },
     },
     tagScope
   )
-  const router = merge(formRouter$)
 
   return {
     react,
     router,
+    notice,
+    track,
   }
 }

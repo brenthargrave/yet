@@ -2,7 +2,7 @@ defmodule App.Conversation do
   use App.Schema
   import Ecto.Changeset
   import App.Types
-  alias App.{Customer, Signature}
+  alias App.{Customer, Signature, Review}
 
   typed_schema "conversations" do
     embeds_many :invitees, Invitee, on_replace: :delete do
@@ -18,6 +18,7 @@ defmodule App.Conversation do
     field :proposed_at, :utc_datetime_usec
 
     has_many :signatures, Signature, on_delete: :delete_all
+    has_many :reviews, Review, on_delete: :delete_all
 
     timestamps(type: :utc_datetime_usec)
   end

@@ -24,6 +24,16 @@ fragment ConversationProps on Conversation {
       role
     }
   }
+  reviews {
+    id
+    conversationId
+    reviewer {
+      id
+      name
+      org
+      role
+    }
+  }
 }
 
 fragment UserErrorProps on UserError {
@@ -77,6 +87,13 @@ mutation ProposeConversation($input: ProposeInput!) {
     ...ConversationPayloadProps
   }
 }
+
+mutation ReviewConversation($input: ReviewInput!) {
+  review(input: $input) {
+    ...ConversationPayloadProps
+  }
+}
+
 
 query Contacts {
   contacts {
