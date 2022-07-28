@@ -21,6 +21,10 @@ export const isValidConversation = ({ note, invitees }: DraftConversation) =>
 export const isCompleteConversation = ({ note, invitees }: DraftConversation) =>
   isValidNote(note) && isValidInviteeSet(invitees)
 
+// NOTE: used to prevent deletion once circulated for cosign
+export const hasBeenShared = (c: DraftConversation) =>
+  c.status !== ConversationStatus.Draft
+
 export const inviteesDiffer = (current: Invitee[], old: Invitee[]): boolean =>
   isEmpty(
     // @ts-ignore

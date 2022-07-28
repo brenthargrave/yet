@@ -11,7 +11,7 @@ export interface Props {
 export const SignButton = ({ onClickSign, isDisabled, isSignLoading }: Props) =>
   h(ActionButton, {
     cta: "Cosign",
-    rightIcon: h(CheckIcon),
+    leftIcon: h(CheckIcon),
     onClick: onClickSign,
     isLoading: isSignLoading,
     isDisabled,

@@ -22,9 +22,11 @@ import { filterResultOk } from "ts-results/rxjs-operators"
 import { map as _map, not, prop } from "~/fp"
 import {
   Contact,
+  ConversationStatus,
   deleteConversation$,
   DraftConversation,
   EventName,
+  hasBeenShared,
   Invitee,
   inviteesDiffer,
   isCompleteConversation,
@@ -237,11 +239,22 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
+  const isExposed$ = record$.pipe(
+    map(hasBeenShared),
+    startWith(false),
+    tag("isExposed$"),
+    share()
+  )
+
   const isDeleteDisabled$ = combineLatest({
     isValid: isValid$,
     isDeleting: isDeleting$,
+    isExposed: isExposed$,
   }).pipe(
-    map(({ isValid, isDeleting }) => !isValid || isDeleting),
+    map(
+      ({ isValid, isDeleting, isExposed }) =>
+        !isValid || isDeleting || isExposed
+    ),
     startWith(false),
     distinctUntilChanged(),
     tag("isDeleteDisabled$"),
