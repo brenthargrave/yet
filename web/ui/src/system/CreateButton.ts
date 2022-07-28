@@ -12,12 +12,12 @@ export const CreateButton = ({ onClick, isLoading, isDisabled }: Props) =>
   h(
     Button,
     {
-      variant: "outline",
+      // variant: "outline",
       size: "xs",
       leftIcon: h(SmallAddIcon),
       onClick,
       isLoading,
       isDisabled,
     },
-    `New`
+    `Note new conversation`
   )
