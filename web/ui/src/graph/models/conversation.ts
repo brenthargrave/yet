@@ -93,3 +93,6 @@ const signableStatuses = [
 ]
 export const isSignableStatus = (status: ConversationStatus): boolean =>
   includes(status, signableStatuses)
+
+export const isCreatedBy = (conversation: Conversation, me: Customer | null) =>
+  conversation.creator.id === me?.id

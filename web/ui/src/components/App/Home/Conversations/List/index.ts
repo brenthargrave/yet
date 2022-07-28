@@ -1,6 +1,12 @@
 import { h, ReactSource } from "@cycle/react"
-import { map, merge, mergeMap, withLatestFrom } from "rxjs"
-import { EventName, Source as GraphSource, track$ } from "~/graph"
+import { combineLatest, map, merge, mergeMap, withLatestFrom } from "rxjs"
+import {
+  Conversation,
+  EventName,
+  isCreatedBy,
+  Source as GraphSource,
+  track$,
+} from "~/graph"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
 import { cb$, mapTo } from "~/rx"
@@ -33,10 +39,18 @@ export const List = (sources: Sources, tagPrefix?: string) => {
     )
   )
 
-  const [onClickConversation, clickConvo$] = cb$<string>(tag("clickConvo$"))
+  const [onClickConversation, clickConvo$] = cb$<Conversation>(
+    tag("clickConvo$")
+  )
 
   const editConvo$ = clickConvo$.pipe(
-    map((id) => push(routes.editConversation({ id })))
+    withLatestFrom(me$),
+    map(([conversation, me]) => {
+      const route = isCreatedBy(conversation, me)
+        ? routes.editConversation({ id: conversation.id })
+        : routes.conversation({ id: conversation.id })
+      return push(route)
+    })
   )
 
   const react = conversations$.pipe(

@@ -8,7 +8,7 @@ import { localizeDate } from "~/i18n"
 import { CreateButton, Divider, Header, Stack, Text, Status } from "~/system"
 import { EmptyView, OnClickNew } from "./EmptyView"
 
-type OnClickConversation = (cid: string) => void
+type OnClickConversation = (c: Conversation) => void
 
 export interface Props {
   conversations: Conversation[]
@@ -36,38 +36,38 @@ export const View: FC<Props> = ({
         h(
           List,
           { spacing: 8, padding: 4 },
-          conversations.map(
-            ({ id, invitees, note, occurredAt, status }, idx, all) =>
-              h(
-                ListItem,
-                {
-                  padding: 0,
-                  style: { cursor: "pointer" },
-                  onClick: (event: MouseEvent) => {
-                    // NOTE: ignore markdown link clicks
-                    // @ts-ignore
-                    const { href } = event.target
-                    if (!href) onClickConversation(id)
-                  },
+          conversations.map((conversation, idx, all) => {
+            const { id, invitees, note, occurredAt, status } = conversation
+            return h(
+              ListItem,
+              {
+                padding: 0,
+                style: { cursor: "pointer" },
+                onClick: (event: MouseEvent) => {
+                  // NOTE: ignore markdown link clicks
+                  // @ts-ignore
+                  const { href } = event.target
+                  if (!href) onClickConversation(conversation)
                 },
-                [
-                  h(Stack, { direction: "column" }, [
-                    h(Stack, { direction: "row", alignItems: "start" }, [
-                      h(Heading, { size: "xs" }, [
-                        join(", ", map(prop("name"), invitees)),
-                      ]),
-                      h(Spacer),
-                      h(Stack, { direction: "column", alignItems: "end" }, [
-                        h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
-                        h(Status, { status }),
-                      ]),
+              },
+              [
+                h(Stack, { direction: "column" }, [
+                  h(Stack, { direction: "row", alignItems: "start" }, [
+                    h(Heading, { size: "xs" }, [
+                      join(", ", map(prop("name"), invitees)),
                     ]),
-                    h(NoteView, { note, maxLines: 10 }),
+                    h(Spacer),
+                    h(Stack, { direction: "column", alignItems: "end" }, [
+                      h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
+                      h(Status, { status }),
+                    ]),
                   ]),
-                  isNotLastItem(idx, all) && h(Divider, { padding: 4 }),
-                ]
-              )
-          )
+                  h(NoteView, { note, maxLines: 10 }),
+                ]),
+                isNotLastItem(idx, all) && h(Divider, { padding: 4 }),
+              ]
+            )
+          })
         ),
       ])
 
