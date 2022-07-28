@@ -56,8 +56,6 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     record: record$,
     me: me$,
   }).pipe(
-    tag("review & history"),
-    tag("review > history, record"),
     filter(
       ({ route, record, me }) =>
         isOnboard(me) &&

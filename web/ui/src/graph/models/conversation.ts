@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker"
 import { eqBy, isEmpty, prop, symmetricDifferenceWith } from "ramda"
-import { isNotEmpty, join, any } from "~/fp"
+import { includes, isNotEmpty, join, any } from "~/fp"
 import { Conversation, Customer, Invitee, MakeOptional, Participant } from ".."
 import { ConversationStatus } from "../generated"
 
@@ -86,3 +86,10 @@ export const isReviewedBy = (
     conversation.reviews
   )
 }
+
+const signableStatuses = [
+  ConversationStatus.Proposed,
+  ConversationStatus.Signed,
+]
+export const isSignableStatus = (status: ConversationStatus): boolean =>
+  includes(status, signableStatuses)
