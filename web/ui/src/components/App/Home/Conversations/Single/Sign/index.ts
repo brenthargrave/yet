@@ -1,8 +1,7 @@
-import { h, ReactSource } from "@cycle/react"
+import { ReactSource } from "@cycle/react"
 import {
   combineLatest,
   debounceTime,
-  EMPTY,
   filter,
   map,
   merge,
@@ -13,11 +12,9 @@ import {
   switchMap,
   withLatestFrom,
 } from "rxjs"
-import { match } from "ts-pattern"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
-import { ErrorView } from "~/components/App/ErrorView"
 import {
-  getConversation$,
+  Conversation,
   isLurking,
   isSignedBy,
   signConversation$,
@@ -27,51 +24,24 @@ import { makeTagger } from "~/log"
 import { error, info } from "~/notice"
 import { push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
-// import { Step, View } from "./View"
-import { Intent, Step, View } from "../View"
+import { Intent, Step } from "../View"
 
 interface Sources {
   react: ReactSource
   router: RouterSource
   graph: GraphSource
+  props: { record$: Observable<Conversation> }
 }
 
 export const Main = (sources: Sources, tagPrefix?: string) => {
   const {
     router: { history$ },
     graph: { me$ },
+    props: { record$ },
   } = sources
 
   const tagScope = `${tagPrefix}/Sign`
   const tag = makeTagger(tagScope)
-
-  const id$ = history$.pipe(
-    switchMap((route) =>
-      match(route)
-        .with({ name: routes.signConversation.name }, ({ params }) =>
-          of(params.id)
-        )
-        .otherwise(() => EMPTY)
-    ),
-    tag("id$"),
-    shareLatest()
-  )
-  const result$ = id$.pipe(
-    switchMap((id) => getConversation$(id)),
-    tag("result$"),
-    shareLatest()
-  )
-  const record$ = result$.pipe(filterResultOk(), tag("record$"), shareLatest())
-  const userError$ = result$.pipe(
-    filterResultErr(),
-    tag("userError$"),
-    shareLatest()
-  )
-  const userErrorNotice$ = userError$.pipe(
-    map(({ message }) => error({ description: message })),
-    tag("userErrorNotice$"),
-    share()
-  )
 
   const redirectCreatorOrCosignerToShow$ = combineLatest({
     me: me$,
@@ -106,8 +76,8 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
 
   const [onClickSign, onClickSign$] = cb$(tag("onClickSign$"))
   const signResult$ = onClickSign$.pipe(
-    withLatestFrom(id$),
-    switchMap(([_, id]) => signConversation$({ id })),
+    withLatestFrom(record$),
+    switchMap(([_, record]) => signConversation$({ id: record.id })),
     tag("signResult$"),
     share()
   )
@@ -155,21 +125,15 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     tag("props$")
   )
 
-  const react = merge(
-    props$.pipe(map((props) => h(View, { ...props }))),
-    userError$.pipe(map((error) => h(ErrorView, { error })))
-  ).pipe(startWith(null), tag("react"))
-
-  const notice = merge(userErrorNotice$, signUserError$, alertSigned$)
+  const notice = merge(signUserError$, alertSigned$)
   const router = merge(
     redirectCreatorOrCosignerToShow$,
     redirectToAuth$,
     redirectSignedToShow$
   )
-  const value = { props$, userError$ }
+  const value = { props$ }
 
   return {
-    react,
     router,
     notice,
     value,
