@@ -64,6 +64,7 @@ defmodule App.Repo.Migrations.CreateEvents do
       timestamps()
     end
 
+    create(unique_index(:reviews, [:conversation_id, :reviewer_id]))
     create(index(:reviews, [:reviewer_id]))
     create(index(:reviews, [:conversation_id]))
   end

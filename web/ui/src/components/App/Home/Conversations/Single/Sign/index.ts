@@ -19,18 +19,19 @@ import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import {
   Conversation,
   ConversationStatus,
+  EventName,
   isLurking,
+  isOnboard,
+  isReviewedBy,
   isSignedBy,
   reviewConversation$,
   signConversation$,
   Source as GraphSource,
   track$,
-  EventName,
-  isOnboard,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { error, info } from "~/notice"
-import { isRoute, push, routes, Source as RouterSource } from "~/router"
+import { push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
 import { Intent, Step } from "../View"
 
@@ -60,7 +61,8 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
       ({ route, record, me }) =>
         isOnboard(me) &&
         route.name === routes.signConversation.name &&
-        record.status === ConversationStatus.Proposed
+        record.status === ConversationStatus.Proposed &&
+        !isReviewedBy(record, me)
     ),
     switchMap(({ route, record }) =>
       reviewConversation$({ id: record.id }).pipe(
