@@ -1,13 +1,12 @@
 import { ReactSource } from "@cycle/react"
 import { merge, switchMap } from "rxjs"
-import { match } from "ts-pattern"
+import { match, P } from "ts-pattern"
 import { Source as GraphSource } from "~/graph"
 import { routes, Source as RouterSource } from "~/router"
 import { Main as Create } from "./Create"
 import { Edit } from "./Edit"
 import { List } from "./List"
-import { Sign } from "./Sign"
-import { Main as Show } from "./Show"
+import { Main as Single } from "./Single"
 
 interface Sources {
   react: ReactSource
@@ -23,10 +22,10 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
   } = sources
 
   const list = List(sources, tagScope)
+  const single = Single(sources, tagScope)
+
   const edit = Edit(sources, tagScope)
   const create = Create(sources, tagScope)
-  const sign = Sign(sources, tagScope)
-  const show = Show(sources, tagScope)
 
   const react = history$.pipe(
     switchMap((route) =>
@@ -34,21 +33,17 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
         .with(routes.newConversation.name, () => create.react)
         .with(routes.editConversation.name, () => edit.react)
         .with(routes.conversations.name, () => list.react)
-        .with(routes.signConversation.name, () => sign.react)
-        .with(routes.conversation.name, () => show.react)
+        .with(
+          P.union(routes.signConversation.name, routes.conversation.name),
+          () => single.react
+        )
         .otherwise((_) => list.react)
     )
   )
 
   const { track } = list
-  const router = merge(
-    list.router,
-    edit.router,
-    create.router,
-    sign.router,
-    show.router
-  )
-  const notice = merge(edit.notice, sign.notice, show.notice)
+  const router = merge(list.router, edit.router, create.router)
+  const notice = merge(edit.notice)
 
   return {
     react,
