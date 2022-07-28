@@ -3,7 +3,7 @@ import { map, merge, mergeMap, withLatestFrom } from "rxjs"
 import { EventName, Source as GraphSource, track$ } from "~/graph"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
-import { callback$, cb$ } from "~/rx"
+import { cb$, mapTo } from "~/rx"
 import { View } from "./View"
 
 interface Sources {
@@ -20,7 +20,7 @@ export const List = (sources: Sources, tagPrefix?: string) => {
 
   const [onClickNew, clickNew$] = cb$(tag("clickNew$"))
 
-  const newConvo$ = clickNew$.pipe(map((_) => push(routes.newConversation())))
+  const newConvo$ = clickNew$.pipe(mapTo(push(routes.newConversation())))
 
   const track = clickNew$.pipe(
     withLatestFrom(me$),

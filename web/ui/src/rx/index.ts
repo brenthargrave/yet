@@ -1,9 +1,11 @@
 import {
   MonoTypeOperatorFunction,
+  OperatorFunction,
   Observable,
   share,
   shareReplay,
   Subject,
+  map,
 } from "rxjs"
 import { Source as WonkaSource, toObservable } from "wonka"
 import { Observable as ZenObservable } from "zen-observable-ts"
@@ -37,6 +39,11 @@ export function cb$<T>(
   const { cb, $ } = callback$(operator)
   return [cb, $]
 }
+
+export const mapTo =
+  <T, R>(result: R): OperatorFunction<T, R> =>
+  (source) =>
+    source.pipe(map((_) => result))
 
 // NOTE: https://stackoverflow.com/a/66416113
 export const zenToRx = <T>(zenObservable: ZenObservable<T>): Observable<T> =>
