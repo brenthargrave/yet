@@ -1,6 +1,6 @@
 import { Divider, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { BackButton, Header, Stack } from "~/system"
+import { BackButton, Header, Heading, Stack } from "~/system"
 import { Props as ActionBarProps, View as ActionBar } from "./ActionBar"
 import { DeleteButton } from "./DeleteButton"
 import { Props as NoteEditorProps, View as NoteEditor } from "./NoteEditor"
@@ -61,6 +61,9 @@ export const View = ({
         h(BackButton, {
           onClick: onClickBack,
         }),
+        h(Spacer),
+        // TODO: heading?
+        // h(Heading, { size: "xs" }, "Conversation"),
         h(Spacer),
         h(DeleteButton, {
           onClick: onClickDelete,
