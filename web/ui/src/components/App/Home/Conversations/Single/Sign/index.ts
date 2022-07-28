@@ -20,6 +20,7 @@ import {
   Conversation,
   ConversationStatus,
   EventName,
+  isCreatedBy,
   isLurking,
   isOnboard,
   isReviewedBy,
@@ -62,6 +63,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
         isOnboard(me) &&
         route.name === routes.signConversation.name &&
         record.status === ConversationStatus.Proposed &&
+        !isCreatedBy(record, me) &&
         !isReviewedBy(record, me)
     ),
     switchMap(({ route, record }) =>
@@ -90,7 +92,6 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     me: me$,
     record: record$,
   }).pipe(
-    tag("TARGET"),
     filter(
       ({ me, record }) => me?.id === record.creator.id || isSignedBy(record, me)
     ),

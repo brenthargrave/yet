@@ -130,6 +130,8 @@ defmodule App.Conversations do
     Repo.get(Conversation, id)
     |> Repo.preload(@conversation_preloads)
     |> lift(nil, :not_found)
+    # NOTE: can't review own conversation
+    |> bind(&if &1.creator != customer, do: ok(&1), else: error(:unauthorized))
     |> fmap(&Map.put(attrs, :conversation, &1))
     |> fmap(&Review.changeset(%Review{}, &1))
     |> bind(&Repo.insert(&1))
@@ -159,5 +161,9 @@ defmodule App.Conversations do
 
   def clear_signatures(conversation_id) do
     Repo.delete_all(from(s in Signature, where: s.conversation_id == ^conversation_id))
+  end
+
+  def clear_reviews(conversation_id) do
+    Repo.delete_all(from(r in Review, where: r.conversation_id == ^conversation_id))
   end
 end
