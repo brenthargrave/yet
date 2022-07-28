@@ -15,6 +15,7 @@ defmodule App.Conversation do
     field :status, Ecto.Enum, values: [:draft, :proposed, :signed, :deleted], default: :draft
     field :deleted_at, :utc_datetime_usec
     field :occurred_at, :utc_datetime_usec
+    field :proposed_at, :utc_datetime_usec
 
     has_many :signatures, Signature, on_delete: :delete_all
 
@@ -53,9 +54,6 @@ defmodule App.Conversation do
 
   def signed_changeset(record) do
     record
-    |> change(
-      status: :signed,
-      proposed_at: Timex.now()
-    )
+    |> change(status: :signed)
   end
 end

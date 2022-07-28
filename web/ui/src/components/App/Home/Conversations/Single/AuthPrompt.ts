@@ -26,7 +26,7 @@ export const View: FC<Props> = ({
 }) => {
   const onClose = () => null
   return h(Modal, {
-    isCentered: true,
+    // isCentered: true,
     autoFocus: true,
     closeOnEsc: true,
     closeOnOverlayClick: true,

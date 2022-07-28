@@ -91,7 +91,19 @@ defmodule App.Conversations do
     |> bind(&Repo.insert(&1))
     |> fmap(& &1.conversation)
     |> fmap(&Conversation.signed_changeset/1)
-    |> bind(&Repo.insert(&1))
+    |> bind(&Repo.insert_or_update(&1))
+    |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
+  end
+
+  defun propose_conversation(
+          customer,
+          %{id: id} = input
+        ) :: Brex.Result.s(Conversation.t()) do
+    Repo.get(Conversation, id)
+    |> Repo.preload(@conversation_preloads)
+    |> lift(nil, :not_found)
+    |> fmap(&Conversation.proposed_changeset/1)
+    |> bind(&Repo.insert_or_update(&1))
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 

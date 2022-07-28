@@ -41,6 +41,8 @@ import {
   MeDocument,
   ProfileInput,
   ProfileProp,
+  ProposeConversationDocument,
+  ProposeInput,
   SignConversationDocument,
   SignInput,
   SubmitCodeDocument,
@@ -316,6 +318,23 @@ export const signConversation$ = (input: SignInput) => {
       return userError ? new Err(userError) : new Ok(conversation!)
     }),
     tag("signConversation$")
+  )
+}
+
+export const proposeConversation$ = (input: ProposeInput) => {
+  return from(
+    client.mutate({
+      mutation: ProposeConversationDocument,
+      variables: { input },
+      refetchQueries: [{ query: GetConversationsDocument }],
+    })
+  ).pipe(
+    map(({ data, errors, extensions, context }) => {
+      if (errors) throw new GraphError(JSON.stringify(errors))
+      const { userError, conversation } = data!.propose!
+      return userError ? new Err(userError) : new Ok(conversation!)
+    }),
+    tag("proposeConversation$")
   )
 }
 

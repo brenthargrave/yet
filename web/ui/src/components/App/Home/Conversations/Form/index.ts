@@ -15,6 +15,7 @@ import {
   share,
   startWith,
   switchMap,
+  tap,
   withLatestFrom,
 } from "rxjs"
 import { filterResultOk } from "ts-results/rxjs-operators"
@@ -23,17 +24,21 @@ import {
   Contact,
   deleteConversation$,
   DraftConversation,
+  EventName,
   Invitee,
   inviteesDiffer,
   isCompleteConversation,
   isValidConversation,
+  proposeConversation$,
   Source as GraphSource,
+  track,
+  track$,
   upsertConversation$,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { info } from "~/notice"
 import { push, routes, routeURL, Source as RouterSource } from "~/router"
-import { cb$, shareLatest } from "~/rx"
+import { cb$, mapTo, shareLatest } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
 
 const contactsToOptions = (contacts: Contact[]): SelectedOption[] =>
@@ -265,6 +270,23 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const [onClickPublish, onClickPublish$] = cb$(tag("onClickPublish$"))
   const [onClosePublish, onClosePublish$] = cb$(tag("onClosePublish$"))
 
+  const propose$ = onClickPublish$.pipe(
+    withLatestFrom(id$),
+    switchMap(([_, id]) => proposeConversation$({ id })),
+    tag("propose$")
+  )
+  const trackPropose$ = propose$.pipe(
+    filterResultOk(),
+    switchMap(({ id }) =>
+      track$({
+        name: EventName.TapPropose,
+        properties: { conversation: id },
+      })
+    ),
+    tag("trackPropose$"),
+    share()
+  )
+
   const isOpenPublish$ = merge(
     onClickPublish$.pipe(map((_) => true)),
     onClosePublish$.pipe(map((_) => false))
@@ -282,7 +304,6 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     tag("shareURLCopiedNotice$")
   )
 
-  // TODO: what do upon share? change state somehow?
   const [onClickShare, onClickShare$] = cb$(tag("onClickShare$"))
 
   const participantNames$ = invitees$.pipe(
@@ -324,10 +345,12 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
 
   const router = merge(goToList$)
   const notice = merge(shareURLCopiedNotice$)
+  const track = merge(trackPropose$)
 
   return {
     react,
     router,
     notice,
+    track,
   }
 }

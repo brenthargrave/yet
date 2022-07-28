@@ -36,10 +36,15 @@ defmodule App.Repo.Migrations.CreateEvents do
       add :status, :string
       add :deleted_at, :utc_datetime_usec
       add :occurred_at, :utc_datetime_usec
+      add :proposed_at, :utc_datetime_usec
       timestamps()
     end
 
     create(index(:conversations, [:creator_id]))
+    create(index(:conversations, [:status]))
+    create(index(:conversations, [:deleted_at]))
+    create(index(:conversations, [:occurred_at]))
+    create(index(:conversations, [:proposed_at]))
 
     create table(:signatures) do
       add :signer_id, references(:customers, on_delete: :delete_all)
@@ -49,5 +54,8 @@ defmodule App.Repo.Migrations.CreateEvents do
     end
 
     create(unique_index(:signatures, [:conversation_id, :signer_id]))
+    create(index(:signatures, [:signer_id]))
+    create(index(:signatures, [:conversation_id]))
+    create(index(:signatures, [:signed_at]))
   end
 end

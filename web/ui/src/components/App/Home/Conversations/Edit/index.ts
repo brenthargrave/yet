@@ -66,6 +66,7 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
     react,
     router: formRouter$,
     notice: formNotice$,
+    track,
   } = Form(
     {
       ...sources,
@@ -85,5 +86,6 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
     react,
     notice,
     router,
+    track,
   }
 }

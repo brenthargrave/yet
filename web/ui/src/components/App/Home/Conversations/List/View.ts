@@ -57,7 +57,7 @@ export const View: FC<Props> = ({
                         join(", ", map(prop("name"), invitees)),
                       ]),
                       h(Spacer),
-                      h(Stack, { direction: "column" }, [
+                      h(Stack, { direction: "column", alignItems: "end" }, [
                         h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
                         h(Status, { status }),
                       ]),

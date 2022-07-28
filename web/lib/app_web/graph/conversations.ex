@@ -78,6 +78,11 @@ defmodule AppWeb.Graph.Conversations do
     field(:signed_at, :datetime)
   end
 
+  input_object :propose_input do
+    field(:id, non_null(:id))
+    field(:proposed_at, :datetime)
+  end
+
   object :conversations_mutations do
     field :upsert_conversation, :conversation_payload do
       arg(:input, non_null(:conversation_input))
@@ -92,6 +97,11 @@ defmodule AppWeb.Graph.Conversations do
     field :sign, :conversation_payload do
       arg(:input, non_null(:sign_input))
       resolve(&Conversations.sign_conversation/3)
+    end
+
+    field :propose, :conversation_payload do
+      arg(:input, non_null(:propose_input))
+      resolve(&Conversations.propose_conversation/3)
     end
   end
 

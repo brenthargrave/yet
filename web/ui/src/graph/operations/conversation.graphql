@@ -72,6 +72,12 @@ mutation SignConversation($input: SignInput!) {
   }
 }
 
+mutation ProposeConversation($input: ProposeInput!) {
+  propose(input: $input) {
+    ...ConversationPayloadProps
+  }
+}
+
 query Contacts {
   contacts {
     id
