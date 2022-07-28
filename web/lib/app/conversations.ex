@@ -7,7 +7,11 @@ defmodule App.Conversations do
   alias App.{Repo, Conversation, Signature, Contact, Review}
   import Ecto.Query
 
-  @conversation_preloads [:creator, signatures: [:signer, :conversation], reviews: [:reviewer, :conversation]]
+  @conversation_preloads [
+    :creator,
+    signatures: [:signer, :conversation],
+    reviews: [:reviewer, :conversation]
+  ]
 
   defun upsert_conversation(
           customer,
@@ -64,6 +68,14 @@ defmodule App.Conversations do
         where: c.status != :deleted
       )
 
+    reviewed =
+      from(c in Conversation,
+        preload: ^@conversation_preloads,
+        join: review in assoc(c, :reviews),
+        where: review.reviewer_id == ^viewer.id,
+        where: c.status != :deleted
+      )
+
     created =
       from(c in Conversation,
         preload: ^@conversation_preloads,
@@ -71,7 +83,7 @@ defmodule App.Conversations do
         where: c.status != :deleted
       )
 
-    Repo.all(from(c in created, union: ^signed))
+    Repo.all(from(c in created, union: ^signed, union: ^reviewed))
     |> ok()
   end
 
