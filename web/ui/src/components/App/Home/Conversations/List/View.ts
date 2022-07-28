@@ -16,7 +16,8 @@ export interface Props {
   onClickConversation: OnClickConversation
 }
 
-const isNotLastItem = (idx: number, all: any[]) => !(idx + 1 === all.length)
+const isNotLastItem = (idx: number, all: Conversation[]) =>
+  !(idx + 1 === all.length)
 
 export const View: FC<Props> = ({
   conversations,
@@ -26,6 +27,7 @@ export const View: FC<Props> = ({
   isEmpty(conversations)
     ? h(EmptyView, { onClickNew })
     : h(Stack, { direction: "column" }, [
+        // h(Header),
         h(Header, [
           h(Heading, { size: "md" }, "Conversations"),
           h(Spacer),
@@ -65,7 +67,7 @@ export const View: FC<Props> = ({
                   ),
                   h(NoteView, { note, maxLines: 10 }),
                 ]),
-                // isNotLastItem(idx, all) && h(Divider),
+                isNotLastItem(idx, all) && h(Divider),
               ]
             )
           )

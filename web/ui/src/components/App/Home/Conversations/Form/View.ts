@@ -71,6 +71,7 @@ export const View = ({
           isDisabled: isDeleteDisabled,
         }),
       ]),
+      // h(Heading, { size: "md", paddingLeft: 4 }, "Edit Conversation"),
       h(Stack, { direction: "column", width: "100%", padding: 4 }, [
         h(When, { occurredAt, onChangeOccurredAt }),
         h(Who, { onSelect, options, selectedOptions }),
