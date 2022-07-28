@@ -15,7 +15,8 @@ const statusIcon = (status: ConversationStatus) => {
   return null
 }
 
-const statusText = (status: ConversationStatus) => status
+const statusText = (status: ConversationStatus) =>
+  status === ConversationStatus.Proposed ? "Pending cosign" : status
 
 export interface Props {
   status: ConversationStatus
