@@ -27,7 +27,8 @@ import { makeTagger } from "~/log"
 import { error, info } from "~/notice"
 import { push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
-import { Step, View } from "./View"
+// import { Step, View } from "./View"
+import { Intent, Step, View } from "../Single/View"
 
 interface Sources {
   react: ReactSource
@@ -76,6 +77,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     me: me$,
     record: record$,
   }).pipe(
+    tag("TARGET"),
     filter(
       ({ me, record }) => me?.id === record.creator.id || isSignedBy(record, me)
     ),
@@ -142,15 +144,19 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   ).pipe(startWith(false), tag("isSigningLoading$"), shareLatest())
 
   const props$ = combineLatest({
+    intent: of(Intent.Sign),
     step: step$,
     conversation: record$,
     isSignLoading: isSigningLoading$,
-  }).pipe(tag("props$"))
+  }).pipe(
+    map((props) => {
+      return { ...props, onClickAuth, onClickSign }
+    }),
+    tag("props$")
+  )
 
   const react = merge(
-    props$.pipe(
-      map((props) => h(View, { ...props, onClickAuth, onClickSign }))
-    ),
+    props$.pipe(map((props) => h(View, { ...props }))),
     userError$.pipe(map((error) => h(ErrorView, { error })))
   ).pipe(startWith(null), tag("react"))
 
@@ -160,10 +166,12 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     redirectToAuth$,
     redirectSignedToShow$
   )
+  const value = { props$, userError$ }
 
   return {
     react,
     router,
     notice,
+    value,
   }
 }

@@ -27,7 +27,8 @@ import { makeTagger } from "~/log"
 import { error, info } from "~/notice"
 import { push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
-import { Intent, Step, View } from "./View"
+// import { Intent, Step, View } from "./View"
+import { Intent, Step, View } from "../Single/View"
 
 interface Sources {
   react: ReactSource
@@ -73,6 +74,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const [onClickBack, onClickBack$] = cb$(tag("onClickBack$"))
   const goToList$ = merge(onClickBack$).pipe(
     map((_) => push(routes.conversations())),
+    tag("onClickBack$"),
     share()
   )
 
@@ -87,23 +89,26 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     intent: of(Intent.Read),
     conversation: record$,
     isOpenShare: isOpenShare$,
-  }).pipe(tag("props$"))
+  }).pipe(
+    map((props) => {
+      return { ...props, onClickShare, onCloseShare, onClickBack }
+    }),
+    tag("props$")
+  )
 
   const react = merge(
-    props$.pipe(
-      map((props) =>
-        h(View, { ...props, onClickShare, onCloseShare, onClickBack })
-      )
-    ),
+    props$.pipe(map((props) => h(View, { ...props }))),
     userError$.pipe(map((error) => h(ErrorView, { error })))
   ).pipe(startWith(null), tag("react"))
 
   const notice = merge(userErrorNotice$)
   const router = merge(goToList$)
+  const value = { props$, userError$ }
 
   return {
     react,
     router,
     notice,
+    value,
   }
 }
