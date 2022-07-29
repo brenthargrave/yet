@@ -65,18 +65,18 @@ export const View = ({
           onClick: onClickBack,
         }),
         h(Spacer),
-        // h(Status, { status }),
         h(DeleteButton, {
           onClick: onClickDelete,
           isLoading: isDeleting,
           isDisabled: isDeleteDisabled,
         }),
       ]),
-      // h(Heading, { size: "md", paddingLeft: 4 }, "Edit Conversation"),
       h(Stack, { direction: "column", width: "100%", padding: 4, pt: 0 }, [
-        h(Stack, { direction: "row", width: "100%", justifyContent: "start" }, [
-          h(Status, { status }),
-        ]),
+        h(
+          Stack,
+          { justifyContent: "start", direction: "row", width: "100%", p: 2 },
+          [h(Status, { status, participantNames })]
+        ),
         h(When, { occurredAt, onChangeOccurredAt }),
         h(Who, { onSelect, options, selectedOptions }),
         h(NoteEditor, { status, note, onChangeNote }),

@@ -2,9 +2,9 @@ import { Box, Button } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { isEmpty } from "~/fp"
-import { Stack, Status } from "~/system"
+import { ConversationStatus, statusText } from "~/graph"
 import { toSentence } from "~/i18n"
-import { ConversationStatus } from "~/graph"
+import { Stack } from "~/system"
 
 export type OnClickPublish = () => void
 
@@ -33,24 +33,19 @@ export const View: FC<Props> = ({
         space: 4,
       },
       [
-        h(Stack, { direction: "column", width: "100%" }, [
-          h(Stack, { direction: "row", justifyContent: "start" }, [
+        h(Stack, { direction: "row", justifyContent: "start" }, [
+          h(Stack, { direction: "column", gap: 1, alignItems: "start" }, [
             h(
               Button,
-              {
-                isDisabled: isPublishDisabled,
-                onClick: onClickPublish,
-              },
+              { isDisabled: isPublishDisabled, onClick: onClickPublish },
               // eslint-disable-next-line no-nested-ternary
-              // isEmpty(participantNames)
-              // ? `Publish`
-              // : `Publish with ${participantList}`
-              `Publish`
+              status === ConversationStatus.Draft
+                ? isEmpty(participantNames)
+                  ? `Publish`
+                  : `Publish with ${participantList}`
+                : statusText(status)
             ),
           ]),
-          // h(Stack, { direction: "row", justifyContent: "start" }, [
-          //   h(Status, { status, participantList }),
-          // ]),
         ]),
       ]
     ),

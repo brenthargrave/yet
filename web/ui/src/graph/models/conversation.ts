@@ -1,4 +1,5 @@
 import { faker } from "@faker-js/faker"
+import { capitalCase } from "change-case"
 import { eqBy, isEmpty, prop, symmetricDifferenceWith } from "ramda"
 import { includes, isNotEmpty, join, any } from "~/fp"
 import { Conversation, Customer, Invitee, MakeOptional, Participant } from ".."
@@ -96,3 +97,14 @@ export const isSignableStatus = (status: ConversationStatus): boolean =>
 
 export const isCreatedBy = (conversation: Conversation, me: Customer | null) =>
   conversation.creator.id === me?.id
+
+export const statusText = (
+  status: ConversationStatus,
+  participantList?: string
+) =>
+  // eslint-disable-next-line no-nested-ternary
+  status === ConversationStatus.Proposed
+    ? participantList
+      ? `Pending cosign by ${participantList}`
+      : `Pending cosign`
+    : capitalCase(status)
