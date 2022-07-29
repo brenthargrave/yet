@@ -29,12 +29,18 @@ defmodule App.Conversations do
     |> Repo.preload(@conversation_preloads)
     |> lift(nil, :not_found)
     |> convert_error(:not_found, %Conversation{})
+    # only creator can edit
     |> bind(
       &if !is_nil(&1.creator_id) && &1.creator_id != customer.id,
         do: error(:unauthorized),
         else: ok(&1)
     )
-    # TODO: error if no longer draft|proposed
+    # NOTE: disable edititing once proposed
+    |> bind(
+      &if Enumerable.member?([:draft, :proposed], String.to_atom(&1.status)),
+        do: ok(&1),
+        else: error(:unauthorized)
+    )
     |> fmap(&Conversation.changeset(&1, attrs))
     |> bind(&Repo.insert_or_update(&1))
     |> fmap(&Repo.preload(&1, @conversation_preloads))

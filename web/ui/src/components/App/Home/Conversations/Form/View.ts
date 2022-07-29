@@ -27,6 +27,7 @@ export interface Props
   onShareURLCopied?: () => void
   onClickShare: () => void
   status?: ConversationStatus
+  isDisabledEditing?: boolean
 }
 
 export const View = ({
@@ -51,6 +52,7 @@ export const View = ({
   onShareURLCopied,
   onClickShare,
   status = ConversationStatus.Draft,
+  isDisabledEditing = false,
 }: Props) =>
   h(
     Stack,
@@ -77,9 +79,23 @@ export const View = ({
           { justifyContent: "start", direction: "row", width: "100%", p: 2 },
           [h(Status, { status })]
         ),
-        h(When, { occurredAt, onChangeOccurredAt }),
-        h(Who, { onSelect, options, selectedOptions }),
-        h(NoteEditor, { status, note, onChangeNote }),
+        h(When, {
+          occurredAt,
+          onChangeOccurredAt,
+          isDisabled: isDisabledEditing,
+        }),
+        h(Who, {
+          onSelect,
+          options,
+          selectedOptions,
+          isDisabled: isDisabledEditing,
+        }),
+        h(NoteEditor, {
+          status,
+          note,
+          onChangeNote,
+          isDisabled: isDisabledEditing,
+        }),
         h(Divider),
         h(ActionBar, {
           status,

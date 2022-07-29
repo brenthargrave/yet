@@ -20,7 +20,7 @@ import {
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { filterResultOk } from "ts-results/rxjs-operators"
-import { map as _map, not, prop } from "~/fp"
+import { and, map as _map, not, prop } from "~/fp"
 import {
   Contact,
   ConversationStatus,
@@ -31,6 +31,7 @@ import {
   Invitee,
   inviteesDiffer,
   isCompleteConversation,
+  isStatusEditable,
   isValidConversation,
   proposeConversation$,
   Source as GraphSource,
@@ -270,17 +271,27 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
+  // NOTE: disable fields once cosigned
+  const isDisabledEditing$ = status$.pipe(
+    map((status) => !isStatusEditable(status)),
+    startWith(false),
+    tag("isDisabledEditing$")
+  )
+
   const isPublishable$ = combineLatest({
+    isDisabledEditing: isDisabledEditing$,
     isComplete: isComplete$,
   }).pipe(
-    map(({ isComplete }) => isComplete),
+    map(({ isComplete, isDisabledEditing }) =>
+      and(isComplete, !isDisabledEditing)
+    ),
     startWith(true),
     distinctUntilChanged(),
     tag("isPublishable$"),
     shareLatest()
   )
   const isPublishDisabled$ = isPublishable$.pipe(
-    map((publishable) => not(publishable)),
+    map(not),
     tag("isPublishDisabled$")
   )
 
@@ -347,6 +358,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareURL: shareURL$,
     participantNames: participantNames$,
     status: status$,
+    isDisabledEditing: isDisabledEditing$,
   }).pipe(tag("props$"))
 
   const react = props$.pipe(

@@ -88,12 +88,28 @@ export const isReviewedBy = (
   )
 }
 
+export const allStatusesList = [
+  ConversationStatus.Draft,
+  ConversationStatus.Proposed,
+  ConversationStatus.Signed,
+  ConversationStatus.Deleted,
+]
+
 const signableStatuses = [
   ConversationStatus.Proposed,
   ConversationStatus.Signed,
 ]
+
 export const isSignableStatus = (status: ConversationStatus): boolean =>
   includes(status, signableStatuses)
+
+export const editableStatusList = [
+  ConversationStatus.Draft,
+  ConversationStatus.Proposed,
+]
+
+export const isStatusEditable = (status: ConversationStatus): boolean =>
+  includes(status, editableStatusList)
 
 export const isCreatedBy = (conversation: Conversation, me: Customer | null) =>
   conversation.creator.id === me?.id

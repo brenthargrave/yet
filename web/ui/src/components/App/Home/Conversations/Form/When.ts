@@ -11,15 +11,21 @@ import { formatDateInput, parseDateInput } from "~/i18n"
 export interface Props {
   occurredAt: Date
   onChangeOccurredAt: (date: Date) => void
+  isDisabled?: boolean
 }
 
-export const View: FC<Props> = ({ occurredAt, onChangeOccurredAt }) => {
+export const View: FC<Props> = ({
+  occurredAt,
+  onChangeOccurredAt,
+  isDisabled = false,
+}) => {
   const max = formatDateInput(new Date())
   const value = formatDateInput(occurredAt)
 
   return h(Stack, { width: "100%", direction: "row" }, [
     h(InputGroup, [
       h(Input, {
+        isDisabled,
         type: "date",
         max,
         value,

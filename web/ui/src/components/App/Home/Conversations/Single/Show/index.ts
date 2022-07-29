@@ -13,7 +13,12 @@ import {
   withLatestFrom,
 } from "rxjs"
 import { any } from "~/fp"
-import { Conversation, isSignableStatus, Source as GraphSource } from "~/graph"
+import {
+  isSignedBy,
+  Conversation,
+  isSignableStatus,
+  Source as GraphSource,
+} from "~/graph"
 import { makeTagger } from "~/log"
 import { isRoute, push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
@@ -83,15 +88,25 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     distinctUntilChanged(),
     tag("isReviewer$")
   )
+  const notSigned$ = combineLatest({ me: me$, record: record$ }).pipe(
+    map(({ record, me }) => isSignedBy(record, me)),
+    startWith(true),
+    distinctUntilChanged(),
+    tag("notSigned$")
+  )
 
   const redirectReviewerToSign$ = combineLatest({
     route: history$,
     isSignable: statusIsSignable$,
     isReviewer: isReviewer$,
+    notSigned: notSigned$,
   }).pipe(
     filter(
-      ({ route, isSignable, isReviewer }) =>
-        route.name === routes.conversation.name && isSignable && isReviewer
+      ({ route, isSignable, isReviewer, notSigned }) =>
+        route.name === routes.conversation.name &&
+        isSignable &&
+        isReviewer &&
+        notSigned
     ),
     distinctUntilChanged(),
     withLatestFrom(record$),

@@ -11,6 +11,7 @@ export interface Props {
   note: string | null | undefined
   onChangeNote: (note: string) => void
   status?: ConversationStatus
+  isDisabled?: boolean
 }
 
 const noteInputsId = "notes"
@@ -20,6 +21,7 @@ export const View: FC<Props> = ({
   note,
   onChangeNote,
   status = ConversationStatus.Draft,
+  isDisabled = false,
 }) => {
   const [minHeight, setMinHeight] = useState<number | null>(0)
   useEffect(() => {
@@ -43,8 +45,8 @@ export const View: FC<Props> = ({
     },
     [
       h(TabList, [
-        h(Tab, { tabIndex: -1 }, `Edit`),
-        h(Tab, { tabIndex: -1 }, `Preview`),
+        h(Tab, { tabIndex: -1, isDisabled }, `Edit`),
+        h(Tab, { tabIndex: -1, isDisabled }, `Preview`),
       ]),
       h(TabPanels, { padding: 0 }, [
         h(
@@ -55,6 +57,7 @@ export const View: FC<Props> = ({
           },
           [
             h(AutosizeTextarea, {
+              isDisabled,
               id: noteInputsId,
               paddingTop: 4,
               minRows: 4,

@@ -6,6 +6,7 @@ import descend from "ramda/es/descend"
 import filter from "ramda/es/filter"
 import find from "ramda/es/find"
 import flatten from "ramda/es/flatten"
+import head from "ramda/es/head"
 import includes from "ramda/es/includes"
 import is from "ramda/es/is"
 import _isEmpty from "ramda/es/isEmpty"
@@ -37,6 +38,7 @@ export {
   filter,
   find,
   flatten,
+  head,
   includes,
   is,
   isEmpty,

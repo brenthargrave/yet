@@ -1,7 +1,7 @@
 import { h } from "@cycle/react"
 import { CreatableSelect } from "chakra-react-select"
 import { FC } from "react"
-import { InputGroup, Stack } from "~/system"
+import { InputGroup, Stack, lightGray } from "~/system"
 
 export interface Option {
   value: string
@@ -15,12 +15,19 @@ export interface Props {
   options: Option[]
   onSelect: (option: Option) => void
   selectedOptions: SelectedOption[]
+  isDisabled?: boolean
 }
 
-export const View: FC<Props> = ({ options, selectedOptions, onSelect }) =>
+export const View: FC<Props> = ({
+  options,
+  selectedOptions,
+  onSelect,
+  isDisabled = false,
+}) =>
   h(Stack, { direction: "row", alignItems: "center", width: "100%" }, [
     h(InputGroup, [
       h(CreatableSelect, {
+        isDisabled,
         placeholder: "With whom?",
         autoFocus: true,
         size: "md",
@@ -29,8 +36,17 @@ export const View: FC<Props> = ({ options, selectedOptions, onSelect }) =>
             ...provided,
             width: "100%",
           }),
+          multiValue: (provided, state) => {
+            return {
+              ...provided,
+              ...(state.isDisabled && {
+                backgroundColor: lightGray,
+                color: "black",
+              }),
+            }
+          },
         },
-        isClearable: true,
+        isClearable: false,
         isMulti: true,
         createOptionPosition: "first",
         formatCreateLabel: (inputValue) => `Add contact: "${inputValue}"`,
@@ -38,7 +54,10 @@ export const View: FC<Props> = ({ options, selectedOptions, onSelect }) =>
         onChange: (newValue, _meta) => onSelect(newValue),
         options,
         noOptionsMessage: (_inputValue) => "No results.",
-        value: selectedOptions,
+        value: selectedOptions.map((value) => ({
+          ...value,
+          isFixed: isDisabled,
+        })),
       }),
     ]),
   ])
