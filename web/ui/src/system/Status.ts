@@ -32,5 +32,9 @@ export interface Props {
 export const Status: FC<Props> = ({ status, participantList }) =>
   h(Stack, { direction: "row" }, [
     h(Icon, { as: statusIcon(status) }),
-    h(Text, { fontSize: "xs" }, statusText(status, participantList)),
+    h(
+      Text,
+      { fontSize: "xs", style: { whiteSpace: "nowrap" } },
+      statusText(status, participantList)
+    ),
   ])
