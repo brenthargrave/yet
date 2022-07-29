@@ -54,6 +54,11 @@ export const View: FC<Props> = ({
                 h(Stack, { direction: "column" }, [
                   h(Stack, { direction: "row", alignItems: "center" }, [
                     h(Heading, { size: "sm" }, [
+                      // TODO: replace invitees w/ state-dep list
+                      // TODO: design name list for each view U viewer-type
+                      // draft = invitees
+                      // proposed = invitees
+                      // signed = signers
                       join(", ", map(prop("name"), invitees)),
                     ]),
                     h(Spacer),
