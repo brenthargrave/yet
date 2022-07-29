@@ -16,6 +16,7 @@ import {
   Header,
   BackButton,
   Status,
+  Divider,
 } from "~/system"
 import { View as AuthPrompt } from "./AuthPrompt"
 import { ShareButton } from "./ShareButton"
@@ -76,7 +77,12 @@ export const View: FC<Props> = ({
     },
     [
       !isSigning(intent) &&
-        h(Header, {}, [h(BackButton, { cta: "", onClick: onClickBack })]),
+        h(Header, {}, [
+          h(BackButton, { cta: "", onClick: onClickBack }),
+          // TODO: sign in/up button
+          // h(Divider),
+          // h(AuthButton)
+        ]),
       h(ShareModal, {
         isOpen: isReading(intent) && isOpenShare,
         onClose: onCloseShare,
@@ -127,25 +133,30 @@ export const View: FC<Props> = ({
             h(Spacer),
           ]),
           h(Stack, { direction: "column", gap: 1 }, [
-            h(Flex, { justifyContent: "space-between", gap: 4 }, [
-              h(MarkdownView, {
-                md: `${bold(creatorName)} with
-                  ${toSentence(map(bold, pluck("name", invitees)))}`,
-              }),
-              h(Stack, { direction: "column", alignItems: "end" }, [
-                h(
-                  Text,
-                  {
-                    size: "xs",
-                    style: {
-                      whiteSpace: "nowrap",
+            h(
+              Flex,
+              { justifyContent: "space-between", gap: 4, alignItems: "center" },
+              [
+                h(MarkdownView, {
+                  md: `${bold(creatorName)} with ${toSentence(
+                    map(bold, pluck("name", invitees))
+                  )}`,
+                }),
+                h(Stack, { direction: "column", alignItems: "end" }, [
+                  h(
+                    Text,
+                    {
+                      size: "xs",
+                      style: {
+                        whiteSpace: "nowrap",
+                      },
                     },
-                  },
-                  occurredAtDesc
-                ),
-                h(Status, { status }),
-              ]),
-            ]),
+                    occurredAtDesc
+                  ),
+                  h(Status, { status }),
+                ]),
+              ]
+            ),
             h(NoteView, { note, isObscured }),
           ]),
           h(Stack, { direction: "row" }, [
