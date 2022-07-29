@@ -48,9 +48,9 @@ export const View: FC<Props> = ({
               `Publish`
             ),
           ]),
-          h(Stack, { direction: "row", justifyContent: "start" }, [
-            h(Status, { status, participantList }),
-          ]),
+          // h(Stack, { direction: "row", justifyContent: "start" }, [
+          //   h(Status, { status, participantList }),
+          // ]),
         ]),
       ]
     ),

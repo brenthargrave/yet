@@ -74,9 +74,9 @@ export const View = ({
       ]),
       // h(Heading, { size: "md", paddingLeft: 4 }, "Edit Conversation"),
       h(Stack, { direction: "column", width: "100%", padding: 4, pt: 0 }, [
-        // h(Stack, { direction: "row", width: "100%", justifyContent: "end" }, [
-        //   h(Status, { status }),
-        // ]),
+        h(Stack, { direction: "row", width: "100%", justifyContent: "start" }, [
+          h(Status, { status }),
+        ]),
         h(When, { occurredAt, onChangeOccurredAt }),
         h(Who, { onSelect, options, selectedOptions }),
         h(NoteEditor, { status, note, onChangeNote }),

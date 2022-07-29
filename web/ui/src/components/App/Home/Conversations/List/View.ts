@@ -53,7 +53,7 @@ export const View: FC<Props> = ({
               [
                 h(Stack, { direction: "column" }, [
                   h(Stack, { direction: "row", alignItems: "start" }, [
-                    h(Heading, { size: "xs" }, [
+                    h(Heading, { size: "sm" }, [
                       join(", ", map(prop("name"), invitees)),
                     ]),
                     h(Spacer),
