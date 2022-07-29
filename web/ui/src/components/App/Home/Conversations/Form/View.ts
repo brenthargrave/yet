@@ -75,7 +75,7 @@ export const View = ({
         h(
           Stack,
           { justifyContent: "start", direction: "row", width: "100%", p: 2 },
-          [h(Status, { status, participantNames })]
+          [h(Status, { status })]
         ),
         h(When, { occurredAt, onChangeOccurredAt }),
         h(Who, { onSelect, options, selectedOptions }),

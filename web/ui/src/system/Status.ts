@@ -26,13 +26,13 @@ const statusColor = (status: ConversationStatus) => {
 export interface Props {
   status: ConversationStatus
   isHighlighted?: boolean
-  participantNames?: string[]
+  stragglerNames?: string[]
 }
 
 export const Status: FC<Props> = ({
   status,
   isHighlighted = false,
-  participantNames = [],
+  stragglerNames: participantNames = [],
 }) =>
   h(
     Stack,
