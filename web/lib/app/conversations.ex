@@ -37,7 +37,7 @@ defmodule App.Conversations do
     )
     # NOTE: disable edititing once proposed
     |> bind(
-      &if Enumerable.member?([:draft, :proposed], String.to_atom(&1.status)),
+      &if Enum.member?([:draft, :proposed], &1.status),
         do: ok(&1),
         else: error(:unauthorized)
     )
