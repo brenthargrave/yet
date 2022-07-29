@@ -1,6 +1,5 @@
 import { Icon } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { capitalCase } from "change-case"
 import { FC } from "react"
 import { AiOutlineFileDone } from "react-icons/ai"
 import { MdPendingActions, MdUnpublished } from "react-icons/md"
@@ -17,17 +16,43 @@ const statusIcon = (status: ConversationStatus) => {
   return null
 }
 
+const statusColor = (status: ConversationStatus) => {
+  if (status === ConversationStatus.Proposed) return "yellow.100"
+  if (status === ConversationStatus.Signed) return "green.100"
+  if (status === ConversationStatus.Deleted) return "red.100"
+  return "white"
+}
+
 export interface Props {
   status: ConversationStatus
+  isHighlighted?: boolean
   participantNames?: string[]
 }
 
-export const Status: FC<Props> = ({ status, participantNames = [] }) =>
-  h(Stack, { direction: "row", alignItems: "center" }, [
-    h(Icon, { as: statusIcon(status) }),
-    h(
-      Text,
-      { fontSize: "xs", style: { whiteSpace: "nowrap" } },
-      statusText(status, toSentence(participantNames))
-    ),
-  ])
+export const Status: FC<Props> = ({
+  status,
+  isHighlighted = false,
+  participantNames = [],
+}) =>
+  h(
+    Stack,
+    {
+      //
+      direction: "row",
+      alignItems: "center",
+      ...(isHighlighted && {
+        bgColor: statusColor(status),
+      }),
+    },
+    [
+      h(Icon, { as: statusIcon(status) }),
+      h(
+        Text,
+        {
+          fontSize: "xs",
+          style: { whiteSpace: "nowrap" },
+        },
+        statusText(status, toSentence(participantNames))
+      ),
+    ]
+  )
