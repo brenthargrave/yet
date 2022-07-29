@@ -12,7 +12,7 @@ import {
   startWith,
   withLatestFrom,
 } from "rxjs"
-import { any } from "~/fp"
+import { any, not } from "~/fp"
 import {
   isSignedBy,
   Conversation,
@@ -89,7 +89,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     tag("isReviewer$")
   )
   const notSigned$ = combineLatest({ me: me$, record: record$ }).pipe(
-    map(({ record, me }) => isSignedBy(record, me)),
+    map(({ record, me }) => not(isSignedBy(record, me))),
     startWith(true),
     distinctUntilChanged(),
     tag("notSigned$")
@@ -104,11 +104,10 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     filter(
       ({ route, isSignable, isReviewer, notSigned }) =>
         route.name === routes.conversation.name &&
-        isSignable &&
         isReviewer &&
+        isSignable &&
         notSigned
     ),
-    distinctUntilChanged(),
     withLatestFrom(record$),
     map(([_, { id }]) => push(routes.signConversation({ id }))),
     tag("redirectReviewerToSign$"),

@@ -88,18 +88,6 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const redirectCreatorOrCosignerToShow$ = combineLatest({
-    me: me$,
-    record: record$,
-  }).pipe(
-    filter(
-      ({ me, record }) => me?.id === record.creator.id || isSignedBy(record, me)
-    ),
-    map(({ me, record: { id } }) => push(routes.conversation({ id }))),
-    tag("redirectCreatorOrCosignerToShow$"),
-    share()
-  )
-
   const [onClickAuth, onClickAuth$] = cb$(tag("onClickAuth$"))
   const redirectToAuth$ = onClickAuth$.pipe(
     map((_) => push(routes.in())),
@@ -167,6 +155,22 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
       return { ...props, onClickAuth, onClickSign }
     }),
     tag("props$")
+  )
+
+  const redirectCreatorOrCosignerToShow$ = combineLatest({
+    route: history$,
+    me: me$,
+    record: record$,
+  }).pipe(
+    filter(
+      ({ route, me, record }) =>
+        (route.name === routes.signConversation.name &&
+          me?.id === record.creator.id) ||
+        isSignedBy(record, me)
+    ),
+    map(({ me, record: { id } }) => push(routes.conversation({ id }))),
+    tag("redirectCreatorOrCosignerToShow$"),
+    share()
   )
 
   const notice = merge(signUserError$, alertSigned$)
