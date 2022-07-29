@@ -18,6 +18,7 @@ import {
   tap,
   withLatestFrom,
 } from "rxjs"
+import { isNotNullish } from "rxjs-etc"
 import { filterResultOk } from "ts-results/rxjs-operators"
 import { map as _map, not, prop } from "~/fp"
 import {
@@ -78,6 +79,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
 
   const status$ = record$.pipe(
     pluck("status"),
+    filter(isNotNullish),
     startWith(ConversationStatus.Draft),
     tag("status$"),
     shareLatest()
