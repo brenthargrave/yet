@@ -1,12 +1,12 @@
 import { Icon } from "@chakra-ui/react"
 import { h } from "@cycle/react"
+import { capitalCase } from "change-case"
 import { FC } from "react"
 import { AiOutlineFileDone } from "react-icons/ai"
 import { MdPendingActions, MdUnpublished } from "react-icons/md"
 import { RiDraftLine } from "react-icons/ri"
 import { ConversationStatus } from "~/graph"
 import { Stack, Text } from "."
-import { trim } from "~/fp"
 
 const statusIcon = (status: ConversationStatus) => {
   if (status === ConversationStatus.Draft) return RiDraftLine
@@ -22,7 +22,7 @@ const statusText = (status: ConversationStatus, participantList?: string) =>
     ? participantList
       ? `Pending cosign by ${participantList}`
       : `Pending cosign`
-    : status
+    : capitalCase(status)
 
 export interface Props {
   status: ConversationStatus
@@ -30,7 +30,7 @@ export interface Props {
 }
 
 export const Status: FC<Props> = ({ status, participantList }) =>
-  h(Stack, { direction: "row" }, [
+  h(Stack, { direction: "row", alignItems: "center" }, [
     h(Icon, { as: statusIcon(status) }),
     h(
       Text,
