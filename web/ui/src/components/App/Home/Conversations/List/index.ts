@@ -1,9 +1,18 @@
 import { h, ReactSource } from "@cycle/react"
-import { combineLatest, map, merge, mergeMap, withLatestFrom } from "rxjs"
+import {
+  combineLatest,
+  filter,
+  map,
+  merge,
+  mergeMap,
+  share,
+  withLatestFrom,
+} from "rxjs"
 import {
   Conversation,
   EventName,
   isCreatedBy,
+  isLurking,
   Source as GraphSource,
   track$,
 } from "~/graph"
@@ -23,6 +32,19 @@ export const List = (sources: Sources, tagPrefix?: string) => {
     graph: { me$, conversations$ },
   } = sources
   const tag = makeTagger(`${tagPrefix}/List`)
+
+  const redirectLurkerToRoot$ = combineLatest({
+    route: history$,
+    me: me$,
+  }).pipe(
+    filter(
+      ({ route, me }) =>
+        route.name === routes.conversations.name && isLurking(me)
+    ),
+    mapTo(push(routes.root())),
+    tag("redirectLurkerToRoot$"),
+    share()
+  )
 
   const [onClickNew, clickNew$] = cb$(tag("clickNew$"))
 
@@ -59,7 +81,7 @@ export const List = (sources: Sources, tagPrefix?: string) => {
     )
   )
 
-  const router = merge(newConvo$, editConvo$)
+  const router = merge(newConvo$, editConvo$, redirectLurkerToRoot$)
 
   return {
     react,
