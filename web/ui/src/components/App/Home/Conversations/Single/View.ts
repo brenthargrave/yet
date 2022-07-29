@@ -129,14 +129,18 @@ export const View: FC<Props> = ({
           h(Stack, { direction: "column", gap: 1 }, [
             h(Flex, { justifyContent: "space-between", gap: 4 }, [
               h(MarkdownView, {
-                md: `${bold(creatorName)} with ${toSentence(
-                  map(bold, pluck("name", invitees))
-                )}`,
+                md: `${bold(creatorName)} with
+                  ${toSentence(map(bold, pluck("name", invitees)))}`,
               }),
               h(Stack, { direction: "column", alignItems: "end" }, [
                 h(
                   Text,
-                  { size: "xs", style: { whiteSpace: "nowrap" } },
+                  {
+                    size: "xs",
+                    style: {
+                      whiteSpace: "nowrap",
+                    },
+                  },
                   occurredAtDesc
                 ),
                 h(Status, { status }),
