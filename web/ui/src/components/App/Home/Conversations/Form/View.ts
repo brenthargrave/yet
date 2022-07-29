@@ -1,6 +1,7 @@
 import { Divider, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { BackButton, Header, Heading, Stack } from "~/system"
+import { ConversationStatus } from "~/graph"
+import { BackButton, Header, Stack, Status } from "~/system"
 import { Props as ActionBarProps, View as ActionBar } from "./ActionBar"
 import { DeleteButton } from "./DeleteButton"
 import { Props as NoteEditorProps, View as NoteEditor } from "./NoteEditor"
@@ -25,6 +26,7 @@ export interface Props
   shareURL?: string
   onShareURLCopied?: () => void
   onClickShare: () => void
+  status?: ConversationStatus
 }
 
 export const View = ({
@@ -48,6 +50,7 @@ export const View = ({
   shareURL,
   onShareURLCopied,
   onClickShare,
+  status = ConversationStatus.Draft,
 }: Props) =>
   h(
     Stack,
@@ -62,9 +65,7 @@ export const View = ({
           onClick: onClickBack,
         }),
         h(Spacer),
-        // TODO: heading?
-        // h(Heading, { size: "xs" }, "Conversation"),
-        h(Spacer),
+        // h(Status, { status }),
         h(DeleteButton, {
           onClick: onClickDelete,
           isLoading: isDeleting,
@@ -72,12 +73,20 @@ export const View = ({
         }),
       ]),
       // h(Heading, { size: "md", paddingLeft: 4 }, "Edit Conversation"),
-      h(Stack, { direction: "column", width: "100%", padding: 4 }, [
+      h(Stack, { direction: "column", width: "100%", padding: 4, pt: 0 }, [
+        // h(Stack, { direction: "row", width: "100%", justifyContent: "end" }, [
+        //   h(Status, { status }),
+        // ]),
         h(When, { occurredAt, onChangeOccurredAt }),
         h(Who, { onSelect, options, selectedOptions }),
-        h(NoteEditor, { note, onChangeNote }),
+        h(NoteEditor, { status, note, onChangeNote }),
         h(Divider),
-        h(ActionBar, { participantNames, isPublishDisabled, onClickPublish }),
+        h(ActionBar, {
+          status,
+          participantNames,
+          isPublishDisabled,
+          onClickPublish,
+        }),
       ]),
       h(PublishView, {
         participantNames,

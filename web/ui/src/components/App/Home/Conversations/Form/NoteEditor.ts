@@ -3,18 +3,24 @@ import { h } from "@cycle/react"
 import { px } from "csx"
 import { FC, useEffect, useState } from "react"
 import { NoteView } from "~/components/Note"
-import { AutosizeTextarea } from "~/system"
+import { ConversationStatus } from "~/graph"
+import { AutosizeTextarea, Divider, Stack, Status } from "~/system"
 import { MarkdownLink } from "./MarkdownLink"
 
 export interface Props {
   note: string | null | undefined
   onChangeNote: (note: string) => void
+  status?: ConversationStatus
 }
 
 const noteInputsId = "notes"
 const previewId = "preview"
 
-export const View: FC<Props> = ({ note, onChangeNote }) => {
+export const View: FC<Props> = ({
+  note,
+  onChangeNote,
+  status = ConversationStatus.Draft,
+}) => {
   const [minHeight, setMinHeight] = useState<number | null>(0)
   useEffect(() => {
     const noteInputsHeight = document.getElementById(noteInputsId)?.offsetHeight
@@ -55,7 +61,10 @@ export const View: FC<Props> = ({ note, onChangeNote }) => {
               defaultValue: note ?? "",
               onChange: (event) => onChangeNote(event.target.value),
             }),
-            h(MarkdownLink),
+            h(Stack, { direction: "column", alignItems: "start" }, [
+              h(MarkdownLink),
+              // h(Status, { status }),
+            ]),
           ]
         ),
         h(

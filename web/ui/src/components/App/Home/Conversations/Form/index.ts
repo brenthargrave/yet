@@ -76,6 +76,13 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     props: { record$, id$ },
   } = sources
 
+  const status$ = record$.pipe(
+    pluck("status"),
+    startWith(ConversationStatus.Draft),
+    tag("status$"),
+    shareLatest()
+  )
+
   const recordInvitees$ = record$.pipe(pluck("invitees"))
   const recordInviteesAsOptions$ = recordInvitees$.pipe(
     map(inviteesToOptions),
@@ -337,6 +344,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     isOpenPublish: isOpenPublish$,
     shareURL: shareURL$,
     participantNames: participantNames$,
+    status: status$,
   }).pipe(tag("props$"))
 
   const react = props$.pipe(

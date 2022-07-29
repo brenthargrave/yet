@@ -1,6 +1,5 @@
 import { ReactSource } from "@cycle/react"
 import {
-  catchError,
   combineLatest,
   EMPTY,
   filter,
@@ -8,7 +7,6 @@ import {
   merge,
   of,
   share,
-  shareReplay,
   switchMap,
 } from "rxjs"
 import { match } from "ts-pattern"

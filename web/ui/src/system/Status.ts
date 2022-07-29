@@ -6,6 +6,7 @@ import { MdPendingActions, MdUnpublished } from "react-icons/md"
 import { RiDraftLine } from "react-icons/ri"
 import { ConversationStatus } from "~/graph"
 import { Stack, Text } from "."
+import { trim } from "~/fp"
 
 const statusIcon = (status: ConversationStatus) => {
   if (status === ConversationStatus.Draft) return RiDraftLine
@@ -15,15 +16,21 @@ const statusIcon = (status: ConversationStatus) => {
   return null
 }
 
-const statusText = (status: ConversationStatus) =>
-  status === ConversationStatus.Proposed ? "Pending cosign" : status
+const statusText = (status: ConversationStatus, participantList?: string) =>
+  // eslint-disable-next-line no-nested-ternary
+  status === ConversationStatus.Proposed
+    ? participantList
+      ? `Pending cosign by ${participantList}`
+      : `Pending cosign`
+    : status
 
 export interface Props {
   status: ConversationStatus
+  participantList?: string
 }
 
-export const Status: FC<Props> = ({ status }) =>
+export const Status: FC<Props> = ({ status, participantList }) =>
   h(Stack, { direction: "row" }, [
     h(Icon, { as: statusIcon(status) }),
-    h(Text, { fontSize: "xs" }, statusText(status)),
+    h(Text, { fontSize: "xs" }, statusText(status, participantList)),
   ])

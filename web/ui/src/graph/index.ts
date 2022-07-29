@@ -283,7 +283,8 @@ export const upsertConversation$ = (input: ConversationInput) => {
   ).pipe(
     map(({ data, errors, extensions, context }) => {
       if (errors) throw new GraphError(JSON.stringify(errors))
-      return data!.upsertConversation!
+      const { userError, conversation } = data!.upsertConversation!
+      return userError ? new Err(userError) : new Ok(conversation!)
     }),
     tag("upsertConversation$")
   )
