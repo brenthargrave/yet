@@ -13,12 +13,14 @@ import {
   EventName,
   isCreatedBy,
   isLurking,
+  isStatusEditable,
   Source as GraphSource,
   track$,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
 import { cb$, mapTo } from "~/rx"
+import { and } from "~/fp"
 import { View } from "./View"
 
 interface Sources {
@@ -68,7 +70,10 @@ export const List = (sources: Sources, tagPrefix?: string) => {
   const editConvo$ = clickConvo$.pipe(
     withLatestFrom(me$),
     map(([conversation, me]) => {
-      const route = isCreatedBy(conversation, me)
+      const route = and(
+        isCreatedBy(conversation, me),
+        isStatusEditable(conversation.status)
+      )
         ? routes.editConversation({ id: conversation.id })
         : routes.conversation({ id: conversation.id })
       return push(route)
