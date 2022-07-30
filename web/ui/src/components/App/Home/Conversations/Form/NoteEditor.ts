@@ -4,20 +4,22 @@ import { px } from "csx"
 import { FC, useEffect, useState } from "react"
 import { NoteView } from "~/components/Note"
 import { ConversationStatus } from "~/graph"
-import { AutosizeTextarea, Divider, Stack, Status } from "~/system"
+import { AutosizeTextarea, Stack } from "~/system"
 import { MarkdownLink } from "./MarkdownLink"
 
+const noteInputsId = "notes"
+const previewId = "preview"
+
 export interface Props {
+  autoFocus?: boolean
   note: string | null | undefined
   onChangeNote: (note: string) => void
   status?: ConversationStatus
   isDisabled?: boolean
 }
 
-const noteInputsId = "notes"
-const previewId = "preview"
-
 export const View: FC<Props> = ({
+  autoFocus = false,
   note,
   onChangeNote,
   status = ConversationStatus.Draft,
@@ -57,8 +59,9 @@ export const View: FC<Props> = ({
           },
           [
             h(AutosizeTextarea, {
-              isDisabled,
+              autoFocus,
               id: noteInputsId,
+              isDisabled,
               paddingTop: 4,
               minRows: 4,
               defaultValue: note ?? "",

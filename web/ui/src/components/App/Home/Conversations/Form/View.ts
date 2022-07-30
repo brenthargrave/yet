@@ -1,5 +1,6 @@
 import { Divider, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
+import { isEmpty, not } from "~/fp"
 import { ConversationStatus } from "~/graph"
 import { BackButton, Header, Stack, Status } from "~/system"
 import { Props as ActionBarProps, View as ActionBar } from "./ActionBar"
@@ -89,6 +90,7 @@ export const View = ({
           options,
           selectedOptions,
           isDisabled: isDisabledEditing,
+          autoFocus: isEmpty(selectedOptions),
         }),
         h(NoteEditor, {
           status,
@@ -102,6 +104,7 @@ export const View = ({
           participantNames,
           isPublishDisabled,
           onClickPublish,
+          autoFocus: not(isEmpty(selectedOptions)),
         }),
       ]),
       h(PublishView, {

@@ -12,6 +12,7 @@ export interface Option {
 export type SelectedOption = Omit<Option, "__isNew__">
 
 export interface Props {
+  autoFocus?: boolean
   options: Option[]
   onSelect: (option: Option) => void
   selectedOptions: SelectedOption[]
@@ -19,6 +20,7 @@ export interface Props {
 }
 
 export const View: FC<Props> = ({
+  autoFocus = true,
   options,
   selectedOptions,
   onSelect,
@@ -29,7 +31,7 @@ export const View: FC<Props> = ({
       h(CreatableSelect, {
         isDisabled,
         placeholder: "With whom?",
-        autoFocus: true,
+        autoFocus,
         size: "md",
         chakraStyles: {
           container: (provided, state) => ({

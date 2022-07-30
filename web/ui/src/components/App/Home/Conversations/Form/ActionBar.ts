@@ -13,6 +13,7 @@ export interface Props {
   onClickPublish?: OnClickPublish
   participantNames?: string[]
   status?: ConversationStatus
+  autoFocus?: boolean
 }
 
 export const View: FC<Props> = ({
@@ -20,6 +21,7 @@ export const View: FC<Props> = ({
   onClickPublish,
   participantNames = [],
   status = ConversationStatus.Draft,
+  autoFocus = false,
 }) => {
   const participantList = toSentence(participantNames)
   return h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
@@ -37,13 +39,14 @@ export const View: FC<Props> = ({
           h(Stack, { direction: "column", gap: 1, alignItems: "start" }, [
             h(
               Button,
-              { isDisabled: isPublishDisabled, onClick: onClickPublish },
-              // eslint-disable-next-line no-nested-ternary
-              status === ConversationStatus.Draft
-                ? isEmpty(participantNames)
-                  ? `Publish`
-                  : `Publish with ${participantList}`
-                : statusText(status)
+              {
+                autoFocus,
+                isDisabled: isPublishDisabled,
+                onClick: onClickPublish,
+              },
+              isEmpty(participantNames)
+                ? `Publish`
+                : `Publish with ${participantList}`
             ),
           ]),
         ]),

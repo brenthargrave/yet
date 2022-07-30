@@ -11,6 +11,7 @@ export const MarkdownLink: FC = () =>
       h(
         Link,
         {
+          tabIndex: -1,
           isExternal: true,
           href: "https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax",
         },
