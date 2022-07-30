@@ -1,8 +1,8 @@
 import { faker } from "@faker-js/faker"
 import { capitalCase } from "change-case"
 import { eqBy, isEmpty, prop, symmetricDifferenceWith } from "ramda"
-import { includes, isNotEmpty, join, any } from "~/fp"
-import { Conversation, Customer, Invitee, MakeOptional, Participant } from ".."
+import { any, includes, isNotEmpty, join } from "~/fp"
+import { Conversation, Customer, Invitee, MakeOptional, Contact } from ".."
 import { ConversationStatus } from "../generated"
 
 export type DraftConversation = MakeOptional<
@@ -36,11 +36,15 @@ const makeId = () => faker.datatype.uuid()
 const makeName = () =>
   join(" ", [faker.name.firstName(), faker.name.lastName()])
 const makeDate = () => faker.date.past()
+const makeOrg = () => faker.company.companyName()
+const makeRole = () => faker.name.jobTitle()
 
-export const makeParticipant = (): Participant => {
+export const makeParticipant = (): Contact => {
   return {
     id: makeId(),
     name: makeName(),
+    org: makeOrg(),
+    role: makeRole(),
   }
 }
 

@@ -3,6 +3,8 @@ fragment ConversationProps on Conversation {
   creator {
     id
     name
+    org
+    role
   }
   invitees {
     id

@@ -11,8 +11,8 @@ defmodule AppWeb.Graph.Conversations do
   end
 
   object :invitee do
-    field(:name, non_null(:string))
     field(:id, non_null(:id))
+    field(:name, non_null(:string))
   end
 
   enum :conversation_status do
@@ -20,11 +20,6 @@ defmodule AppWeb.Graph.Conversations do
     value(:proposed, as: :proposed)
     value(:signed, as: :signed)
     value(:deleted, as: :deleted)
-  end
-
-  object :participant do
-    field(:name, non_null(:string))
-    field(:id, non_null(:string))
   end
 
   object :signature do
@@ -43,7 +38,7 @@ defmodule AppWeb.Graph.Conversations do
 
   object :conversation do
     field(:id, non_null(:id))
-    field(:creator, non_null(:participant))
+    field(:creator, non_null(:contact))
     field(:invitees, non_null(list_of(non_null(:invitee))))
     field(:note, :string)
     field(:status, non_null(:conversation_status))
