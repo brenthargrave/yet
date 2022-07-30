@@ -146,6 +146,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   ).pipe(startWith(false), tag("isSigningLoading$"), shareLatest())
 
   const props$ = combineLatest({
+    viewer: me$,
     intent: of(Intent.Sign),
     step: step$,
     conversation: record$,

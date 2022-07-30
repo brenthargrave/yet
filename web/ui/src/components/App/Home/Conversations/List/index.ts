@@ -80,9 +80,10 @@ export const List = (sources: Sources, tagPrefix?: string) => {
     })
   )
 
-  const react = conversations$.pipe(
-    map((conversations) =>
-      h(View, { conversations, onClickNew, onClickConversation })
+  const props$ = combineLatest({ viewer: me$, conversations: conversations$ })
+  const react = props$.pipe(
+    map(({ viewer, conversations }) =>
+      h(View, { viewer, conversations, onClickNew, onClickConversation })
     )
   )
 

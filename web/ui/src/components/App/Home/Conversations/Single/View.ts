@@ -1,23 +1,24 @@
 import { h } from "@cycle/react"
+import { sign } from "crypto"
 import { FC } from "react"
 import { NoteView } from "~/components/Note"
 import { map, pluck } from "~/fp"
-import { Conversation, isSignableStatus } from "~/graph"
+import { Conversation, Customer, Maybe } from "~/graph"
 import { localizeDate, t, toSentence } from "~/i18n"
 import { routes, routeURL } from "~/router"
 import {
+  BackButton,
   Flex,
+  Header,
   Heading,
   MarkdownView,
+  ShareModal,
   Spacer,
   Stack,
-  Text,
-  ShareModal,
-  Header,
-  BackButton,
   Status,
-  Divider,
+  Text,
 } from "~/system"
+import { ParticipantsView } from "~/system/ParticipantsView"
 import { View as AuthPrompt } from "./AuthPrompt"
 import { ShareButton } from "./ShareButton"
 import { SignButton } from "./SignButton"
@@ -39,6 +40,7 @@ const isSigningStep = (intent: Intent, current: Step, step: Step) =>
   isSigning(intent) && current === step
 
 export interface Props {
+  viewer: Maybe<Customer>
   intent?: Intent
   step?: Step
   conversation: Conversation
@@ -54,9 +56,10 @@ export interface Props {
 }
 
 export const View: FC<Props> = ({
+  viewer,
   intent = Intent.Read,
   step = Step.Auth,
-  conversation: { id, status, occurredAt, invitees, creator, note },
+  conversation: { id, status, occurredAt, invitees, creator, note, signatures },
   onClickAuth,
   onClickSign,
   isSignLoading = false,
@@ -67,6 +70,7 @@ export const View: FC<Props> = ({
 }) => {
   const isObscured = isSigningStep(intent, step, Step.Auth) || isOpenShare
   const creatorName = creator.name
+  const signers = map((sig) => sig.signer, signatures)
   const occurredAtDesc = localizeDate(occurredAt)
   return h(
     Stack,
@@ -137,10 +141,12 @@ export const View: FC<Props> = ({
               Flex,
               { justifyContent: "space-between", gap: 4, alignItems: "center" },
               [
-                h(MarkdownView, {
-                  md: `${bold(creatorName)} with ${toSentence(
-                    map(bold, pluck("name", invitees))
-                  )}`,
+                h(ParticipantsView, {
+                  viewer,
+                  status,
+                  creator,
+                  invitees,
+                  signers,
                 }),
                 h(Stack, { direction: "column", alignItems: "end" }, [
                   h(

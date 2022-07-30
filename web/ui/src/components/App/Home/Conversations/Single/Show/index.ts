@@ -56,6 +56,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   ).pipe(startWith(false), tag("isOpenShare$"), shareLatest())
 
   const props$ = combineLatest({
+    viewer: me$,
     intent: of(Intent.Read),
     conversation: record$,
     isOpenShare: isOpenShare$,

@@ -99,21 +99,14 @@ export const allStatusesList = [
   ConversationStatus.Deleted,
 ]
 
-const signableStatuses = [
-  ConversationStatus.Proposed,
-  ConversationStatus.Signed,
-]
-
 export const isSignableStatus = (status: ConversationStatus): boolean =>
-  includes(status, signableStatuses)
-
-export const editableStatusList = [
-  ConversationStatus.Draft,
-  ConversationStatus.Proposed,
-]
+  includes(status, [ConversationStatus.Proposed, ConversationStatus.Signed])
 
 export const isStatusEditable = (status: ConversationStatus): boolean =>
-  includes(status, editableStatusList)
+  includes(status, [ConversationStatus.Draft, ConversationStatus.Proposed])
+
+export const isStatusClosed = (status: ConversationStatus): boolean =>
+  includes(status, [ConversationStatus.Signed, ConversationStatus.Deleted])
 
 export const isCreatedBy = (conversation: Conversation, me: Customer | null) =>
   conversation.creator.id === me?.id
