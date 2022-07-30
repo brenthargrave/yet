@@ -8,7 +8,6 @@ const size = "lg"
 export interface Props {
   attr: string
   onChangeInput: (text: string) => void
-  inputValue: string
   isSubmitButtonDisabled: boolean
   isInputDisabled: boolean
   onSubmit: () => void
@@ -21,7 +20,6 @@ export interface Props {
 export const View = ({
   attr,
   onChangeInput,
-  inputValue: value,
   isSubmitButtonDisabled,
   isInputDisabled,
   onSubmit: _onSubmit,
@@ -49,7 +47,6 @@ export const View = ({
             h(Input, {
               ref: inputRef,
               key,
-              value,
               autoFocus: true,
               placeholder: inputPlaceholder,
               isRequired: true,

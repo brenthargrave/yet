@@ -48,13 +48,8 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     shareLatest()
   )
 
-  const inputValue$$ = new BehaviorSubject<string>("")
-  const inputValue$ = merge(
-    inputValue$$.asObservable(),
-    // reset input when new form step changes
-    attr$.pipe(map((_) => ""))
-  ).pipe(tag("inputValue$"), shareLatest())
-  const onChangeInput = (value: string) => inputValue$$.next(value)
+  const [onChangeInput, onChangeInput$] = cb$<string>(tag("onChangeInput$"))
+  const inputValue$ = onChangeInput$.pipe(tag("inputValue$"), shareLatest())
 
   const [onSubmit, submit$] = cb$(tag("submit$"))
 
@@ -105,7 +100,6 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
 
   const react = combineLatest({
     attr: attr$,
-    inputValue: inputValue$,
     isSubmitButtonDisabled,
     isInputDisabled,
     isLoading,
