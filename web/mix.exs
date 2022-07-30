@@ -62,6 +62,7 @@ defmodule App.MixProject do
       {:scribe, "~> 0.10"},
       {:tabula, "~> 2.1.1"},
       {:timex, "~> 3.0"}
+      # {:ex_cldr_strftime, "~> 0.2.0"}
     ]
   end
 

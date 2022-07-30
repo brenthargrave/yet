@@ -16,9 +16,13 @@ defmodule App.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: App.PubSub},
       # Start the Endpoint (http/https)
-      AppWeb.Endpoint
+      AppWeb.Endpoint,
       # Start a worker by calling: App.Worker.start_link(arg)
       # {App.Worker, arg}
+
+      # >
+      # https://dockyard.com/blog/2016/05/02/phoenix-tips-and-tricks
+      {Task.Supervisor, name: App.TaskSupervisor}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

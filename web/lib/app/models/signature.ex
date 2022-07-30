@@ -26,7 +26,7 @@ defmodule App.Signature do
   end
 
   defun validate_conversation_is_signable(changeset :: Changeset.t()) :: Changeset.t() do
-    validate_change(changeset, :conversation, fn :conversation, value ->
+    validate_change(changeset, :conversation, fn :conversation, _value ->
       conversation = get_field(changeset, :conversation)
       inviteeCount = Enum.count(conversation.invitees)
       sigCount = Enum.count(conversation.signatures)
@@ -53,5 +53,13 @@ defmodule App.Signature do
         []
       end
     end)
+  end
+
+  defun signed_sms_message(signature :: __MODULE__.t()) :: String.t() do
+    brand = System.get_env("PRODUCT_NAME")
+    datetime = signature.conversation.occurred_at
+    dateFormatted = Timex.format!(datetime, "%B %d", :strftime)
+
+    "(via #{brand}) #{signature.signer.name} just cosigned your #{dateFormatted} conversation notes."
   end
 end

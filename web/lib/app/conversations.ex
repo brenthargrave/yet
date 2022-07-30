@@ -90,6 +90,7 @@ defmodule App.Conversations do
       )
 
     Repo.all(from(c in created, union: ^signed, union: ^reviewed))
+    |> IO.inspect()
     |> ok()
   end
 
@@ -108,6 +109,7 @@ defmodule App.Conversations do
     |> fmap(&Map.put(attrs, :conversation, &1))
     |> fmap(&Signature.changeset(%Signature{}, &1))
     |> bind(&Repo.insert(&1))
+    |> fmap(&tap_notify_creator_of_signature/1)
     |> fmap(& &1.conversation)
     |> fmap(&Conversation.signed_changeset/1)
     |> bind(&Repo.insert_or_update(&1))
@@ -116,7 +118,7 @@ defmodule App.Conversations do
 
   defun propose_conversation(
           customer,
-          %{id: id} = input
+          %{id: id} = _input
         ) :: Brex.Result.s(Conversation.t()) do
     Repo.get(Conversation, id)
     |> Repo.preload(@conversation_preloads)
@@ -129,7 +131,7 @@ defmodule App.Conversations do
 
   defun review_conversation(
           customer,
-          %{id: id} = input
+          %{id: id} = _input
         ) :: Brex.Result.s(Conversation.t()) do
     attrs = %{reviewer: customer}
 
@@ -148,10 +150,11 @@ defmodule App.Conversations do
   defun get_contacts(viewer :: Customer.t()) :: Brex.Result.s(list(term())) do
     Repo.all(
       from(contact in Contact,
-        join: sig in assoc(contact, :signatures),
-        join: convo in assoc(sig, :conversation),
-        where: convo.creator_id == ^viewer.id,
-        where: convo.status != :deleted
+        join: signature in assoc(contact, :signatures),
+        join: conversation in assoc(signature, :conversation),
+        where: conversation.creator_id == ^viewer.id,
+        where: conversation.status != :deleted,
+        distinct: contact.id
       )
     )
   end
@@ -171,5 +174,16 @@ defmodule App.Conversations do
 
   def clear_reviews(conversation_id) do
     Repo.delete_all(from(r in Review, where: r.conversation_id == ^conversation_id))
+  end
+
+  defun tap_notify_creator_of_signature(signature :: Signature.t()) :: Signature.t() do
+    to = signature.conversation.creator.e164
+    body = Signature.signed_sms_message(signature)
+
+    Task.Supervisor.async_nolink(App.TaskSupervisor, fn ->
+      App.Notification.send_sms(%{to: to, body: body})
+    end)
+
+    signature
   end
 end

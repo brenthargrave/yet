@@ -5,7 +5,6 @@ defmodule App.Review do
   import Ecto.Changeset
   import App.Types
   alias App.{Customer, Conversation}
-  alias Ecto.Changeset
 
   typed_schema "reviews" do
     belongs_to(:conversation, Conversation)
