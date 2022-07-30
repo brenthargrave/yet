@@ -5,7 +5,6 @@ import {
   map,
   merge,
   Observable,
-  shareReplay,
   startWith,
   switchMap,
   withLatestFrom,
