@@ -15,7 +15,6 @@ import {
   share,
   startWith,
   switchMap,
-  tap,
   withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
@@ -35,14 +34,13 @@ import {
   isValidConversation,
   proposeConversation$,
   Source as GraphSource,
-  track,
   track$,
   upsertConversation$,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { info } from "~/notice"
 import { push, routes, routeURL, Source as RouterSource } from "~/router"
-import { cb$, mapTo, shareLatest } from "~/rx"
+import { cb$, shareLatest } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
 
 const contactsToOptions = (contacts: Contact[]): SelectedOption[] =>
@@ -105,19 +103,6 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     tag("options$"),
     shareLatest()
   )
-  // TODO: merge in prior selections
-  //  combineLatest({
-  //   contacts: contacts$.pipe(map(contactsToOptions)),
-  //   invitees: inviteesAsOptions$,
-  // }).pipe(
-  //   map(({ contacts, invitees }) => {
-  //     // @ts-ignore
-  //     unionWith(eqBy(prop("id")), contacts, invitees)
-  //   }),
-  //   startWith([]),
-  //   tag("options$"),
-  //   share()
-  // )
 
   const invitees$ = selectedOptions$.pipe(
     map(optionsToInvitees),

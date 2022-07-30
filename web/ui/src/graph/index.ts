@@ -2,7 +2,6 @@
 /* eslint no-console: 0 */
 /* eslint max-classes-per-file: 0 */
 
-import { gql } from "@apollo/client"
 import { captureException } from "@sentry/react"
 import {
   BehaviorSubject,
@@ -15,12 +14,11 @@ import {
   MonoTypeOperatorFunction,
   Observable,
   of,
-  delay,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { switchMap } from "rxjs/operators"
 import { Err, Ok, Result } from "ts-results"
-import { descend, isNil, none, not, prop, propSatisfies, toLower } from "~/fp"
+import { descend, prop } from "~/fp"
 import { makeTagger } from "~/log"
 import { shareLatest, zenToRx } from "~/rx"
 import { getId } from "./anon"
@@ -37,10 +35,8 @@ import {
   EventName,
   EventProperties,
   GetConversationsDocument,
-  Maybe,
   MeDocument,
   ProfileInput,
-  ProfileProp,
   ProposeConversationDocument,
   ProposeInput,
   ReviewConversationDocument,
