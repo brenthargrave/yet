@@ -113,7 +113,6 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
 
   const recordNote$ = record$.pipe(
     pluck("note"),
-    distinctUntilChanged(),
     tag("recordNote$"),
     shareLatest()
   )
