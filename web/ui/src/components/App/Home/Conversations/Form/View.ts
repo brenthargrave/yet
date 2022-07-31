@@ -2,7 +2,7 @@ import { Divider, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { isEmpty, not } from "~/fp"
 import { ConversationStatus } from "~/graph"
-import { BackButton, Header, Stack, Status } from "~/system"
+import { BackButton, Header, Heading, Stack, Status } from "~/system"
 import { Props as ActionBarProps, View as ActionBar } from "./ActionBar"
 import { DeleteButton } from "./DeleteButton"
 import { Props as NoteEditorProps, View as NoteEditor } from "./NoteEditor"
@@ -74,12 +74,21 @@ export const View = ({
           isDisabled: isDeleteDisabled,
         }),
       ]),
+      h(Header, [
+        //
+        h(Heading, { size: "md" }, "Conversation"),
+        h(Spacer),
+        h(Status, { status }),
+      ]),
       h(Stack, { direction: "column", width: "100%", padding: 4, pt: 0 }, [
-        h(
-          Stack,
-          { justifyContent: "start", direction: "row", width: "100%", p: 2 },
-          [h(Status, { status })]
-        ),
+        // h(
+        //   Stack,
+        //   { justifyContent: "start", direction: "row", width: "100%", p: 2 },
+        //   [
+        //     //
+        //     h(Status, { status }),
+        //   ]
+        // ),
         h(When, {
           occurredAt,
           onChangeOccurredAt,
