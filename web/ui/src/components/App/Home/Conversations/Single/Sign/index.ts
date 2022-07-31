@@ -35,6 +35,7 @@ import { error, info } from "~/notice"
 import { push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
 import { Intent, Step } from "../View"
+import { or } from "~/fp"
 
 interface Sources {
   react: ReactSource
@@ -165,9 +166,8 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   }).pipe(
     filter(
       ({ route, me, record }) =>
-        (route.name === routes.signConversation.name &&
-          me?.id === record.creator.id) ||
-        isSignedBy(record, me)
+        route.name === routes.signConversation.name &&
+        or(isCreatedBy(record, me), isSignedBy(record, me))
     ),
     map(({ me, record: { id } }) => push(routes.conversation({ id }))),
     tag("redirectCreatorOrCosignerToShow$"),
