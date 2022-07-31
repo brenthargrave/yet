@@ -1,6 +1,6 @@
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { map, prop } from "~/fp"
+import { isEmpty, isNotEmpty, map, prop } from "~/fp"
 import {
   Contact,
   ConversationStatus,
@@ -34,13 +34,15 @@ export const ParticipantsView: FC<Props> = ({
   invitees,
   signers,
 }) => {
-  const creatorName = creator.name // personalizedName(viewer, creator)
+  const creatorName = creator.name
   const others: Participant[] = isStatusClosed(status) ? signers : invitees
-  // const othersNames = map((p) => personalizedName(viewer, p), others)
-  const othersNames = map(prop("name"), others)
-  return h(MarkdownView, {
-    md: `${bold(creatorName)} with ${toSentence(map(bold, othersNames))}`,
-  })
+  let md = bold(creatorName)
+  if (isNotEmpty(others)) {
+    const othersNames = map(prop("name"), others)
+    md += ` with ${toSentence(map(bold, othersNames))}`
+  }
+  // md: `${bold(creatorName)} with ${toSentence(map(bold, othersNames))}`,
+  return h(MarkdownView, { md })
 }
 
 ParticipantsView.displayName = "ParticipantsView"
