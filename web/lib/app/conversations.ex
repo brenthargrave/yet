@@ -148,7 +148,7 @@ defmodule App.Conversations do
   end
 
   defun get_contacts(viewer :: Customer.t()) :: Brex.Result.s(list(term())) do
-    Repo.all(
+    signers =
       from(contact in Contact,
         join: signature in assoc(contact, :signatures),
         join: conversation in assoc(signature, :conversation),
@@ -156,7 +156,17 @@ defmodule App.Conversations do
         where: conversation.status != :deleted,
         distinct: contact.id
       )
-    )
+
+    creators =
+      from(contact in Contact,
+        join: conversation in assoc(contact, :conversations),
+        join: signature in assoc(conversation, :signatures),
+        where: signature.signer_id == ^viewer.id,
+        where: conversation.status != :deleted,
+        distinct: contact.id
+      )
+
+    Repo.all(from c in signers, union: ^creators)
     |> IO.inspect()
   end
 

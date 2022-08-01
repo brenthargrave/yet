@@ -62,7 +62,6 @@ defmodule App.Signature do
     brand = System.get_env("PRODUCT_NAME")
     datetime = signature.conversation.occurred_at
     dateFormatted = Timex.format!(datetime, "%B %d", :strftime)
-    # https://trawler.wip/c/01G9B1TAXR5AZF91WQBBKWBZH3/sign
 
     "(#{brand}) #{signature.signer.name} just cosigned your #{dateFormatted} conversation notes. #{conversation_url}"
   end
