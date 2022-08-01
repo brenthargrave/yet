@@ -47,8 +47,8 @@ export const View: FC<Props> = ({
     },
     [
       h(TabList, [
-        h(Tab, { tabIndex: -1, isDisabled }, `Edit`),
-        h(Tab, { tabIndex: -1, isDisabled }, `Preview`),
+        h(Tab, { isDisabled }, `Edit`),
+        h(Tab, { isDisabled }, `Preview`),
       ]),
       h(TabPanels, { padding: 0 }, [
         h(
