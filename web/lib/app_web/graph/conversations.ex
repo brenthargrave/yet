@@ -79,6 +79,7 @@ defmodule AppWeb.Graph.Conversations do
   input_object :sign_input do
     field(:id, non_null(:id))
     field(:signed_at, :datetime)
+    field(:conversation_url, non_null(:string))
   end
 
   input_object :propose_input do

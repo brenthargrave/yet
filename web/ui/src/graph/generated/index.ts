@@ -220,6 +220,7 @@ export type RootQueryTypeGetConversationArgs = {
 };
 
 export type SignInput = {
+  conversationUrl: Scalars['String'];
   id: Scalars['ID'];
   signedAt?: InputMaybe<Scalars['DateTime']>;
 };

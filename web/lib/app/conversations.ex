@@ -96,7 +96,7 @@ defmodule App.Conversations do
 
   defun sign_conversation(
           customer,
-          %{id: id} = input
+          %{id: id, conversation_url: conversation_url} = input
         ) :: Brex.Result.s(Conversation.t()) do
     attrs = %{
       signer: customer,
@@ -109,7 +109,7 @@ defmodule App.Conversations do
     |> fmap(&Map.put(attrs, :conversation, &1))
     |> fmap(&Signature.changeset(%Signature{}, &1))
     |> bind(&Repo.insert(&1))
-    |> fmap(&tap_notify_creator_of_signature/1)
+    |> fmap(&tap_notify_creator_of_signature(&1, conversation_url))
     |> fmap(& &1.conversation)
     |> fmap(&Conversation.signed_changeset/1)
     |> bind(&Repo.insert_or_update(&1))
@@ -157,6 +157,7 @@ defmodule App.Conversations do
         distinct: contact.id
       )
     )
+    |> IO.inspect()
   end
 
   ## Helpers
@@ -176,9 +177,13 @@ defmodule App.Conversations do
     Repo.delete_all(from(r in Review, where: r.conversation_id == ^conversation_id))
   end
 
-  defun tap_notify_creator_of_signature(signature :: Signature.t()) :: Signature.t() do
+  defun tap_notify_creator_of_signature(
+          signature :: Signature.t(),
+          conversation_url :: String.t()
+        ) ::
+          Signature.t() do
     to = signature.conversation.creator.e164
-    body = Signature.signed_sms_message(signature)
+    body = Signature.signed_sms_message(signature, conversation_url)
 
     Task.Supervisor.async_nolink(App.TaskSupervisor, fn ->
       App.Notification.send_sms(%{to: to, body: body})

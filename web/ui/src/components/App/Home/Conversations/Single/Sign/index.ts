@@ -32,7 +32,7 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { error, info } from "~/notice"
-import { push, routes, Source as RouterSource } from "~/router"
+import { push, routes, routeURL, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
 import { Intent, Step } from "../View"
 import { or } from "~/fp"
@@ -110,7 +110,12 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const [onClickSign, onClickSign$] = cb$(tag("onClickSign$"))
   const signResult$ = onClickSign$.pipe(
     withLatestFrom(record$),
-    switchMap(([_, record]) => signConversation$({ id: record.id })),
+    switchMap(([_, { id }]) =>
+      signConversation$({
+        id,
+        conversationUrl: routeURL(routes.conversation({ id })),
+      })
+    ),
     tag("signResult$"),
     share()
   )
