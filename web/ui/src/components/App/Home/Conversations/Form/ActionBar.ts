@@ -1,7 +1,7 @@
 import { Box, Button } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { isEmpty } from "~/fp"
+import { isEmpty, head } from "~/fp"
 import { ConversationStatus, statusText } from "~/graph"
 import { toSentence } from "~/i18n"
 import { Stack } from "~/system"
@@ -23,7 +23,10 @@ export const View: FC<Props> = ({
   status = ConversationStatus.Draft,
   autoFocus = false,
 }) => {
-  const participantList = toSentence(participantNames)
+  const firstNames = participantNames.map(
+    (name) => head(name.split(/(\s+)/)) ?? name
+  )
+  const participantList = toSentence(firstNames)
   return h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
     h(
       Box,
