@@ -2,6 +2,7 @@ import { defineConfig } from "vite"
 import reactRefresh from "@vitejs/plugin-react-refresh"
 import codegen from "vite-plugin-graphql-codegen"
 import analyze from "rollup-plugin-analyzer"
+import topLevelAwait from "vite-plugin-top-level-await"
 
 import fs from "fs"
 import path, { resolve } from "path"
@@ -25,6 +26,13 @@ const port: number = parseInt(PORT_UI ?? "8080", 10)
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    // NOTE: https://github.com/vitejs/vite/issues/6985#issuecomment-1044375490
+    topLevelAwait({
+      // The export name of top-level await promise for each chunk module
+      promiseExportName: "__tla",
+      // The function to generate import names of top-level await promise in each chunk module
+      promiseImportName: (i) => `__tla_${i}`,
+    }),
     reactRefresh(),
     codegen({
       runOnBuild: false, // disable in production
