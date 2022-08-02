@@ -24,12 +24,14 @@ defmodule AppWeb.PageController do
 
     title = ~s(#{conversation.creator.name} with #{others_copy} on #{on})
 
-    render(conn, "index.html", %{
+    og = %{
       type: "website",
       url: ~s(#{root_url}/c/#{id}),
       title: title,
       image: ~s(#{root_url}#{AppWeb.Endpoint.static_path("/og/chat-quote.svg")})
-    })
+    }
+
+    render(conn, "index.html", %{og: og})
   end
 
   # https://vitejs.dev/guide/backend-integration.html
