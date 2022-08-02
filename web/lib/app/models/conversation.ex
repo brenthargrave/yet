@@ -1,5 +1,6 @@
 defmodule App.Conversation do
   use App.Schema
+  use Croma
   import Ecto.Changeset
   import App.Types
   alias App.{Customer, Signature, Review}

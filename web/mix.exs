@@ -61,7 +61,8 @@ defmodule App.MixProject do
       {:shorter_maps, "~> 2.2"},
       {:scribe, "~> 0.10"},
       {:tabula, "~> 2.1.1"},
-      {:timex, "~> 3.0"}
+      {:timex, "~> 3.0"},
+      {:r_enum, "~> 0.6"}
       # {:ex_cldr_strftime, "~> 0.2.0"}
     ]
   end
