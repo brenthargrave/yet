@@ -3,35 +3,58 @@ defmodule AppWeb.PageController do
   alias App.{Repo, Conversation}
 
   # %{"path" => ["c", "01G9DG5VJS7N568PCSM0R157MY"]}
-  def index(conn, %{"path" => ["c", id]} = params) do
-    IO.inspect(conn)
-    IO.inspect(params)
-    root_url = "https://#{AppWeb.Endpoint.host()}"
-
+  def index(conn, %{"path" => ["c", id | _]} = _params) do
     conversation =
       Repo.get(Conversation, id)
       |> Repo.preload([:creator, signatures: [:signer]])
 
-    others =
-      if conversation.status == "signed",
-        do: Enum.map(conversation.signatures, & &1.signer),
-        else: conversation.invitees
+    assigns =
+      case conversation do
+        %Conversation{
+          status: status,
+          signatures: signatures,
+          invitees: invitees,
+          creator: creator,
+          occurred_at: occurred_at,
+          note: note
+        } = _conversation ->
+          root_url = "https://#{AppWeb.Endpoint.host()}"
 
-    others_names = Enum.map(others, & &1.name)
-    others_copy = RList.to_sentence(others_names)
+          others =
+            if status == "signed",
+              do: Enum.map(signatures, & &1.signer),
+              else: invitees
 
-    on = Timex.format!(conversation.occurred_at, "%B %d", :strftime)
+          others_names =
+            others
+            |> Enum.map(& &1.name)
+            |> RList.to_sentence()
 
-    title = ~s(#{conversation.creator.name} with #{others_copy} on #{on})
+          title = ~s<#{creator.name} with #{others_names}>
 
-    og = %{
-      type: "website",
-      url: ~s(#{root_url}/c/#{id}),
-      title: title,
-      image: ~s(#{root_url}#{AppWeb.Endpoint.static_path("/og/chat-quote.svg")})
-    }
+          on = Calendar.strftime(occurred_at, "%B %-d, %Y")
 
-    render(conn, "index.html", %{og: og})
+          # html = Md.generate(note)
+          text = HtmlSanitizeEx.markdown_html(note)
+          truncated = Util.StringFormatter.truncate(note, max_length: 100)
+
+          description = ~s<#{on} - #{truncated}>
+
+          %{
+            og: %{
+              type: "website",
+              url: ~s(#{root_url}/c/#{id}),
+              title: title,
+              image: ~s(#{root_url}#{AppWeb.Endpoint.static_path("/og/chat-quote.png")}),
+              description: description
+            }
+          }
+
+        _ ->
+          %{}
+      end
+
+    render(conn, "index.html", assigns)
   end
 
   # https://vitejs.dev/guide/backend-integration.html
