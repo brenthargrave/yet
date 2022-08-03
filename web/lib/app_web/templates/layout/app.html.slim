@@ -8,10 +8,10 @@ html lang="en" prefix="og: https://ogp.me/ns#"
     meta http-equiv="Pragma" content="no-cache"
     meta http-equiv="Expires" content="0"
     // TODO: default meta tags for title/description
+    // title = og.title
+    // meta name="description" content="#{og.description}"
     - og = assigns[:og]
     = if og do
-      title og.title
-      meta name="description" content="#{og.description}"
       // facebook
       meta property="og:type" content="#{og.type}"
       meta property="og:title" content="#{og.title}"
