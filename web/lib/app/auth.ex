@@ -81,6 +81,8 @@ defmodule App.Auth do
     end
   end
 
+  def with_token(token) when is_nil(token), do: nil
+
   defun with_token(token :: String.t()) :: Customer.t() | nil do
     Customer
     |> where(token: ^token)

@@ -44,6 +44,7 @@ defmodule App.Conversations do
     |> fmap(&Conversation.changeset(&1, attrs))
     |> bind(&Repo.insert_or_update(&1))
     |> fmap(&Repo.preload(&1, @conversation_preloads))
+    |> fmap(&Conversation.notify_subscriptions/1)
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 

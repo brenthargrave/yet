@@ -393,7 +393,6 @@ export const subscribeConversation$ = (input: ConversationChangedInput) =>
       })
     ).pipe(
       map((result) => {
-        console.debug(result)
         const { context, data, errors, extensions } = result
         if (errors) throw new GraphError(JSON.stringify(errors))
         return data

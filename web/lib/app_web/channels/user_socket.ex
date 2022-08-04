@@ -23,6 +23,9 @@ defmodule AppWeb.UserSocket do
 
     socket =
       case App.Auth.with_token(Map.get(params, "token")) do
+        nil ->
+          socket
+
         %App.Customer{} = customer ->
           Absinthe.Phoenix.Socket.put_options(socket,
             context: %{

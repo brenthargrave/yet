@@ -58,4 +58,14 @@ defmodule App.Conversation do
     record
     |> change(status: :signed)
   end
+
+  defun notify_subscriptions(conversation :: __MODULE__.t()) :: __MODULE__.t() do
+    Absinthe.Subscription.publish(
+      AppWeb.Endpoint,
+      conversation,
+      conversation_changed: conversation.id
+    )
+
+    conversation
+  end
 end
