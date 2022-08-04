@@ -83,7 +83,7 @@ defmodule App.Auth do
 
   def with_token(token) when is_nil(token), do: nil
 
-  defun with_token(token :: String.t()) :: Customer.t() | nil do
+  def with_token(token) do
     Customer
     |> where(token: ^token)
     |> Repo.one()

@@ -143,7 +143,7 @@ defmodule App.Conversations do
     |> bind(&if &1.creator != customer, do: ok(&1), else: error(:unauthorized))
     |> fmap(&Map.put(attrs, :conversation, &1))
     |> fmap(&Review.changeset(%Review{}, &1))
-    |> bind(&Repo.insert(&1))
+    |> bind(&Repo.insert_or_update(&1))
     |> fmap(& &1.conversation)
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
