@@ -13,16 +13,16 @@ export type SelectedOption = Omit<Option, "__isNew__">
 
 export interface Props {
   autoFocus?: boolean
-  options: Option[]
+  options?: Option[]
   onSelect: (option: Option) => void
-  selectedOptions: SelectedOption[]
+  selectedOptions?: SelectedOption[]
   isDisabled?: boolean
 }
 
 export const View: FC<Props> = ({
   autoFocus = true,
-  options,
-  selectedOptions,
+  options = [],
+  selectedOptions = [],
   onSelect,
   isDisabled = false,
 }) =>
