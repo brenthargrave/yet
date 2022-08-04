@@ -102,13 +102,11 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
 
   const justSigned$ = status$.pipe(
     pairwise(),
-    tag("status$ > pairwise"),
     filter(
       ([prev, curr]) =>
-        prev === ConversationStatus.Proposed &&
-        curr === ConversationStatus.Signed
+        prev !== ConversationStatus.Signed && curr === ConversationStatus.Signed
     ),
-    tag("status$ justSigned$"),
+    tag("justSigned$"),
     share()
   )
   const justSignedNotice$ = justSigned$.pipe(
@@ -116,9 +114,14 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     map(([_, record]) =>
       info({ title: justSignedNotice(record as Conversation) })
     ),
-    tag("justSignedNotice$")
+    tag("justSignedNotice$"),
+    share()
   )
-  // TODO: handle edit attempt *just after* status change to signed
+  const redirectJustSignedToShow$ = justSigned$.pipe(
+    withLatestFrom(record$),
+    map(([_, { id }]) => push(routes.conversation({ id }))),
+    tag("redirectJustSigned$")
+  )
 
   const recordInvitees$ = record$.pipe(pluck("invitees"))
   const recordInviteesAsOptions$ = recordInvitees$.pipe(
@@ -398,7 +401,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     )
   )
 
-  const router = merge(goToList$)
+  const router = merge(goToList$, redirectJustSignedToShow$)
   const notice = merge(shareURLCopiedNotice$, justSignedNotice$)
   const track = merge(trackPropose$)
 

@@ -19,8 +19,6 @@ defmodule AppWeb.UserSocket do
   # performing token verification on connect.
   @impl true
   def connect(params, socket, _connect_info) do
-    IO.inspect(params)
-
     socket =
       case App.Auth.with_token(Map.get(params, "token")) do
         nil ->
@@ -37,7 +35,6 @@ defmodule AppWeb.UserSocket do
           socket
       end
 
-    IO.inspect(socket)
     {:ok, socket}
   end
 

@@ -123,7 +123,9 @@ export const statusText = (
     : capitalCase(status)
 
 export const justSignedNotice = ({ signatures }: Conversation) => {
-  // @ts-ignore
-  const s: Signature = head(descend(prop("signedAt"), signatures))
-  return `${s.signer.name} just cosigned!`
+  const sorted = signatures.sort(descend(prop("signedAt")))
+  console.debug("SORTED", sorted)
+  const latest = head(sorted)
+  console.debug("SIG", latest)
+  return `${latest?.signer?.name} just cosigned!`
 }

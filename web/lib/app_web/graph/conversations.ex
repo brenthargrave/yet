@@ -145,12 +145,6 @@ defmodule AppWeb.Graph.Conversations do
         {:ok, topic: args.input.id}
       end)
 
-      # trigger(:submit_conversation,
-      #   topic: fn conversation ->
-      #     conversation.id
-      #   end
-      # )
-
       resolve(fn conversation, _, _ ->
         {:ok, conversation}
       end)

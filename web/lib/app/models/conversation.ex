@@ -60,6 +60,9 @@ defmodule App.Conversation do
   end
 
   defun notify_subscriptions(conversation :: __MODULE__.t()) :: __MODULE__.t() do
+    IO.inspect("NOTIFY")
+    IO.inspect(conversation)
+
     Absinthe.Subscription.publish(
       AppWeb.Endpoint,
       conversation,
