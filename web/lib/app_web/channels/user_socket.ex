@@ -1,5 +1,6 @@
 defmodule AppWeb.UserSocket do
   use Phoenix.Socket
+  use Absinthe.Phoenix.Socket, schema: AppWeb.Graph.Schema
 
   ## Channels
   # channel "room:*", AppWeb.RoomChannel

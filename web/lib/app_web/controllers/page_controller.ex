@@ -36,7 +36,7 @@ defmodule AppWeb.PageController do
 
           # html = Md.generate(note)
           text = HtmlSanitizeEx.markdown_html(note)
-          truncated = Util.StringFormatter.truncate(note, max_length: 100)
+          truncated = Util.StringFormatter.truncate(text, max_length: 100)
 
           description = ~s<#{on} - #{truncated}>
 

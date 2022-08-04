@@ -20,17 +20,17 @@ defmodule AppWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/" do
-      pipe_through [:fetch_session, :protect_from_forgery]
-      live_dashboard "/dashboard", metrics: AppWeb.Telemetry
+      pipe_through([:fetch_session, :protect_from_forgery])
+      live_dashboard("/dashboard", metrics: AppWeb.Telemetry)
     end
   end
 
   pipeline :graphql do
-    plug AppWeb.Graph.Context
+    plug(AppWeb.Graph.Context)
   end
 
   scope "/graphql" do
-    pipe_through :graphql
+    pipe_through(:graphql)
 
     forward(
       "/",
@@ -44,6 +44,7 @@ defmodule AppWeb.Router do
     "/graphiql",
     Absinthe.Plug.GraphiQL,
     schema: AppWeb.Graph.Schema,
+    socket: AppWeb.UserSocket,
     interface: :advanced
   )
 

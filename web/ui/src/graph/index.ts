@@ -26,6 +26,8 @@ import { client, tokenCacheKey } from "./apollo"
 import {
   CheckTokenDocument,
   ContactsDocument,
+  ConversationChangedDocument,
+  ConversationChangedInput,
   ConversationInput,
   ConversationStatus,
   Customer,
@@ -380,6 +382,17 @@ export const getConversation$ = (id: string) => {
     tag("getConversation$")
   )
 }
+
+export const subscribeConversation$ = (input: ConversationChangedInput) =>
+  from(
+    client.subscribe({
+      query: ConversationChangedDocument,
+      variables: { input },
+    })
+  ).pipe(
+    map((value) => console.debug("CHANGED", value)),
+    tag("subscribeConversation$")
+  )
 
 export const conversations$ = token$.pipe(
   filter(isNotNullish),

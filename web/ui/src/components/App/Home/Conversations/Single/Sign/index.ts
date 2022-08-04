@@ -54,6 +54,8 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const tagScope = `${tagPrefix}/Sign`
   const tag = makeTagger(tagScope)
 
+  // TODO: subscribe to edits
+
   const review$ = combineLatest({
     route: history$,
     record: record$,
