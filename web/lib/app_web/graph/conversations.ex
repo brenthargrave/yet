@@ -140,6 +140,20 @@ defmodule AppWeb.Graph.Conversations do
   object :conversations_subscriptions do
     field :conversation_changed, :conversation do
       arg(:input, non_null(:conversation_changed_input))
+
+      config(fn args, _ ->
+        {:ok, topic: args.input.id}
+      end)
+
+      # trigger(:submit_conversation,
+      #   topic: fn conversation ->
+      #     conversation.id
+      #   end
+      # )
+
+      resolve(fn conversation, _, _ ->
+        {:ok, conversation}
+      end)
     end
   end
 end

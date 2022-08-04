@@ -392,16 +392,15 @@ export const subscribeConversation$ = (input: ConversationChangedInput) =>
         variables: { input },
       })
     ).pipe(
-      map(({ context, data, errors, extensions, ...result }) => {
+      map((result) => {
+        console.debug(result)
+        const { context, data, errors, extensions } = result
         if (errors) throw new GraphError(JSON.stringify(errors))
         return data
       })
     )
   ).pipe(
-    map((data) => {
-      // TODO: usererrors/
-      return data?.conversationChanged
-    }),
+    map((data) => data?.conversationChanged),
     filter(isNotNullish),
     catchError((error, _caught$) => {
       console.error(error)
