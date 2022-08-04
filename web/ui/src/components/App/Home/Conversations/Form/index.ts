@@ -34,6 +34,7 @@ import {
   isValidConversation,
   proposeConversation$,
   Source as GraphSource,
+  subscribeConversation$,
   track$,
   upsertConversation$,
 } from "~/graph"
@@ -73,10 +74,19 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
 
   const {
     graph: { contacts$ },
-    props: { record$, id$ },
+    props: { record$: _record$, id$ },
   } = sources
 
-  // TODO: subscribe to signings, alert signed, update state
+  const liveRecord$ = id$.pipe(
+    distinctUntilChanged(),
+    switchMap((id) => subscribeConversation$({ id })),
+    tag("liveRecord$"),
+    shareLatest()
+  )
+  const record$ = merge(_record$, liveRecord$).pipe(
+    tag("record$"),
+    shareLatest()
+  )
 
   const status$ = record$.pipe(
     pluck("status"),
