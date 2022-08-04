@@ -1,8 +1,10 @@
-defmodule App.Notification do
+defmodule App.Notifications do
   use Croma
   use App.Types
+  use Brex.Result
 
-  def send_sms(%{to: to, body: body}) do
+  @type payload() :: %{to: String.t(), body: String.t()}
+  defun send(%{to: to, body: body} :: payload()) :: nil do
     System.get_env("DEBUG_DISABLE_SMS") ||
       ExTwilio.Message.create(
         messaging_service_sid: System.get_env("TWILIO_MESSAGING_SID"),

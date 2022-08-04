@@ -67,5 +67,20 @@ defmodule App.Repo.Migrations.CreateEvents do
     create(unique_index(:reviews, [:conversation_id, :reviewer_id]))
     create(index(:reviews, [:reviewer_id]))
     create(index(:reviews, [:conversation_id]))
+
+    create table(:notifications) do
+      add :kind, :string, null: false
+      add :body, :string, null: false
+      add :conversation_id, references(:conversations, on_delete: :delete_all)
+      add :recipient_id, references(:customers, on_delete: :delete_all)
+      add :delivered_at, :utc_datetime_usec, null: false
+      timestamps()
+    end
+
+    create(index(:notifications, [:kind]))
+    create(index(:notifications, [:delivered_at]))
+    create(index(:notifications, [:conversation_id]))
+    create(index(:notifications, [:recipient_id]))
+    create(unique_index(:notifications, [:kind, :conversation_id, :recipient_id]))
   end
 end

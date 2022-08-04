@@ -47,7 +47,7 @@ export function makeDriver(): Driver<Sink, Source> {
           .with(CommandType.out, () => {
             setToken(null)
           })
-          .exhaustive()
+          .otherwise((res) => console.info(res))
       },
       error: (error) => console.error(error),
       complete: () => console.info("complete"),

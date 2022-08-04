@@ -49,6 +49,7 @@ export const App = (sources: Sources) => {
     react: homeView$,
     router: homeRouter$,
     notice: homeNotice$,
+    graph: homeGraph$,
     ...home
   } = Home(sources)
 
@@ -99,7 +100,7 @@ export const App = (sources: Sources) => {
     eatUnrecoverableError()
   )
   const notice = merge(authNotice, homeNotice$).pipe(eatUnrecoverableError())
-  const graph = merge(authGraph$).pipe(eatUnrecoverableError())
+  const graph = merge(authGraph$, homeGraph$).pipe(eatUnrecoverableError())
   const track = merge(home.track).pipe(eatUnrecoverableError())
 
   return {

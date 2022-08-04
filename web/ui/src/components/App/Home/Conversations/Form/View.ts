@@ -1,7 +1,7 @@
 import { Divider, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { isEmpty, not } from "~/fp"
-import { ConversationStatus } from "~/graph"
+import { ConversationStatus, Invitee } from "~/graph"
 import { BackButton, Header, Heading, Stack, Status } from "~/system"
 import { Props as ActionBarProps, View as ActionBar } from "./ActionBar"
 import { DeleteButton } from "./DeleteButton"
@@ -29,6 +29,8 @@ export interface Props
   onClickShare: () => void
   status?: ConversationStatus
   isDisabledEditing?: boolean
+  knownInvitees?: Invitee[]
+  unknownInvitees?: Invitee[]
 }
 
 export const View = ({
@@ -54,6 +56,8 @@ export const View = ({
   onClickShare,
   status = ConversationStatus.Draft,
   isDisabledEditing = false,
+  knownInvitees,
+  unknownInvitees,
 }: Props) =>
   h(
     Stack,
@@ -75,20 +79,11 @@ export const View = ({
         }),
       ]),
       h(Header, [
-        //
         h(Heading, { size: "md" }, "Conversation"),
         h(Spacer),
         h(Status, { status }),
       ]),
       h(Stack, { direction: "column", width: "100%", padding: 4, pt: 0 }, [
-        // h(
-        //   Stack,
-        //   { justifyContent: "start", direction: "row", width: "100%", p: 2 },
-        //   [
-        //     //
-        //     h(Status, { status }),
-        //   ]
-        // ),
         h(When, {
           occurredAt,
           onChangeOccurredAt,
@@ -117,12 +112,13 @@ export const View = ({
         }),
       ]),
       h(PublishView, {
-        participantNames,
         isOpen: isOpenPublish,
         onClose: onClosePublish,
         shareURL,
         onShareURLCopied,
         onClickShareViaApp: onClickShare,
+        knownInvitees,
+        unknownInvitees,
       }),
     ]
   )

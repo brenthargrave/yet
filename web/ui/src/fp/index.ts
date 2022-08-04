@@ -3,6 +3,7 @@ import any from "ramda/es/any"
 import ascend from "ramda/es/ascend"
 import compose from "ramda/es/compose"
 import descend from "ramda/es/descend"
+import eqBy from "ramda/es/eqBy"
 import filter from "ramda/es/filter"
 import find from "ramda/es/find"
 import flatten from "ramda/es/flatten"
@@ -22,21 +23,25 @@ import propSatisfies from "ramda/es/propSatisfies"
 import sort from "ramda/es/sort"
 import sortBy from "ramda/es/sortBy"
 import split from "ramda/es/split"
+import symmetricDifferenceWith from "ramda/es/symmetricDifferenceWith"
 import take from "ramda/es/take"
 import toLower from "ramda/es/toLower"
 import trim from "ramda/es/trim"
 import values from "ramda/es/values"
+import reject from "ramda/es/reject"
 
 const isEmpty = (i: any): boolean => isNil(i) || _isEmpty(i)
 const isNotEmpty = (i: any): boolean => not(isEmpty(i))
 const isPresent = (i: any): boolean => not(isNil(i))
 
 export {
+  reject,
   and,
   any,
   ascend,
   compose,
   descend,
+  eqBy,
   filter,
   find,
   flatten,
@@ -58,6 +63,7 @@ export {
   sort,
   sortBy,
   split,
+  symmetricDifferenceWith,
   take,
   toLower,
   trim,

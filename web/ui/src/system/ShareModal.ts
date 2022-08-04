@@ -16,6 +16,7 @@ import {
   Stack,
   Text,
 } from "~/system"
+import { MarkdownView } from "./MarkdownView"
 
 export interface Props extends ModalProps {
   shareURL?: string
@@ -23,6 +24,7 @@ export interface Props extends ModalProps {
   onClickShareViaApp?: () => void
   heading?: string
   subheading?: string
+  cta?: string
 }
 
 const size = "md"
@@ -35,6 +37,7 @@ export const ShareModal = ({
   onClickShareViaApp,
   heading,
   subheading,
+  cta,
 }: Props) => {
   const { hasCopied, onCopy } = useClipboard(shareURL ?? "")
   const url = shareURL
@@ -45,9 +48,10 @@ export const ShareModal = ({
 
   return h(Modal, { isOpen, onClose }, [
     h(Stack, { direction: "column", gap: 4 }, [
+      cta && h(MarkdownView, { md: cta }),
       heading && h(Heading, { size: "sm" }, heading),
       subheading && h(Text, subheading),
-      (heading || subheading) && h(Divider),
+      (heading || subheading || cta) && h(Divider),
       h(Stack, { direction: "column", gap: 1 }, [
         h(Heading, { size: "xs" }, `Copy share link to clipboard`),
         h(InputGroup, { size }, [

@@ -16,15 +16,23 @@ import {
   share,
   startWith,
   switchMap,
+  tap,
   withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { filterResultOk } from "ts-results/rxjs-operators"
-import { and, map as _map, not, prop } from "~/fp"
+import {
+  filter as _filter,
+  and,
+  includes,
+  map as _map,
+  not,
+  pluck as _pluck,
+  prop,
+} from "~/fp"
 import {
   Contact,
   Conversation,
-  ConversationPropsFragmentDoc,
   ConversationStatus,
   deleteConversation$,
   DraftConversation,
@@ -37,6 +45,7 @@ import {
   isValidConversation,
   justSignedNotice,
   proposeConversation$,
+  refetchContacts,
   Source as GraphSource,
   subscribeConversation$,
   track$,
@@ -57,10 +66,16 @@ const inviteesToOptions = (invitees: Invitee[]): SelectedOption[] =>
     return { label: name, value: id }
   })
 
-const optionsToInvitees = (options: ContactOption[]): Invitee[] =>
-  options.map(({ label, value }) => {
-    return { name: label, id: value }
+const optionsToInvitees = (
+  options: ContactOption[],
+  contacts: Contact[]
+): Invitee[] => {
+  const contactIds = _pluck("id", contacts)
+  return options.map(({ label: name, value: id }) => {
+    const isContact = includes(id, contactIds)
+    return { name, id, isContact } as Invitee
   })
+}
 
 interface Props {
   id$: Observable<string>
@@ -82,7 +97,6 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   } = sources
 
   const liveRecord$ = id$.pipe(
-    distinctUntilChanged(),
     switchMap((id) => subscribeConversation$({ id })),
     tag("liveRecord$"),
     shareLatest()
@@ -100,26 +114,24 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const justSigned$ = status$.pipe(
+  const justSignedNotice$ = record$.pipe(
     pairwise(),
+    tag("justSignedNotice$ pairwise"),
     filter(
       ([prev, curr]) =>
-        prev !== ConversationStatus.Signed && curr === ConversationStatus.Signed
+        prev.status !== ConversationStatus.Signed &&
+        curr.status === ConversationStatus.Signed
     ),
-    tag("justSigned$"),
-    share()
-  )
-  const justSignedNotice$ = justSigned$.pipe(
-    withLatestFrom(record$),
-    map(([_, record]) =>
+    map(([_prev, record]) =>
       info({ title: justSignedNotice(record as Conversation) })
     ),
     tag("justSignedNotice$"),
+    tap((_) => refetchContacts()),
     share()
   )
-  const redirectJustSignedToShow$ = justSigned$.pipe(
-    withLatestFrom(record$),
-    map(([_, { id }]) => push(routes.conversation({ id }))),
+  const redirectJustSignedToShow$ = justSignedNotice$.pipe(
+    withLatestFrom(id$),
+    map(([_, id]) => push(routes.conversation({ id }))),
     tag("redirectJustSigned$")
   )
 
@@ -143,8 +155,12 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const invitees$ = selectedOptions$.pipe(
-    map(optionsToInvitees),
+  const invitees$ = combineLatest({
+    options: selectedOptions$,
+    contacts: contacts$,
+  }).pipe(
+    // @ts-ignore
+    map(({ options, contacts }) => optionsToInvitees(options, contacts)),
     distinctUntilChanged(inviteesDiffer),
     tag("invitees$"),
     shareLatest()
@@ -327,13 +343,15 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const [onClosePublish, onClosePublish$] = cb$(tag("onClosePublish$"))
 
   const propose$ = onClickPublish$.pipe(
-    withLatestFrom(id$),
-    switchMap(([_, id]) => proposeConversation$({ id })),
+    withLatestFrom(record$),
+    tag("propose$ withLatestFrom"),
+    filter(([_, record]) => record.status === ConversationStatus.Draft),
+    switchMap(([_, { id }]) => proposeConversation$({ id })),
     tag("propose$")
   )
-  const trackPropose$ = propose$.pipe(
-    filterResultOk(),
-    switchMap(({ id }) =>
+  const trackPropose$ = onClickPublish$.pipe(
+    withLatestFrom(id$),
+    switchMap(([_, id]) =>
       track$({
         name: EventName.TapPropose,
         properties: { conversation: id },
@@ -362,6 +380,17 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
 
   const [onClickShare, onClickShare$] = cb$(tag("onClickShare$"))
 
+  const knownInvitees$ = invitees$.pipe(
+    map((invitees) => invitees.filter((invitee) => invitee.isContact)),
+    tag("knownInvitees$"),
+    share()
+  )
+  const unknownInvitees$ = invitees$.pipe(
+    map((invitees) => invitees.filter((invitee) => !invitee.isContact)),
+    tag("unknownInvitees$"),
+    share()
+  )
+
   const participantNames$ = invitees$.pipe(
     map(_map(prop("name"))),
     tag("participantNames$"),
@@ -382,6 +411,8 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     participantNames: participantNames$,
     status: status$,
     isDisabledEditing: isDisabledEditing$,
+    knownInvitees: knownInvitees$,
+    unknownInvitees: unknownInvitees$,
   }).pipe(tag("props$"))
 
   const react = props$.pipe(
@@ -404,11 +435,13 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const router = merge(goToList$, redirectJustSignedToShow$)
   const notice = merge(shareURLCopiedNotice$, justSignedNotice$)
   const track = merge(trackPropose$)
+  const graph = merge(propose$)
 
   return {
     react,
     router,
     notice,
     track,
+    graph,
   }
 }

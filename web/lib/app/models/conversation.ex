@@ -8,6 +8,7 @@ defmodule App.Conversation do
   typed_schema "conversations" do
     embeds_many :invitees, Invitee, on_replace: :delete do
       field :name, :string, enforce: true
+      field :is_contact, :boolean, enforce: true
     end
 
     field :note, :string
@@ -33,9 +34,10 @@ defmodule App.Conversation do
 
   def invitee_changeset(record, attrs) do
     record
-    |> cast(attrs, [:id, :name])
+    |> cast(attrs, [:id, :name, :is_contact])
     |> validate_required(:name, trim: true)
     |> validate_length(:name, min: 1)
+    |> validate_required(:is_contact)
   end
 
   def tombstone_changeset(record) do
@@ -59,10 +61,7 @@ defmodule App.Conversation do
     |> change(status: :signed)
   end
 
-  defun notify_subscriptions(conversation :: __MODULE__.t()) :: __MODULE__.t() do
-    IO.inspect("NOTIFY")
-    IO.inspect(conversation)
-
+  defun update_subscriptions(conversation :: __MODULE__.t()) :: __MODULE__.t() do
     Absinthe.Subscription.publish(
       AppWeb.Endpoint,
       conversation,
@@ -70,5 +69,9 @@ defmodule App.Conversation do
     )
 
     conversation
+  end
+
+  defun show_url(conversation :: __MODULE__.t()) :: String.t() do
+    ~s<https://#{System.get_env("HOST")}/c/#{conversation.id}>
   end
 end

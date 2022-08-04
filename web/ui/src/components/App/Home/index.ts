@@ -29,6 +29,7 @@ export const Home = (sources: Sources) => {
     router,
     track,
     notice,
+    graph,
   } = Conversations(sources, tagScope)
 
   const rootView$ = conversationsView$.pipe(
@@ -47,5 +48,6 @@ export const Home = (sources: Sources) => {
     router,
     track,
     notice,
+    graph,
   }
 }

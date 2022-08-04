@@ -272,6 +272,11 @@ export const contacts$ = token$.pipe(
   shareLatest()
 )
 
+export const refetchContacts = () =>
+  client.refetchQueries({
+    include: [ContactsDocument],
+  })
+
 export const upsertConversation$ = (input: ConversationInput) => {
   return from(
     client.mutate({
@@ -390,6 +395,7 @@ export const subscribeConversation$ = (input: ConversationChangedInput) =>
       client.subscribe({
         query: ConversationChangedDocument,
         variables: { input },
+        fetchPolicy: "no-cache",
       })
     ).pipe(
       map((result) => {

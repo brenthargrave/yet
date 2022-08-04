@@ -12,7 +12,7 @@ import {
 import { toSentence } from "~/i18n"
 import { MarkdownView } from "~/system"
 
-type Participant = Omit<Invitee, "__typename">
+type Participant = Omit<Invitee, "__typename" | "isContact">
 
 const bold = (inner: string) => `**${inner}**`
 

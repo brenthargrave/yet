@@ -4,7 +4,7 @@ defmodule App.Conversations do
   use TypedStruct
   use Brex.Result
   use Timex
-  alias App.{Repo, Conversation, Signature, Contact, Review}
+  alias App.{Repo, Conversation, Signature, Contact, Review, Customer, Notification}
   import Ecto.Query
 
   @conversation_preloads [
@@ -44,7 +44,7 @@ defmodule App.Conversations do
     |> fmap(&Conversation.changeset(&1, attrs))
     |> bind(&Repo.insert_or_update(&1))
     |> fmap(&Repo.preload(&1, @conversation_preloads))
-    |> fmap(&Conversation.notify_subscriptions/1)
+    |> fmap(&Conversation.update_subscriptions/1)
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 
@@ -114,7 +114,7 @@ defmodule App.Conversations do
     |> fmap(&Conversation.signed_changeset/1)
     |> bind(&Repo.insert_or_update(&1))
     |> fmap(&Repo.preload(&1, @conversation_preloads, force: true, in_parallel: true))
-    |> fmap(&Conversation.notify_subscriptions/1)
+    |> fmap(&Conversation.update_subscriptions/1)
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 
@@ -128,6 +128,8 @@ defmodule App.Conversations do
     |> bind(&if &1.creator == customer, do: ok(&1), else: error(:unauthorized))
     |> fmap(&Conversation.proposed_changeset/1)
     |> bind(&Repo.insert_or_update(&1))
+    |> fmap(&Conversation.update_subscriptions/1)
+    |> fmap(&notify_registered_invitees/1)
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 
@@ -144,8 +146,9 @@ defmodule App.Conversations do
     |> bind(&if &1.creator != customer, do: ok(&1), else: error(:unauthorized))
     |> fmap(&Map.put(attrs, :conversation, &1))
     |> fmap(&Review.changeset(%Review{}, &1))
-    |> bind(&Repo.insert_or_update(&1))
+    |> bind(&Repo.insert_or_update(&1, on_conflict: :nothing))
     |> fmap(& &1.conversation)
+    |> fmap(&Conversation.update_subscriptions/1)
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 
@@ -197,9 +200,39 @@ defmodule App.Conversations do
     body = Signature.signed_sms_message(signature, conversation_url)
 
     Task.Supervisor.async_nolink(App.TaskSupervisor, fn ->
-      App.Notification.send_sms(%{to: to, body: body})
+      App.Notifications.send(%{to: to, body: body})
     end)
 
     signature
+  end
+
+  defun notify_registered_invitees(conversation :: Conversation.t()) :: Conversation.t() do
+    creator_name = conversation.creator.name
+    url = Conversation.show_url(conversation)
+    body = ~s<#{creator_name} has notes for you to cosign #{url}>
+
+    contact_ids =
+      conversation.invitees
+      |> Enum.filter(&(&1.is_contact == true))
+      |> Enum.map(& &1.id)
+
+    recipients = Repo.all(from c in Customer, where: c.id in ^contact_ids)
+
+    Task.Supervisor.async_nolink(App.TaskSupervisor, fn ->
+      Enum.each(recipients, fn recipient ->
+        Notification.changeset(%Notification{}, %{
+          kind: :proposed,
+          body: body,
+          conversation: conversation,
+          recipient: recipient,
+          delivered_at: Timex.now()
+        })
+        |> Repo.insert()
+        # TODO: Brex.Result tap()
+        |> fmap(&(App.Notifications.send(%{to: recipient.e164, body: body}) && &1))
+      end)
+    end)
+
+    conversation
   end
 end

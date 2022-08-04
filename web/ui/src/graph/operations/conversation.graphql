@@ -9,6 +9,7 @@ fragment ConversationProps on Conversation {
   invitees {
     id
     name
+    isContact
   }
   note
   status

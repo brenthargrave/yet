@@ -45,7 +45,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const { react, router, notice, track } = Form(
+  const { react, router, notice, track, graph } = Form(
     {
       ...sources,
       props: { id$, record$ },
@@ -58,5 +58,6 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     router,
     notice,
     track,
+    graph,
   }
 }

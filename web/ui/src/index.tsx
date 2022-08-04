@@ -27,13 +27,3 @@ run(App, {
   graph: makeGraphDriver(),
   track: makeTrackDriver(),
 })
-
-/* eslint-disable */
-// import * as React from "react"
-// import * as ReactDOM from "react-dom"
-// import { h } from "@cycle/react"
-// ReactDOM.render(
-//   h(RouteProvider, [
-//     h(App)
-//   ]
-//   ), document.getElementById("index"))

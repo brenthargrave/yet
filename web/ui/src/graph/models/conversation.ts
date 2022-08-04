@@ -1,9 +1,19 @@
 import { faker } from "@faker-js/faker"
 import { capitalCase } from "change-case"
-import { head, descend, eqBy, isEmpty, symmetricDifferenceWith } from "ramda"
-import { prop, any, includes, isNotEmpty, join, sortBy } from "~/fp"
-import { Conversation, Customer, Invitee, MakeOptional, Contact } from ".."
-import { ConversationStatus, Signature } from "../generated"
+import {
+  any,
+  descend,
+  eqBy,
+  head,
+  includes,
+  isEmpty,
+  isNotEmpty,
+  join,
+  prop,
+  symmetricDifferenceWith,
+} from "~/fp"
+import { Contact, Conversation, Customer, Invitee, MakeOptional } from ".."
+import { ConversationStatus } from "../generated"
 
 export type DraftConversation = MakeOptional<
   Conversation,
@@ -38,6 +48,7 @@ const makeName = () =>
 const makeDate = () => faker.date.past()
 const makeOrg = () => faker.company.companyName()
 const makeRole = () => faker.name.jobTitle()
+const makeBool = () => faker.datatype.boolean()
 
 export const makeParticipant = (): Contact => {
   return {
@@ -52,6 +63,7 @@ export const makeInvitee = (): Invitee => {
   return {
     id: makeId(),
     name: makeName(),
+    isContact: makeBool(),
   }
 }
 
@@ -123,9 +135,6 @@ export const statusText = (
     : capitalCase(status)
 
 export const justSignedNotice = ({ signatures }: Conversation) => {
-  const sorted = signatures.sort(descend(prop("signedAt")))
-  console.debug("SORTED", sorted)
-  const latest = head(sorted)
-  console.debug("SIG", latest)
-  return `${latest?.signer?.name} just cosigned!`
+  const latest = head(signatures.sort(descend(prop("signedAt"))))
+  return `${latest?.signer?.name} cosigned!`
 }

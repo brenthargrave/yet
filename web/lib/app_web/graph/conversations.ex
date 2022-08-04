@@ -13,6 +13,7 @@ defmodule AppWeb.Graph.Conversations do
   object :invitee do
     field(:id, non_null(:id))
     field(:name, non_null(:string))
+    field(:is_contact, non_null(:boolean))
   end
 
   enum :conversation_status do
@@ -52,6 +53,7 @@ defmodule AppWeb.Graph.Conversations do
   input_object :invitee_input do
     field(:name, non_null(:string))
     field(:id, non_null(:string))
+    field(:is_contact, non_null(:boolean))
   end
 
   input_object :conversation_input do
