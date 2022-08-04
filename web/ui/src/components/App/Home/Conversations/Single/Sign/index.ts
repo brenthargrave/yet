@@ -16,6 +16,7 @@ import {
   withLatestFrom,
 } from "rxjs"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
+import { or } from "~/fp"
 import {
   Conversation,
   ConversationStatus,
@@ -28,6 +29,7 @@ import {
   reviewConversation$,
   signConversation$,
   Source as GraphSource,
+  subscribeConversation$,
   track$,
 } from "~/graph"
 import { makeTagger } from "~/log"
@@ -35,7 +37,6 @@ import { error, info } from "~/notice"
 import { push, routes, routeURL, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
 import { Intent, Step } from "../View"
-import { or } from "~/fp"
 
 interface Sources {
   react: ReactSource
@@ -53,8 +54,6 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
 
   const tagScope = `${tagPrefix}/Sign`
   const tag = makeTagger(tagScope)
-
-  // TODO: subscribe to edits
 
   const review$ = combineLatest({
     route: history$,

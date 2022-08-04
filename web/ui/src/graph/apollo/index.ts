@@ -42,7 +42,7 @@ await persistCache({
 
 // NOTE: https://hexdocs.pm/absinthe/apollo.html
 const authedHttpLink = authLink.concat(httpLink)
-const phoenixSocket = new PhoenixSocket("ws://localhost:4000/socket", {
+const phoenixSocket = new PhoenixSocket("wss://localhost:5443/socket", {
   params: () => {
     const token = localStorage.getItem(tokenCacheKey)
     if (token) {

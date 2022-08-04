@@ -109,7 +109,6 @@ query Contacts {
 
 subscription ConversationChanged($input: ConversationChangedInput!) {
   conversationChanged(input: $input) {
-    status
-    note
+    ...ConversationProps
   }
 }
