@@ -76,6 +76,8 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     props: { record$, id$ },
   } = sources
 
+  // TODO: subscribe to signings, alert signed, update state
+
   const status$ = record$.pipe(
     pluck("status"),
     filter(isNotNullish),

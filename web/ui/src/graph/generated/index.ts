@@ -219,6 +219,16 @@ export type RootQueryTypeGetConversationArgs = {
   id: Scalars['ID'];
 };
 
+export type RootSubscriptionType = {
+  __typename?: 'RootSubscriptionType';
+  statusChanged?: Maybe<Conversation>;
+};
+
+
+export type RootSubscriptionTypeStatusChangedArgs = {
+  input: Scalars['ID'];
+};
+
 export type SignInput = {
   conversationUrl: Scalars['String'];
   id: Scalars['ID'];

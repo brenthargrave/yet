@@ -17,4 +17,8 @@ defmodule AppWeb.Graph.Schema do
     import_fields(:onboarding_mutations)
     import_fields(:conversations_mutations)
   end
+
+  subscription do
+    import_fields(:conversations_subscriptions)
+  end
 end
