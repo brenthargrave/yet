@@ -109,8 +109,7 @@ defmodule App.Conversations do
     |> fmap(&Map.put(attrs, :conversation, &1))
     |> fmap(&Signature.changeset(%Signature{}, &1))
     |> bind(&Repo.insert(&1))
-    # TODO: restore
-    # |> fmap(&tap_notify_creator_of_signature(&1, conversation_url))
+    |> fmap(&tap_notify_creator_of_signature(&1, conversation_url))
     |> fmap(& &1.conversation)
     |> fmap(&Conversation.signed_changeset/1)
     |> bind(&Repo.insert_or_update(&1))

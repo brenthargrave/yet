@@ -3,10 +3,11 @@ defmodule App.Notification do
   use App.Types
 
   def send_sms(%{to: to, body: body}) do
-    ExTwilio.Message.create(
-      messaging_service_sid: System.get_env("TWILIO_MESSAGING_SID"),
-      to: to,
-      body: body
-    )
+    System.get_env("DEBUG_DISABLE_SMS") ||
+      ExTwilio.Message.create(
+        messaging_service_sid: System.get_env("TWILIO_MESSAGING_SID"),
+        to: to,
+        body: body
+      )
   end
 end
