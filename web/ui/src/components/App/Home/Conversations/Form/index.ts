@@ -10,6 +10,7 @@ import {
   mergeMap,
   Observable,
   of,
+  pairwise,
   pluck,
   scan,
   share,
@@ -22,6 +23,8 @@ import { filterResultOk } from "ts-results/rxjs-operators"
 import { and, map as _map, not, prop } from "~/fp"
 import {
   Contact,
+  Conversation,
+  ConversationPropsFragmentDoc,
   ConversationStatus,
   deleteConversation$,
   DraftConversation,
@@ -32,6 +35,7 @@ import {
   isCompleteConversation,
   isStatusEditable,
   isValidConversation,
+  justSignedNotice,
   proposeConversation$,
   Source as GraphSource,
   subscribeConversation$,
@@ -95,6 +99,26 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     tag("status$"),
     shareLatest()
   )
+
+  const justSigned$ = status$.pipe(
+    pairwise(),
+    tag("status$ > pairwise"),
+    filter(
+      ([prev, curr]) =>
+        prev === ConversationStatus.Proposed &&
+        curr === ConversationStatus.Signed
+    ),
+    tag("status$ justSigned$"),
+    share()
+  )
+  const justSignedNotice$ = justSigned$.pipe(
+    withLatestFrom(record$),
+    map(([_, record]) =>
+      info({ title: justSignedNotice(record as Conversation) })
+    ),
+    tag("justSignedNotice$")
+  )
+  // TODO: handle edit attempt *just after* status change to signed
 
   const recordInvitees$ = record$.pipe(pluck("invitees"))
   const recordInviteesAsOptions$ = recordInvitees$.pipe(
@@ -375,7 +399,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   )
 
   const router = merge(goToList$)
-  const notice = merge(shareURLCopiedNotice$)
+  const notice = merge(shareURLCopiedNotice$, justSignedNotice$)
   const track = merge(trackPropose$)
 
   return {

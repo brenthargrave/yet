@@ -1,9 +1,9 @@
 import { faker } from "@faker-js/faker"
 import { capitalCase } from "change-case"
-import { eqBy, isEmpty, prop, symmetricDifferenceWith } from "ramda"
-import { any, includes, isNotEmpty, join } from "~/fp"
+import { head, descend, eqBy, isEmpty, symmetricDifferenceWith } from "ramda"
+import { prop, any, includes, isNotEmpty, join, sortBy } from "~/fp"
 import { Conversation, Customer, Invitee, MakeOptional, Contact } from ".."
-import { ConversationStatus } from "../generated"
+import { ConversationStatus, Signature } from "../generated"
 
 export type DraftConversation = MakeOptional<
   Conversation,
@@ -121,3 +121,9 @@ export const statusText = (
       ? `Pending cosign by ${participantList}`
       : `Pending cosign`
     : capitalCase(status)
+
+export const justSignedNotice = ({ signatures }: Conversation) => {
+  // @ts-ignore
+  const s: Signature = head(descend(prop("signedAt"), signatures))
+  return `${s.signer.name} just cosigned!`
+}

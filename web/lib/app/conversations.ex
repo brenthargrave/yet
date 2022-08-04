@@ -114,6 +114,7 @@ defmodule App.Conversations do
     |> fmap(& &1.conversation)
     |> fmap(&Conversation.signed_changeset/1)
     |> bind(&Repo.insert_or_update(&1))
+    |> fmap(&Conversation.notify_subscriptions/1)
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 
