@@ -1,6 +1,7 @@
 defmodule AppWeb.UserSocket do
   use Phoenix.Socket
   use Absinthe.Phoenix.Socket, schema: AppWeb.Graph.Schema
+  use Brex.Result
 
   ## Channels
   # channel "room:*", AppWeb.RoomChannel
@@ -17,7 +18,23 @@ defmodule AppWeb.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   @impl true
-  def connect(_params, socket, _connect_info) do
+  def connect(params, socket, _connect_info) do
+    IO.inspect(params)
+
+    socket =
+      case App.Auth.with_token(Map.get(params, "token")) do
+        %App.Customer{} = customer ->
+          Absinthe.Phoenix.Socket.put_options(socket,
+            context: %{
+              customer: customer
+            }
+          )
+
+        _ ->
+          socket
+      end
+
+    IO.inspect(socket)
     {:ok, socket}
   end
 

@@ -80,4 +80,10 @@ defmodule App.Auth do
       |> Repo.insert()
     end
   end
+
+  defun with_token(token :: String.t()) :: Customer.t() | nil do
+    Customer
+    |> where(token: ^token)
+    |> Repo.one()
+  end
 end
