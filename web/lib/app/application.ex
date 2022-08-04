@@ -20,7 +20,8 @@ defmodule App.Application do
       # Start a worker by calling: App.Worker.start_link(arg)
       # {App.Worker, arg}
 
-      # >
+      {Absinthe.Subscription, AppWeb.Endpoint},
+
       # https://dockyard.com/blog/2016/05/02/phoenix-tips-and-tricks
       {Task.Supervisor, name: App.TaskSupervisor}
     ]

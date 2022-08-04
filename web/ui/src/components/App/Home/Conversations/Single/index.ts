@@ -1,9 +1,24 @@
 import { h, ReactSource } from "@cycle/react"
-import { EMPTY, map, merge, of, share, startWith, switchMap } from "rxjs"
+import {
+  distinctUntilChanged,
+  EMPTY,
+  map,
+  merge,
+  Observable,
+  of,
+  share,
+  startWith,
+  switchMap,
+} from "rxjs"
 import { match } from "ts-pattern"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { ErrorView } from "~/components/App/ErrorView"
-import { getConversation$, Source as GraphSource } from "~/graph"
+import {
+  Conversation,
+  getConversation$,
+  Source as GraphSource,
+  subscribeConversation$,
+} from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { routes, Source as RouterSource } from "~/router"
@@ -45,7 +60,17 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const record$ = result$.pipe(filterResultOk(), tag("record$"), shareLatest())
+  const _record$ = result$.pipe(filterResultOk(), tag("record$"), shareLatest())
+  const liveRecord$ = id$.pipe(
+    distinctUntilChanged(),
+    switchMap((id) => subscribeConversation$({ id })),
+    tag("liveRecord$"),
+    shareLatest()
+  )
+  const record$ = merge(_record$, liveRecord$).pipe(
+    tag("record$"),
+    shareLatest()
+  )
 
   const userError$ = result$.pipe(
     filterResultErr(),

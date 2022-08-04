@@ -26,6 +26,9 @@ import { client, tokenCacheKey } from "./apollo"
 import {
   CheckTokenDocument,
   ContactsDocument,
+  Conversation,
+  ConversationChangedDocument,
+  ConversationChangedInput,
   ConversationInput,
   ConversationStatus,
   Customer,
@@ -380,6 +383,30 @@ export const getConversation$ = (id: string) => {
     tag("getConversation$")
   )
 }
+
+export const subscribeConversation$ = (input: ConversationChangedInput) =>
+  from(
+    zenToRx(
+      client.subscribe({
+        query: ConversationChangedDocument,
+        variables: { input },
+      })
+    ).pipe(
+      map((result) => {
+        const { context, data, errors, extensions } = result
+        if (errors) throw new GraphError(JSON.stringify(errors))
+        return data
+      })
+    )
+  ).pipe(
+    map((data) => data?.conversationChanged),
+    filter(isNotNullish),
+    catchError((error, _caught$) => {
+      console.error(error)
+      throw new GraphDefaultQueryError(error.message)
+    }),
+    tag("subscribeConversation$")
+  )
 
 export const conversations$ = token$.pipe(
   filter(isNotNullish),

@@ -91,6 +91,10 @@ defmodule AppWeb.Graph.Conversations do
     field(:id, non_null(:id))
   end
 
+  input_object :conversation_changed_input do
+    field(:id, non_null(:id))
+  end
+
   object :conversations_mutations do
     field :upsert_conversation, :conversation_payload do
       arg(:input, non_null(:conversation_input))
@@ -130,6 +134,20 @@ defmodule AppWeb.Graph.Conversations do
 
     field :contacts, non_null(list_of(non_null(:contact))) do
       resolve(&Conversations.get_contacts/3)
+    end
+  end
+
+  object :conversations_subscriptions do
+    field :conversation_changed, :conversation do
+      arg(:input, non_null(:conversation_changed_input))
+
+      config(fn args, _ ->
+        {:ok, topic: args.input.id}
+      end)
+
+      resolve(fn conversation, _, _ ->
+        {:ok, conversation}
+      end)
     end
   end
 end

@@ -106,3 +106,9 @@ query Contacts {
     role
   }
 }
+
+subscription ConversationChanged($input: ConversationChangedInput!) {
+  conversationChanged(input: $input) {
+    ...ConversationProps
+  }
+}

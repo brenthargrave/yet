@@ -10,6 +10,7 @@ import {
   mergeMap,
   Observable,
   of,
+  pairwise,
   pluck,
   scan,
   share,
@@ -22,6 +23,8 @@ import { filterResultOk } from "ts-results/rxjs-operators"
 import { and, map as _map, not, prop } from "~/fp"
 import {
   Contact,
+  Conversation,
+  ConversationPropsFragmentDoc,
   ConversationStatus,
   deleteConversation$,
   DraftConversation,
@@ -32,8 +35,10 @@ import {
   isCompleteConversation,
   isStatusEditable,
   isValidConversation,
+  justSignedNotice,
   proposeConversation$,
   Source as GraphSource,
+  subscribeConversation$,
   track$,
   upsertConversation$,
 } from "~/graph"
@@ -73,8 +78,19 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
 
   const {
     graph: { contacts$ },
-    props: { record$, id$ },
+    props: { record$: _record$, id$ },
   } = sources
+
+  const liveRecord$ = id$.pipe(
+    distinctUntilChanged(),
+    switchMap((id) => subscribeConversation$({ id })),
+    tag("liveRecord$"),
+    shareLatest()
+  )
+  const record$ = merge(_record$, liveRecord$).pipe(
+    tag("record$"),
+    shareLatest()
+  )
 
   const status$ = record$.pipe(
     pluck("status"),
@@ -82,6 +98,29 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     startWith(ConversationStatus.Draft),
     tag("status$"),
     shareLatest()
+  )
+
+  const justSigned$ = status$.pipe(
+    pairwise(),
+    filter(
+      ([prev, curr]) =>
+        prev !== ConversationStatus.Signed && curr === ConversationStatus.Signed
+    ),
+    tag("justSigned$"),
+    share()
+  )
+  const justSignedNotice$ = justSigned$.pipe(
+    withLatestFrom(record$),
+    map(([_, record]) =>
+      info({ title: justSignedNotice(record as Conversation) })
+    ),
+    tag("justSignedNotice$"),
+    share()
+  )
+  const redirectJustSignedToShow$ = justSigned$.pipe(
+    withLatestFrom(record$),
+    map(([_, { id }]) => push(routes.conversation({ id }))),
+    tag("redirectJustSigned$")
   )
 
   const recordInvitees$ = record$.pipe(pluck("invitees"))
@@ -362,8 +401,8 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     )
   )
 
-  const router = merge(goToList$)
-  const notice = merge(shareURLCopiedNotice$)
+  const router = merge(goToList$, redirectJustSignedToShow$)
+  const notice = merge(shareURLCopiedNotice$, justSignedNotice$)
   const track = merge(trackPropose$)
 
   return {

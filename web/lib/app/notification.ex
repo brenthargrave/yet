@@ -8,6 +8,5 @@ defmodule App.Notification do
       to: to,
       body: body
     )
-    |> IO.inspect()
   end
 end

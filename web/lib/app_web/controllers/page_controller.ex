@@ -2,6 +2,10 @@ defmodule AppWeb.PageController do
   use AppWeb, :controller
   alias App.{Repo, Conversation}
 
+  def index(conn, %{"path" => ["c", "new" | _]} = _params) do
+    render(conn, "index.html")
+  end
+
   # %{"path" => ["c", "01G9DG5VJS7N568PCSM0R157MY"]}
   def index(conn, %{"path" => ["c", id | _]} = _params) do
     conversation =

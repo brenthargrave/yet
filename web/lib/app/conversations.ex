@@ -44,6 +44,7 @@ defmodule App.Conversations do
     |> fmap(&Conversation.changeset(&1, attrs))
     |> bind(&Repo.insert_or_update(&1))
     |> fmap(&Repo.preload(&1, @conversation_preloads))
+    |> fmap(&Conversation.notify_subscriptions/1)
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 
@@ -90,7 +91,6 @@ defmodule App.Conversations do
       )
 
     Repo.all(from(c in created, union: ^signed, union: ^reviewed))
-    |> IO.inspect()
     |> ok()
   end
 
@@ -109,10 +109,13 @@ defmodule App.Conversations do
     |> fmap(&Map.put(attrs, :conversation, &1))
     |> fmap(&Signature.changeset(%Signature{}, &1))
     |> bind(&Repo.insert(&1))
-    |> fmap(&tap_notify_creator_of_signature(&1, conversation_url))
+    # TODO: restore
+    # |> fmap(&tap_notify_creator_of_signature(&1, conversation_url))
     |> fmap(& &1.conversation)
     |> fmap(&Conversation.signed_changeset/1)
     |> bind(&Repo.insert_or_update(&1))
+    |> fmap(&Repo.preload(&1, @conversation_preloads, force: true, in_parallel: true))
+    |> fmap(&Conversation.notify_subscriptions/1)
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 
@@ -142,7 +145,7 @@ defmodule App.Conversations do
     |> bind(&if &1.creator != customer, do: ok(&1), else: error(:unauthorized))
     |> fmap(&Map.put(attrs, :conversation, &1))
     |> fmap(&Review.changeset(%Review{}, &1))
-    |> bind(&Repo.insert(&1))
+    |> bind(&Repo.insert_or_update(&1))
     |> fmap(& &1.conversation)
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
@@ -167,7 +170,6 @@ defmodule App.Conversations do
       )
 
     Repo.all(from c in signers, union: ^creators)
-    |> IO.inspect()
   end
 
   ## Helpers

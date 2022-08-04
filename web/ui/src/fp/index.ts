@@ -20,6 +20,7 @@ import pluck from "ramda/es/pluck"
 import prop from "ramda/es/prop"
 import propSatisfies from "ramda/es/propSatisfies"
 import sort from "ramda/es/sort"
+import sortBy from "ramda/es/sortBy"
 import split from "ramda/es/split"
 import take from "ramda/es/take"
 import toLower from "ramda/es/toLower"
@@ -55,6 +56,7 @@ export {
   prop,
   propSatisfies,
   sort,
+  sortBy,
   split,
   take,
   toLower,

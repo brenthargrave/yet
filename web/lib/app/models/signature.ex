@@ -63,6 +63,6 @@ defmodule App.Signature do
     datetime = signature.conversation.occurred_at
     dateFormatted = Timex.format!(datetime, "%B %d", :strftime)
 
-    "(#{brand}) #{signature.signer.name} just cosigned your #{dateFormatted} conversation notes. #{conversation_url}"
+    "(#{brand}) #{signature.signer.name} just cosigned your notes #{conversation_url}"
   end
 end

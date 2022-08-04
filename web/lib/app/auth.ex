@@ -80,4 +80,12 @@ defmodule App.Auth do
       |> Repo.insert()
     end
   end
+
+  def with_token(token) when is_nil(token), do: nil
+
+  def with_token(token) do
+    Customer
+    |> where(token: ^token)
+    |> Repo.one()
+  end
 end
