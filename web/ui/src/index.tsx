@@ -17,6 +17,10 @@ Sentry.init({
   dsn: VITE_SENTRY_DSN,
   environment,
   debug,
+  tunnel: "/api/sentry",
+  transportOptions: {
+    dsn: VITE_SENTRY_DSN,
+  },
   beforeSend: (event) => (environment === "prod" ? event : null),
 })
 

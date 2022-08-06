@@ -47,6 +47,8 @@ defmodule AppWeb.Endpoint do
   plug(Plug.RequestId)
   plug(Plug.Telemetry, event_prefix: [:phoenix, :endpoint])
 
+  plug(Sentry.PlugTunnel, at: "/api/sentry")
+
   plug(Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json, Absinthe.Plug.Parser],
     pass: ["*/*"],

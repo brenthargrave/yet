@@ -63,7 +63,8 @@ defmodule App.MixProject do
       {:tabula, "~> 2.1.1"},
       {:timex, "~> 3.0"},
       {:r_enum, "~> 0.6"},
-      {:html_sanitize_ex, "~> 1.4"}
+      {:html_sanitize_ex, "~> 1.4"},
+      {:httpoison, "~> 1.8"}
     ]
   end
 
