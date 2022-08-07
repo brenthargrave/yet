@@ -65,3 +65,6 @@ export const client = new ApolloClient({
   link,
   cache,
 })
+
+// TODO: when signout added, ensure socket reconnects w/ new token on signin:
+// https://hexdocs.pm/absinthe/apollo.html#reconnecting-the-websocket-link

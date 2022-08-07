@@ -316,7 +316,10 @@ export const signConversation$ = (input: SignInput) => {
     client.mutate({
       mutation: SignConversationDocument,
       variables: { input },
-      refetchQueries: [{ query: GetConversationsDocument }],
+      refetchQueries: [
+        { query: GetConversationsDocument },
+        { query: ContactsDocument },
+      ],
     })
   ).pipe(
     map(({ data, errors, extensions, context }) => {
@@ -350,7 +353,10 @@ export const reviewConversation$ = (input: ReviewInput) => {
     client.mutate({
       mutation: ReviewConversationDocument,
       variables: { input },
-      refetchQueries: [{ query: GetConversationsDocument }],
+      refetchQueries: [
+        { query: GetConversationsDocument },
+        { query: ContactsDocument },
+      ],
     })
   ).pipe(
     map(({ data, errors, extensions, context }) => {
