@@ -15,7 +15,7 @@ export const MarkdownLink: FC = () =>
           isExternal: true,
           href: "https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax",
         },
-        ` Styling with Markdown is supported`
+        ` Markdown supported`
       ),
     ]),
   ])
