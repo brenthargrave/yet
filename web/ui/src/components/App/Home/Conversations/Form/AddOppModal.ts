@@ -5,11 +5,11 @@ import { Modal, Text, Stack, Header, BackButton } from "~/system"
 export interface Props {
   isOpen: boolean
   onClose?: () => void
-  // oppsView: ReactNode
+  oppsView: ReactNode
 }
 
-export const View: FC<Props> = ({ isOpen, onClose = () => null, children }) =>
-  h(
+export const View: FC<Props> = ({ isOpen, onClose = () => null, oppsView }) => {
+  return h(
     Modal,
     {
       isOpen: true,
@@ -32,9 +32,10 @@ export const View: FC<Props> = ({ isOpen, onClose = () => null, children }) =>
           // force minHeight for a list view
           minHeight: "60vh",
         },
-        [children]
+        [oppsView]
       ),
     ]
   )
+}
 
 View.displayName = "AddOppModal"

@@ -426,53 +426,27 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
     knownInvitees: knownInvitees$,
     unknownInvitees: unknownInvitees$,
     isOpenAddOpp: isOpenAddOpp$,
-    // oppsView: opps.react,
+    oppsView: opps.react.pipe(tag("react")),
   }).pipe(tag("props$"))
 
-  // const react = props$.pipe(
-  //   map((valueProps) =>
-  //     h(View, {
-  //       ...valueProps,
-  //       onSelect,
-  //       onChangeNote,
-  //       onClickBack,
-  //       onClickDelete,
-  //       onChangeOccurredAt,
-  //       onClickPublish,
-  //       onClosePublish,
-  //       onShareURLCopied,
-  //       onClickShare,
-  //       onClickAddOpp,
-  //       onCloseAddOpp,
-  //     })
-  //   )
-  // )
-
-  const react = combineLatest({ props: props$, oppsView: opps.react }).pipe(
-    map(({ props, oppsView }) =>
-      h(
-        View,
-        {
-          ...props,
-          // @ts-ignore
-          // oppsView,
-          onSelect,
-          onChangeNote,
-          onClickBack,
-          onClickDelete,
-          onChangeOccurredAt,
-          onClickPublish,
-          onClosePublish,
-          onShareURLCopied,
-          onClickShare,
-          onClickAddOpp,
-          onCloseAddOpp,
-        },
-        [oppsView]
-      )
+  const react = props$.pipe(
+    map((props) =>
+      h(View, {
+        ...props,
+        onSelect,
+        onChangeNote,
+        onClickBack,
+        onClickDelete,
+        onChangeOccurredAt,
+        onClickPublish,
+        onClosePublish,
+        onShareURLCopied,
+        onClickShare,
+        onClickAddOpp,
+        onCloseAddOpp,
+      })
     )
   )
-
   const router = merge(goToList$, redirectJustSignedToShow$)
   const notice = merge(shareURLCopiedNotice$, justSignedNotice$)
   const track = merge(trackPropose$)

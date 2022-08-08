@@ -1,5 +1,6 @@
 import { Divider, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
+import { ReactNode } from "react"
 import { isEmpty, not } from "~/fp"
 import { ConversationStatus, Invitee } from "~/graph"
 import { BackButton, Header, Heading, Stack, Status } from "~/system"
@@ -35,6 +36,7 @@ export interface Props
   isOpenAddOpp?: boolean
   onClickAddOpp?: () => void
   onCloseAddOpp?: () => void
+  oppsView: ReactNode
 }
 
 export const View = ({
@@ -65,6 +67,7 @@ export const View = ({
   isOpenAddOpp = false,
   onClickAddOpp,
   onCloseAddOpp: onCloseAddApp,
+  oppsView,
 }: Props) =>
   h(
     Stack,
@@ -131,6 +134,7 @@ export const View = ({
       h(AddOppModal, {
         isOpen: isOpenAddOpp,
         onClose: onCloseAddApp,
+        oppsView,
       }),
     ]
   )
