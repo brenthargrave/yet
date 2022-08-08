@@ -31,6 +31,7 @@ export interface Props
   isDisabledEditing?: boolean
   knownInvitees?: Invitee[]
   unknownInvitees?: Invitee[]
+  onClickAddOpp?: () => void
 }
 
 export const View = ({
@@ -58,6 +59,7 @@ export const View = ({
   isDisabledEditing = false,
   knownInvitees,
   unknownInvitees,
+  onClickAddOpp,
 }: Props) =>
   h(
     Stack,
@@ -100,6 +102,7 @@ export const View = ({
           status,
           note,
           onChangeNote,
+          onClickAddOpp,
           isDisabled: isDisabledEditing,
         }),
         h(Divider),

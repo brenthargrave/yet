@@ -17,6 +17,7 @@ export interface Props {
   onChangeNote: (note: string) => void
   status?: ConversationStatus
   isDisabled?: boolean
+  onClickAddOpp?: () => void
 }
 
 export const View: FC<Props> = ({
@@ -25,6 +26,7 @@ export const View: FC<Props> = ({
   onChangeNote,
   status = ConversationStatus.Draft,
   isDisabled = false,
+  onClickAddOpp,
 }) => {
   const [minHeight, setMinHeight] = useState<number | null>(0)
   useEffect(() => {
@@ -82,6 +84,7 @@ export const View: FC<Props> = ({
                     leftIcon: h(AddIcon),
                     size: "xs",
                     variant: "ghost",
+                    onClick: onClickAddOpp,
                   },
                   `Opportunity`
                 ),

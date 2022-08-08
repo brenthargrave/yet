@@ -397,6 +397,8 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
+  const [onClickAddOpp, onClickAddOpp$] = cb$(tag("onClickAddOpp$"))
+
   const props$ = combineLatest({
     options: options$,
     selectedOptions: selectedOptions$,
