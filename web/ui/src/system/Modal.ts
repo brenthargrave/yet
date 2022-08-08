@@ -17,6 +17,7 @@ export interface Props {
   headerText?: string
   showCloseButton?: boolean
   showFooter?: boolean
+  minHeight?: string
 }
 
 export const View: FC<Props> = ({
@@ -27,6 +28,7 @@ export const View: FC<Props> = ({
   headerText = "",
   showCloseButton = true,
   showFooter = false,
+  minHeight,
 }) =>
   h(Modal, {
     // isCentered: true,
@@ -40,7 +42,7 @@ export const View: FC<Props> = ({
       h(ModalContent, { key: "content" }, [
         showHeader && h(ModalHeader, { key: "header" }, headerText),
         showCloseButton && h(ModalCloseButton, { key: "closeButton" }),
-        h(ModalBody, { key: "body" }, [children]),
+        h(ModalBody, { minHeight, key: "body" }, [children]),
         showFooter &&
           h(ModalFooter, { key: "footer" }, [
             // ?

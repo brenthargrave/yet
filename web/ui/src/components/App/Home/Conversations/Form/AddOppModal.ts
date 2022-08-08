@@ -21,20 +21,9 @@ export const View: FC<Props> = ({ isOpen, onClose = () => null, oppsView }) => {
       showHeader: true,
       // headerText: "Opportunities",
       showCloseButton: true,
+      minHeight: "60vh",
     },
-    [
-      h(
-        Stack,
-        {
-          direction: "column",
-          align: "start",
-          justifyContent: "flex-start",
-          // force minHeight for a list view
-          minHeight: "60vh",
-        },
-        [oppsView]
-      ),
-    ]
+    [oppsView]
   )
 }
 
