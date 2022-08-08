@@ -12,20 +12,20 @@ import { EmptyView, OnClickNew } from "./EmptyView"
 type OnClickConversation = (c: Conversation) => void
 
 export interface Props {
-  viewer: Maybe<Customer>
-  conversations: Conversation[]
   onClickNew?: OnClickNew
-  onClickConversation: OnClickConversation
+  // viewer: Maybe<Customer>
+  // conversations: Conversation[]
+  // onClickConversation: OnClickConversation
 }
 
 const isNotLastItem = (idx: number, all: Conversation[]) =>
   !(idx + 1 === all.length)
 
 export const View: FC<Props> = ({
-  viewer,
-  conversations,
   onClickNew,
-  onClickConversation,
+  // viewer,
+  // conversations,
+  // onClickConversation,
 }) => h(EmptyView, { onClickNew })
 // isEmpty(conversations)
 // ? h(EmptyView, { onClickNew })

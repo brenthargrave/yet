@@ -18,6 +18,6 @@ const value: DraftConversation[] = [makeConversation(), makeConversation()]
 
 export const Default: Story<Props> = (args) => h(View, args)
 Default.argTypes = {
-  onClickConversation: { control: false, action: "onClickConversation" },
-  conversations: { value },
+  // onClickConversation: { control: false, action: "onClickConversation" },
+  // conversations: { value },
 }

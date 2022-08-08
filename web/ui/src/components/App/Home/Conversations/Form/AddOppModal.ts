@@ -1,17 +1,18 @@
 import { h } from "@cycle/react"
-import { FC } from "react"
+import { FC, ReactNode } from "react"
 import { Modal, Text, Stack, Header, BackButton } from "~/system"
 
 export interface Props {
   isOpen: boolean
   onClose?: () => void
+  // oppsView: ReactNode
 }
 
-export const View: FC<Props> = ({ isOpen, onClose = () => null }) =>
+export const View: FC<Props> = ({ isOpen, onClose = () => null, children }) =>
   h(
     Modal,
     {
-      isOpen,
+      isOpen: true,
       onClose,
       // showFooter: false,
       // showHeader: false,
@@ -31,10 +32,7 @@ export const View: FC<Props> = ({ isOpen, onClose = () => null }) =>
           // force minHeight for a list view
           minHeight: "60vh",
         },
-        [
-          // TODO
-          h(Text, "TODO"),
-        ]
+        [children]
       ),
     ]
   )

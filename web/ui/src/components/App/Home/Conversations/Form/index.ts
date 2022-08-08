@@ -56,6 +56,7 @@ import { info } from "~/notice"
 import { push, routes, routeURL, Source as RouterSource } from "~/router"
 import { cb$, mapTo, shareLatest } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
+import { Main as Opps } from "~/components/App/Home/Opps"
 
 const contactsToOptions = (contacts: Contact[]): SelectedOption[] =>
   contacts.map(({ id, name }, idx, _) => {
@@ -88,8 +89,9 @@ interface Sources {
   props: Props
 }
 
-export const Form = (sources: Sources, tagPrefix?: string) => {
-  const tag = makeTagger(`${tagPrefix}/Form`)
+export const Form = (sources: Sources, _tagPrefix?: string) => {
+  const tagPrefix = `${_tagPrefix}/Form`
+  const tag = makeTagger(tagPrefix)
 
   const {
     graph: { contacts$ },
@@ -405,6 +407,8 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     onCloseAddOpp$.pipe(mapTo(false))
   ).pipe(startWith(false), tag("isOpenAddOpp$"), shareLatest())
 
+  const opps = Opps(sources, tagPrefix)
+
   const props$ = combineLatest({
     options: options$,
     selectedOptions: selectedOptions$,
@@ -422,24 +426,50 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     knownInvitees: knownInvitees$,
     unknownInvitees: unknownInvitees$,
     isOpenAddOpp: isOpenAddOpp$,
+    // oppsView: opps.react,
   }).pipe(tag("props$"))
 
-  const react = props$.pipe(
-    map((valueProps) =>
-      h(View, {
-        ...valueProps,
-        onSelect,
-        onChangeNote,
-        onClickBack,
-        onClickDelete,
-        onChangeOccurredAt,
-        onClickPublish,
-        onClosePublish,
-        onShareURLCopied,
-        onClickShare,
-        onClickAddOpp,
-        onCloseAddOpp,
-      })
+  // const react = props$.pipe(
+  //   map((valueProps) =>
+  //     h(View, {
+  //       ...valueProps,
+  //       onSelect,
+  //       onChangeNote,
+  //       onClickBack,
+  //       onClickDelete,
+  //       onChangeOccurredAt,
+  //       onClickPublish,
+  //       onClosePublish,
+  //       onShareURLCopied,
+  //       onClickShare,
+  //       onClickAddOpp,
+  //       onCloseAddOpp,
+  //     })
+  //   )
+  // )
+
+  const react = combineLatest({ props: props$, oppsView: opps.react }).pipe(
+    map(({ props, oppsView }) =>
+      h(
+        View,
+        {
+          ...props,
+          // @ts-ignore
+          // oppsView,
+          onSelect,
+          onChangeNote,
+          onClickBack,
+          onClickDelete,
+          onChangeOccurredAt,
+          onClickPublish,
+          onClosePublish,
+          onShareURLCopied,
+          onClickShare,
+          onClickAddOpp,
+          onCloseAddOpp,
+        },
+        [oppsView]
+      )
     )
   )
 
