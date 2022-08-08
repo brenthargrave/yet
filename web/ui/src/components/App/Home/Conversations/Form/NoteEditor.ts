@@ -3,6 +3,8 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { px } from "csx"
 import { FC, useEffect, useState } from "react"
+import { CgInsertBefore } from "react-icons/cg"
+import { ImEmbed } from "react-icons/im"
 import { NoteView } from "~/components/Note"
 import { ConversationStatus } from "~/graph"
 import { AutosizeTextarea, Button, Spacer, Stack } from "~/system"
@@ -82,6 +84,8 @@ export const View: FC<Props> = ({
                   Button,
                   {
                     leftIcon: h(AddIcon),
+                    // leftIcon: h(CgInsertBefore),
+                    // leftIcon: h(ImEmbed),
                     size: "xs",
                     variant: "ghost",
                     onClick: onClickAddOpp,
