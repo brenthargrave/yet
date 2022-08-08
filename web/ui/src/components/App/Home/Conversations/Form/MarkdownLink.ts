@@ -5,7 +5,7 @@ import { Icon, Link } from "@chakra-ui/react"
 import { Stack, Text } from "~/system"
 
 export const MarkdownLink: FC = () =>
-  h(Stack, { direction: "row", alignItems: "center", pt: 1 }, [
+  h(Stack, { direction: "row", alignItems: "center" }, [
     h(Icon, { as: RiMarkdownFill }),
     h(Text, { fontSize: "xs" }, [
       h(

@@ -1,10 +1,11 @@
+import { AddIcon } from "@chakra-ui/icons"
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { px } from "csx"
 import { FC, useEffect, useState } from "react"
 import { NoteView } from "~/components/Note"
 import { ConversationStatus } from "~/graph"
-import { AutosizeTextarea, Stack } from "~/system"
+import { AutosizeTextarea, Button, Spacer, Stack } from "~/system"
 import { MarkdownLink } from "./MarkdownLink"
 
 const noteInputsId = "notes"
@@ -67,10 +68,27 @@ export const View: FC<Props> = ({
               defaultValue: note ?? "",
               onChange: (event) => onChangeNote(event.target.value),
             }),
-            h(Stack, { direction: "column", alignItems: "start" }, [
-              h(MarkdownLink),
-              // h(Status, { status }),
-            ]),
+            h(
+              Stack,
+              {
+                direction: "row",
+                alignItems: "center",
+                paddingTop: "4px",
+              },
+              [
+                h(
+                  Button,
+                  {
+                    leftIcon: h(AddIcon),
+                    size: "xs",
+                    variant: "ghost",
+                  },
+                  `Opportunity`
+                ),
+                h(Spacer),
+                h(MarkdownLink),
+              ]
+            ),
           ]
         ),
         h(
