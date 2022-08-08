@@ -1,6 +1,6 @@
 defmodule AppWeb.Graph.Opps do
   use Absinthe.Schema.Notation
-  alias AppWeb.Resolvers.Conversations
+  # alias AppWeb.Resolvers.Opps
   import_types(Absinthe.Type.Custom)
 
   object :opp do
@@ -16,7 +16,8 @@ defmodule AppWeb.Graph.Opps do
 
   object :opps_queries do
     field :get_opps, :opps_payload do
-      resolve(&Opps.get_opps/3)
+      # resolve(&Opps.get_opps/3)
+      resolve({:ok, []})
     end
   end
 
