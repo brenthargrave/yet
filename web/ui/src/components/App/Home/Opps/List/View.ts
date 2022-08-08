@@ -11,6 +11,9 @@ import { EmptyView, OnClickNew } from "./EmptyView"
 
 type OnClickConversation = (c: Conversation) => void
 
+const isNotLastItem = (idx: number, all: Conversation[]) =>
+  !(idx + 1 === all.length)
+
 export interface Props {
   onClickNew?: OnClickNew
   // viewer: Maybe<Customer>
@@ -18,15 +21,13 @@ export interface Props {
   // onClickConversation: OnClickConversation
 }
 
-const isNotLastItem = (idx: number, all: Conversation[]) =>
-  !(idx + 1 === all.length)
-
 export const View: FC<Props> = ({
   onClickNew,
   // viewer,
   // conversations,
   // onClickConversation,
-}) => h(EmptyView, { onClickNew })
+  // TODO: minHeight variesby render target (home vs. modal)
+}) => h(EmptyView, { minHeight: "70vh", onClickNew })
 // isEmpty(conversations)
 // ? h(EmptyView, { onClickNew })
 // : h(Stack, { direction: "column" }, [

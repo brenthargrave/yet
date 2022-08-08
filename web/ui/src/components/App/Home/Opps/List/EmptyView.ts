@@ -14,9 +14,7 @@ const text = (text: string) =>
   h(Text, { align: "center", size: "md", pt: 0 }, text)
 
 export const EmptyView: FC<Props> = ({ onClickNew, minHeight = "100%" }) =>
-  h(Center, { minHeight: "100%", width: "100%" }, [
-    // h(Center, { minHeight, width: "100%" }, [
-    // h(Center, { height: "60vh", width: "100%" }, [
+  h(Center, { minHeight, width: "100%" }, [
     h(VStack, { alignItems: "center", gap: 4, padding: 4 }, [
       h(
         Heading,
