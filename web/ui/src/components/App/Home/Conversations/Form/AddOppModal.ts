@@ -18,7 +18,7 @@ export const View: FC<Props> = ({ isOpen, onClose = () => null }) =>
       // showCloseButton: false,
       showFooter: true,
       showHeader: true,
-      headerText: "Opportunities",
+      // headerText: "Opportunities",
       showCloseButton: true,
     },
     [
@@ -28,6 +28,8 @@ export const View: FC<Props> = ({ isOpen, onClose = () => null }) =>
           direction: "column",
           align: "start",
           justifyContent: "flex-start",
+          // force minHeight for a list view
+          minHeight: "60vh",
         },
         [
           // TODO
