@@ -4,6 +4,7 @@ import { isEmpty, not } from "~/fp"
 import { ConversationStatus, Invitee } from "~/graph"
 import { BackButton, Header, Heading, Stack, Status } from "~/system"
 import { Props as ActionBarProps, View as ActionBar } from "./ActionBar"
+import { View as AddOppModal } from "./AddOppModal"
 import { DeleteButton } from "./DeleteButton"
 import { Props as NoteEditorProps, View as NoteEditor } from "./NoteEditor"
 import { PublishView } from "./PublishView"
@@ -31,7 +32,9 @@ export interface Props
   isDisabledEditing?: boolean
   knownInvitees?: Invitee[]
   unknownInvitees?: Invitee[]
+  isOpenAddOpp?: boolean
   onClickAddOpp?: () => void
+  onCloseAddOpp?: () => void
 }
 
 export const View = ({
@@ -59,7 +62,9 @@ export const View = ({
   isDisabledEditing = false,
   knownInvitees,
   unknownInvitees,
+  isOpenAddOpp = false,
   onClickAddOpp,
+  onCloseAddOpp: onCloseAddApp,
 }: Props) =>
   h(
     Stack,
@@ -122,6 +127,10 @@ export const View = ({
         onClickShareViaApp: onClickShare,
         knownInvitees,
         unknownInvitees,
+      }),
+      h(AddOppModal, {
+        isOpen: isOpenAddOpp,
+        onClose: onCloseAddApp,
       }),
     ]
   )

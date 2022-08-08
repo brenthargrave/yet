@@ -20,6 +20,9 @@ Default.argTypes = {
   isOpenPublish: {
     control: { type: "boolean", defaultValue: false },
   },
+  isOpenAddOpp: {
+    control: { type: "boolean", defaultValue: false },
+  },
   status: {
     control: "radio",
     options: allStatusesList,

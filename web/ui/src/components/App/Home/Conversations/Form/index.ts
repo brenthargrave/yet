@@ -54,7 +54,7 @@ import {
 import { makeTagger } from "~/log"
 import { info } from "~/notice"
 import { push, routes, routeURL, Source as RouterSource } from "~/router"
-import { cb$, shareLatest } from "~/rx"
+import { cb$, mapTo, shareLatest } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
 
 const contactsToOptions = (contacts: Contact[]): SelectedOption[] =>
@@ -398,6 +398,11 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   )
 
   const [onClickAddOpp, onClickAddOpp$] = cb$(tag("onClickAddOpp$"))
+  const [onCloseAddOpp, onCloseAddOpp$] = cb$(tag("onCloseAddOpp$"))
+  const isOpenAddOpp$ = merge(
+    onClickAddOpp$.pipe(mapTo(true)),
+    onCloseAddOpp$.pipe(mapTo(false))
+  ).pipe(startWith(false), tag("isOpenAddOpp$"), shareLatest())
 
   const props$ = combineLatest({
     options: options$,
@@ -415,6 +420,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     isDisabledEditing: isDisabledEditing$,
     knownInvitees: knownInvitees$,
     unknownInvitees: unknownInvitees$,
+    isOpenAddOpp: isOpenAddOpp$,
   }).pipe(tag("props$"))
 
   const react = props$.pipe(
@@ -430,6 +436,8 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
         onClosePublish,
         onShareURLCopied,
         onClickShare,
+        onClickAddOpp,
+        onCloseAddOpp,
       })
     )
   )
