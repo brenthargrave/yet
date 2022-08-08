@@ -13,9 +13,19 @@ import { FC } from "react"
 export interface Props {
   isOpen: boolean
   onClose: () => void
+  showHeader?: boolean
+  showCloseButton?: boolean
+  showFooter?: boolean
 }
 
-export const View: FC<Props> = ({ isOpen, onClose, children }) =>
+export const View: FC<Props> = ({
+  isOpen,
+  onClose,
+  children,
+  showHeader = true,
+  showCloseButton = true,
+  showFooter = false,
+}) =>
   h(Modal, {
     // isCentered: true,
     autoFocus: true,
@@ -26,12 +36,13 @@ export const View: FC<Props> = ({ isOpen, onClose, children }) =>
     children: [
       h(ModalOverlay, { key: "overlay" }),
       h(ModalContent, { key: "content" }, [
-        h(ModalHeader, { key: "header" }, ""),
-        h(ModalCloseButton, { key: "closeButton" }),
+        showHeader && h(ModalHeader, { key: "header" }, ""),
+        showCloseButton && h(ModalCloseButton, { key: "closeButton" }),
         h(ModalBody, { key: "body" }, [children]),
-        h(ModalFooter, { key: "footer" }, [
-          // ?
-        ]),
+        showFooter &&
+          h(ModalFooter, { key: "footer" }, [
+            // ?
+          ]),
       ]),
     ],
   })
