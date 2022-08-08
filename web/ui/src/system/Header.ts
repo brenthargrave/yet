@@ -2,7 +2,11 @@ import { Box } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC, ReactNode } from "react"
 
-export const Header: FC = ({ children }) =>
+interface Props {
+  padding?: number
+}
+
+export const Header: FC<Props> = ({ padding = 4, children }) =>
   h(
     Box,
     {
@@ -10,7 +14,7 @@ export const Header: FC = ({ children }) =>
       direction: "row",
       alignItems: "center",
       width: "100%",
-      padding: 4,
+      padding,
     },
     [children]
   )

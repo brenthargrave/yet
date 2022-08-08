@@ -399,6 +399,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
 
   const [onClickAddOpp, onClickAddOpp$] = cb$(tag("onClickAddOpp$"))
   const [onCloseAddOpp, onCloseAddOpp$] = cb$(tag("onCloseAddOpp$"))
+
   const isOpenAddOpp$ = merge(
     onClickAddOpp$.pipe(mapTo(true)),
     onCloseAddOpp$.pipe(mapTo(false))

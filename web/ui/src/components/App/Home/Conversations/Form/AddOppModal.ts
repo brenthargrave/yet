@@ -1,6 +1,6 @@
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { Modal, Text } from "~/system"
+import { Modal, Text, Stack, Header, BackButton } from "~/system"
 
 export interface Props {
   isOpen: boolean
@@ -13,13 +13,27 @@ export const View: FC<Props> = ({ isOpen, onClose = () => null }) =>
     {
       isOpen,
       onClose,
-      showHeader: false,
-      showCloseButton: false,
-      showFooter: false,
+      // showFooter: false,
+      // showHeader: false,
+      // showCloseButton: false,
+      showFooter: true,
+      showHeader: true,
+      headerText: "Opportunities",
+      showCloseButton: true,
     },
     [
-      // TODO:
-      h(Text, "TODO"),
+      h(
+        Stack,
+        {
+          direction: "column",
+          align: "start",
+          justifyContent: "flex-start",
+        },
+        [
+          // TODO
+          h(Text, "TODO"),
+        ]
+      ),
     ]
   )
 
