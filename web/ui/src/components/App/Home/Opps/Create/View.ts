@@ -1,5 +1,14 @@
 import { h } from "@cycle/react"
 import {
+  ChevronLeftIcon,
+  SmallCloseIcon,
+  CheckIcon,
+  DeleteIcon,
+} from "@chakra-ui/icons"
+import {
+  Divider,
+  Button,
+  IconButton,
   AutosizeTextarea,
   BackButton,
   Header,
@@ -59,6 +68,31 @@ export const View = ({ showNav, ...props }: Props) =>
               // defaultValue: note ?? "",
               onChange: (event) => console.log(event),
             }),
+          ]),
+        ]),
+        h(Stack, { direction: "column" }, [
+          // h(Divider),
+          h(Stack, { direction: "row" }, [
+            //
+            h(
+              Button,
+              {
+                size: "md",
+              },
+              "Save"
+            ),
+            h(Spacer),
+            h(
+              Button,
+              {
+                variant: "ghost",
+                // leftIcon: h(DeleteIcon),
+                // leftIcon: h(ChevronLeftIcon),
+                leftIcon: h(SmallCloseIcon),
+                size: "xs",
+              },
+              "Cancel"
+            ),
           ]),
         ]),
       ]),
