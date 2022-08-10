@@ -1,3 +1,4 @@
+import all from "ramda/es/all"
 import and from "ramda/es/and"
 import any from "ramda/es/any"
 import ascend from "ramda/es/ascend"
@@ -20,6 +21,7 @@ import or from "ramda/es/or"
 import pluck from "ramda/es/pluck"
 import prop from "ramda/es/prop"
 import propSatisfies from "ramda/es/propSatisfies"
+import reject from "ramda/es/reject"
 import sort from "ramda/es/sort"
 import sortBy from "ramda/es/sortBy"
 import split from "ramda/es/split"
@@ -28,14 +30,13 @@ import take from "ramda/es/take"
 import toLower from "ramda/es/toLower"
 import trim from "ramda/es/trim"
 import values from "ramda/es/values"
-import reject from "ramda/es/reject"
 
 const isEmpty = (i: any): boolean => isNil(i) || _isEmpty(i)
 const isNotEmpty = (i: any): boolean => not(isEmpty(i))
 const isPresent = (i: any): boolean => not(isNil(i))
 
 export {
-  reject,
+  all,
   and,
   any,
   ascend,
@@ -60,6 +61,7 @@ export {
   pluck,
   prop,
   propSatisfies,
+  reject,
   sort,
   sortBy,
   split,

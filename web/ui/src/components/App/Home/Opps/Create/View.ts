@@ -93,6 +93,7 @@ export const View = ({
               defaultValue: defaultValueDesc,
               onChange: onChangeDesc,
               minRows: 2,
+              placeholder: "Optional",
             }),
           ]),
         ]),

@@ -10,12 +10,12 @@ import {
   merge,
   Observable,
 } from "rxjs"
-import { Source as GraphSource } from "~/graph"
+import { isValidOrg, isValidRole, Source as GraphSource } from "~/graph"
 import { cb$, mapTo, shareLatest } from "~/rx"
 import { makeTagger } from "~/log"
 import { routes, Source as RouterSource } from "~/router"
 import { View } from "./View"
-import { not } from "~/fp"
+import { not, and } from "~/fp"
 
 interface Sources {
   react: ReactSource
@@ -64,8 +64,12 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     desc: desc$,
   }).pipe(tag("payload$"), share())
 
-  // TODO: validation?
-  const isValid$ = payload$.pipe(map(({ org, role, desc }) => false))
+  const isValid$ = payload$.pipe(
+    map(({ org, role }) => and(isValidOrg(org), isValidRole(role))),
+    tag("isValid$"),
+    startWith(false),
+    shareLatest()
+  )
 
   const isDisabledSubmit$ = isValid$.pipe(
     map(not),
