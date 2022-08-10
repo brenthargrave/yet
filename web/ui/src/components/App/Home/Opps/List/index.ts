@@ -1,10 +1,11 @@
 import { h, ReactSource } from "@cycle/react"
-import { combineLatest, map, of, share } from "rxjs"
+import { combineLatest, map, share, merge } from "rxjs"
 import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { Source as RouterSource } from "~/router"
+import { cb$, mapTo } from "~/rx"
 import { View } from "./View"
-import { cb$ } from "~/rx"
+import { State } from ".."
 
 interface Sources {
   react: ReactSource
@@ -21,6 +22,9 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   } = sources
 
   const [onClickNew, onClickNew$] = cb$(tag("onClickNew$"))
+  const create$ = onClickNew$.pipe(mapTo(State.create), tag("showCreate$"))
+
+  const intent$ = merge(create$)
 
   const props$ = combineLatest({
     opps: opps$,
@@ -36,7 +40,9 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     tag("react")
   )
 
+  const value = { intent$ }
   return {
     react,
+    value,
   }
 }
