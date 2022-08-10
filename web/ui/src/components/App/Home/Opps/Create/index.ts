@@ -1,6 +1,8 @@
 import { h, ReactSource } from "@cycle/react"
 import {
   combineLatest,
+  debounceTime,
+  distinctUntilChanged,
   EMPTY,
   map,
   mergeWith,
@@ -57,11 +59,10 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     tag("record$"),
     shareLatest()
   )
-  const id$ = record$.pipe(
-    map((record) => record.id),
-    tag("id$"),
-    shareLatest()
-  )
+  const id$ = record$.pipe(pluck("id"), tag("id$"), shareLatest())
+  const recordOrg$ = record$.pipe(pluck("org"), tag("org$"), shareLatest())
+  const recordRole$ = record$.pipe(pluck("role"), tag("role$"), shareLatest())
+  const recordDesc$ = record$.pipe(pluck("desc"), tag("desc$"), shareLatest())
 
   const [onChangeOrg, onChangeOrg$] = cb$<string>(tag("onChangeOrg$"))
   const [onChangeRole, onChangeRole$] = cb$<string>(tag("onChangeRole$"))
@@ -70,15 +71,21 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
 
   const org$: Observable<string> = record$.pipe(
     pluck("org"),
-    mergeWith(onChangeOrg$)
+    mergeWith(onChangeOrg$),
+    tag("org$"),
+    share()
   )
   const role$: Observable<string> = record$.pipe(
     pluck("role"),
-    mergeWith(onChangeRole$)
+    mergeWith(onChangeRole$),
+    tag("role$"),
+    share()
   )
   const desc$: Observable<string> = record$.pipe(
     pluck("desc"),
-    mergeWith(onChangeDesc$)
+    mergeWith(onChangeDesc$),
+    tag("desc$"),
+    share()
   )
 
   const payload$ = combineLatest({
@@ -89,15 +96,23 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   }).pipe(tag("payload$"), share())
 
   const isValid$ = payload$.pipe(
-    map(({ org, role }) => and(isValidOrg(org), isValidRole(role))),
+    debounceTime(100),
+    map(({ org, role }) => {
+      const orgValid = isValidOrg(org)
+      const roleValid = isValidRole(role)
+      console.debug("org", orgValid, "role", roleValid)
+      return and(orgValid, roleValid)
+    }),
     tag("isValid$"),
     startWith(false),
+    distinctUntilChanged(),
     shareLatest()
   )
 
   const isDisabledSubmit$ = isValid$.pipe(
     map(not),
     startWith(true),
+    distinctUntilChanged(),
     tag("isDisabledSubmit$"),
     shareLatest()
   )
@@ -110,9 +125,9 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   )
 
   const props$ = combineLatest({
-    defaultValueOrg: org$,
-    defaultValueRole: role$,
-    defaultValueDesc: desc$,
+    defaultValueOrg: recordOrg$,
+    defaultValueRole: recordRole$,
+    defaultValueDesc: recordDesc$,
     isDisabledSubmit: isDisabledSubmit$,
   }).pipe(tag("props$"), share())
 

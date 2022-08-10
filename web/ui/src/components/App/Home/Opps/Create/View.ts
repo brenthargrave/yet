@@ -22,6 +22,14 @@ import {
   Text,
 } from "~/system"
 
+type Callback = (value: string) => void
+const makeOnChange =
+  (cb?: Callback): React.ChangeEventHandler<HTMLInputElement> =>
+  (e) => {
+    const { value } = e.currentTarget
+    if (cb) cb(value)
+  }
+
 export interface Props {
   showNav?: boolean
   onChangeOrg?: () => void
@@ -75,7 +83,7 @@ export const View = ({
             h(InputGroup, [
               h(Input, {
                 defaultValue: defaultValueOrg,
-                onChange: onChangeOrg,
+                onChange: makeOnChange(onChangeOrg),
                 autoFocus: true,
                 placeholder: "Company, school, club, family, etc.",
                 required: true,
@@ -88,7 +96,7 @@ export const View = ({
               // TODO: populate placeholder w/ most popular
               h(Input, {
                 defaultValue: defaultValueRole,
-                onChange: onChangeRole,
+                onChange: makeOnChange(onChangeRole),
                 required: true,
                 placeholder: "Engineer, etc.",
               }),
@@ -99,7 +107,7 @@ export const View = ({
             h(InputGroup, [
               h(AutosizeTextarea, {
                 defaultValue: defaultValueDesc,
-                onChange: onChangeDesc,
+                onChange: makeOnChange(onChangeDesc),
                 minRows: 2,
                 placeholder: "Optional",
               }),
