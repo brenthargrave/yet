@@ -21,6 +21,7 @@ import {
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { filterResultOk } from "ts-results/rxjs-operators"
+import { hide } from "rxjs-spy/cjs/operators"
 import {
   filter as _filter,
   and,
@@ -53,7 +54,13 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { info } from "~/notice"
-import { push, routes, routeURL, Source as RouterSource } from "~/router"
+import {
+  newConversationOppsRoutes,
+  push,
+  routes,
+  routeURL,
+  Source as RouterSource,
+} from "~/router"
 import { cb$, mapTo, shareLatest } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
 import { Main as Opps } from "~/components/App/Home/Opps"
@@ -96,6 +103,7 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
   const {
     graph: { contacts$ },
     props: { record$: _record$, id$ },
+    router: { history$ },
   } = sources
 
   const liveRecord$ = id$.pipe(
@@ -402,10 +410,32 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
   const [onClickAddOpp, onClickAddOpp$] = cb$(tag("onClickAddOpp$"))
   const [onCloseAddOpp, onCloseAddOpp$] = cb$(tag("onCloseAddOpp$"))
 
-  const isOpenAddOpp$ = merge(
-    onClickAddOpp$.pipe(mapTo(true)),
-    onCloseAddOpp$.pipe(mapTo(false))
-  ).pipe(startWith(false), tag("isOpenAddOpp$"), shareLatest())
+  // const isOpenAddOpp$ = merge(
+  //   onClickAddOpp$.pipe(mapTo(true)),
+  //   onCloseAddOpp$.pipe(mapTo(false))
+  // ).pipe(startWith(false), tag("isOpenAddOpp$"), shareLatest())
+
+  const showOpps$ = onClickAddOpp$.pipe(
+    mapTo(push(routes.newConversationNewOpp())),
+    tag("showOpp$"),
+    share()
+  )
+  const hideOpps$ = onCloseAddOpp$.pipe(
+    mapTo(push(routes.newConversation())),
+    tag("hideOpps$"),
+    share()
+  )
+  const isOpenAddOpp$ = history$.pipe(
+    map((route) => newConversationOppsRoutes.has(route)),
+    tag("isOpenAddOpp$"),
+    startWith(false),
+    share()
+  )
+
+  // const isOpenAddOpp$ = merge(
+  //   onClickAddOpp$.pipe(mapTo(true)),
+  //   onCloseAddOpp$.pipe(mapTo(false))
+  // ).pipe(startWith(false), tag("isOpenAddOpp$"), shareLatest())
 
   const opps = Opps(sources, tagPrefix)
 
@@ -447,7 +477,13 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
       })
     )
   )
-  const router = merge(goToList$, redirectJustSignedToShow$, opps.router)
+  const router = merge(
+    goToList$,
+    redirectJustSignedToShow$,
+    showOpps$,
+    hideOpps$,
+    opps.router
+  )
   const notice = merge(shareURLCopiedNotice$, justSignedNotice$)
   const track = merge(trackPropose$)
   const graph = merge(propose$)

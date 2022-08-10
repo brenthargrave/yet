@@ -40,6 +40,11 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
   newConversationNewOpp,
 })
 
+export const newConversationOppsRoutes = createGroup([
+  routes.newConversationOpps,
+  routes.newConversationNewOpp,
+])
+
 export type Route = _Route<typeof routes>
 
 export const routeURL = (route: Route): string =>
