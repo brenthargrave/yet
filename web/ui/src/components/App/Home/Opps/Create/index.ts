@@ -1,21 +1,30 @@
 import { h, ReactSource } from "@cycle/react"
 import {
-  mergeWith,
-  startWith,
-  map,
-  of,
   combineLatest,
-  share,
-  pluck,
-  merge,
+  EMPTY,
+  map,
+  mergeWith,
   Observable,
+  of,
+  pluck,
+  share,
+  startWith,
+  switchMap,
+  withLatestFrom,
 } from "rxjs"
-import { isValidOrg, isValidRole, Source as GraphSource } from "~/graph"
-import { cb$, mapTo, shareLatest } from "~/rx"
+import { match } from "ts-pattern"
+import { ulid } from "ulid"
+import { and, not } from "~/fp"
+import {
+  isValidOrg,
+  isValidRole,
+  Source as GraphSource,
+  upsertOpp$,
+} from "~/graph"
 import { makeTagger } from "~/log"
 import { routes, Source as RouterSource } from "~/router"
+import { cb$, shareLatest } from "~/rx"
 import { View } from "./View"
-import { not, and } from "~/fp"
 
 interface Sources {
   react: ReactSource
@@ -29,21 +38,35 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
 
   const {
     graph: { opps$ },
+    router: { history$ },
   } = sources
 
-  const record$ = of({
-    org: "",
-    role: "",
-    desc: "",
-  })
-
-  // const recordOrg$ = record$.pipe(pluck("org"), tag("recordOrg$"))
-  // const recordRole$ = record$.pipe(pluck("role"), tag("recordRole$"))
-  // const recordDesc$ = record$.pipe(pluck("desc"), tag("recordDesc$"))
+  const record$ = history$.pipe(
+    switchMap((route) =>
+      match(route.name)
+        .with(routes.newConversationNewOpp.name, () =>
+          of({
+            id: ulid(),
+            org: "",
+            role: "",
+            desc: "",
+          })
+        )
+        .otherwise(() => EMPTY)
+    ),
+    tag("record$"),
+    shareLatest()
+  )
+  const id$ = record$.pipe(
+    map((record) => record.id),
+    tag("id$"),
+    shareLatest()
+  )
 
   const [onChangeOrg, onChangeOrg$] = cb$<string>(tag("onChangeOrg$"))
   const [onChangeRole, onChangeRole$] = cb$<string>(tag("onChangeRole$"))
   const [onChangeDesc, onChangeDesc$] = cb$<string>(tag("onChangeDesc$"))
+  const [onSubmit, onSubmit$] = cb$(tag("onSubmit$"))
 
   const org$: Observable<string> = record$.pipe(
     pluck("org"),
@@ -59,6 +82,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   )
 
   const payload$ = combineLatest({
+    id: id$,
     org: org$,
     role: role$,
     desc: desc$,
@@ -78,6 +102,13 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
+  const submit$ = onSubmit$.pipe(
+    withLatestFrom(payload$),
+    switchMap(([_, input]) => upsertOpp$(input)),
+    tag("submit$"),
+    share()
+  )
+
   const props$ = combineLatest({
     defaultValueOrg: org$,
     defaultValueRole: role$,
@@ -92,6 +123,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
         onChangeOrg,
         onChangeRole,
         onChangeDesc,
+        onSubmit,
       })
     )
   )

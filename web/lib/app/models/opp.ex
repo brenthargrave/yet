@@ -14,9 +14,12 @@ defmodule App.Opp do
     timestamps(type: :utc_datetime_usec)
   end
 
+  @required_attrs [:id, :role, :org, :desc]
+
   def changeset(record, attrs) do
     record
-    |> cast(attrs, [:role, :org, :desc])
+    |> cast(attrs, @required_attrs)
+    |> validate_required(@required_attrs)
     |> put_assoc(:creator, attrs[:creator])
   end
 end

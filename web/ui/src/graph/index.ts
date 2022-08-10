@@ -40,6 +40,7 @@ import {
   GetConversationsDocument,
   GetOppsDocument,
   MeDocument,
+  OppInput,
   ProfileInput,
   ProposeConversationDocument,
   ProposeInput,
@@ -56,6 +57,7 @@ import {
   TrackEventInput,
   UpdateProfileDocument,
   UpsertConversationDocument,
+  UpsertOppDocument,
   UserError,
   ViewConversationDocument,
 } from "./generated"
@@ -499,3 +501,20 @@ export const opps$ = token$.pipe(
   }),
   shareLatest()
 )
+
+export const upsertOpp$ = (input: OppInput) => {
+  return from(
+    client.mutate({
+      mutation: UpsertOppDocument,
+      variables: { input },
+      refetchQueries: [{ query: GetOppsDocument }],
+    })
+  ).pipe(
+    map(({ data, errors, extensions, context }) => {
+      if (errors) throw new GraphError(JSON.stringify(errors))
+      const { userError, opp } = data!.upsertOpp!
+      return userError ? new Err(userError) : new Ok(opp)
+    }),
+    tag("upsertConversation$")
+  )
+}

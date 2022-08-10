@@ -6,6 +6,7 @@ defmodule App.Conversations do
   use Timex
   alias App.{Repo, Conversation, Signature, Contact, Review, Customer, Notification}
   import Ecto.Query
+  import App.Helpers, only: [format_ecto_errors: 1]
 
   @conversation_preloads [
     :creator,
@@ -175,13 +176,6 @@ defmodule App.Conversations do
   end
 
   ## Helpers
-
-  defp format_ecto_errors(%Ecto.Changeset{} = changeset) do
-    changeset
-    |> Ecto.Changeset.traverse_errors(fn {message, _opts} -> message end)
-    |> Enum.map(fn {k, v} -> "#{k} #{v}" end)
-    |> error()
-  end
 
   def clear_signatures(conversation_id) do
     Repo.delete_all(from(s in Signature, where: s.conversation_id == ^conversation_id))

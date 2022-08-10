@@ -16,9 +16,23 @@ defmodule AppWeb.Resolvers.Opps do
           _parent,
           _args,
           %{context: %{customer: customer}} = _resolution
-        ) :: resolver_result(ConversationsPayload.t()) do
+        ) :: resolver_result(OppsPayload.t()) do
     Opps.opps(customer)
     |> fmap(&%OppsPayload{opps: &1})
+  end
+
+  typedstruct module: OppPayload do
+    field(:opp, Opp.t())
+    field(:user_error, UserError.t())
+  end
+
+  defun upsert_opp(
+          _parent,
+          %{input: input} = _args,
+          %{context: %{customer: customer}} = _resolution
+        ) :: resolver_result(OppPayload.t()) do
+    Opps.upsert_opp(customer, input)
+    |> fmap(&%OppPayload{opp: &1})
   end
 
   def get_opps(_parent, _args, _resolution) do

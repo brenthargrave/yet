@@ -6,6 +6,7 @@ import {
   PlusSquareIcon,
   DeleteIcon,
 } from "@chakra-ui/icons"
+import { form } from "@cycle/react-dom"
 import {
   Divider,
   Button,
@@ -30,6 +31,7 @@ export interface Props {
   onChangeDesc?: () => void
   defaultValueDesc?: string
   isDisabledSubmit?: boolean
+  onSubmit?: () => void
 }
 
 export const View = ({
@@ -41,9 +43,14 @@ export const View = ({
   onChangeDesc,
   defaultValueDesc,
   isDisabledSubmit = true,
+  onSubmit: _onSubmit,
   ...props
-}: Props) =>
-  h(
+}: Props) => {
+  const onSubmit: React.FormEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault()
+    if (_onSubmit) _onSubmit()
+  }
+  return h(
     Stack,
     {
       direction: "column",
@@ -60,70 +67,73 @@ export const View = ({
           h(Spacer),
         ]),
       h(Header, [h(Heading, { size: "md" }, "Opportunity"), h(Spacer)]),
-      h(Stack, { direction: "column", width: "100%", padding: 4, gap: 4 }, [
-        // TODO: org
-        h(Stack, { direction: "column" }, [
-          h(Text, "Organization:"),
-          h(InputGroup, [
-            h(Input, {
-              defaultValue: defaultValueOrg,
-              onChange: onChangeOrg,
-              autoFocus: true,
-              placeholder: "Company, school, club, family, etc.",
-              required: true,
-            }),
+      form({ onSubmit, style: { width: "100%" } }, [
+        h(Stack, { direction: "column", width: "100%", padding: 4, gap: 4 }, [
+          // TODO: org
+          h(Stack, { direction: "column" }, [
+            h(Text, "Organization:"),
+            h(InputGroup, [
+              h(Input, {
+                defaultValue: defaultValueOrg,
+                onChange: onChangeOrg,
+                autoFocus: true,
+                placeholder: "Company, school, club, family, etc.",
+                required: true,
+              }),
+            ]),
           ]),
-        ]),
-        h(Stack, { direction: "column" }, [
-          h(Text, "Role:"),
-          h(InputGroup, [
-            // TODO: populate placeholder w/ most popular
-            h(Input, {
-              defaultValue: defaultValueRole,
-              onChange: onChangeRole,
-              required: true,
-              placeholder: "Engineer, etc.",
-            }),
+          h(Stack, { direction: "column" }, [
+            h(Text, "Role:"),
+            h(InputGroup, [
+              // TODO: populate placeholder w/ most popular
+              h(Input, {
+                defaultValue: defaultValueRole,
+                onChange: onChangeRole,
+                required: true,
+                placeholder: "Engineer, etc.",
+              }),
+            ]),
           ]),
-        ]),
-        h(Stack, { direction: "column" }, [
-          h(Text, "Description:"),
-          h(InputGroup, [
-            h(AutosizeTextarea, {
-              defaultValue: defaultValueDesc,
-              onChange: onChangeDesc,
-              minRows: 2,
-              placeholder: "Optional",
-            }),
+          h(Stack, { direction: "column" }, [
+            h(Text, "Description:"),
+            h(InputGroup, [
+              h(AutosizeTextarea, {
+                defaultValue: defaultValueDesc,
+                onChange: onChangeDesc,
+                minRows: 2,
+                placeholder: "Optional",
+              }),
+            ]),
           ]),
-        ]),
-        h(Stack, { direction: "column" }, [
-          // h(Divider),
-          h(Stack, { direction: "row" }, [
-            //
-            h(
-              Button,
-              {
-                leftIcon: h(PlusSquareIcon),
-                size: "md",
-                isDisabled: isDisabledSubmit,
-              },
-              "Save"
-            ),
-            h(Spacer),
-            h(
-              Button,
-              {
-                variant: "ghost",
-                // leftIcon: h(DeleteIcon),
-                // leftIcon: h(ChevronLeftIcon),
-                leftIcon: h(SmallCloseIcon),
-                size: "sm",
-              },
-              "Cancel"
-            ),
+          h(Stack, { direction: "column" }, [
+            // h(Divider),
+            h(Stack, { direction: "row" }, [
+              //
+              h(
+                Button,
+                {
+                  leftIcon: h(PlusSquareIcon),
+                  size: "md",
+                  isDisabled: isDisabledSubmit,
+                },
+                "Save"
+              ),
+              h(Spacer),
+              h(
+                Button,
+                {
+                  variant: "ghost",
+                  // leftIcon: h(DeleteIcon),
+                  // leftIcon: h(ChevronLeftIcon),
+                  leftIcon: h(SmallCloseIcon),
+                  size: "sm",
+                },
+                "Cancel"
+              ),
+            ]),
           ]),
         ]),
       ]),
     ]
   )
+}

@@ -1,13 +1,32 @@
+fragment OppProps on Opp {
+  id
+  org
+  role
+  desc
+  creator {
+    ...ContactProps
+  }
+}
+
+fragment OppPayloadProps on OppPayload {
+  opp {
+    ...OppProps
+  }
+  userError {
+    ...UserErrorProps
+  }
+}
+
 query GetOpps {
   getOpps {
     opps {
-      id
-      role
-      org
-      desc
-      creator {
-        ...ContactProps
-      }
+      ...OppProps,
     }
+  }
+}
+
+mutation UpsertOpp($input: OppInput!) {
+  upsertOpp(input: $input) {
+    ...OppPayloadProps
   }
 }
