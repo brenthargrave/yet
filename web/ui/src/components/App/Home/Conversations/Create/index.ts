@@ -1,6 +1,6 @@
 import { ReactSource } from "@cycle/react"
-import { EMPTY, map, merge, of, switchMap } from "rxjs"
-import { match } from "ts-pattern"
+import { EMPTY, map, of, switchMap } from "rxjs"
+import { match, P } from "ts-pattern"
 import { ulid } from "ulid"
 import { ConversationStatus, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
@@ -25,14 +25,22 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const record$ = history$.pipe(
     switchMap((route) =>
       match(route)
-        .with({ name: routes.newConversation.name }, ({ params }) =>
-          of({
-            id: ulid(),
-            invitees: [],
-            note: null,
-            status: ConversationStatus.Draft,
-            occurredAt: new Date(),
-          })
+        .with(
+          {
+            name: P.union(
+              routes.newConversation.name,
+              routes.newConversationOpps.name,
+              routes.newConversationNewOpp.name
+            ),
+          },
+          ({ params }) =>
+            of({
+              id: ulid(),
+              invitees: [],
+              note: null,
+              status: ConversationStatus.Draft,
+              occurredAt: new Date(),
+            })
         )
         .otherwise(() => EMPTY)
     ),

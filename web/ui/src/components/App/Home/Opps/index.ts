@@ -1,5 +1,5 @@
 import { ReactSource } from "@cycle/react"
-import { merge, share, switchMap } from "rxjs"
+import { EMPTY, merge, share, switchMap } from "rxjs"
 import { match } from "ts-pattern"
 import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
@@ -29,7 +29,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
       match(route.name)
         .with(routes.newConversationOpps.name, () => list.react)
         .with(routes.newConversationNewOpp.name, () => create.react)
-        .otherwise(() => list.react)
+        .otherwise(() => EMPTY)
     ),
     tag("react"),
     share()
