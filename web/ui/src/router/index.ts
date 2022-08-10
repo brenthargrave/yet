@@ -18,6 +18,8 @@ const conversation = conversations.extend(
 )
 const editConversation = conversation.extend("/edit")
 const signConversation = conversation.extend("/sign")
+const newConversationOpps = newConversation.extend("/o")
+const newConversationNewOpp = newConversationOpps.extend("/new")
 
 export const { routes, useRoute, RouteProvider, session } = createRouter({
   in: defineRoute("/in"),
@@ -28,6 +30,8 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
   conversation,
   editConversation,
   signConversation,
+  newConversationOpps,
+  newConversationNewOpp,
 })
 
 export type Route = _Route<typeof routes>
