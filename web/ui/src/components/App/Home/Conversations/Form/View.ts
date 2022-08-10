@@ -68,6 +68,7 @@ export const View = ({
   onClickAddOpp,
   onCloseAddOpp: onCloseAddApp,
   oppsView,
+  ...props
 }: Props) =>
   h(
     Stack,
