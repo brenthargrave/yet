@@ -21,10 +21,27 @@ import {
 } from "~/system"
 
 export interface Props {
-  showNav: boolean
+  showNav?: boolean
+  onChangeOrg?: () => void
+  defaultValueOrg?: string
+  onChangeRole?: () => void
+  defaultValueRole?: string
+  onChangeDesc?: () => void
+  defaultValueDesc?: string
+  isDisabledSubmit?: boolean
 }
 
-export const View = ({ showNav, ...props }: Props) =>
+export const View = ({
+  showNav = false,
+  onChangeOrg,
+  defaultValueOrg,
+  onChangeRole,
+  defaultValueRole,
+  onChangeDesc,
+  defaultValueDesc,
+  isDisabledSubmit = true,
+  ...props
+}: Props) =>
   h(
     Stack,
     {
@@ -48,6 +65,8 @@ export const View = ({ showNav, ...props }: Props) =>
           h(Text, "Organization:"),
           h(InputGroup, [
             h(Input, {
+              defaultValue: defaultValueOrg,
+              onChange: onChangeOrg,
               autoFocus: true,
               placeholder: "Company, school, club, family, etc.",
               required: true,
@@ -59,6 +78,8 @@ export const View = ({ showNav, ...props }: Props) =>
           h(InputGroup, [
             // TODO: populate placeholder w/ most popular
             h(Input, {
+              defaultValue: defaultValueRole,
+              onChange: onChangeRole,
               required: true,
               placeholder: "Engineer, etc.",
             }),
@@ -68,9 +89,9 @@ export const View = ({ showNav, ...props }: Props) =>
           h(Text, "Description:"),
           h(InputGroup, [
             h(AutosizeTextarea, {
-              minRows: 4,
-              // defaultValue: note ?? "",
-              onChange: (event) => console.log(event),
+              defaultValue: defaultValueDesc,
+              onChange: onChangeDesc,
+              minRows: 2,
             }),
           ]),
         ]),
@@ -82,6 +103,7 @@ export const View = ({ showNav, ...props }: Props) =>
               Button,
               {
                 size: "md",
+                isDisabled: isDisabledSubmit,
               },
               "Save"
             ),
