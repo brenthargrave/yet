@@ -21,7 +21,8 @@ export const View: FC<Props> = ({ isOpen, onClose = () => null, oppsView }) => {
   return h(
     Modal,
     {
-      isOpen: true,
+      isOpen,
+      // isOpen: true,
       onClose,
       // showFooter: false,
       // showHeader: false,

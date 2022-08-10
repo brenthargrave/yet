@@ -38,12 +38,12 @@ export const View: FC<Props> = ({
   // conversations,
   // onClickConversation,
   // TODO: minHeight varies by render target (home vs. modal)
-}) => h(EmptyOppsView, { minHeight, onClickCreate })
-// isEmpty(opps)
-//   ? h(EmptyView, { minHeight: "70vh", onClickNew })
-//   : h(Stack, { direction: "column" }, [
-//     //
-//    ])
+}) =>
+  isEmpty(opps)
+    ? h(EmptyOppsView, { minHeight, onClickCreate })
+    : h(Stack, { minHeight, direction: "column" }, [
+        //
+      ])
 //     h(Header),
 //     h(Header, [
 //       h(Heading, { size: "md" }, "Conversations"),

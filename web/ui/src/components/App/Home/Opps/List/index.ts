@@ -5,6 +5,7 @@ import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
 import { cb$, mapTo } from "~/rx"
 import { View } from "./View"
+import { State } from ".."
 
 interface Sources {
   react: ReactSource
@@ -21,8 +22,12 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   } = sources
 
   const [onClickCreate, onClickCreate$] = cb$(tag("onClickNew$"))
+  // const showCreate$ = onClickCreate$.pipe(
+  //   mapTo(push(routes.newConversationNewOpp())),
+  //   tag("showCreate$")
+  // )
   const showCreate$ = onClickCreate$.pipe(
-    mapTo(push(routes.newConversationNewOpp())),
+    mapTo(State.create),
     tag("showCreate$")
   )
 
@@ -40,10 +45,12 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     tag("react")
   )
 
-  const router = merge(showCreate$)
-
+  const router = merge()
+  const action = merge(showCreate$)
+  const value = { action }
   return {
     react,
     router,
+    value,
   }
 }
