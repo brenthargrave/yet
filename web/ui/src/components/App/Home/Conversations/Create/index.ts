@@ -24,16 +24,14 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
 
   const record$ = history$.pipe(
     switchMap((route) =>
-      match(route)
+      match(route.name)
         .with(
-          {
-            name: P.union(
-              routes.newConversation.name,
-              routes.newConversationOpps.name,
-              routes.newConversationNewOpp.name
-            ),
-          },
-          ({ params }) =>
+          P.union(
+            routes.newConversation.name,
+            routes.newConversationOpps.name,
+            routes.newConversationNewOpp.name
+          ),
+          () =>
             of({
               id: ulid(),
               invitees: [],

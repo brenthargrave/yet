@@ -1,6 +1,9 @@
 import { color, rgb, rgba } from "csx"
 
 export const maxWidth = 468
+export const modalStyleProps = {
+  minHeight: "70vh",
+}
 
 export const white = "#fff"
 

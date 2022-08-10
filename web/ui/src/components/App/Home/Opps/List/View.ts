@@ -5,9 +5,19 @@ import { NoteView } from "~/components/Note"
 import { isEmpty, join, map, prop } from "~/fp"
 import { Conversation, Customer, Maybe, Opp } from "~/graph"
 import { localizeDate } from "~/i18n"
-import { CreateButton, Divider, Header, Stack, Text, Status } from "~/system"
+import {
+  CreateButton,
+  Divider,
+  Header,
+  Stack,
+  Text,
+  Status,
+  modalStyleProps,
+} from "~/system"
 import { ParticipantsView } from "~/system/ParticipantsView"
 import { EmptyOppsView, OnClickNew } from "./EmptyView"
+
+const { minHeight } = modalStyleProps
 
 type OnClickConversation = (c: Conversation) => void
 
@@ -28,7 +38,7 @@ export const View: FC<Props> = ({
   // conversations,
   // onClickConversation,
   // TODO: minHeight varies by render target (home vs. modal)
-}) => h(EmptyOppsView, { minHeight: "70vh", onClickCreate })
+}) => h(EmptyOppsView, { minHeight, onClickCreate })
 // isEmpty(opps)
 //   ? h(EmptyView, { minHeight: "70vh", onClickNew })
 //   : h(Stack, { direction: "column" }, [

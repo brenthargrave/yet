@@ -1,6 +1,15 @@
 import { h } from "@cycle/react"
 import { FC, ReactNode } from "react"
-import { Modal, Text, Stack, Header, BackButton } from "~/system"
+import {
+  Modal,
+  Text,
+  Stack,
+  Header,
+  BackButton,
+  modalStyleProps,
+} from "~/system"
+
+const { minHeight } = modalStyleProps
 
 export interface Props {
   isOpen: boolean
@@ -21,7 +30,7 @@ export const View: FC<Props> = ({ isOpen, onClose = () => null, oppsView }) => {
       showHeader: true,
       // headerText: "Opportunities",
       showCloseButton: true,
-      minHeight: "60vh",
+      minHeight,
     },
     [oppsView]
   )
