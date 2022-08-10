@@ -1,17 +1,11 @@
 import { ReactSource } from "@cycle/react"
-import { merge, share, startWith, switchMap } from "rxjs"
+import { merge, share, switchMap } from "rxjs"
 import { match } from "ts-pattern"
 import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { Source as RouterSource } from "~/router"
-import { shareLatest } from "~/rx"
+import { routes, Source as RouterSource } from "~/router"
 import { Main as Create } from "./Create"
 import { Main as List } from "./List"
-
-export enum State {
-  list = "list",
-  create = "create",
-}
 
 interface Sources {
   react: ReactSource
@@ -23,27 +17,27 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const tagScope = `${tagPrefix}/Opps`
   const tag = makeTagger(tagScope)
 
+  const {
+    router: { history$ },
+  } = sources
+
   const list = List(sources, tagScope)
   const create = Create(sources, tagScope)
 
-  const state$ = merge(list.value.intent$).pipe(
-    startWith(State.list),
-    tag("state$"),
-    shareLatest()
-  )
-
-  const react = state$.pipe(
-    switchMap((state) =>
-      match(state)
-        .with(State.list, () => list.react)
-        .with(State.create, () => create.react)
-        .exhaustive()
+  const react = history$.pipe(
+    switchMap((route) =>
+      match(route.name)
+        .with(routes.newConversationOpps.name, () => list.react)
+        .with(routes.newConversationNewOpp.name, () => create.react)
+        .otherwise(() => list.react)
     ),
     tag("react"),
     share()
   )
 
+  const router = merge(list.router)
   return {
     react,
+    router,
   }
 }

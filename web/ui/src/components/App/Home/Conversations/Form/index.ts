@@ -447,7 +447,7 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
       })
     )
   )
-  const router = merge(goToList$, redirectJustSignedToShow$)
+  const router = merge(goToList$, redirectJustSignedToShow$, opps.router)
   const notice = merge(shareURLCopiedNotice$, justSignedNotice$)
   const track = merge(trackPropose$)
   const graph = merge(propose$)

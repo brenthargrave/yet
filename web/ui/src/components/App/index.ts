@@ -69,8 +69,10 @@ export const App = (sources: Sources) => {
     debounceTime(100),
     switchMap(({ route, me }) => {
       return match(route.name)
-        .with("in", () => authView$)
-        .with("root", () => (isLurking(me) ? landingView$ : homeView$))
+        .with(routes.in.name, () => authView$)
+        .with(routes.root.name, () =>
+          isLurking(me) ? landingView$ : homeView$
+        )
         .otherwise(() => homeView$)
     }),
     tag("bodyView$")

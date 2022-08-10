@@ -15,20 +15,20 @@ const isNotLastItem = (idx: number, all: Conversation[]) =>
   !(idx + 1 === all.length)
 
 export interface Props {
-  onClickNew?: OnClickNew
+  onClickCreate?: OnClickNew
   opps: Opp[]
   // viewer: Maybe<Customer>
   // onClickConversation: OnClickConversation
 }
 
 export const View: FC<Props> = ({
-  onClickNew,
+  onClickCreate,
   opps = [],
   // viewer,
   // conversations,
   // onClickConversation,
   // TODO: minHeight varies by render target (home vs. modal)
-}) => h(EmptyOppsView, { minHeight: "70vh", onClickNew })
+}) => h(EmptyOppsView, { minHeight: "70vh", onClickCreate })
 // isEmpty(opps)
 //   ? h(EmptyView, { minHeight: "70vh", onClickNew })
 //   : h(Stack, { direction: "column" }, [

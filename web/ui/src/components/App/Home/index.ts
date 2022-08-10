@@ -24,13 +24,10 @@ export const Home = (sources: Sources) => {
   // NOTE: force onboarding everywhere in main app after auth
   const onboarding = Onboarding(sources)
 
-  const {
-    react: conversationsView$,
-    router,
-    track,
-    notice,
-    graph,
-  } = Conversations(sources, tagScope)
+  const { react: conversationsView$, ...conversations } = Conversations(
+    sources,
+    tagScope
+  )
 
   const rootView$ = conversationsView$.pipe(
     map((subview) => h(View, [subview])),
@@ -45,9 +42,6 @@ export const Home = (sources: Sources) => {
 
   return {
     react,
-    router,
-    track,
-    notice,
-    graph,
+    ...conversations,
   }
 }

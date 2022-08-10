@@ -1,11 +1,10 @@
 import { h, ReactSource } from "@cycle/react"
-import { combineLatest, map, share, merge, of } from "rxjs"
+import { of } from "rxjs"
 import { Source as GraphSource } from "~/graph"
+import { cb$, mapTo, shareLatest } from "~/rx"
 import { makeTagger } from "~/log"
-import { Source as RouterSource } from "~/router"
-import { cb$, mapTo } from "~/rx"
+import { routes, Source as RouterSource } from "~/router"
 import { View } from "./View"
-import { State } from ".."
 
 interface Sources {
   react: ReactSource
@@ -22,7 +21,10 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   } = sources
 
   // const [onClickNew, onClickNew$] = cb$(tag("onClickNew$"))
-  // const create$ = onClickNew$.pipe(mapTo(State.create), tag("showCreate$"))
+  // const new$ = onClickNew$.pipe(
+  //   mapTo(routes.newConversationNewOpp()),
+  //   tag("showCreate$")
+  // )
 
   // const intent$ = merge(create$)
 

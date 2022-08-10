@@ -30,7 +30,14 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
   const react = history$.pipe(
     switchMap((route) =>
       match(route.name)
-        .with(routes.newConversation.name, () => create.react)
+        .with(
+          P.union(
+            routes.newConversation.name,
+            routes.newConversationOpps.name,
+            routes.newConversationNewOpp.name
+          ),
+          () => create.react
+        )
         .with(routes.editConversation.name, () => edit.react)
         .with(routes.conversations.name, () => list.react)
         .with(

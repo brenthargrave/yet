@@ -7,13 +7,16 @@ export type OnClickNew = () => void
 
 interface Props {
   minHeight?: string
-  onClickNew?: OnClickNew
+  onClickCreate?: OnClickNew
 }
 
 const text = (text: string) =>
   h(Text, { align: "center", size: "md", pt: 0 }, text)
 
-export const EmptyOppsView: FC<Props> = ({ onClickNew, minHeight = "100%" }) =>
+export const EmptyOppsView: FC<Props> = ({
+  onClickCreate: onClickNew,
+  minHeight = "100%",
+}) =>
   h(Center, { minHeight, width: "100%" }, [
     h(VStack, { alignItems: "center", gap: 4, padding: 4 }, [
       h(
