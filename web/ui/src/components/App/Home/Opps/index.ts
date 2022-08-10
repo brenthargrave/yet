@@ -31,10 +31,9 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   )
 
   const react = state$.pipe(
-    map((state) =>
-      match(state)
-        .with(State.list, () => list.react)
-        .with(State.create, () => of(null))
+    map(
+      (state) => match(state).with(State.list, () => list.react)
+      // .with(State.create, () => of(null))
     ),
     tag("react")
   )

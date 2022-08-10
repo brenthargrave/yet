@@ -13,7 +13,7 @@ interface Props {
 const text = (text: string) =>
   h(Text, { align: "center", size: "md", pt: 0 }, text)
 
-export const EmptyView: FC<Props> = ({ onClickNew, minHeight = "100%" }) =>
+export const EmptyOppsView: FC<Props> = ({ onClickNew, minHeight = "100%" }) =>
   h(Center, { minHeight, width: "100%" }, [
     h(VStack, { alignItems: "center", gap: 4, padding: 4 }, [
       h(
@@ -31,4 +31,4 @@ export const EmptyView: FC<Props> = ({ onClickNew, minHeight = "100%" }) =>
       h(Button, { onClick: onClickNew }, `Create opp`),
     ]),
   ])
-EmptyView.displayName = "EmptyView"
+EmptyOppsView.displayName = "EmptyView"
