@@ -3,6 +3,7 @@ import {
   ChevronLeftIcon,
   SmallCloseIcon,
   CheckIcon,
+  PlusSquareIcon,
   DeleteIcon,
 } from "@chakra-ui/icons"
 import {
@@ -102,6 +103,7 @@ export const View = ({
             h(
               Button,
               {
+                leftIcon: h(PlusSquareIcon),
                 size: "md",
                 isDisabled: isDisabledSubmit,
               },
@@ -115,7 +117,7 @@ export const View = ({
                 // leftIcon: h(DeleteIcon),
                 // leftIcon: h(ChevronLeftIcon),
                 leftIcon: h(SmallCloseIcon),
-                size: "xs",
+                size: "sm",
               },
               "Cancel"
             ),
