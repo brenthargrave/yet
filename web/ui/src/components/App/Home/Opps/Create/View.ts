@@ -42,26 +42,30 @@ export const View = ({ showNav, ...props }: Props) =>
           h(Spacer),
         ]),
       h(Header, [h(Heading, { size: "md" }, "Opportunity"), h(Spacer)]),
-      h(Stack, { direction: "column", width: "100%", padding: 4, gap: 6 }, [
+      h(Stack, { direction: "column", width: "100%", padding: 4, gap: 4 }, [
         // TODO: org
         h(Stack, { direction: "column" }, [
-          h(Text, "Organization"),
+          h(Text, "Organization:"),
           h(InputGroup, [
             h(Input, {
-              placeholder: "Company, school, club, family, etc.",
               autoFocus: true,
+              placeholder: "Company, school, club, family, etc.",
+              required: true,
             }),
           ]),
         ]),
         h(Stack, { direction: "column" }, [
-          h(Text, "Role"),
+          h(Text, "Role:"),
           h(InputGroup, [
             // TODO: populate placeholder w/ most popular
-            h(Input, { placeholder: "Engineer, etc." }),
+            h(Input, {
+              required: true,
+              placeholder: "Engineer, etc.",
+            }),
           ]),
         ]),
         h(Stack, { direction: "column" }, [
-          h(Text, "Description"),
+          h(Text, "Description:"),
           h(InputGroup, [
             h(AutosizeTextarea, {
               minRows: 4,
