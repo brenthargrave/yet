@@ -22,13 +22,13 @@ export const EmptyView: FC<Props> = ({ onClickNew, minHeight = "100%" }) =>
           align: "center",
           size: "md",
         },
-        `You haven't noted opportunities yet.`
+        `You haven't noted any opportunities.`
       ),
       text(
         `Create an opportunity ("opp") to include in your conversation notes.`
       ),
       // text(`Opps that others discuss with you will appear here too.`),
-      h(Button, { onClick: onClickNew }, `Create new Opp`),
+      h(Button, { onClick: onClickNew }, `Create opp`),
     ]),
   ])
 EmptyView.displayName = "EmptyView"

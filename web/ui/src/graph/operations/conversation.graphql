@@ -1,10 +1,14 @@
+fragment ContactProps on Contact {
+  id
+  name
+  org
+  role
+}
+
 fragment ConversationProps on Conversation {
   id
   creator {
-    id
-    name
-    org
-    role
+    ...ContactProps
   }
   invitees {
     id
@@ -21,10 +25,7 @@ fragment ConversationProps on Conversation {
     signedAt
     conversationId
     signer {
-      id
-      name
-      org
-      role
+      ...ContactProps
     }
   }
   reviews {
@@ -32,10 +33,7 @@ fragment ConversationProps on Conversation {
     conversationId
     insertedAt
     reviewer {
-      id
-      name
-      org
-      role
+      ...ContactProps
     }
   }
 }
@@ -101,10 +99,7 @@ mutation ReviewConversation($input: ReviewInput!) {
 
 query Contacts {
   contacts {
-    id
-    name
-    org
-    role
+    ...ContactProps
   }
 }
 

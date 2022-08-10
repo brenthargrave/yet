@@ -38,6 +38,7 @@ import {
   EventName,
   EventProperties,
   GetConversationsDocument,
+  GetOppsDocument,
   MeDocument,
   ProfileInput,
   ProposeConversationDocument,
@@ -457,6 +458,42 @@ export const conversations$ = token$.pipe(
       .sort(descend(prop("occurredAt")))
   ),
   tag("conversations$ - DELETED"),
+  catchError((error, _caught$) => {
+    throw new GraphDefaultQueryError(error.message)
+  }),
+  shareLatest()
+)
+
+// TODO: dedupe w/ convos$
+export const opps$ = token$.pipe(
+  filter(isNotNullish),
+  switchMap((token) => {
+    return zenToRx(
+      client.watchQuery({
+        query: GetOppsDocument,
+        fetchPolicy: "network-only",
+      })
+    ).pipe(
+      map(
+        ({
+          data,
+          error,
+          errors,
+          loading,
+          networkStatus,
+          partial,
+          ...result
+        }) => {
+          // NOTE: throw will create endless loop upon resubscription
+          if (error) captureException(error)
+          if (errors) captureException(JSON.stringify(errors))
+          return data.getOpps!.opps
+        }
+      ),
+      filter(isNotNullish)
+    )
+  }),
+  tag("opps$"),
   catchError((error, _caught$) => {
     throw new GraphDefaultQueryError(error.message)
   }),

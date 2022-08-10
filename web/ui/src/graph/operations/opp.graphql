@@ -1,0 +1,13 @@
+query GetOpps {
+  getOpps {
+    opps {
+      id
+      role
+      org
+      desc
+      creator {
+        ...ContactProps
+      }
+    }
+  }
+}

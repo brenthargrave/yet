@@ -1,13 +1,13 @@
 defmodule AppWeb.Graph.Opps do
   use Absinthe.Schema.Notation
-  # alias AppWeb.Resolvers.Opps
-  import_types(Absinthe.Type.Custom)
+  alias AppWeb.Resolvers.Opps
 
   object :opp do
     field(:id, non_null(:id))
     field(:role, non_null(:string))
     field(:org, non_null(:string))
     field(:desc, :string)
+    field(:creator, non_null(:contact))
   end
 
   object :opps_payload do
@@ -16,11 +16,7 @@ defmodule AppWeb.Graph.Opps do
 
   object :opps_queries do
     field :get_opps, :opps_payload do
-      # resolve(&Opps.get_opps/3)
-      resolve({:ok, []})
+      resolve(&Opps.get_opps/3)
     end
-  end
-
-  object :opp_mutations do
   end
 end

@@ -4,11 +4,13 @@ defmodule AppWeb.Graph.Schema do
   import_types(AppWeb.Graph.Auth)
   import_types(AppWeb.Graph.Onboarding)
   import_types(AppWeb.Graph.Conversations)
+  import_types(AppWeb.Graph.Opps)
 
   query do
     import_fields(:analytics_queries)
     import_fields(:auth_queries)
     import_fields(:conversations_queries)
+    import_fields(:opps_queries)
   end
 
   mutation do

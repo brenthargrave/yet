@@ -82,5 +82,18 @@ defmodule App.Repo.Migrations.CreateEvents do
     create(index(:notifications, [:conversation_id]))
     create(index(:notifications, [:recipient_id]))
     create(unique_index(:notifications, [:kind, :conversation_id, :recipient_id]))
+
+    create table(:opps) do
+      add :creator_id, references(:customers, on_delete: :delete_all)
+      add :name, :string
+      add :org, :string
+      add :role, :string
+      add :desc, :string
+      timestamps()
+    end
+
+    create(index(:opps, [:creator_id]))
+    create(index(:opps, [:org]))
+    create(index(:opps, [:role]))
   end
 end

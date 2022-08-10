@@ -9,8 +9,9 @@ import {
   me$,
   setToken,
   token$,
+  opps$,
 } from "~/graph"
-import { Contact, Conversation } from "./generated"
+import { Contact, Conversation, Opp } from "./generated"
 
 type Token = string
 
@@ -19,6 +20,7 @@ export interface Source {
   me$: Observable<Customer | null>
   contacts$: Observable<Contact[]>
   conversations$: Observable<Conversation[]>
+  opps$: Observable<Opp[]>
 }
 
 enum CommandType {
@@ -58,6 +60,7 @@ export function makeDriver(): Driver<Sink, Source> {
       me$,
       contacts$,
       conversations$,
+      opps$,
     }
   }
 }

@@ -3,7 +3,7 @@ import { h } from "@cycle/react"
 import { FC } from "react"
 import { NoteView } from "~/components/Note"
 import { isEmpty, join, map, prop } from "~/fp"
-import { Conversation, Customer, Maybe } from "~/graph"
+import { Conversation, Customer, Maybe, Opp } from "~/graph"
 import { localizeDate } from "~/i18n"
 import { CreateButton, Divider, Header, Stack, Text, Status } from "~/system"
 import { ParticipantsView } from "~/system/ParticipantsView"
@@ -16,8 +16,8 @@ const isNotLastItem = (idx: number, all: Conversation[]) =>
 
 export interface Props {
   onClickNew?: OnClickNew
+  opps: Opp[]
   // viewer: Maybe<Customer>
-  // conversations: Conversation[]
   // onClickConversation: OnClickConversation
 }
 

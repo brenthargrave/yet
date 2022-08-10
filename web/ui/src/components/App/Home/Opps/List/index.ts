@@ -1,5 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
-import { map, of } from "rxjs"
+import { combineLatest, map, of, share } from "rxjs"
 import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { Source as RouterSource } from "~/router"
@@ -16,13 +16,25 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const tagScope = `${tagPrefix}/List`
   const tag = makeTagger(tagScope)
 
+  const {
+    graph: { opps$ },
+  } = sources
+
   const [onClickNew, onClickNew$] = cb$(tag("onClickNew$"))
 
-  const react = of(
-    h(View, {
-      onClickNew,
-    })
-  ).pipe(tag("react"))
+  const props$ = combineLatest({
+    opps: opps$,
+  }).pipe(tag("props$"), share())
+
+  const react = props$.pipe(
+    map((props) =>
+      h(View, {
+        ...props,
+        onClickNew,
+      })
+    ),
+    tag("react")
+  )
 
   return {
     react,
