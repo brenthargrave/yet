@@ -64,7 +64,8 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const router = merge()
+  const router = merge(list.router)
+
   return {
     react,
     router,

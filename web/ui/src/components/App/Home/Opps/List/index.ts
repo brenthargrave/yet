@@ -22,14 +22,14 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   } = sources
 
   const [onClickCreate, onClickCreate$] = cb$(tag("onClickNew$"))
-  // const showCreate$ = onClickCreate$.pipe(
-  //   mapTo(push(routes.newConversationNewOpp())),
-  //   tag("showCreate$")
-  // )
   const showCreate$ = onClickCreate$.pipe(
-    mapTo(State.create),
+    mapTo(push(routes.newConversationNewOpp())),
     tag("showCreate$")
   )
+  // const showCreate$ = onClickCreate$.pipe(
+  //   mapTo(State.create),
+  //   tag("showCreate$")
+  // )
 
   const props$ = combineLatest({
     opps: opps$,
@@ -45,9 +45,13 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     tag("react")
   )
 
-  const router = merge()
-  const action = merge(showCreate$)
+  // const router = merge()
+  const router = merge(showCreate$)
+
+  // const action = merge(showCreate$)
+  const action = merge()
   const value = { action }
+
   return {
     react,
     router,
