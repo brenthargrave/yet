@@ -13,6 +13,7 @@ import {
   Text,
   Status,
   modalStyleProps,
+  MarkdownView,
 } from "~/system"
 import { ParticipantsView } from "~/system/ParticipantsView"
 import { EmptyOppsView, OnClickNew } from "./EmptyView"
@@ -22,6 +23,8 @@ const { minHeight } = modalStyleProps
 type OnClickConversation = (c: Conversation) => void
 
 const isNotLastItem = <T>(idx: number, all: T[]) => !(idx + 1 === all.length)
+
+const bold = (value: string) => `**${value}**`
 
 export interface Props {
   onClickCreate?: OnClickNew
@@ -63,7 +66,8 @@ export const View: FC<Props> = ({
                     { direction: "column", alignItems: "start", width: "100%" },
                     [
                       h(Stack, { direction: "row", alignItems: "center" }, [
-                        h(Text, { size: "md" }, `${role} @ ${org}`),
+                        h(MarkdownView, { md: `${bold(role)} @ ${bold(org)}` }),
+                        // h(Text, { size: "md" }, `${role} @ ${org}`),
                         h(Spacer),
                         // TODO: reward $
                       ]),
