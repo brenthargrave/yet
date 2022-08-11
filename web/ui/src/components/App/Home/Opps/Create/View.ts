@@ -119,7 +119,7 @@ export const View = ({
           ]),
           h(Stack, { direction: "column" }, [
             // h(Divider),
-            h(Stack, { direction: "row" }, [
+            h(Stack, { direction: "row", alignItems: "center" }, [
               //
               h(
                 Button,

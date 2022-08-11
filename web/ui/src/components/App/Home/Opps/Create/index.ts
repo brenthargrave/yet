@@ -14,6 +14,7 @@ import {
   switchMap,
   withLatestFrom,
   merge,
+  distinctUntilKeyChanged,
 } from "rxjs"
 import { match } from "ts-pattern"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
@@ -128,15 +129,18 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   )
 
   const opp$ = submit$.pipe(filterResultOk(), tag("opp$"), share())
-  const userError$ = submit$.pipe(filterResultErr(), tag("userError$"))
+  const userError$ = submit$.pipe(filterResultErr(), tag("userError$"), share())
 
-  const redirectToList$ = merge(opps$, onCancel$).pipe(
+  const redirectToList$ = merge(onCancel$, opp$).pipe(
     map((_opp) => push(routes.newConversationOpps())),
-    tag("redirectCreated$")
+    tag("redirectToList$"),
+    share()
   )
 
   const userErrorNotice$ = userError$.pipe(
-    map(({ message }) => error({ description: message }))
+    map(({ message }) => error({ description: message })),
+    tag("userErrorNotice$"),
+    share()
   )
 
   const props$ = combineLatest({

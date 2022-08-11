@@ -1,5 +1,5 @@
 import { Driver } from "@cycle/run"
-import { Observable } from "rxjs"
+import { distinctUntilChanged, Observable } from "rxjs"
 import { match } from "ts-pattern"
 import {
   createGroup,
@@ -95,7 +95,11 @@ export function makeDriver(): Driver<Sink, Source> {
         observer.next(route)
       })
       return unlisten
-    }).pipe(tag("history$"), shareLatest())
+    }).pipe(
+      distinctUntilChanged((prev, curr) => prev.href === curr.href),
+      tag("history$"),
+      shareLatest()
+    )
 
     return {
       history$,

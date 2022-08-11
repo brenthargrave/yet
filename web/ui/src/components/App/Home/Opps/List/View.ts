@@ -45,8 +45,7 @@ export const View: FC<Props> = ({
     ? h(EmptyOppsView, { minHeight, onClickCreate })
     : h(Stack, { minHeight, direction: "column" }, [
         h(Header, [
-          // TODO: vary by render target: `Your Opportunities
-          h(Heading, { size: "md" }, "Select Opportunity"),
+          h(Heading, { size: "md" }, "Your opportunities"),
           h(Spacer),
           h(CreateButton, { onClick: onClickCreate, cta: `New opp` }),
         ]),
