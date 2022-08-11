@@ -13,6 +13,7 @@ import { FC } from "react"
 export interface Props {
   isOpen: boolean
   onClose: () => void
+  autoFocus?: boolean
   showHeader?: boolean
   headerText?: string
   showCloseButton?: boolean
@@ -24,6 +25,7 @@ export const View: FC<Props> = ({
   isOpen,
   onClose,
   children,
+  autoFocus = true,
   showHeader = true,
   headerText = "",
   showCloseButton = true,
@@ -32,7 +34,7 @@ export const View: FC<Props> = ({
 }) =>
   h(Modal, {
     // isCentered: true,
-    autoFocus: true,
+    autoFocus,
     closeOnEsc: true,
     closeOnOverlayClick: true,
     isOpen,

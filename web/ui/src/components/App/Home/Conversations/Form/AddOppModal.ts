@@ -26,6 +26,7 @@ export const View: FC<Props> = ({ isOpen, onClose = () => null, oppsView }) => {
       // showFooter: false,
       // showHeader: false,
       // showCloseButton: false,
+      autoFocus: false,
       showFooter: true,
       showHeader: true,
       // headerText: "Opportunities",

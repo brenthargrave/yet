@@ -1,4 +1,12 @@
-import { Heading, List, ListItem, Spacer } from "@chakra-ui/react"
+import { AddIcon, SmallAddIcon } from "@chakra-ui/icons"
+import {
+  Heading,
+  List,
+  ListIcon,
+  ListItem,
+  Spacer,
+  VStack,
+} from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { NoteView } from "~/components/Note"
@@ -25,6 +33,7 @@ type OnClickConversation = (c: Conversation) => void
 const isNotLastItem = <T>(idx: number, all: T[]) => !(idx + 1 === all.length)
 
 const bold = (value: string) => `**${value}**`
+const i = (value: string) => `*${value}*`
 
 export interface Props {
   onClickCreate?: OnClickNew
@@ -43,13 +52,13 @@ export const View: FC<Props> = ({
 }) =>
   isEmpty(opps)
     ? h(EmptyOppsView, { minHeight, onClickCreate })
-    : h(Stack, { minHeight, direction: "column" }, [
+    : h(Stack, { minHeight, direction: "column", pt: 4 }, [
         h(Header, [
           h(Heading, { size: "md" }, "Your opportunities"),
           h(Spacer),
           h(CreateButton, { onClick: onClickCreate, cta: `New opp` }),
         ]),
-        h(List, { spacing: 8, padding: 4 }, [
+        h(List, { spacing: 4, paddingTop: 4 }, [
           ...opps.map(({ org, role, desc }, idx, all) => {
             return h(
               ListItem,
@@ -59,14 +68,22 @@ export const View: FC<Props> = ({
                 onClick: console.debug,
               },
               [
-                h(Stack, { direction: "row", alignItems: "center" }, [
+                h(Stack, { direction: "row", alignItems: "center", gap: 3 }, [
+                  h(ListIcon, { as: SmallAddIcon }),
                   h(
                     Stack,
                     { direction: "column", alignItems: "start", width: "100%" },
                     [
                       h(Stack, { direction: "row", alignItems: "center" }, [
-                        h(MarkdownView, { md: `${bold(role)} @ ${bold(org)}` }),
+                        h(VStack, { alignItems: "start", gap: 0, spacing: 0 }, [
+                          h(MarkdownView, { md: `${bold(role)}` }),
+                          h(MarkdownView, { md: `${i(org)}` }),
+                        ]),
                         // h(Text, { size: "md" }, `${role} @ ${org}`),
+                        // h(VStack, { alignItems: "start" }, [
+                        //   h(Heading, { fontSize: "md" }, role),
+                        //   h(Text, { fontSize: "md" }, org),
+                        // ]),
                         h(Spacer),
                         // TODO: reward $
                       ]),
@@ -76,7 +93,7 @@ export const View: FC<Props> = ({
                 ]),
                 // TODO: redesign divider, right margin
                 isNotLastItem(idx, all) &&
-                  h(Divider, { padding: 4, width: "100%" }),
+                  h(Divider, { padding: 2, width: "100%" }),
               ]
             )
           }),
