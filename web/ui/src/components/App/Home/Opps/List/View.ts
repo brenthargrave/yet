@@ -1,4 +1,4 @@
-import { AddIcon, SmallAddIcon } from "@chakra-ui/icons"
+import { AddIcon, EditIcon, SmallAddIcon } from "@chakra-ui/icons"
 import {
   Heading,
   List,
@@ -9,6 +9,7 @@ import {
 } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
+import { ImEmbed } from "react-icons/im"
 import { NoteView } from "~/components/Note"
 import { isEmpty, join, map, prop } from "~/fp"
 import { Conversation, Customer, Maybe, Opp } from "~/graph"
@@ -22,6 +23,7 @@ import {
   Status,
   modalStyleProps,
   MarkdownView,
+  Button,
 } from "~/system"
 import { ParticipantsView } from "~/system/ParticipantsView"
 import { EmptyOppsView, OnClickNew } from "./EmptyView"
@@ -52,8 +54,8 @@ export const View: FC<Props> = ({
 }) =>
   isEmpty(opps)
     ? h(EmptyOppsView, { minHeight, onClickCreate })
-    : h(Stack, { minHeight, direction: "column", pt: 4 }, [
-        h(Header, [
+    : h(Stack, { minHeight, direction: "column", pt: 8 }, [
+        h(Header, { padding: 0 }, [
           h(Heading, { size: "md" }, "Your opportunities"),
           h(Spacer),
           h(CreateButton, { onClick: onClickCreate, cta: `New opp` }),
@@ -63,34 +65,69 @@ export const View: FC<Props> = ({
             return h(
               ListItem,
               {
-                padding: 0,
                 style: { cursor: "pointer" },
                 onClick: console.debug,
               },
               [
-                h(Stack, { direction: "row", alignItems: "center", gap: 3 }, [
-                  h(ListIcon, { as: SmallAddIcon }),
-                  h(
-                    Stack,
-                    { direction: "column", alignItems: "start", width: "100%" },
-                    [
-                      h(Stack, { direction: "row", alignItems: "center" }, [
-                        h(VStack, { alignItems: "start", gap: 0, spacing: 0 }, [
-                          h(MarkdownView, { md: `${bold(role)}` }),
-                          h(MarkdownView, { md: `${i(org)}` }),
+                h(
+                  Stack,
+                  {
+                    direction: "row",
+                    alignItems: "center",
+                    gap: 3,
+                  },
+                  [
+                    // h(ListIcon, { as: SmallAddIcon }),
+                    h(
+                      Stack,
+                      {
+                        direction: "column",
+                        alignItems: "start",
+                        width: "100%",
+                      },
+                      [
+                        h(Stack, { direction: "row", alignItems: "center" }, [
+                          h(
+                            VStack,
+                            { alignItems: "start", gap: 0, spacing: 0 },
+                            [
+                              h(MarkdownView, { md: `${bold(role)}` }),
+                              h(MarkdownView, { md: `${i(org)}` }),
+                            ]
+                          ),
+                          // h(Text, { size: "md" }, `${role} @ ${org}`),
+                          // h(VStack, { alignItems: "start" }, [
+                          //   h(Heading, { fontSize: "md" }, role),
+                          //   h(Text, { fontSize: "md" }, org),
+                          // ]),
+                          h(Spacer),
+                          // TODO: reward $
                         ]),
-                        // h(Text, { size: "md" }, `${role} @ ${org}`),
-                        // h(VStack, { alignItems: "start" }, [
-                        //   h(Heading, { fontSize: "md" }, role),
-                        //   h(Text, { fontSize: "md" }, org),
-                        // ]),
-                        h(Spacer),
-                        // TODO: reward $
-                      ]),
-                      desc && h(Text, { size: "md" }, desc),
-                    ]
-                  ),
-                ]),
+                        desc && h(Text, { size: "md" }, desc),
+                      ]
+                    ),
+                    h(VStack, {}, [
+                      h(
+                        Button,
+                        {
+                          variant: "ghost",
+                          leftIcon: h(ImEmbed),
+                          size: "xs",
+                        }
+                        // `Edit`
+                      ),
+                      h(
+                        Button,
+                        {
+                          variant: "ghost",
+                          leftIcon: h(EditIcon),
+                          size: "xs",
+                        }
+                        // `Edit`
+                      ),
+                    ]),
+                  ]
+                ),
                 // TODO: redesign divider, right margin
                 isNotLastItem(idx, all) &&
                   h(Divider, { padding: 2, width: "100%" }),
