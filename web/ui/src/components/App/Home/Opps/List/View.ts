@@ -42,14 +42,12 @@ export const View: FC<Props> = ({
   isEmpty(opps)
     ? h(EmptyOppsView, { minHeight, onClickCreate })
     : h(Stack, { minHeight, direction: "column" }, [
-        //
+        h(Header, [
+          h(Heading, { size: "md" }, "Your Opportunities"),
+          h(Spacer),
+          h(CreateButton, { onClick: onClickCreate, cta: `Create new opp` }),
+        ]),
       ])
-//     h(Header),
-//     h(Header, [
-//       h(Heading, { size: "md" }, "Conversations"),
-//       h(Spacer),
-//       h(CreateButton, { onClick: onClickNew }),
-//     ]),
 //     h(
 //       List,
 //       { spacing: 8, padding: 4 },

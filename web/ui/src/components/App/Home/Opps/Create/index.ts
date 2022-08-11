@@ -71,6 +71,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const [onChangeRole, onChangeRole$] = cb$<string>(tag("onChangeRole$"))
   const [onChangeDesc, onChangeDesc$] = cb$<string>(tag("onChangeDesc$"))
   const [onSubmit, onSubmit$] = cb$(tag("onSubmit$"))
+  const [onCancel, onCancel$] = cb$(tag("onCancel$"))
 
   const org$: Observable<string> = record$.pipe(
     pluck("org"),
@@ -129,7 +130,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const opp$ = submit$.pipe(filterResultOk(), tag("opp$"), share())
   const userError$ = submit$.pipe(filterResultErr(), tag("userError$"))
 
-  const redirectCreated$ = opp$.pipe(
+  const redirectToList$ = merge(opps$, onCancel$).pipe(
     map((_opp) => push(routes.newConversationOpps())),
     tag("redirectCreated$")
   )
@@ -153,11 +154,12 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
         onChangeRole,
         onChangeDesc,
         onSubmit,
+        onCancel,
       })
     )
   )
 
-  const router = merge(redirectCreated$)
+  const router = merge(redirectToList$)
   const notice = merge(userErrorNotice$)
   return {
     react,

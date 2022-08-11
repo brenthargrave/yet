@@ -6,9 +6,15 @@ export interface Props {
   onClick?: () => void
   isLoading?: boolean
   isDisabled?: boolean
+  cta?: string
 }
 
-export const CreateButton = ({ onClick, isLoading, isDisabled }: Props) =>
+export const CreateButton = ({
+  onClick,
+  isLoading,
+  isDisabled,
+  cta = `Note new conversation`,
+}: Props) =>
   h(
     Button,
     {
@@ -19,5 +25,5 @@ export const CreateButton = ({ onClick, isLoading, isDisabled }: Props) =>
       isLoading,
       isDisabled,
     },
-    `Note new conversation`
+    cta
   )

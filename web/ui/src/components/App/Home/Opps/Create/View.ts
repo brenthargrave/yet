@@ -40,6 +40,7 @@ export interface Props {
   defaultValueDesc?: string
   isDisabledSubmit?: boolean
   onSubmit?: () => void
+  onCancel?: () => void
 }
 
 export const View = ({
@@ -52,6 +53,7 @@ export const View = ({
   defaultValueDesc,
   isDisabledSubmit = true,
   onSubmit: _onSubmit,
+  onCancel,
   ...props
 }: Props) => {
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = (e) => {
@@ -138,6 +140,7 @@ export const View = ({
                   // leftIcon: h(ChevronLeftIcon),
                   leftIcon: h(SmallCloseIcon),
                   size: "sm",
+                  onClick: onCancel,
                 },
                 "Cancel"
               ),
