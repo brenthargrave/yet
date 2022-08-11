@@ -23,7 +23,7 @@ defmodule App.Opps do
     |> ok()
   end
 
-  defun upsert_conversation(
+  defun upsert_opp(
           customer,
           input
         ) :: Brex.Result.s(Conversation.t()) do

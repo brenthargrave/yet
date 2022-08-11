@@ -141,8 +141,8 @@ export type OppInput = {
 
 export type OppPayload = {
   __typename?: 'OppPayload';
-  opp: Opp;
-  userError: UserError;
+  opp?: Maybe<Opp>;
+  userError?: Maybe<UserError>;
 };
 
 export type OppsPayload = {
@@ -456,7 +456,7 @@ export type ConversationChangedSubscription = { __typename?: 'RootSubscriptionTy
 
 export type OppPropsFragment = { __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } };
 
-export type OppPayloadPropsFragment = { __typename?: 'OppPayload', opp: { __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }, userError: { __typename?: 'UserError', code?: ErrorCode | null, message: string } };
+export type OppPayloadPropsFragment = { __typename?: 'OppPayload', opp?: { __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } } | null, userError?: { __typename?: 'UserError', code?: ErrorCode | null, message: string } | null };
 
 export type GetOppsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -468,7 +468,7 @@ export type UpsertOppMutationVariables = Exact<{
 }>;
 
 
-export type UpsertOppMutation = { __typename?: 'RootMutationType', upsertOpp?: { __typename?: 'OppPayload', opp: { __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }, userError: { __typename?: 'UserError', code?: ErrorCode | null, message: string } } | null };
+export type UpsertOppMutation = { __typename?: 'RootMutationType', upsertOpp?: { __typename?: 'OppPayload', opp?: { __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } } | null, userError?: { __typename?: 'UserError', code?: ErrorCode | null, message: string } | null } | null };
 
 export const AuthenticatedCustomerPropsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuthenticatedCustomerProps"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Customer"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"e164"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"org"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]} as unknown as DocumentNode<AuthenticatedCustomerPropsFragment, unknown>;
 export const ContactPropsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ContactProps"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Contact"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"org"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]} as unknown as DocumentNode<ContactPropsFragment, unknown>;

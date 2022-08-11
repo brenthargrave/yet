@@ -64,10 +64,12 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const router = merge(list.router)
+  const router = merge(list.router, create.router)
+  const notice = merge(create.notice)
 
   return {
     react,
     router,
+    notice,
   }
 }

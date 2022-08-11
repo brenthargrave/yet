@@ -15,8 +15,8 @@ defmodule AppWeb.Graph.Opps do
   end
 
   object :opp_payload do
-    field(:user_error, non_null(:user_error))
-    field(:opp, non_null(:opp))
+    field(:user_error, :user_error)
+    field(:opp, :opp)
   end
 
   input_object :opp_input do

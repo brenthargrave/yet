@@ -13,8 +13,10 @@ import {
   startWith,
   switchMap,
   withLatestFrom,
+  merge,
 } from "rxjs"
 import { match } from "ts-pattern"
+import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { ulid } from "ulid"
 import { and, not } from "~/fp"
 import {
@@ -24,7 +26,8 @@ import {
   upsertOpp$,
 } from "~/graph"
 import { makeTagger } from "~/log"
-import { routes, Source as RouterSource } from "~/router"
+import { error } from "~/notice"
+import { push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
 import { View } from "./View"
 
@@ -100,7 +103,6 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     map(({ org, role }) => {
       const orgValid = isValidOrg(org)
       const roleValid = isValidRole(role)
-      console.debug("org", orgValid, "role", roleValid)
       return and(orgValid, roleValid)
     }),
     tag("isValid$"),
@@ -124,6 +126,18 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
+  const opp$ = submit$.pipe(filterResultOk(), tag("opp$"), share())
+  const userError$ = submit$.pipe(filterResultErr(), tag("userError$"))
+
+  const redirectCreated$ = opp$.pipe(
+    map((_opp) => push(routes.newConversationOpps())),
+    tag("redirectCreated$")
+  )
+
+  const userErrorNotice$ = userError$.pipe(
+    map(({ message }) => error({ description: message }))
+  )
+
   const props$ = combineLatest({
     defaultValueOrg: recordOrg$,
     defaultValueRole: recordRole$,
@@ -143,7 +157,11 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     )
   )
 
+  const router = merge(redirectCreated$)
+  const notice = merge(userErrorNotice$)
   return {
     react,
+    router,
+    notice,
   }
 }

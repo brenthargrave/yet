@@ -105,8 +105,10 @@ export const View = ({
           h(Stack, { direction: "column" }, [
             h(Text, "Description:"),
             h(InputGroup, [
+              // @ts-ignore
               h(AutosizeTextarea, {
                 defaultValue: defaultValueDesc,
+                // @ts-ignore
                 onChange: makeOnChange(onChangeDesc),
                 minRows: 2,
                 placeholder: "Optional",
@@ -120,6 +122,7 @@ export const View = ({
               h(
                 Button,
                 {
+                  type: "submit",
                   leftIcon: h(PlusSquareIcon),
                   size: "md",
                   isDisabled: isDisabledSubmit,
