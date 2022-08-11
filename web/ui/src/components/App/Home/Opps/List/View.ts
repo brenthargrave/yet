@@ -1,38 +1,29 @@
-import { AddIcon, EditIcon, SmallAddIcon } from "@chakra-ui/icons"
+import { SmallAddIcon } from "@chakra-ui/icons"
 import {
   Heading,
+  HStack,
+  IconButton,
   List,
-  ListIcon,
   ListItem,
   Spacer,
   VStack,
-  IconButton,
-  HStack,
 } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { ImEmbed } from "react-icons/im"
-import { NoteView } from "~/components/Note"
-import { isEmpty, join, map, prop } from "~/fp"
-import { Conversation, Customer, Maybe, Opp } from "~/graph"
-import { localizeDate } from "~/i18n"
+import { isEmpty } from "~/fp"
+import { Opp } from "~/graph"
 import {
   CreateButton,
   Divider,
   Header,
+  MarkdownView,
+  modalStyleProps,
   Stack,
   Text,
-  Status,
-  modalStyleProps,
-  MarkdownView,
-  Button,
 } from "~/system"
-import { ParticipantsView } from "~/system/ParticipantsView"
 import { EmptyOppsView, OnClickNew } from "./EmptyView"
 
 const { minHeight } = modalStyleProps
-
-type OnClickConversation = (c: Conversation) => void
 
 const isNotLastItem = <T>(idx: number, all: T[]) => !(idx + 1 === all.length)
 
@@ -43,15 +34,12 @@ export interface Props {
   onClickCreate?: OnClickNew
   opps: Opp[]
   // viewer: Maybe<Customer>
-  // onClickConversation: OnClickConversation
 }
 
 export const View: FC<Props> = ({
   onClickCreate,
   opps = [],
   // viewer,
-  // conversations,
-  // onClickConversation,
   // TODO: minHeight varies by render target (home vs. modal)
 }) =>
   isEmpty(opps)
@@ -64,78 +52,66 @@ export const View: FC<Props> = ({
         ]),
         h(List, { spacing: 4, paddingTop: 8 }, [
           ...opps.map(({ org, role, desc }, idx, all) => {
-            return h(
-              ListItem,
-              {
-                // style: { cursor: "pointer" },
-                onClick: console.debug,
-              },
-              [
-                h(
-                  Stack,
-                  {
-                    direction: "row",
-                    alignItems: "center",
-                    gap: 3,
-                  },
-                  [
-                    h(IconButton, {
-                      icon: h(SmallAddIcon),
-                      variant: "ghost",
-                      size: "lg",
-                    }),
-                    h(Divider, {
-                      //
-                      orientation: "vertical",
-                      h: "40px",
-                    }),
-                    h(
-                      Stack,
-                      {
-                        direction: "column",
-                        alignItems: "start",
-                        width: "100%",
-                        spacing: 1,
-                        style: { cursor: "pointer" },
-                      },
-                      [
-                        h(
-                          HStack,
-                          {
-                            width: "100%",
-                          },
-                          [
-                            h(
-                              VStack,
-                              {
-                                alignItems: "start",
-                                gap: 0,
-                                spacing: 1,
-                              },
-                              [
-                                h(MarkdownView, { md: `${bold(role)}` }),
-                                h(MarkdownView, { md: `${i(org)}` }),
-                              ]
-                            ),
-                            // h(Text, { size: "md" }, `${role} @ ${org}`),
-                            // h(VStack, { alignItems: "start" }, [
-                            //   h(Heading, { fontSize: "md" }, role),
-                            //   h(Text, { fontSize: "md" }, org),
-                            // ]),
-                            h(Spacer),
-                            // TODO: reward $
-                          ]
-                        ),
-                        desc && h(Text, { size: "md" }, desc),
-                      ]
-                    ),
-                  ]
-                ),
-                // TODO: redesign divider, right margin
-                isNotLastItem(idx, all) &&
-                  h(Divider, { padding: 2, width: "100%" }),
-              ]
-            )
+            return h(ListItem, {}, [
+              h(
+                Stack,
+                {
+                  direction: "row",
+                  alignItems: "center",
+                  gap: 3,
+                },
+                [
+                  h(IconButton, {
+                    icon: h(SmallAddIcon),
+                    variant: "ghost",
+                    size: "lg",
+                  }),
+                  h(Divider, {
+                    //
+                    orientation: "vertical",
+                    h: "40px",
+                  }),
+                  h(
+                    Stack,
+                    {
+                      direction: "column",
+                      alignItems: "start",
+                      width: "100%",
+                      spacing: 1,
+                      style: { cursor: "pointer" },
+                    },
+                    [
+                      h(
+                        HStack,
+                        {
+                          width: "100%",
+                        },
+                        [
+                          h(
+                            VStack,
+                            {
+                              alignItems: "start",
+                              gap: 0,
+                              spacing: 1,
+                            },
+                            [
+                              h(MarkdownView, { md: `${bold(role)}` }),
+                              h(MarkdownView, { md: `${i(org)}` }),
+                            ]
+                          ),
+                          h(Spacer),
+                          // TODO: reward $
+                        ]
+                      ),
+                      desc && h(Text, { size: "md", noOfLines: 1 }, desc),
+                    ]
+                  ),
+                ]
+              ),
+              // TODO: redesign divider, right margin
+              isNotLastItem(idx, all) &&
+                h(Divider, { padding: 2, width: "100%" }),
+            ])
           }),
         ]),
       ])
