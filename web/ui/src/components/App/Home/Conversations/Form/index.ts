@@ -462,7 +462,6 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
   const react = props$.pipe(
     map((props) =>
       h(View, {
-        key: tagPrefix,
         ...props,
         onSelect,
         onChangeNote,

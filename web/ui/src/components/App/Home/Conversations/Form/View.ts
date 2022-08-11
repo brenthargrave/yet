@@ -37,7 +37,6 @@ export interface Props
   onClickAddOpp?: () => void
   onCloseAddOpp?: () => void
   oppsView: ReactNode
-  key?: string
 }
 
 export const View = ({
@@ -69,13 +68,11 @@ export const View = ({
   onClickAddOpp,
   onCloseAddOpp: onCloseAddApp,
   oppsView,
-  key,
   ...props
 }: Props) =>
   h(
     Stack,
     {
-      key,
       direction: "column",
       align: "start",
       justifyContent: "flex-start",

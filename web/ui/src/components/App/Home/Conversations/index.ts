@@ -1,6 +1,7 @@
 import { ReactSource } from "@cycle/react"
 import {
   merge,
+  map,
   switchMap,
   share,
   distinctUntilChanged,
@@ -14,6 +15,13 @@ import { Edit } from "./Edit"
 import { List } from "./List"
 import { Main as Single } from "./Single"
 import { makeTagger } from "~/log"
+
+enum State {
+  create = "create",
+  edit = "edit",
+  list = "list",
+  single = "single",
+}
 
 interface Sources {
   react: ReactSource
@@ -35,8 +43,8 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
   const edit = Edit(sources, tagScope)
   const create = Create(sources, tagScope)
 
-  const react = history$.pipe(
-    switchMap((route) =>
+  const state$ = history$.pipe(
+    map((route) =>
       match(route.name)
         .with(
           P.union(
@@ -45,16 +53,31 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
             routes.newConversationNewOpp.name,
             routes.newConversationOpp.name
           ),
-          () => create.react
+          () => State.create
         )
-        .with(routes.editConversation.name, () => edit.react)
-        .with(routes.conversations.name, () => list.react)
+        .with(routes.editConversation.name, () => State.edit)
+        .with(routes.conversations.name, () => State.list)
         .with(
           P.union(routes.signConversation.name, routes.conversation.name),
-          () => single.react
+          () => State.single
         )
-        .otherwise(() => list.react)
+        .otherwise(() => State.list)
     ),
+    distinctUntilChanged(),
+    tag("state$"),
+    share()
+  )
+
+  const react = state$.pipe(
+    switchMap((state) =>
+      match(state)
+        .with(State.create, () => create.react)
+        .with(State.edit, () => edit.react)
+        .with(State.list, () => list.react)
+        .with(State.single, () => single.react)
+        .exhaustive()
+    ),
+    tag("react"),
     share()
   )
 

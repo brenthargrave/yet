@@ -1,17 +1,23 @@
 import { h, ReactSource } from "@cycle/react"
 import {
-  share,
   combineLatest,
-  map,
-  switchMap,
   distinctUntilChanged,
+  map,
+  share,
+  switchMap,
 } from "rxjs"
+import { match } from "ts-pattern"
 import { Onboarding } from "~/components/Onboarding"
 import { isAuthenticated, isOnboarding, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { Source as RouterSource } from "~/router"
 import { Conversations } from "./Conversations"
 import { View } from "./View"
+
+enum State {
+  onboarding = "onboarding",
+  root = "root",
+}
 
 interface Sources {
   react: ReactSource
@@ -40,10 +46,23 @@ export const Home = (sources: Sources) => {
     tag("rootView$")
   )
 
-  const react = combineLatest({ me }).pipe(
-    switchMap(({ me }) =>
-      isAuthenticated(me) && isOnboarding(me) ? onboarding.react : rootView$
+  const state$ = combineLatest({ me }).pipe(
+    map(({ me }) =>
+      isAuthenticated(me) && isOnboarding(me) ? State.onboarding : State.root
     ),
+    distinctUntilChanged(),
+    tag("state$"),
+    share()
+  )
+
+  const react = state$.pipe(
+    switchMap((state) =>
+      match(state)
+        .with(State.onboarding, () => onboarding.react)
+        .with(State.root, () => rootView$)
+        .exhaustive()
+    ),
+    tag("react"),
     share()
   )
 

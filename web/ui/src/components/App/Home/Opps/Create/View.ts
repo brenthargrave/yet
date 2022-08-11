@@ -31,7 +31,6 @@ const makeOnChange =
   }
 
 export interface Props {
-  key?: string
   showNav?: boolean
   onChangeOrg?: () => void
   defaultValueOrg?: string
@@ -45,7 +44,6 @@ export interface Props {
 }
 
 export const View = ({
-  key,
   showNav = false,
   onChangeOrg,
   defaultValueOrg,
@@ -65,7 +63,6 @@ export const View = ({
   return h(
     Stack,
     {
-      key,
       direction: "column",
       align: "start",
       justifyContent: "flex-start",

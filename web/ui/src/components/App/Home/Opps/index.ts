@@ -56,13 +56,13 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     startWith(State.list),
     distinctUntilChanged(),
     tag("routerIntent$"),
-    shareLatest()
+    share()
   )
 
   const state$ = merge(routerIntent$, list.value.action).pipe(
-    tag("state$"),
     distinctUntilChanged(),
-    shareLatest()
+    tag("state$"),
+    share()
   )
 
   const react = state$.pipe(

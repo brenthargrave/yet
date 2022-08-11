@@ -1,6 +1,14 @@
 import { h, ReactSource } from "@cycle/react"
 import { captureException } from "@sentry/react"
-import { combineLatest, debounceTime, EMPTY, merge, Observable, of } from "rxjs"
+import {
+  distinctUntilChanged,
+  combineLatest,
+  debounceTime,
+  EMPTY,
+  merge,
+  Observable,
+  of,
+} from "rxjs"
 import { map, switchMap } from "rxjs/operators"
 import { match } from "ts-pattern"
 import { Auth } from "~/components/Auth"
@@ -28,6 +36,12 @@ const tag = makeTagger("App")
 
 // @ts-ignore
 const { VITE_API_ENV } = import.meta.env
+
+enum State {
+  auth = "auth",
+  landing = "landing",
+  home = "home",
+}
 
 export interface Sources {
   react: ReactSource
@@ -65,16 +79,31 @@ export const App = (sources: Sources) => {
     tag("me$")
   )
 
-  const bodyView$ = combineLatest({ route: history$, me: me$ }).pipe(
+  const state$ = combineLatest({
+    route: history$,
+    me: me$,
+  }).pipe(
     debounceTime(100),
-    switchMap(({ route, me }) => {
+    map(({ route, me }) => {
       return match(route.name)
-        .with(routes.in.name, () => authView$)
+        .with(routes.in.name, () => State.auth)
         .with(routes.root.name, () =>
-          isLurking(me) ? landingView$ : homeView$
+          isLurking(me) ? State.landing : State.home
         )
-        .otherwise(() => homeView$)
+        .otherwise(() => State.home)
     }),
+    distinctUntilChanged(),
+    tag("state$")
+  )
+
+  const bodyView$ = state$.pipe(
+    switchMap((state) =>
+      match(state)
+        .with(State.landing, () => landingView$)
+        .with(State.auth, () => authView$)
+        .with(State.home, () => homeView$)
+        .exhaustive()
+    ),
     tag("bodyView$")
   )
 
