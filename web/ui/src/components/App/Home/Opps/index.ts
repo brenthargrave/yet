@@ -1,23 +1,19 @@
 import { ReactSource } from "@cycle/react"
 import {
-  Observable,
-  startWith,
-  EMPTY,
-  merge,
-  of,
-  share,
-  switchMap,
-  map,
   distinctUntilChanged,
+  map,
+  merge,
+  share,
+  startWith,
+  switchMap,
 } from "rxjs"
 import { match } from "ts-pattern"
 import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { routes, Source as RouterSource } from "~/router"
-import { Main as List } from "./List"
 import { Main as Create } from "./Create"
 import { Main as Edit } from "./Edit"
-import { shareLatest } from "~/rx"
+import { Main as List } from "./List"
 
 export enum State {
   list = "list",

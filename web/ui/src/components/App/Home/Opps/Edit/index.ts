@@ -6,7 +6,6 @@ import { getOpp$, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { routes, Source as RouterSource } from "~/router"
-import { shareLatest } from "~/rx"
 import { Main as Form } from "../Form"
 
 interface Sources {
@@ -33,22 +32,18 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
         .otherwise(() => EMPTY)
     ),
     tag("id$"),
-    shareLatest()
+    share()
   )
 
   const result$ = id$.pipe(
     switchMap((id) => getOpp$(id)),
     tag("result$"),
-    shareLatest()
+    share()
   )
 
-  const record$ = result$.pipe(filterResultOk(), tag("record$"), shareLatest())
+  const record$ = result$.pipe(filterResultOk(), tag("record$"), share())
 
-  const userError$ = result$.pipe(
-    filterResultErr(),
-    tag("userError$"),
-    shareLatest()
-  )
+  const userError$ = result$.pipe(filterResultErr(), tag("userError$"), share())
 
   const userErrorNotice$ = userError$.pipe(
     map(({ message }) => error({ description: message })),

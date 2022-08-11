@@ -1,20 +1,13 @@
 import { ReactSource } from "@cycle/react"
-import {
-  merge,
-  map,
-  switchMap,
-  share,
-  distinctUntilChanged,
-  distinctUntilKeyChanged,
-} from "rxjs"
+import { distinctUntilChanged, map, merge, share, switchMap } from "rxjs"
 import { match, P } from "ts-pattern"
 import { Source as GraphSource } from "~/graph"
+import { makeTagger } from "~/log"
 import { routes, Source as RouterSource } from "~/router"
 import { Main as Create } from "./Create"
 import { Edit } from "./Edit"
 import { List } from "./List"
 import { Main as Single } from "./Single"
-import { makeTagger } from "~/log"
 
 enum State {
   create = "create",

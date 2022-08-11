@@ -21,16 +21,8 @@ import {
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { filterResultOk } from "ts-results/rxjs-operators"
-import { hide } from "rxjs-spy/cjs/operators"
-import {
-  filter as _filter,
-  and,
-  includes,
-  map as _map,
-  not,
-  pluck as _pluck,
-  prop,
-} from "~/fp"
+import { Main as Opps } from "~/components/App/Home/Opps"
+import { and, includes, map as _map, not, pluck as _pluck, prop } from "~/fp"
 import {
   Contact,
   Conversation,
@@ -63,7 +55,6 @@ import {
 } from "~/router"
 import { cb$, mapTo, shareLatest } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
-import { Main as Opps } from "~/components/App/Home/Opps"
 
 const contactsToOptions = (contacts: Contact[]): SelectedOption[] =>
   contacts.map(({ id, name }, idx, _) => {
