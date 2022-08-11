@@ -23,6 +23,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
 
   const [onClickCreate, onClickCreate$] = cb$(tag("onClickNew$"))
   const [onClickOpp, onClickOpp$] = cb$<Opp>(tag("onClickOpp$"))
+  // TODO: embed link in note
   const [onClickAdd, onClickAdd$] = cb$<Opp>(tag("onClickAdd$"))
 
   const showCreate$ = onClickCreate$.pipe(
