@@ -39,7 +39,7 @@ export enum Target {
 const headerCopy = (target: Target) =>
   match(target)
     .with(Target.create, () => "Opportunity")
-    .with(Target.edit, () => "Update opportunity")
+    .with(Target.edit, () => "Opportunity")
     .exhaustive()
 
 export interface Props {

@@ -51,7 +51,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const {
     graph: { opps$ },
     router: { history$ },
-    props: { record$ },
+    props: { record$, target },
   } = sources
 
   const id$ = record$.pipe(pluck("id"), tag("id$"), share())
@@ -145,6 +145,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     map((props) =>
       h(View, {
         ...props,
+        target,
         onChangeOrg,
         onChangeRole,
         onChangeDesc,
