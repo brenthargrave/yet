@@ -26,12 +26,15 @@ import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { push, routes, Source as RouterSource } from "~/router"
 import { cb$ } from "~/rx"
-import { View } from "./View"
+import { View, Target } from "./View"
+
+export { Target }
 
 type EditableOpp = Omit<Opp, "creator">
 
 interface Props {
   record$: Observable<EditableOpp>
+  target: Target
 }
 
 interface Sources {

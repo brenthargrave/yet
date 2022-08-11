@@ -6,7 +6,7 @@ import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { routes, Source as RouterSource } from "~/router"
 import { shareLatest } from "~/rx"
-import { Main as Form } from "../Form"
+import { Main as Form, Target } from "../Form"
 
 interface Sources {
   react: ReactSource
@@ -43,7 +43,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const { react, router, notice } = Form(
     {
       ...sources,
-      props: { record$ },
+      props: { record$, target: Target.create },
     },
     tagScope
   )

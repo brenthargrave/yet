@@ -7,6 +7,7 @@ import {
   DeleteIcon,
 } from "@chakra-ui/icons"
 import { form } from "@cycle/react-dom"
+import { match } from "ts-pattern"
 import {
   Divider,
   Button,
@@ -30,7 +31,19 @@ const makeOnChange =
     if (cb) cb(value)
   }
 
+export enum Target {
+  create = "create",
+  edit = "edit",
+}
+
+const headerCopy = (target: Target) =>
+  match(target)
+    .with(Target.create, () => "Opportunity")
+    .with(Target.edit, () => "Update opportunity")
+    .exhaustive()
+
 export interface Props {
+  target?: Target
   showNav?: boolean
   onChangeOrg?: () => void
   defaultValueOrg?: string
@@ -44,6 +57,7 @@ export interface Props {
 }
 
 export const View = ({
+  target = Target.create,
   showNav = false,
   onChangeOrg,
   defaultValueOrg,
@@ -76,8 +90,11 @@ export const View = ({
           }),
           h(Spacer),
         ]),
-      // TODO: `Edit/Update Opportunity
-      h(Header, [h(Heading, { size: "md" }, "Opportunity"), h(Spacer)]),
+      h(Header, [
+        //
+        h(Heading, { size: "md" }, headerCopy(target)),
+        h(Spacer),
+      ]),
       form({ onSubmit, style: { width: "100%" } }, [
         h(Stack, { direction: "column", width: "100%", padding: 4, gap: 4 }, [
           // TODO: org
