@@ -6,6 +6,8 @@ import {
   ListItem,
   Spacer,
   VStack,
+  IconButton,
+  HStack,
 } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
@@ -24,7 +26,6 @@ import {
   modalStyleProps,
   MarkdownView,
   Button,
-  IconButton,
 } from "~/system"
 import { ParticipantsView } from "~/system/ParticipantsView"
 import { EmptyOppsView, OnClickNew } from "./EmptyView"
@@ -78,11 +79,15 @@ export const View: FC<Props> = ({
                     gap: 3,
                   },
                   [
-                    // h(ListIcon, { as: SmallAddIcon }),
                     h(IconButton, {
                       icon: h(SmallAddIcon),
                       variant: "ghost",
                       size: "lg",
+                    }),
+                    h(Divider, {
+                      //
+                      orientation: "vertical",
+                      h: "40px",
                     }),
                     h(
                       Stack,
@@ -90,49 +95,40 @@ export const View: FC<Props> = ({
                         direction: "column",
                         alignItems: "start",
                         width: "100%",
+                        spacing: 1,
+                        style: { cursor: "pointer" },
                       },
                       [
-                        h(Stack, { direction: "row", alignItems: "center" }, [
-                          h(
-                            VStack,
-                            { alignItems: "start", gap: 0, spacing: 0 },
-                            [
-                              h(MarkdownView, { md: `${bold(role)}` }),
-                              h(MarkdownView, { md: `${i(org)}` }),
-                            ]
-                          ),
-                          // h(Text, { size: "md" }, `${role} @ ${org}`),
-                          // h(VStack, { alignItems: "start" }, [
-                          //   h(Heading, { fontSize: "md" }, role),
-                          //   h(Text, { fontSize: "md" }, org),
-                          // ]),
-                          h(Spacer),
-                          // TODO: reward $
-                        ]),
+                        h(
+                          HStack,
+                          {
+                            width: "100%",
+                          },
+                          [
+                            h(
+                              VStack,
+                              {
+                                alignItems: "start",
+                                gap: 0,
+                                spacing: 1,
+                              },
+                              [
+                                h(MarkdownView, { md: `${bold(role)}` }),
+                                h(MarkdownView, { md: `${i(org)}` }),
+                              ]
+                            ),
+                            // h(Text, { size: "md" }, `${role} @ ${org}`),
+                            // h(VStack, { alignItems: "start" }, [
+                            //   h(Heading, { fontSize: "md" }, role),
+                            //   h(Text, { fontSize: "md" }, org),
+                            // ]),
+                            h(Spacer),
+                            // TODO: reward $
+                          ]
+                        ),
                         desc && h(Text, { size: "md" }, desc),
                       ]
                     ),
-                    h(VStack, {}, [
-                      h(
-                        Button,
-                        {
-                          // variant: "ghost",
-                          variant: "outline",
-                          leftIcon: h(ImEmbed),
-                          size: "xs",
-                        },
-                        `Add to conversation`
-                      ),
-                      h(
-                        Button,
-                        {
-                          variant: "outline",
-                          leftIcon: h(EditIcon),
-                          size: "xs",
-                        },
-                        `Edit`
-                      ),
-                    ]),
                   ]
                 ),
                 // TODO: redesign divider, right margin
