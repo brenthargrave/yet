@@ -30,3 +30,9 @@ mutation UpsertOpp($input: OppInput!) {
     ...OppPayloadProps
   }
 }
+
+query GetOpp($id: ID!) {
+  getOpp(id: $id) {
+    ...OppPayloadProps
+  }
+}

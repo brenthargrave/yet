@@ -13,12 +13,14 @@ import { match } from "ts-pattern"
 import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { routes, Source as RouterSource } from "~/router"
-import { Main as Create } from "./Create"
 import { Main as List } from "./List"
+import { Main as Create } from "./Create"
+import { Main as Edit } from "./Edit"
 
 export enum State {
   list = "list",
   create = "create",
+  edit = "edit",
 }
 
 interface Sources {
@@ -38,12 +40,15 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
 
   const list = List(sources, tagScope)
   const create = Create(sources, tagScope)
+  const edit = Edit(sources, tagScope)
+  // TODO: edit vs. show based on viewer
 
   const routerIntent$ = history$.pipe(
     map((route) =>
       match(route.name)
         .with(routes.newConversationOpps.name, () => State.list)
         .with(routes.newConversationNewOpp.name, () => State.create)
+        .with(routes.newConversationOpp.name, () => State.edit)
         .otherwise(() => State.list)
     ),
     startWith(State.list),
@@ -58,14 +63,15 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
       match(state)
         .with(State.list, () => list.react)
         .with(State.create, () => create.react)
+        .with(State.edit, () => edit.react)
         .exhaustive()
     ),
     tag("react"),
     share()
   )
 
-  const router = merge(list.router, create.router)
-  const notice = merge(create.notice)
+  const router = merge(list.router, create.router, edit.router)
+  const notice = merge(create.notice, edit.notice)
 
   return {
     react,

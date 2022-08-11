@@ -38,6 +38,7 @@ import {
   EventName,
   EventProperties,
   GetConversationsDocument,
+  GetOppDocument,
   GetOppsDocument,
   MeDocument,
   OppInput,
@@ -516,5 +517,32 @@ export const upsertOpp$ = (input: OppInput) => {
       return userError ? new Err(userError) : new Ok(opp)
     }),
     tag("upsertConversation$")
+  )
+}
+
+export const getOpp$ = (id: string) => {
+  return merge(
+    from(
+      client.query({
+        query: GetOppDocument,
+        variables: { id },
+        fetchPolicy: "network-only",
+      })
+    ).pipe(
+      map(({ data, errors }) => {
+        if (errors) throw new GraphError(JSON.stringify(errors))
+        return data
+      })
+    )
+  ).pipe(
+    map((data) => {
+      const { userError, opp } = data!.getOpp!
+      return userError ? new Err(userError) : new Ok(opp!)
+    }),
+    catchError((error, _caught$) => {
+      console.error(error)
+      throw new GraphDefaultQueryError(error.message)
+    }),
+    tag("getOpp$")
   )
 }

@@ -37,5 +37,10 @@ defmodule AppWeb.Graph.Opps do
     field :get_opps, :opps_payload do
       resolve(&Opps.get_opps/3)
     end
+
+    field :get_opp, :opp_payload do
+      arg(:id, non_null(:id))
+      resolve(&Opps.get_opp/3)
+    end
   end
 end

@@ -26,7 +26,7 @@ defmodule App.Opps do
   defun upsert_opp(
           customer,
           input
-        ) :: Brex.Result.s(Conversation.t()) do
+        ) :: Brex.Result.s(Opp.t()) do
     attrs = Map.put(input, :creator, customer)
 
     Repo.get(Opp, attrs.id)
@@ -43,5 +43,11 @@ defmodule App.Opps do
     |> bind(&Repo.insert_or_update(&1))
     |> fmap(&Repo.preload(&1, @preloads))
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
+  end
+
+  defun get_opp(id :: id()) :: Brex.Result.s(Opp.t()) do
+    Repo.get(Opp, id)
+    |> Repo.preload(@preloads)
+    |> lift(nil, :not_found)
   end
 end

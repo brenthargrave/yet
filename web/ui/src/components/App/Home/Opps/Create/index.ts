@@ -40,14 +40,13 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const form = Form(
+  const { react, router, notice } = Form(
     {
       ...sources,
       props: { record$ },
     },
     tagScope
   )
-  const { react, router, notice } = form
 
   return {
     react,

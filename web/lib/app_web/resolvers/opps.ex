@@ -5,7 +5,7 @@ defmodule AppWeb.Resolvers.Opps do
   use Brex.Result
   alias App.Opps
   alias App.Opp
-  # alias App.UserError
+  alias App.UserError
   require Logger
 
   typedstruct module: OppsPayload do
@@ -37,5 +37,15 @@ defmodule AppWeb.Resolvers.Opps do
 
   def get_opps(_parent, _args, _resolution) do
     ok([])
+  end
+
+  defun get_opp(
+          _parent,
+          %{id: id} = _args,
+          _resolution
+        ) :: resolver_result(OppPayload.t()) do
+    Opps.get_opp(id)
+    |> fmap(&%OppPayload{opp: &1})
+    |> convert_error(:not_found, %OppPayload{user_error: UserError.not_found()})
   end
 end
