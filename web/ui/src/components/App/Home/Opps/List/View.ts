@@ -23,6 +23,7 @@ import {
 } from "~/system"
 import { EmptyOppsView, OnClickNew } from "./EmptyView"
 
+// TODO: minHeight varies by render target (home vs. modal)
 const { minHeight } = modalStyleProps
 
 const isNotLastItem = <T>(idx: number, all: T[]) => !(idx + 1 === all.length)
@@ -34,13 +35,16 @@ export interface Props {
   onClickCreate?: OnClickNew
   opps: Opp[]
   // viewer: Maybe<Customer>
+  onClickAdd?: (opp: Opp) => void
+  onClickOpp?: (opp: Opp) => void
 }
 
 export const View: FC<Props> = ({
   onClickCreate,
   opps = [],
+  onClickAdd = () => null,
+  onClickOpp = () => null,
   // viewer,
-  // TODO: minHeight varies by render target (home vs. modal)
 }) =>
   isEmpty(opps)
     ? h(EmptyOppsView, { minHeight, onClickCreate })
@@ -51,7 +55,8 @@ export const View: FC<Props> = ({
           h(CreateButton, { onClick: onClickCreate, cta: `New opp` }),
         ]),
         h(List, { spacing: 4, paddingTop: 8 }, [
-          ...opps.map(({ org, role, desc }, idx, all) => {
+          ...opps.map((opp, idx, all) => {
+            const { org, role, desc } = opp
             return h(ListItem, {}, [
               h(
                 Stack,
@@ -65,6 +70,7 @@ export const View: FC<Props> = ({
                     icon: h(SmallAddIcon),
                     variant: "ghost",
                     size: "lg",
+                    onClick: () => onClickAdd(opp),
                   }),
                   h(Divider, {
                     //
@@ -79,6 +85,7 @@ export const View: FC<Props> = ({
                       width: "100%",
                       spacing: 1,
                       style: { cursor: "pointer" },
+                      onClick: () => onClickOpp(opp),
                     },
                     [
                       h(
