@@ -8,6 +8,7 @@ import {
   share,
   switchMap,
   map,
+  distinctUntilChanged,
 } from "rxjs"
 import { match } from "ts-pattern"
 import { Source as GraphSource } from "~/graph"
@@ -16,6 +17,7 @@ import { routes, Source as RouterSource } from "~/router"
 import { Main as List } from "./List"
 import { Main as Create } from "./Create"
 import { Main as Edit } from "./Edit"
+import { shareLatest } from "~/rx"
 
 export enum State {
   list = "list",
@@ -52,11 +54,16 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
         .otherwise(() => State.list)
     ),
     startWith(State.list),
-    tag("state$"),
-    share()
+    distinctUntilChanged(),
+    tag("routerIntent$"),
+    shareLatest()
   )
 
-  const state$ = merge(routerIntent$, list.value.action)
+  const state$ = merge(routerIntent$, list.value.action).pipe(
+    tag("state$"),
+    distinctUntilChanged(),
+    shareLatest()
+  )
 
   const react = state$.pipe(
     switchMap((state) =>

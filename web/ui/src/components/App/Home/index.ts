@@ -1,13 +1,17 @@
 import { h, ReactSource } from "@cycle/react"
-import { combineLatest, map, switchMap } from "rxjs"
+import {
+  share,
+  combineLatest,
+  map,
+  switchMap,
+  distinctUntilChanged,
+} from "rxjs"
 import { Onboarding } from "~/components/Onboarding"
 import { isAuthenticated, isOnboarding, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { Source as RouterSource } from "~/router"
 import { Conversations } from "./Conversations"
 import { View } from "./View"
-
-const tag = makeTagger("Home")
 
 interface Sources {
   react: ReactSource
@@ -17,6 +21,8 @@ interface Sources {
 
 export const Home = (sources: Sources) => {
   const tagScope = "Home"
+  const tag = makeTagger(tagScope)
+
   const {
     graph: { me$: me },
   } = sources
@@ -37,7 +43,8 @@ export const Home = (sources: Sources) => {
   const react = combineLatest({ me }).pipe(
     switchMap(({ me }) =>
       isAuthenticated(me) && isOnboarding(me) ? onboarding.react : rootView$
-    )
+    ),
+    share()
   )
 
   return {

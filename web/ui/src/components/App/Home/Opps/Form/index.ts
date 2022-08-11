@@ -25,7 +25,7 @@ import {
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { push, routes, Source as RouterSource } from "~/router"
-import { cb$, shareLatest } from "~/rx"
+import { cb$ } from "~/rx"
 import { View } from "./View"
 
 type EditableOpp = Omit<Opp, "creator">
@@ -51,10 +51,10 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     props: { record$ },
   } = sources
 
-  const id$ = record$.pipe(pluck("id"), tag("id$"), shareLatest())
-  const recordOrg$ = record$.pipe(pluck("org"), tag("org$"), shareLatest())
-  const recordRole$ = record$.pipe(pluck("role"), tag("role$"), shareLatest())
-  const recordDesc$ = record$.pipe(pluck("desc"), tag("desc$"), shareLatest())
+  const id$ = record$.pipe(pluck("id"), tag("id$"), share())
+  const recordOrg$ = record$.pipe(pluck("org"), tag("recordOrg$"), share())
+  const recordRole$ = record$.pipe(pluck("role"), tag("recordRole$"), share())
+  const recordDesc$ = record$.pipe(pluck("desc"), tag("recordDesc$"), share())
 
   const [onChangeOrg, onChangeOrg$] = cb$<string>(tag("onChangeOrg$"))
   const [onChangeRole, onChangeRole$] = cb$<string>(tag("onChangeRole$"))
@@ -98,7 +98,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     tag("isValid$"),
     startWith(false),
     distinctUntilChanged(),
-    shareLatest()
+    share()
   )
 
   const isDisabledSubmit$ = isValid$.pipe(
@@ -106,7 +106,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     startWith(true),
     distinctUntilChanged(),
     tag("isDisabledSubmit$"),
-    shareLatest()
+    share()
   )
 
   const submit$ = onSubmit$.pipe(
@@ -136,7 +136,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     defaultValueRole: recordRole$,
     defaultValueDesc: recordDesc$,
     isDisabledSubmit: isDisabledSubmit$,
-  }).pipe(tag("props$"), share())
+  }).pipe(tag("props$"))
 
   const react = props$.pipe(
     map((props) =>
