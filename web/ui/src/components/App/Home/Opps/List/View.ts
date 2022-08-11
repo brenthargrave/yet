@@ -21,8 +21,7 @@ const { minHeight } = modalStyleProps
 
 type OnClickConversation = (c: Conversation) => void
 
-const isNotLastItem = (idx: number, all: Conversation[]) =>
-  !(idx + 1 === all.length)
+const isNotLastItem = <T>(idx: number, all: T[]) => !(idx + 1 === all.length)
 
 export interface Props {
   onClickCreate?: OnClickNew
@@ -43,57 +42,42 @@ export const View: FC<Props> = ({
     ? h(EmptyOppsView, { minHeight, onClickCreate })
     : h(Stack, { minHeight, direction: "column" }, [
         h(Header, [
-          h(Heading, { size: "md" }, "Your Opportunities"),
+          // TODO: vary by render target: `Your Opportunities
+          h(Heading, { size: "md" }, "Select Opportunity"),
           h(Spacer),
-          h(CreateButton, { onClick: onClickCreate, cta: `Create new opp` }),
+          h(CreateButton, { onClick: onClickCreate, cta: `New opp` }),
+        ]),
+        h(List, { spacing: 8, padding: 4 }, [
+          ...opps.map(({ org, role, desc }, idx, all) => {
+            return h(
+              ListItem,
+              {
+                padding: 0,
+                style: { cursor: "pointer" },
+                onClick: console.debug,
+              },
+              [
+                h(Stack, { direction: "row", alignItems: "center" }, [
+                  h(
+                    Stack,
+                    { direction: "column", alignItems: "start", width: "100%" },
+                    [
+                      h(Stack, { direction: "row", alignItems: "center" }, [
+                        h(Text, { size: "md" }, `${role} @ ${org}`),
+                        h(Spacer),
+                        // TODO: reward $
+                      ]),
+                      desc && h(Text, { size: "md" }, desc),
+                    ]
+                  ),
+                ]),
+                // TODO: redesign divider, right margin
+                isNotLastItem(idx, all) &&
+                  h(Divider, { padding: 4, width: "100%" }),
+              ]
+            )
+          }),
         ]),
       ])
-//     h(
-//       List,
-//       { spacing: 8, padding: 4 },
-//       conversations.map((conversation, idx, all) => {
-//         const { creator, signatures, invitees, note, occurredAt, status } =
-//           conversation
-//         const signers = map((sig) => sig.signer, signatures)
-//         return h(
-//           ListItem,
-//           {
-//             padding: 0,
-//             style: { cursor: "pointer" },
-//             onClick: (event: MouseEvent) => {
-//               // NOTE: ignore markdown link clicks
-//               // @ts-ignore
-//               const { href } = event.target
-//               if (!href) onClickConversation(conversation)
-//             },
-//           },
-//           [
-//             h(Stack, { direction: "column" }, [
-//               h(Stack, { direction: "row", alignItems: "center" }, [
-//                 h(ParticipantsView, {
-//                   viewer,
-//                   status,
-//                   creator,
-//                   invitees,
-//                   signers,
-//                 }),
-//                 // h(Heading, { size: "sm" }, [
-//                 //   // TODO: replace invitees w/ state-dep list
-//                 //   join(", ", map(prop("name"), invitees)),
-//                 // ]),
-//                 h(Spacer),
-//                 h(Stack, { direction: "column", alignItems: "end" }, [
-//                   h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
-//                   h(Status, { status }),
-//                 ]),
-//               ]),
-//               h(NoteView, { note, maxLines: 10 }),
-//             ]),
-//             isNotLastItem(idx, all) && h(Divider, { padding: 4 }),
-//           ]
-//         )
-//       })
-//     ),
-// ])
 
 View.displayName = "Conversation.List.View"

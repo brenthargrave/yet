@@ -416,7 +416,7 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
   // ).pipe(startWith(false), tag("isOpenAddOpp$"), shareLatest())
 
   const showOpps$ = onClickAddOpp$.pipe(
-    mapTo(push(routes.newConversationNewOpp())),
+    mapTo(push(routes.newConversationOpps())),
     tag("showOpp$"),
     share()
   )
