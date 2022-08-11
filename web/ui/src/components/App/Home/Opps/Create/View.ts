@@ -76,6 +76,7 @@ export const View = ({
           }),
           h(Spacer),
         ]),
+      // TODO: `Edit/Update Opportunity
       h(Header, [h(Heading, { size: "md" }, "Opportunity"), h(Spacer)]),
       form({ onSubmit, style: { width: "100%" } }, [
         h(Stack, { direction: "column", width: "100%", padding: 4, gap: 4 }, [
@@ -125,7 +126,8 @@ export const View = ({
                 Button,
                 {
                   type: "submit",
-                  leftIcon: h(PlusSquareIcon),
+                  // leftIcon: h(PlusSquareIcon),
+                  leftIcon: h(CheckIcon),
                   size: "md",
                   isDisabled: isDisabledSubmit,
                 },
