@@ -29,7 +29,8 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
           P.union(
             routes.newConversation.name,
             routes.newConversationOpps.name,
-            routes.newConversationNewOpp.name
+            routes.newConversationNewOpp.name,
+            routes.newConversationOpp.name
           ),
           () =>
             of({

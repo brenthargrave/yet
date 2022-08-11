@@ -23,6 +23,7 @@ import { and, not } from "~/fp"
 import {
   isValidOrg,
   isValidRole,
+  Opp,
   Source as GraphSource,
   upsertOpp$,
 } from "~/graph"

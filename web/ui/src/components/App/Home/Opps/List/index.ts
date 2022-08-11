@@ -1,6 +1,6 @@
 import { h, ReactSource } from "@cycle/react"
 import { combineLatest, map, share, merge } from "rxjs"
-import { Source as GraphSource } from "~/graph"
+import { Source as GraphSource, Opp } from "~/graph"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
 import { cb$, mapTo } from "~/rx"
@@ -22,14 +22,18 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   } = sources
 
   const [onClickCreate, onClickCreate$] = cb$(tag("onClickNew$"))
+  const [onClickOpp, onClickOpp$] = cb$<Opp>(tag("onClickOpp$"))
+  const [onClickAdd, onClickAdd$] = cb$<Opp>(tag("onClickAdd$"))
+
   const showCreate$ = onClickCreate$.pipe(
     mapTo(push(routes.newConversationNewOpp())),
     tag("showCreate$")
   )
-  // const showCreate$ = onClickCreate$.pipe(
-  //   mapTo(State.create),
-  //   tag("showCreate$")
-  // )
+
+  const showSingle$ = onClickOpp$.pipe(
+    map(({ id }) => push(routes.newConversationOpp({ id }))),
+    tag("showSingle$")
+  )
 
   const props$ = combineLatest({
     opps: opps$,
@@ -40,15 +44,14 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
       h(View, {
         ...props,
         onClickCreate,
+        onClickAdd,
+        onClickOpp,
       })
     ),
     tag("react")
   )
 
-  // const router = merge()
-  const router = merge(showCreate$)
-
-  // const action = merge(showCreate$)
+  const router = merge(showCreate$, showSingle$)
   const action = merge()
   const value = { action }
 
