@@ -1,5 +1,5 @@
 import { ReactSource } from "@cycle/react"
-import { EMPTY, map, of, share, switchMap } from "rxjs"
+import { EMPTY, map, merge, of, share, switchMap } from "rxjs"
 import { match } from "ts-pattern"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { getOpp$, Source as GraphSource } from "~/graph"
@@ -56,13 +56,16 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const { react, router, notice } = Form(
+  const form = Form(
     {
       ...sources,
       props: { record$ },
     },
     tagScope
   )
+
+  const notice = merge(form.notice, userErrorNotice$)
+  const { react, router } = form
 
   return {
     react,

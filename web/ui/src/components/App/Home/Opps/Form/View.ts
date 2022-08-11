@@ -139,8 +139,8 @@ export const View = ({
                 {
                   variant: "ghost",
                   // leftIcon: h(DeleteIcon),
-                  // leftIcon: h(ChevronLeftIcon),
-                  leftIcon: h(SmallCloseIcon),
+                  leftIcon: h(ChevronLeftIcon),
+                  // leftIcon: h(SmallCloseIcon),
                   size: "sm",
                   onClick: onCancel,
                 },
