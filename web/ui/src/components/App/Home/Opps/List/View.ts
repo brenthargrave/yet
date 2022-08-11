@@ -24,6 +24,7 @@ import {
   modalStyleProps,
   MarkdownView,
   Button,
+  IconButton,
 } from "~/system"
 import { ParticipantsView } from "~/system/ParticipantsView"
 import { EmptyOppsView, OnClickNew } from "./EmptyView"
@@ -60,12 +61,12 @@ export const View: FC<Props> = ({
           h(Spacer),
           h(CreateButton, { onClick: onClickCreate, cta: `New opp` }),
         ]),
-        h(List, { spacing: 4, paddingTop: 4 }, [
+        h(List, { spacing: 4, paddingTop: 8 }, [
           ...opps.map(({ org, role, desc }, idx, all) => {
             return h(
               ListItem,
               {
-                style: { cursor: "pointer" },
+                // style: { cursor: "pointer" },
                 onClick: console.debug,
               },
               [
@@ -78,6 +79,11 @@ export const View: FC<Props> = ({
                   },
                   [
                     // h(ListIcon, { as: SmallAddIcon }),
+                    h(IconButton, {
+                      icon: h(SmallAddIcon),
+                      variant: "ghost",
+                      size: "lg",
+                    }),
                     h(
                       Stack,
                       {
@@ -110,20 +116,21 @@ export const View: FC<Props> = ({
                       h(
                         Button,
                         {
-                          variant: "ghost",
+                          // variant: "ghost",
+                          variant: "outline",
                           leftIcon: h(ImEmbed),
                           size: "xs",
-                        }
-                        // `Edit`
+                        },
+                        `Add to conversation`
                       ),
                       h(
                         Button,
                         {
-                          variant: "ghost",
+                          variant: "outline",
                           leftIcon: h(EditIcon),
                           size: "xs",
-                        }
-                        // `Edit`
+                        },
+                        `Edit`
                       ),
                     ]),
                   ]
