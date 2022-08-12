@@ -88,7 +88,7 @@ defmodule App.Repo.Migrations.CreateEvents do
       add :name, :string
       add :org, :string
       add :role, :string
-      add :desc, :string
+      add :desc, :text
       timestamps()
     end
 
