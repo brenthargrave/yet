@@ -14,10 +14,11 @@ import {
   withLatestFrom,
 } from "rxjs"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
-import { and, not } from "~/fp"
+import { and, not, pick } from "~/fp"
 import {
   isValidOrg,
   isValidRole,
+  Money,
   Opp,
   Source as GraphSource,
   upsertOpp$,
@@ -58,10 +59,12 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const recordOrg$ = record$.pipe(pluck("org"), tag("recordOrg$"), share())
   const recordRole$ = record$.pipe(pluck("role"), tag("recordRole$"), share())
   const recordDesc$ = record$.pipe(pluck("desc"), tag("recordDesc$"), share())
+  const recordFee$ = record$.pipe(pluck("fee"), tag("recordFee$"), share())
 
   const [onChangeOrg, onChangeOrg$] = cb$<string>(tag("onChangeOrg$"))
   const [onChangeRole, onChangeRole$] = cb$<string>(tag("onChangeRole$"))
   const [onChangeDesc, onChangeDesc$] = cb$<string>(tag("onChangeDesc$"))
+  const [onChangeFee, onChangeFee$] = cb$<Money>(tag("onChangeFee$"))
   const [onSubmit, onSubmit$] = cb$(tag("onSubmit$"))
   const [onCancel, onCancel$] = cb$(tag("onCancel$"))
 
@@ -83,12 +86,19 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     tag("desc$"),
     share()
   )
+  const fee$ = record$.pipe(
+    map(({ fee }) => pick(["amount", "currency"], fee)),
+    mergeWith(onChangeFee$),
+    tag("fee$"),
+    share()
+  )
 
   const payload$ = combineLatest({
     id: id$,
     org: org$,
     role: role$,
     desc: desc$,
+    fee: fee$,
   }).pipe(tag("payload$"), share())
 
   const isValid$ = payload$.pipe(
@@ -138,6 +148,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     defaultValueOrg: recordOrg$,
     defaultValueRole: recordRole$,
     defaultValueDesc: recordDesc$,
+    defaultValueFee: recordFee$,
     isDisabledSubmit: isDisabledSubmit$,
   }).pipe(tag("props$"))
 
@@ -149,6 +160,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
         onChangeOrg,
         onChangeRole,
         onChangeDesc,
+        onChangeFee,
         onSubmit,
         onCancel,
       })

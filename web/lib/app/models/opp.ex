@@ -10,16 +10,15 @@ defmodule App.Opp do
     field :role, :string
     field :org, :string
     field :desc, :string
+    field :fee, Money.Ecto.Composite.Type
 
     timestamps(type: :utc_datetime_usec)
   end
 
-  @required_attrs [:id, :role, :org, :desc]
-
   def changeset(record, attrs) do
     record
-    |> cast(attrs, @required_attrs)
-    |> validate_required(@required_attrs)
+    |> cast(attrs, [:id, :role, :org, :desc, :fee])
+    |> validate_required([:id, :role, :org])
     |> put_assoc(:creator, attrs[:creator])
   end
 end

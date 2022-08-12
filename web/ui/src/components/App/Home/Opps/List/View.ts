@@ -1,21 +1,28 @@
 import { SmallAddIcon } from "@chakra-ui/icons"
 import {
+  Badge,
   Heading,
   HStack,
+  Icon,
   IconButton,
   List,
   ListItem,
   Spacer,
+  Tag,
+  TagLabel,
   VStack,
 } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
+import { TbArrowsSplit2 } from "react-icons/tb"
 import { isEmpty } from "~/fp"
 import { Opp } from "~/graph"
+import { formatMoney } from "~/i18n"
 import {
   CreateButton,
   Divider,
   Header,
+  lightGreen,
   MarkdownView,
   modalStyleProps,
   Stack,
@@ -56,7 +63,7 @@ export const View: FC<Props> = ({
         ]),
         h(List, { spacing: 4, paddingTop: 8 }, [
           ...opps.map((opp, idx, all) => {
-            const { org, role, desc } = opp
+            const { org, role, desc, fee } = opp
             return h(ListItem, {}, [
               h(
                 Stack,
@@ -92,6 +99,7 @@ export const View: FC<Props> = ({
                         HStack,
                         {
                           width: "100%",
+                          alignItems: "start",
                         },
                         [
                           h(
@@ -107,7 +115,36 @@ export const View: FC<Props> = ({
                             ]
                           ),
                           h(Spacer),
-                          // TODO: reward $
+                          // Fee section
+                          fee.amount > 0 &&
+                            h(VStack, { alignItems: "center", padding: 2 }, [
+                              h(
+                                Tag,
+                                {
+                                  variant: "outline",
+                                  colorScheme: "green",
+                                },
+                                [
+                                  h(Icon, { as: TbArrowsSplit2 }),
+                                  h(TagLabel, { pl: 2 }, formatMoney(fee)),
+                                ]
+                              ),
+                              // h(
+                              //   Badge,
+                              //   { variant: "subtle", colorScheme: "green" },
+                              //   [formatMoney(fee)]
+                              // ),
+                              // h(Text, { kfontSize: "xs" }, `Referral reward`),
+                              // h(
+                              //   Text,
+                              //   {
+                              //     fontSize: "sm",
+                              //     fontStyle: "bold",
+                              //     // color: "green",
+                              //   },
+                              //   formatMoney(fee)
+                              // ),
+                            ]),
                         ]
                       ),
                       desc && h(Text, { size: "md", noOfLines: 1 }, desc),

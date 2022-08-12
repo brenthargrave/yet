@@ -20,6 +20,9 @@ defmodule AppWeb.Resolvers.Opps do
     Opps.opps(customer)
     |> fmap(&%OppsPayload{opps: &1})
   end
+  def get_opps(_parent, _args, _resolution) do
+    ok([])
+  end
 
   typedstruct module: OppPayload do
     field(:opp, Opp.t())
@@ -33,10 +36,6 @@ defmodule AppWeb.Resolvers.Opps do
         ) :: resolver_result(OppPayload.t()) do
     Opps.upsert_opp(customer, input)
     |> fmap(&%OppPayload{opp: &1})
-  end
-
-  def get_opps(_parent, _args, _resolution) do
-    ok([])
   end
 
   defun get_opp(

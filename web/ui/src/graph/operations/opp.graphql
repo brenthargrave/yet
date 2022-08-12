@@ -3,6 +3,10 @@ fragment OppProps on Opp {
   org
   role
   desc
+  fee {
+    amount
+    currency
+  }
   creator {
     ...ContactProps
   }

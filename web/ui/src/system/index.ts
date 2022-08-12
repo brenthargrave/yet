@@ -29,6 +29,7 @@ import {
   InputAddonProps,
   InputGroup as _InputGroup,
   InputGroupProps,
+  InputLeftElement,
   InputProps,
   PinInput as _PinInput,
   PinInputProps,
@@ -61,6 +62,7 @@ export const Input = forwardRef(({ ...rest }: InputProps, ref) =>
 )
 export const InputAddon = (props: InputAddonProps) => h(_InputAddon, props)
 export const InputGroup = (props: InputGroupProps) => h(_InputGroup, props)
+export { InputLeftElement }
 export const Spacer = (props: SpacerProps) => h(_Spacer, props)
 export const Stack = (props: StackProps) => h(_Stack, props)
 export const Text = (props: TextProps) => h(_Text, props)

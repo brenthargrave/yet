@@ -1,12 +1,14 @@
 defmodule AppWeb.Graph.Opps do
   use Absinthe.Schema.Notation
   alias AppWeb.Resolvers.Opps
+  import_types(Absinthe.Type.Custom.Money)
 
   object :opp do
     field(:id, non_null(:id))
     field(:role, non_null(:string))
     field(:org, non_null(:string))
     field(:desc, :string)
+    field(:fee, non_null(:money))
     field(:creator, non_null(:contact))
   end
 
@@ -24,6 +26,7 @@ defmodule AppWeb.Graph.Opps do
     field(:role, non_null(:string))
     field(:org, non_null(:string))
     field(:desc, :string)
+    field(:fee, non_null(:money_input))
   end
 
   object :opps_mutations do

@@ -8,6 +8,7 @@ import {
 } from "@chakra-ui/icons"
 import { form } from "@cycle/react-dom"
 import { match } from "ts-pattern"
+import { HStack, InputLeftAddon, VStack } from "@chakra-ui/react"
 import {
   Divider,
   Button,
@@ -21,7 +22,10 @@ import {
   Spacer,
   Stack,
   Text,
+  InputLeftElement,
 } from "~/system"
+import { MoneyInput } from "./MoneyInput"
+import { Money } from "~/graph"
 
 type Callback = (value: string) => void
 const makeOnChange =
@@ -51,6 +55,8 @@ export interface Props {
   defaultValueRole?: string
   onChangeDesc?: () => void
   defaultValueDesc?: string | null
+  onChangeFee?: (money: Money) => void
+  defaultValueFee?: Money
   isDisabledSubmit?: boolean
   onSubmit?: () => void
   onCancel?: () => void
@@ -65,6 +71,8 @@ export const View = ({
   defaultValueRole,
   onChangeDesc,
   defaultValueDesc,
+  onChangeFee,
+  defaultValueFee,
   isDisabledSubmit = true,
   onSubmit: _onSubmit,
   onCancel,
@@ -123,7 +131,7 @@ export const View = ({
             ]),
           ]),
           h(Stack, { direction: "column" }, [
-            h(Text, "Description:"),
+            h(Text, "Short description:"),
             h(InputGroup, [
               // @ts-ignore
               h(AutosizeTextarea, {
@@ -135,8 +143,17 @@ export const View = ({
               }),
             ]),
           ]),
-          h(Stack, { direction: "column" }, [
-            // h(Divider),
+          h(Stack, { direction: "column", alignItems: "start" }, [
+            h(VStack, { width: "40%", alignItems: "start" }, [
+              h(Text, "Finder's fee:"),
+              h(MoneyInput, {
+                onChange: onChangeFee,
+                money: defaultValueFee,
+              }),
+            ]),
+          ]),
+          h(Stack, { direction: "column", paddingTop: 2 }, [
+            h(Divider),
             h(Stack, { direction: "row", alignItems: "center" }, [
               //
               h(

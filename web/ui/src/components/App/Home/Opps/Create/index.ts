@@ -2,7 +2,7 @@ import { ReactSource } from "@cycle/react"
 import { EMPTY, of, switchMap } from "rxjs"
 import { match } from "ts-pattern"
 import { ulid } from "ulid"
-import { Source as GraphSource } from "~/graph"
+import { Currency, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { routes, Source as RouterSource } from "~/router"
 import { shareLatest } from "~/rx"
@@ -31,7 +31,11 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
             id: ulid(),
             org: "",
             role: "",
-            desc: "",
+            desc: null,
+            fee: {
+              amount: 0,
+              currency: Currency.Usd,
+            },
           })
         )
         .otherwise(() => EMPTY)

@@ -57,6 +57,10 @@ defmodule AppWeb.Resolvers.Conversations do
     |> fmap(&%ConversationsPayload{conversations: &1})
   end
 
+  def get_conversations(_parent, _args, _resolution) do
+    ok([])
+  end
+
   defun sign_conversation(
           _parent,
           %{input: input} = _args,

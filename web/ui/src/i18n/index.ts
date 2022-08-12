@@ -2,6 +2,7 @@ import { format, parse, getYear } from "date-fns"
 import { phone as validatePhone } from "phone"
 import "@formatjs/intl-listformat/polyfill"
 import "@formatjs/intl-listformat/locale-data/en" // locale-data for en
+import { Money } from "~/graph"
 
 const shared = {
   continue: `Continue`,
@@ -67,3 +68,11 @@ const lf = new Intl.ListFormat("en", {
   style: "long", // other values: "short" or "narrow"
 })
 export const toSentence = (arr: string[]) => lf.format(arr)
+
+export const formatMoney = (money: Money, locale = "en-US"): string =>
+  new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: money.currency.toString(),
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(money.amount)

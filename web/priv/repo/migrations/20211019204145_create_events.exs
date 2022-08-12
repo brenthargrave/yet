@@ -83,12 +83,18 @@ defmodule App.Repo.Migrations.CreateEvents do
     create(index(:notifications, [:recipient_id]))
     create(unique_index(:notifications, [:kind, :conversation_id, :recipient_id]))
 
+    # NOTE: custom type for money
+    # https://github.com/elixirmoney/money/tree/2bfeacf1b50dad17bc47bb9b0da7c262fe238e3b#serialization-to-postgresql-with-multiple-currency
+    execute """
+    CREATE TYPE public.money_with_currency AS (amount integer, currency varchar(3))
+    """
+
     create table(:opps) do
       add :creator_id, references(:customers, on_delete: :delete_all)
-      add :name, :string
-      add :org, :string
-      add :role, :string
+      add :org, :string, null: false
+      add :role, :string, null: false
       add :desc, :text
+      add :fee, :money_with_currency, null: false
       timestamps()
     end
 
