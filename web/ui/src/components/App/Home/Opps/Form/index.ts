@@ -59,11 +59,13 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const recordOrg$ = record$.pipe(pluck("org"), tag("recordOrg$"), share())
   const recordRole$ = record$.pipe(pluck("role"), tag("recordRole$"), share())
   const recordDesc$ = record$.pipe(pluck("desc"), tag("recordDesc$"), share())
+  const recordUrl$ = record$.pipe(pluck("url"), tag("recordUrl$"), share())
   const recordFee$ = record$.pipe(pluck("fee"), tag("recordFee$"), share())
 
   const [onChangeOrg, onChangeOrg$] = cb$<string>(tag("onChangeOrg$"))
   const [onChangeRole, onChangeRole$] = cb$<string>(tag("onChangeRole$"))
   const [onChangeDesc, onChangeDesc$] = cb$<string>(tag("onChangeDesc$"))
+  const [onChangeUrl, onChangeUrl$] = cb$<string>(tag("onChangeUrl$"))
   const [onChangeFee, onChangeFee$] = cb$<Money>(tag("onChangeFee$"))
   const [onSubmit, onSubmit$] = cb$(tag("onSubmit$"))
   const [onCancel, onCancel$] = cb$(tag("onCancel$"))
@@ -86,6 +88,12 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     tag("desc$"),
     share()
   )
+  const url$ = record$.pipe(
+    pluck("url"),
+    mergeWith(onChangeUrl$),
+    tag("url$"),
+    share()
+  )
   const fee$ = record$.pipe(
     map(({ fee }) => pick(["amount", "currency"], fee)),
     mergeWith(onChangeFee$),
@@ -98,6 +106,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     org: org$,
     role: role$,
     desc: desc$,
+    url: url$,
     fee: fee$,
   }).pipe(tag("payload$"), share())
 
@@ -148,6 +157,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     defaultValueOrg: recordOrg$,
     defaultValueRole: recordRole$,
     defaultValueDesc: recordDesc$,
+    defaultValueUrl: recordUrl$,
     defaultValueFee: recordFee$,
     isDisabledSubmit: isDisabledSubmit$,
   }).pipe(tag("props$"))
@@ -160,6 +170,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
         onChangeOrg,
         onChangeRole,
         onChangeDesc,
+        onChangeUrl,
         onChangeFee,
         onSubmit,
         onCancel,

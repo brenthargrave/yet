@@ -9,6 +9,7 @@ defmodule AppWeb.Graph.Opps do
     field(:org, non_null(:string))
     field(:desc, :string)
     field(:fee, non_null(:money))
+    field(:url, :string)
     field(:creator, non_null(:contact))
   end
 
@@ -26,6 +27,7 @@ defmodule AppWeb.Graph.Opps do
     field(:role, non_null(:string))
     field(:org, non_null(:string))
     field(:desc, :string)
+    field(:url, :string)
     field(:fee, non_null(:money_input))
   end
 

@@ -3,6 +3,7 @@ fragment OppProps on Opp {
   org
   role
   desc
+  url
   fee {
     amount
     currency

@@ -94,6 +94,7 @@ defmodule App.Repo.Migrations.CreateEvents do
       add :org, :string, null: false
       add :role, :string, null: false
       add :desc, :text
+      add :url, :text
       add :fee, :money_with_currency, null: false
       timestamps()
     end
@@ -101,5 +102,6 @@ defmodule App.Repo.Migrations.CreateEvents do
     create(index(:opps, [:creator_id]))
     create(index(:opps, [:org]))
     create(index(:opps, [:role]))
+    create(index(:opps, [:url]))
   end
 end

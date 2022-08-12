@@ -1,31 +1,25 @@
+import { CheckIcon } from "@chakra-ui/icons"
+import { FormControl, FormLabel, VStack } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import {
-  ChevronLeftIcon,
-  SmallCloseIcon,
-  CheckIcon,
-  PlusSquareIcon,
-  DeleteIcon,
-} from "@chakra-ui/icons"
 import { form } from "@cycle/react-dom"
+import { FC } from "react"
 import { match } from "ts-pattern"
-import { HStack, InputLeftAddon, VStack } from "@chakra-ui/react"
+import { Money } from "~/graph"
 import {
-  Divider,
-  Button,
-  IconButton,
   AutosizeTextarea,
   BackButton,
+  Button,
+  Divider,
   Header,
   Heading,
   Input,
-  InputGroup,
   Spacer,
   Stack,
-  Text,
-  InputLeftElement,
 } from "~/system"
+import { CancelButton } from "./CancelButton"
+import { InputControl } from "./InputControl"
 import { MoneyInput } from "./MoneyInput"
-import { Money } from "~/graph"
+import { UrlInput } from "./UrlInput"
 
 type Callback = (value: string) => void
 const makeOnChange =
@@ -55,6 +49,8 @@ export interface Props {
   defaultValueRole?: string
   onChangeDesc?: () => void
   defaultValueDesc?: string | null
+  onChangeUrl?: () => void
+  defaultValueUrl?: string | null
   onChangeFee?: (money: Money) => void
   defaultValueFee?: Money
   isDisabledSubmit?: boolean
@@ -62,7 +58,7 @@ export interface Props {
   onCancel?: () => void
 }
 
-export const View = ({
+export const View: FC<Props> = ({
   target = Target.create,
   showNav = false,
   onChangeOrg,
@@ -71,13 +67,15 @@ export const View = ({
   defaultValueRole,
   onChangeDesc,
   defaultValueDesc,
+  onChangeUrl,
+  defaultValueUrl,
   onChangeFee,
   defaultValueFee,
   isDisabledSubmit = true,
   onSubmit: _onSubmit,
   onCancel,
   ...props
-}: Props) => {
+}) => {
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
     if (_onSubmit) _onSubmit()
@@ -102,50 +100,42 @@ export const View = ({
         //
         h(Heading, { size: "md" }, headerCopy(target)),
         h(Spacer),
+        h(CancelButton, { onCancel }),
       ]),
       form({ onSubmit, style: { width: "100%" } }, [
         h(Stack, { direction: "column", width: "100%", padding: 4, gap: 4 }, [
-          // TODO: org
-          h(Stack, { direction: "column" }, [
-            h(Text, "Organization:"),
-            h(InputGroup, [
-              h(Input, {
-                defaultValue: defaultValueOrg,
-                onChange: makeOnChange(onChangeOrg),
-                autoFocus: true,
-                placeholder: "Company, school, club, family, etc.",
-                required: true,
-              }),
-            ]),
+          h(InputControl, { label: "Organization", isRequired: true }, [
+            h(Input, {
+              defaultValue: defaultValueOrg,
+              onChange: makeOnChange(onChangeOrg),
+              placeholder: "Company, school, club, family, etc.",
+              autoFocus: true,
+            }),
           ]),
-          h(Stack, { direction: "column" }, [
-            h(Text, "Role:"),
-            h(InputGroup, [
-              // TODO: populate placeholder w/ most popular
-              h(Input, {
-                defaultValue: defaultValueRole,
-                onChange: makeOnChange(onChangeRole),
-                required: true,
-                placeholder: "Engineer, etc.",
-              }),
-            ]),
+          h(InputControl, { label: "Role", isRequired: true }, [
+            h(Input, {
+              defaultValue: defaultValueRole,
+              onChange: makeOnChange(onChangeRole),
+              placeholder: "Cofounder, Engineer, Designer, etc.",
+            }),
           ]),
-          h(Stack, { direction: "column" }, [
-            h(Text, "Short description:"),
-            h(InputGroup, [
+          h(InputControl, { label: "Description" }, [
+            // @ts-ignore
+            h(AutosizeTextarea, {
+              defaultValue: defaultValueDesc,
               // @ts-ignore
-              h(AutosizeTextarea, {
-                defaultValue: defaultValueDesc,
-                // @ts-ignore
-                onChange: makeOnChange(onChangeDesc),
-                minRows: 2,
-                placeholder: "Optional",
-              }),
-            ]),
+              onChange: makeOnChange(onChangeDesc),
+              minRows: 2,
+            }),
           ]),
-          h(Stack, { direction: "column", alignItems: "start" }, [
-            h(VStack, { width: "40%", alignItems: "start" }, [
-              h(Text, "Finder's fee:"),
+          h(InputControl, { label: "Canonical URL" }, [
+            h(UrlInput, {
+              onChange: onChangeUrl,
+              defaultValue: defaultValueUrl,
+            }),
+          ]),
+          h(VStack, { width: "40%", alignItems: "start" }, [
+            h(InputControl, { label: "Finder's Fee" }, [
               h(MoneyInput, {
                 onChange: onChangeFee,
                 money: defaultValueFee,
@@ -168,18 +158,7 @@ export const View = ({
                 "Save"
               ),
               h(Spacer),
-              h(
-                Button,
-                {
-                  variant: "ghost",
-                  // leftIcon: h(DeleteIcon),
-                  leftIcon: h(ChevronLeftIcon),
-                  // leftIcon: h(SmallCloseIcon),
-                  size: "sm",
-                  onClick: onCancel,
-                },
-                "Cancel"
-              ),
+              h(CancelButton, { onCancel }),
             ]),
           ]),
         ]),
