@@ -24,6 +24,7 @@ import { filterResultOk } from "ts-results/rxjs-operators"
 import { Main as Opps } from "~/components/App/Home/Opps"
 import { and, includes, map as _map, not, pluck as _pluck, prop } from "~/fp"
 import {
+  appendToNote,
   Contact,
   Conversation,
   ConversationStatus,
@@ -96,6 +97,15 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
     props: { record$: _record$, id$ },
     router: { history$ },
   } = sources
+
+  // Opps
+  const [onClickAddOpp, onClickAddOpp$] = cb$(tag("onClickAddOpp$"))
+  const [onCloseAddOpp, onCloseAddOpp$] = cb$(tag("onCloseAddOpp$"))
+
+  const opps = Opps(sources, tagPrefix)
+  const {
+    value: { appendOpp$ },
+  } = opps
 
   const liveRecord$ = id$.pipe(
     switchMap((id) => subscribeConversation$({ id })),
@@ -175,7 +185,20 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
 
   const [onChangeNote, onChangeNote$] = cb$<string>(tag("onChangeNote$"))
 
-  const note$ = merge(recordNote$, onChangeNote$).pipe(
+  const editedNote$ = merge(recordNote$, onChangeNote$).pipe(
+    distinctUntilChanged(),
+    tag("editedNote$"),
+    shareLatest()
+  )
+
+  const appendedNote$ = appendOpp$.pipe(
+    withLatestFrom(editedNote$),
+    map(([opp, note]) => appendToNote({ note, opp })),
+    tag("appendedNote$"),
+    shareLatest()
+  )
+
+  const note$ = merge(editedNote$, appendedNote$).pipe(
     distinctUntilChanged(),
     tag("note$"),
     shareLatest()
@@ -398,20 +421,12 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
     share()
   )
 
-  const [onClickAddOpp, onClickAddOpp$] = cb$(tag("onClickAddOpp$"))
-  const [onCloseAddOpp, onCloseAddOpp$] = cb$(tag("onCloseAddOpp$"))
-
-  // const isOpenAddOpp$ = merge(
-  //   onClickAddOpp$.pipe(mapTo(true)),
-  //   onCloseAddOpp$.pipe(mapTo(false))
-  // ).pipe(startWith(false), tag("isOpenAddOpp$"), shareLatest())
-
   const showOpps$ = onClickAddOpp$.pipe(
     mapTo(push(routes.newConversationOpps())),
     tag("showOpp$"),
     share()
   )
-  const hideOpps$ = onCloseAddOpp$.pipe(
+  const hideOpps$ = merge(appendedNote$, onCloseAddOpp$).pipe(
     mapTo(push(routes.newConversation())),
     tag("hideOpps$"),
     share()
@@ -422,13 +437,6 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
     startWith(false),
     share()
   )
-
-  // const isOpenAddOpp$ = merge(
-  //   onClickAddOpp$.pipe(mapTo(true)),
-  //   onCloseAddOpp$.pipe(mapTo(false))
-  // ).pipe(startWith(false), tag("isOpenAddOpp$"), shareLatest())
-
-  const opps = Opps(sources, tagPrefix)
 
   const props$ = combineLatest({
     options: options$,

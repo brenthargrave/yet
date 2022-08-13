@@ -55,7 +55,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const state$ = merge(routerIntent$, list.value.action).pipe(
+  const state$ = merge(routerIntent$).pipe(
     distinctUntilChanged(),
     tag("state$"),
     share()
@@ -75,10 +75,12 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
 
   const router = merge(list.router, create.router, edit.router)
   const notice = merge(create.notice, edit.notice)
+  const { value } = list
 
   return {
     react,
     router,
     notice,
+    value,
   }
 }
