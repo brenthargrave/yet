@@ -11,6 +11,7 @@ fragment OppProps on Opp {
   creator {
     ...ContactProps
   }
+  insertedAt
 }
 
 fragment OppPayloadProps on OppPayload {

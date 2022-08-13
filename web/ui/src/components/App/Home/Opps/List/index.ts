@@ -5,7 +5,6 @@ import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
 import { cb$, mapTo } from "~/rx"
 import { View } from "./View"
-import { State } from ".."
 
 interface Sources {
   react: ReactSource

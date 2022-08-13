@@ -1,6 +1,5 @@
 import { SmallAddIcon } from "@chakra-ui/icons"
 import {
-  Badge,
   Heading,
   HStack,
   Icon,
@@ -22,7 +21,6 @@ import {
   CreateButton,
   Divider,
   Header,
-  lightGreen,
   MarkdownView,
   modalStyleProps,
   Stack,

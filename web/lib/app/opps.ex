@@ -16,7 +16,8 @@ defmodule App.Opps do
     created =
       from(o in Opp,
         preload: ^@preloads,
-        where: o.creator_id == ^viewer.id
+        where: o.creator_id == ^viewer.id,
+        order_by: [desc: o.inserted_at]
       )
 
     Repo.all(created)

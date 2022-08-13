@@ -32,12 +32,14 @@ import take from "ramda/es/take"
 import toLower from "ramda/es/toLower"
 import trim from "ramda/es/trim"
 import values from "ramda/es/values"
+import has from "ramda/es/has"
 
 const isEmpty = (i: any): boolean => isNil(i) || _isEmpty(i)
 const isNotEmpty = (i: any): boolean => not(isEmpty(i))
 const isPresent = (i: any): boolean => not(isNil(i))
 
 export {
+  has,
   all,
   and,
   any,

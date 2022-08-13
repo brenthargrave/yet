@@ -11,6 +11,7 @@ defmodule AppWeb.Graph.Opps do
     field(:fee, non_null(:money))
     field(:url, :string)
     field(:creator, non_null(:contact))
+    field(:inserted_at, non_null(:datetime))
   end
 
   object :opps_payload do
