@@ -75,7 +75,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
 
   const router = merge(list.router, create.router, edit.router)
   const notice = merge(create.notice, edit.notice)
-  const { value } = list
+  const value = { ...list.value }
 
   return {
     react,

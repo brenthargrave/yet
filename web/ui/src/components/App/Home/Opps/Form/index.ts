@@ -31,7 +31,7 @@ import { View, Target } from "./View"
 
 export { Target }
 
-type EditableOpp = Omit<Opp, "creator">
+type EditableOpp = Omit<Opp, "creator" | "insertedAt">
 
 interface Props {
   record$: Observable<EditableOpp>
