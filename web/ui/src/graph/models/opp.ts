@@ -1,4 +1,3 @@
-import { isEmpty, join, reject } from "~/fp"
 import { routes, routeURL } from "~/router"
 import { Opp } from "../generated"
 

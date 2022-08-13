@@ -6,6 +6,7 @@ import {
   distinctUntilChanged,
   EMPTY,
   filter,
+  fromEvent,
   map,
   merge,
   mergeMap,
@@ -97,7 +98,13 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
 
   // Opps
   const [onClickAddOpp, onClickAddOpp$] = cb$(tag("onClickAddOpp$"))
-  const [onCloseAddOpp, onCloseAddOpp$] = cb$(tag("onCloseAddOpp$"))
+  const [onCloseAddOpp, _onCloseAddOpp$] = cb$(tag("onCloseAddOpp$"))
+  // TODO: why does ESC fail to close Opps modal but not Publish?
+  const onEscape$ = fromEvent<KeyboardEvent>(document, "keydown").pipe(
+    filter((e) => e.key === "Escape"),
+    tag("escape$")
+  )
+  const onCloseAddOpp$ = merge(_onCloseAddOpp$, onEscape$)
 
   const opps = Opps(sources, tagPrefix)
   const {
