@@ -30,6 +30,8 @@ const newConversationOpp = newConversationOpps.extend(
   { id: param.path.string },
   (p) => `/${p.id}`
 )
+const opps = root.extend("/o")
+const opp = opps.extend({ id: param.path.string }, (p) => `/${p.id}`)
 
 export const { routes, useRoute, RouteProvider, session } = createRouter({
   in: defineRoute("/in"),
@@ -43,6 +45,8 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
   newConversationOpps,
   newConversationNewOpp,
   newConversationOpp,
+  opps,
+  opp,
 })
 
 export const newConversationOppsRoutes = createGroup([

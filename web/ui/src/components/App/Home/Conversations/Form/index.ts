@@ -421,22 +421,26 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
     share()
   )
 
-  const showOpps$ = onClickAddOpp$.pipe(
-    mapTo(push(routes.newConversationOpps())),
-    tag("showOpp$"),
-    share()
-  )
-  const hideOpps$ = merge(appendedNote$, onCloseAddOpp$).pipe(
-    mapTo(push(routes.newConversation())),
-    tag("hideOpps$"),
-    share()
-  )
-  const isOpenAddOpp$ = history$.pipe(
-    map((route) => newConversationOppsRoutes.has(route)),
-    tag("isOpenAddOpp$"),
-    startWith(false),
-    share()
-  )
+  // const showOpps$ = onClickAddOpp$.pipe(
+  //   mapTo(push(routes.newConversationOpps())),
+  //   tag("showOpp$"),
+  //   share()
+  // )
+  // const hideOpps$ = merge(appendedNote$, onCloseAddOpp$).pipe(
+  //   mapTo(push(routes.newConversation())),
+  //   tag("hideOpps$"),
+  //   share()
+  // )
+  // const isOpenAddOpp$ = history$.pipe(
+  //   map((route) => newConversationOppsRoutes.has(route)),
+  //   tag("isOpenAddOpp$"),
+  //   startWith(false),
+  //   share()
+  // )
+  const isOpenAddOpp$ = merge(
+    onClickAddOpp$.pipe(mapTo(true)),
+    merge(appendedNote$, onCloseAddOpp$).pipe(mapTo(false))
+  ).pipe(tag("isOpenAddOpp$"), startWith(false), share())
 
   const props$ = combineLatest({
     options: options$,
@@ -479,8 +483,8 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
   const router = merge(
     goToList$,
     redirectJustSignedToShow$,
-    showOpps$,
-    hideOpps$,
+    // showOpps$,
+    // hideOpps$,
     opps.router
   )
   const notice = merge(shareURLCopiedNotice$, justSignedNotice$, opps.notice)
