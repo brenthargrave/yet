@@ -1,4 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
+import { createRef } from "react"
 import {
   combineLatest,
   debounceTime,
@@ -24,7 +25,6 @@ import { filterResultOk } from "ts-results/rxjs-operators"
 import { Main as Opps } from "~/components/App/Home/Opps"
 import { and, includes, map as _map, not, pluck as _pluck, prop } from "~/fp"
 import {
-  appendToNote,
   Contact,
   Conversation,
   ConversationStatus,
@@ -38,6 +38,7 @@ import {
   isStatusEditable,
   isValidConversation,
   justSignedNotice,
+  oppEmbedText,
   proposeConversation$,
   refetchContacts,
   Source as GraphSource,
@@ -47,15 +48,11 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { info } from "~/notice"
-import {
-  newConversationOppsRoutes,
-  push,
-  routes,
-  routeURL,
-  Source as RouterSource,
-} from "~/router"
+import { push, routes, routeURL, Source as RouterSource } from "~/router"
 import { cb$, mapTo, shareLatest } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
+
+const noteInputRef = createRef<HTMLTextAreaElement>()
 
 const contactsToOptions = (contacts: Contact[]): SelectedOption[] =>
   contacts.map(({ id, name }, idx, _) => {
@@ -104,7 +101,7 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
 
   const opps = Opps(sources, tagPrefix)
   const {
-    value: { appendOpp$ },
+    value: { appendOpp$: embedOpp$ },
   } = opps
 
   const liveRecord$ = id$.pipe(
@@ -191,14 +188,33 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
     shareLatest()
   )
 
-  const appendedNote$ = appendOpp$.pipe(
+  const noteWithEmbed$ = embedOpp$.pipe(
     withLatestFrom(editedNote$),
-    map(([opp, note]) => appendToNote({ note, opp })),
-    tag("appendedNote$"),
+    map(([opp, note]) => {
+      const noteText = note ?? ""
+      const embedText = oppEmbedText(opp)
+      const ele = noteInputRef.current
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const pos = ele?.selectionStart ?? 0
+      const noteWithEmbed =
+        noteText.slice(0, pos) + embedText + noteText.slice(pos)
+      if (ele) ele.value = noteWithEmbed
+      // NOTE: modal close loses textarea focus, fix:
+      setTimeout(() => {
+        if (ele) {
+          ele.focus()
+          ele.value = noteWithEmbed
+          ele.selectionStart = pos
+          ele.selectionEnd = pos
+        }
+      }, 400)
+      return noteWithEmbed
+    }),
+    tag("noteWithEmbed$"),
     shareLatest()
   )
 
-  const note$ = merge(editedNote$, appendedNote$).pipe(
+  const note$ = merge(editedNote$, noteWithEmbed$).pipe(
     distinctUntilChanged(),
     tag("note$"),
     shareLatest()
@@ -227,7 +243,7 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
     share()
   )
 
-  const formChangeCount$ = formTouch$.pipe(
+  const formChangeCount$ = merge(formTouch$, noteWithEmbed$).pipe(
     scan((acc, curr, idx) => acc + 1, 0),
     tag("formChangeCount$")
   )
@@ -439,7 +455,12 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
   // )
   const isOpenAddOpp$ = merge(
     onClickAddOpp$.pipe(mapTo(true)),
-    merge(appendedNote$, onCloseAddOpp$).pipe(mapTo(false))
+    merge(noteWithEmbed$, onCloseAddOpp$).pipe(
+      mapTo(false)
+      // tap((noteWithEmbed) => {
+      //   noteInputRef.current?.focus()
+      // })
+    )
   ).pipe(tag("isOpenAddOpp$"), startWith(false), share())
 
   const props$ = combineLatest({
@@ -477,6 +498,7 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
         onClickShare,
         onClickAddOpp,
         onCloseAddOpp,
+        noteInputRef,
       })
     )
   )

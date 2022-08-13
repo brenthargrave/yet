@@ -6,16 +6,8 @@ export const isValidName = (value: string) => value.length > 2
 export const isValidOrg = isValidName
 export const isValidRole = isValidName
 
-const localURL = ({ id }: Opp) => routeURL(routes.opp({ id }))
-
-export const appendToNote = ({
-  note,
-  opp,
-}: {
-  opp: Opp
-  note: string | null | undefined
-}) => {
-  const parts = reject(isEmpty, [note, localURL(opp)])
-  const result = join("\n\n", parts)
-  return result
+export const oppEmbedText = (opp: Opp) => {
+  const { id, role, org } = opp
+  const url = routeURL(routes.opp({ id }))
+  return `\n${role} @ ${org} \n${url}\n`
 }

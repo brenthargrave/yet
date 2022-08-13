@@ -2,7 +2,7 @@ import { AddIcon } from "@chakra-ui/icons"
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { px } from "csx"
-import { FC, useEffect, useState } from "react"
+import { FC, Ref, useEffect, useState } from "react"
 import { NoteView } from "~/components/Note"
 import { ConversationStatus } from "~/graph"
 import { AutosizeTextarea, Button, Spacer, Stack } from "~/system"
@@ -18,6 +18,7 @@ export interface Props {
   status?: ConversationStatus
   isDisabled?: boolean
   onClickAddOpp?: () => void
+  noteInputRef?: Ref<HTMLTextAreaElement>
 }
 
 export const View: FC<Props> = ({
@@ -27,6 +28,7 @@ export const View: FC<Props> = ({
   status = ConversationStatus.Draft,
   isDisabled = false,
   onClickAddOpp,
+  noteInputRef,
 }) => {
   const [minHeight, setMinHeight] = useState<number | null>(0)
   useEffect(() => {
@@ -67,8 +69,10 @@ export const View: FC<Props> = ({
               isDisabled,
               paddingTop: 4,
               minRows: 4,
-              value: note ?? "",
+              defaultValue: note ?? "",
+              size: "sm",
               onChange: (event) => onChangeNote(event.target.value),
+              ref: noteInputRef,
             }),
             h(
               Stack,

@@ -1,7 +1,7 @@
 /* eslint react/display-name: 0 */
-import { Textarea, TextareaProps } from "@chakra-ui/react"
+import { Textarea, TextareaProps, useMergeRefs } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import React from "react"
+import React, { Ref } from "react"
 import ResizeTextarea from "react-textarea-autosize"
 
 interface Additions {
@@ -13,7 +13,7 @@ interface Additions {
 export const AutosizeTextarea = React.forwardRef<
   HTMLTextAreaElement,
   TextareaProps & Additions
->((props, ref) => {
+>(({ ...props }, ref) => {
   return h(Textarea, {
     minH: "unset",
     overflow: "hidden",

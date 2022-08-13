@@ -1,6 +1,6 @@
 import { Divider, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { ReactNode } from "react"
+import { ReactNode, Ref } from "react"
 import { isEmpty, not } from "~/fp"
 import { ConversationStatus, Invitee } from "~/graph"
 import { BackButton, Header, Heading, Stack, Status } from "~/system"
@@ -37,6 +37,7 @@ export interface Props
   onClickAddOpp?: () => void
   onCloseAddOpp?: () => void
   oppsView: ReactNode
+  noteInputRef?: Ref<HTMLTextAreaElement>
 }
 
 export const View = ({
@@ -68,6 +69,7 @@ export const View = ({
   onClickAddOpp,
   onCloseAddOpp: onCloseAddApp,
   oppsView,
+  noteInputRef,
   ...props
 }: Props) =>
   h(
@@ -113,6 +115,7 @@ export const View = ({
           onChangeNote,
           onClickAddOpp,
           isDisabled: isDisabledEditing,
+          noteInputRef,
         }),
         h(Divider),
         h(ActionBar, {
