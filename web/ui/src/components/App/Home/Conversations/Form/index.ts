@@ -114,7 +114,7 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
 
   const opps = Opps(sources, tagPrefix)
   const {
-    value: { appendOpp$: embedOpp$ },
+    value: { embedOpp$ },
   } = opps
 
   const liveRecord$ = id$.pipe(

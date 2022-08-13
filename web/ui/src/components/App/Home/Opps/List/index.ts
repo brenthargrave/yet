@@ -24,7 +24,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const [onClickOpp, onClickOpp$] = cb$<Opp>(tag("onClickOpp$"))
   const [onClickAdd, onClickAdd$] = cb$<Opp>(tag("onClickAdd$"))
 
-  const appendOpp$ = onClickAdd$.pipe(tag("appendOpp$"), share())
+  const embedOpp$ = onClickAdd$.pipe(tag("appendOpp$"), share())
 
   const showCreate$ = onClickCreate$.pipe(
     mapTo(push(routes.newConversationNewOpp())),
@@ -53,7 +53,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   )
 
   const router = merge(showCreate$, showSingle$)
-  const value = { appendOpp$ }
+  const value = { embedOpp$ }
 
   return {
     react,
