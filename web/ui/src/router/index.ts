@@ -1,4 +1,5 @@
 import { Driver } from "@cycle/run"
+import { captureException } from "@sentry/react"
 import { distinctUntilChanged, Observable } from "rxjs"
 import { match } from "ts-pattern"
 import {
@@ -70,6 +71,7 @@ export interface Source {
 export enum CommandType {
   push = "push",
   back = "back",
+  replace = "replace",
 }
 export interface Command {
   type: CommandType
@@ -81,22 +83,25 @@ export const push = (route: Route): Command => {
 export const back = (): Command => {
   return { type: CommandType.back }
 }
+export const replace = (): Command => {
+  return { type: CommandType.replace }
+}
 
 type Sink = Stream<Command>
 
 export function makeDriver(): Driver<Sink, Source> {
-  return function (sink: Sink): Source {
+  return (sink: Sink): Source => {
     sink.addListener({
       next: (cmd) => {
-        // console.debug(tagPrefix, cmd)
         const { type, route } = cmd
         match(type)
           .with(CommandType.push, () => route?.push())
           .with(CommandType.back, () => window.history.back())
+          .with(CommandType.replace, () => route?.replace())
           .exhaustive()
       },
-      error: (error) => console.error(error),
-      complete: () => console.info("complete"),
+      error: (error) => captureException(error),
+      complete: () => null,
     })
 
     const history$ = new Observable<Route>((observer) => {
