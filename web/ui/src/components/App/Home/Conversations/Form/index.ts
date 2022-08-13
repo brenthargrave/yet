@@ -49,7 +49,13 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { info } from "~/notice"
-import { push, routes, routeURL, Source as RouterSource } from "~/router"
+import {
+  newConversationOppsRoutes,
+  push,
+  routes,
+  routeURL,
+  Source as RouterSource,
+} from "~/router"
 import { cb$, mapTo, shareLatest } from "~/rx"
 import { Option as ContactOption, SelectedOption, View } from "./View"
 
@@ -444,31 +450,34 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
     share()
   )
 
-  // const showOpps$ = onClickAddOpp$.pipe(
-  //   mapTo(push(routes.newConversationOpps())),
-  //   tag("showOpp$"),
-  //   share()
-  // )
-  // const hideOpps$ = merge(appendedNote$, onCloseAddOpp$).pipe(
-  //   mapTo(push(routes.newConversation())),
-  //   tag("hideOpps$"),
-  //   share()
-  // )
-  // const isOpenAddOpp$ = history$.pipe(
-  //   map((route) => newConversationOppsRoutes.has(route)),
-  //   tag("isOpenAddOpp$"),
-  //   startWith(false),
-  //   share()
-  // )
-  const isOpenAddOpp$ = merge(
-    onClickAddOpp$.pipe(mapTo(true)),
-    merge(noteWithEmbed$, onCloseAddOpp$).pipe(
-      mapTo(false)
-      // tap((noteWithEmbed) => {
-      //   noteInputRef.current?.focus()
-      // })
-    )
-  ).pipe(tag("isOpenAddOpp$"), startWith(false), share())
+  const showOpps$ = onClickAddOpp$.pipe(
+    mapTo(push(routes.newConversationOpps())),
+    tag("showOpp$"),
+    share()
+  )
+  const hideOpps$ = merge(onCloseAddOpp$, noteWithEmbed$).pipe(
+    mapTo(push(routes.newConversation())),
+    tag("hideOpps$"),
+    share()
+  )
+  const isOpenAddOpp$ = history$.pipe(
+    map((route) => newConversationOppsRoutes.has(route)),
+    tag("isOpenAddOpp$"),
+    startWith(false),
+    share()
+  )
+  // const isOpenAddOpp$ = merge(
+  //   onClickAddOpp$.pipe(mapTo(true)),
+  //   merge(noteWithEmbed$, onCloseAddOpp$).pipe( mapTo(false))
+  // ).pipe(tag("isOpenAddOpp$"), startWith(false), share())
+
+  const router = merge(
+    goToList$,
+    redirectJustSignedToShow$,
+    showOpps$,
+    hideOpps$,
+    opps.router
+  )
 
   const props$ = combineLatest({
     options: options$,
@@ -508,13 +517,6 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
         noteInputRef,
       })
     )
-  )
-  const router = merge(
-    goToList$,
-    redirectJustSignedToShow$,
-    // showOpps$,
-    // hideOpps$,
-    opps.router
   )
   const notice = merge(shareURLCopiedNotice$, justSignedNotice$, opps.notice)
   const track = merge(trackPropose$)
