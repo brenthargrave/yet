@@ -1,10 +1,9 @@
 import { ReactSource } from "@cycle/react"
-import { EMPTY, map, of, switchMap } from "rxjs"
-import { match, P } from "ts-pattern"
-import { ulid } from "ulid"
-import { ConversationStatus, Source as GraphSource } from "~/graph"
+import { filter, map, of, switchMap } from "rxjs"
+import { pairwiseStartWith } from "rxjs-etc/dist/esm/operators"
+import { newConversation, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { routes, Source as RouterSource } from "~/router"
+import { isNewConversationRoute, Source as RouterSource } from "~/router"
 import { shareLatest } from "~/rx"
 import { Form } from "../Form"
 
@@ -23,29 +22,16 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const tag = makeTagger(tagScope)
 
   const record$ = history$.pipe(
-    switchMap((route) =>
-      match(route.name)
-        .with(
-          P.union(
-            routes.newConversation.name,
-            routes.newConversationOpps.name,
-            routes.newConversationNewOpp.name,
-            routes.newConversationOpp.name
-          ),
-          () =>
-            of({
-              id: ulid(),
-              invitees: [],
-              note: null,
-              status: ConversationStatus.Draft,
-              occurredAt: new Date(),
-            })
-        )
-        .otherwise(() => EMPTY)
+    pairwiseStartWith(null),
+    filter(
+      ([prior, current]) =>
+        isNewConversationRoute(current) && !isNewConversationRoute(prior)
     ),
+    switchMap((_) => of(newConversation())),
     tag("record$"),
     shareLatest()
   )
+
   const id$ = record$.pipe(
     map((record) => record.id),
     tag("id$"),

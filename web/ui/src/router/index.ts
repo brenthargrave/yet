@@ -10,6 +10,7 @@ import {
   Route as _Route,
 } from "type-route"
 import { Stream } from "xstream"
+import { includes, isEmpty } from "~/fp"
 import { makeTagger } from "~/log"
 import { shareLatest } from "~/rx"
 
@@ -50,10 +51,17 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
   opp,
 })
 
-export const newConversationOppsRoutes = createGroup([
+const newConversationOppsRoutes = [
   routes.newConversationOpps,
   routes.newConversationNewOpp,
   routes.newConversationOpp,
+]
+export const newConversationOppsRoutesGroup = createGroup(
+  newConversationOppsRoutes
+)
+export const newConversationRoutesGroup = createGroup([
+  ...newConversationOppsRoutes,
+  routes.newConversation,
 ])
 
 export type Route = _Route<typeof routes>
@@ -63,6 +71,9 @@ export const routeURL = (route: Route): string =>
 
 export const isRoute = (route: Route, expectedRoute: Route): boolean =>
   route.name === expectedRoute.name
+
+export const isNewConversationRoute = (route?: Route | null): boolean =>
+  route ? includes(route.name, newConversationRoutesGroup.routeNames) : false
 
 export interface Source {
   history$: Observable<Route>

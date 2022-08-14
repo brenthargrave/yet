@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker"
 import { capitalCase } from "change-case"
+import { ulid } from "ulid"
 import {
   any,
   descend,
@@ -42,7 +43,7 @@ export const inviteesDiffer = (current: Invitee[], old: Invitee[]): boolean =>
     symmetricDifferenceWith(eqBy<Invitee>(prop<Invitee>("id")), old, current)
   )
 
-const makeId = () => faker.datatype.uuid()
+const makeId = () => ulid()
 const makeName = () =>
   join(" ", [faker.name.firstName(), faker.name.lastName()])
 const makeDate = () => faker.date.past()
@@ -67,23 +68,29 @@ export const makeInvitee = (): Invitee => {
   }
 }
 
-export const makeConversation = (): DraftConversation => {
-  return {
-    id: makeId(),
-    occurredAt: makeDate(),
-    creator: makeParticipant(),
-    invitees: [makeInvitee(), makeInvitee()],
-    note: faker.lorem.paragraph(),
-    signatures: [],
-    reviews: [],
-    status: faker.helpers.arrayElement([
-      ConversationStatus.Draft,
-      ConversationStatus.Proposed,
-      ConversationStatus.Signed,
-      ConversationStatus.Deleted,
-    ]),
-  }
-}
+export const makeConversation = (): DraftConversation => ({
+  id: makeId(),
+  occurredAt: makeDate(),
+  creator: makeParticipant(),
+  invitees: [makeInvitee(), makeInvitee()],
+  note: faker.lorem.paragraph(),
+  signatures: [],
+  reviews: [],
+  status: faker.helpers.arrayElement([
+    ConversationStatus.Draft,
+    ConversationStatus.Proposed,
+    ConversationStatus.Signed,
+    ConversationStatus.Deleted,
+  ]),
+})
+
+export const newConversation = (): DraftConversation => ({
+  id: ulid(),
+  invitees: [],
+  note: null,
+  status: ConversationStatus.Draft,
+  occurredAt: new Date(),
+})
 
 export const isSignedBy = (
   conversation: Conversation,

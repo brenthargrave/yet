@@ -50,7 +50,7 @@ import {
 import { makeTagger } from "~/log"
 import { info } from "~/notice"
 import {
-  newConversationOppsRoutes,
+  newConversationOppsRoutesGroup,
   push,
   routes,
   routeURL,
@@ -461,7 +461,7 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
     share()
   )
   const isOpenAddOpp$ = history$.pipe(
-    map((route) => newConversationOppsRoutes.has(route)),
+    map((route) => newConversationOppsRoutesGroup.has(route)),
     tag("isOpenAddOpp$"),
     startWith(false),
     share()
