@@ -47,6 +47,7 @@ import {
   ProposeInput,
   ReviewConversationDocument,
   ReviewInput,
+  Scalars,
   SignConversationDocument,
   SignInput,
   SubmitCodeDocument,
@@ -67,6 +68,7 @@ import { client as urqlClient } from "./urql"
 export { loggedIn, loggedOut } from "./driver"
 export type { Commands, Source } from "./driver"
 export * from "./generated"
+export type ID = Scalars["ID"]
 export * from "./models"
 
 const tag = makeTagger("graph")

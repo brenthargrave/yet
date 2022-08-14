@@ -11,16 +11,13 @@ import {
 import {
   Conversation,
   EventName,
-  isCreatedBy,
   isLurking,
-  isStatusEditable,
   Source as GraphSource,
   track$,
 } from "~/graph"
 import { makeTagger } from "~/log"
-import { push, routes, Source as RouterSource } from "~/router"
+import { NEWID, push, routes, Source as RouterSource } from "~/router"
 import { cb$, mapTo } from "~/rx"
-import { and } from "~/fp"
 import { View } from "./View"
 
 interface Sources {
@@ -50,7 +47,9 @@ export const List = (sources: Sources, tagPrefix?: string) => {
 
   const [onClickNew, clickNew$] = cb$(tag("clickNew$"))
 
-  const newConvo$ = clickNew$.pipe(mapTo(push(routes.newConversation())))
+  const newConvo$ = clickNew$.pipe(
+    mapTo(push(routes.conversation({ id: NEWID })))
+  )
 
   const track = clickNew$.pipe(
     withLatestFrom(me$),
@@ -63,21 +62,14 @@ export const List = (sources: Sources, tagPrefix?: string) => {
     )
   )
 
-  const [onClickConversation, clickConvo$] = cb$<Conversation>(
+  const [onClickConversation, onClickConversation$] = cb$<Conversation>(
     tag("clickConvo$")
   )
 
-  const editConvo$ = clickConvo$.pipe(
-    withLatestFrom(me$),
-    map(([conversation, me]) => {
-      const route = and(
-        isCreatedBy(conversation, me),
-        isStatusEditable(conversation.status)
-      )
-        ? routes.editConversation({ id: conversation.id })
-        : routes.conversation({ id: conversation.id })
-      return push(route)
-    })
+  const editConvo$ = onClickConversation$.pipe(
+    map(({ id }) => push(routes.conversation({ id }))),
+    tag("editConvo$"),
+    share()
   )
 
   const props$ = combineLatest({ viewer: me$, conversations: conversations$ })

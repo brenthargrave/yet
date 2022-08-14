@@ -22,8 +22,10 @@ import {
   withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
+import { match } from "ts-pattern"
 import { filterResultOk } from "ts-results/rxjs-operators"
-import { Main as Opps } from "~/components/App/Home/Opps"
+import { Actions, Source as ActionSource } from "~/action"
+import { Opps, State as OppsState } from "~/components/App/Home/Opps"
 import { and, includes, map as _map, not, pluck as _pluck, prop } from "~/fp"
 import {
   Contact,
@@ -50,14 +52,17 @@ import {
 import { makeTagger } from "~/log"
 import { info } from "~/notice"
 import {
-  newConversationOppsRoutesGroup,
+  conversationOppsRouteGroup,
+  NEWID,
   push,
   routes,
   routeURL,
   Source as RouterSource,
 } from "~/router"
-import { cb$, mapTo, shareLatest } from "~/rx"
-import { Option as ContactOption, SelectedOption, View } from "./View"
+import { cb$, shareLatest } from "~/rx"
+import { Mode, Option as ContactOption, SelectedOption, View } from "./View"
+
+export { Mode }
 
 const noteInputRef = createRef<HTMLTextAreaElement>()
 
@@ -90,9 +95,10 @@ interface Sources {
   router: RouterSource
   graph: GraphSource
   props: Props
+  action: ActionSource
 }
 
-export const Form = (sources: Sources, _tagPrefix?: string) => {
+export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
   const tagPrefix = `${_tagPrefix}/Form`
   const tag = makeTagger(tagPrefix)
 
@@ -105,14 +111,49 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
   // Opps
   const [onClickAddOpp, onClickAddOpp$] = cb$(tag("onClickAddOpp$"))
   const [onCloseAddOpp, _onCloseAddOpp$] = cb$(tag("onCloseAddOpp$"))
-  // TODO: why does ESC fail to close Opps modal but not Publish?
+  // ! why does ESC fail to close Opps modal but not Publish?
   const onEscape$ = fromEvent<KeyboardEvent>(document, "keydown").pipe(
     filter((e) => e.key === "Escape"),
     tag("escape$")
   )
   const onCloseAddOpp$ = merge(_onCloseAddOpp$, onEscape$)
 
-  const opps = Opps(sources, tagPrefix)
+  const oppsState$ = history$.pipe(
+    map((route) =>
+      match(route)
+        .with({ name: routes.conversationOpps.name }, () => OppsState.list)
+        .with({ name: routes.conversationOpp.name }, ({ params: { oid } }) =>
+          oid === NEWID ? OppsState.create : OppsState.single
+        )
+        .otherwise(() => OppsState.list)
+    ),
+    distinctUntilChanged(),
+    tag("oppsState$"),
+    shareLatest()
+  )
+
+  const oppID$ = history$.pipe(
+    switchMap((route) =>
+      match(route)
+        .with({ name: routes.conversationOpp.name }, ({ params: { oid } }) =>
+          oid === NEWID ? EMPTY : of(oid)
+        )
+        .otherwise(() => EMPTY)
+    ),
+    tag("oppID$"),
+    shareLatest()
+  )
+
+  const opps = Opps(
+    {
+      ...sources,
+      props: {
+        state$: oppsState$,
+        id$: oppID$,
+      },
+    },
+    tagPrefix
+  )
   const {
     value: { embedOpp$ },
   } = opps
@@ -137,7 +178,6 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
 
   const justSignedNotice$ = record$.pipe(
     pairwise(),
-    tag("justSignedNotice$ pairwise"),
     filter(
       ([prev, curr]) =>
         prev.status !== ConversationStatus.Signed &&
@@ -451,32 +491,55 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
   )
 
   const showOpps$ = onClickAddOpp$.pipe(
-    mapTo(push(routes.newConversationOpps())),
+    withLatestFrom(record$),
+    map(([_, { id }]) => push(routes.conversationOpps({ id }))),
     tag("showOpp$"),
     share()
   )
+
   const hideOpps$ = merge(onCloseAddOpp$, noteWithEmbed$).pipe(
-    mapTo(push(routes.newConversation())),
+    withLatestFrom(record$),
+    map(([_, { id }]) =>
+      match(mode)
+        .with(Mode.create, () => push(routes.conversation({ id: NEWID })))
+        .with(Mode.edit, () => push(routes.conversation({ id })))
+        .exhaustive()
+    ),
     tag("hideOpps$"),
     share()
   )
+
   const isOpenAddOpp$ = history$.pipe(
-    map((route) => newConversationOppsRoutesGroup.has(route)),
+    map((route) => conversationOppsRouteGroup.has(route)),
     tag("isOpenAddOpp$"),
     startWith(false),
     share()
   )
-  // const isOpenAddOpp$ = merge(
-  //   onClickAddOpp$.pipe(mapTo(true)),
-  //   merge(noteWithEmbed$, onCloseAddOpp$).pipe( mapTo(false))
-  // ).pipe(tag("isOpenAddOpp$"), startWith(false), share())
+
+  const oppsRouter$ = opps.action.pipe(
+    withLatestFrom(record$),
+    map(([action, { id, ...record }]) =>
+      match(action)
+        .with({ type: Actions.listOpps }, () =>
+          push(routes.conversationOpps({ id }))
+        )
+        .with({ type: Actions.createOpp }, () =>
+          push(routes.conversationOpp({ id, oid: NEWID }))
+        )
+        .with({ type: Actions.showOpp }, ({ opp }) =>
+          push(routes.conversationOpp({ id, oid: opp.id }))
+        )
+        .run()
+    ),
+    tag("oppsRouter$")
+  )
 
   const router = merge(
     goToList$,
     redirectJustSignedToShow$,
     showOpps$,
     hideOpps$,
-    opps.router
+    oppsRouter$
   )
 
   const props$ = combineLatest({
@@ -515,6 +578,7 @@ export const Form = (sources: Sources, _tagPrefix?: string) => {
         onClickAddOpp,
         onCloseAddOpp,
         noteInputRef,
+        mode,
       })
     )
   )

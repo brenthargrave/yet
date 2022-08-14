@@ -11,6 +11,7 @@ import {
 } from "rxjs"
 import { map, switchMap } from "rxjs/operators"
 import { match } from "ts-pattern"
+import { Source as ActionSource } from "~/action"
 import { Auth } from "~/components/Auth"
 import { Landing } from "~/components/Landing"
 import {
@@ -47,6 +48,7 @@ export interface Sources {
   react: ReactSource
   router: RouterSource
   graph: GraphSource
+  action: ActionSource
 }
 
 export const App = (sources: Sources) => {

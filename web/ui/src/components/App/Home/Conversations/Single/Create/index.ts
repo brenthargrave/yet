@@ -1,16 +1,18 @@
 import { ReactSource } from "@cycle/react"
 import { filter, map, of, switchMap } from "rxjs"
 import { pairwiseStartWith } from "rxjs-etc/dist/esm/operators"
+import { Source as ActionSource } from "~/action"
 import { newConversation, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { isNewConversationRoute, Source as RouterSource } from "~/router"
 import { shareLatest } from "~/rx"
-import { Form } from "../Form"
+import { Form, Mode } from "../Form"
 
 interface Sources {
   react: ReactSource
   router: RouterSource
   graph: GraphSource
+  action: ActionSource
 }
 
 export const Main = (sources: Sources, tagPrefix?: string) => {
@@ -43,7 +45,8 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
       ...sources,
       props: { id$, record$ },
     },
-    tagScope
+    tagScope,
+    Mode.create
   )
 
   return {

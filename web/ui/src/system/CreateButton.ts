@@ -13,7 +13,7 @@ export const CreateButton = ({
   onClick,
   isLoading,
   isDisabled,
-  cta = `Note new conversation`,
+  cta = `New conversation`,
 }: Props) =>
   h(
     Button,

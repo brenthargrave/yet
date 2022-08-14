@@ -14,6 +14,7 @@ import {
   withLatestFrom,
 } from "rxjs"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
+import { act, Actions } from "~/action"
 import { and, not, pick } from "~/fp"
 import {
   isValidOrg,
@@ -25,9 +26,8 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
-import { push, routes, Source as RouterSource } from "~/router"
-import { cb$ } from "~/rx"
-import { View, Target } from "./View"
+import { cb$, mapTo, shareLatest } from "~/rx"
+import { Target, View } from "./View"
 
 export { Target }
 
@@ -40,18 +40,15 @@ interface Props {
 
 interface Sources {
   react: ReactSource
-  router: RouterSource
   graph: GraphSource
   props: Props
 }
 
-export const Main = (sources: Sources, tagPrefix?: string) => {
+export const Form = (sources: Sources, tagPrefix?: string) => {
   const tagScope = `${tagPrefix}/Form`
   const tag = makeTagger(tagScope)
 
   const {
-    graph: { opps$ },
-    router: { history$ },
     props: { record$, target },
   } = sources
 
@@ -120,7 +117,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     tag("isValid$"),
     startWith(false),
     distinctUntilChanged(),
-    share()
+    shareLatest()
   )
 
   const isDisabledSubmit$ = isValid$.pipe(
@@ -128,7 +125,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     startWith(true),
     distinctUntilChanged(),
     tag("isDisabledSubmit$"),
-    share()
+    shareLatest()
   )
 
   const submit$ = onSubmit$.pipe(
@@ -141,9 +138,9 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const opp$ = submit$.pipe(filterResultOk(), tag("opp$"), share())
   const userError$ = submit$.pipe(filterResultErr(), tag("userError$"), share())
 
-  const redirectToList$ = merge(onCancel$, opp$).pipe(
-    map((_opp) => push(routes.newConversationOpps())),
-    tag("redirectToList$"),
+  const showList$ = merge(onCancel$, opp$).pipe(
+    mapTo(act(Actions.listOpps)),
+    tag("showList$"),
     share()
   )
 
@@ -178,11 +175,11 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     )
   )
 
-  const router = merge(redirectToList$)
+  const action = merge(showList$)
   const notice = merge(userErrorNotice$)
   return {
     react,
-    router,
     notice,
+    action,
   }
 }

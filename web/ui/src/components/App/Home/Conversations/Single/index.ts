@@ -1,36 +1,60 @@
 import { h, ReactSource } from "@cycle/react"
+import { and } from "ramda"
 import {
   distinctUntilChanged,
   EMPTY,
+  filter,
   map,
   merge,
-  Observable,
   of,
   share,
   startWith,
   switchMap,
+  withLatestFrom,
 } from "rxjs"
-import { match } from "ts-pattern"
+import { delayUntil } from "rxjs-etc/dist/esm/operators"
+import { match, P } from "ts-pattern"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
+import { Source as ActionSource } from "~/action"
 import { ErrorView } from "~/components/App/ErrorView"
 import {
   Conversation,
+  Customer,
+  ErrorCode,
   getConversation$,
+  ID,
+  isCreatedBy,
+  isStatusEditable,
+  Maybe,
   Source as GraphSource,
   subscribeConversation$,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
-import { routes, Source as RouterSource } from "~/router"
+import {
+  NEWID,
+  push,
+  routes,
+  singleConversationRoutesGroup,
+  Source as RouterSource,
+} from "~/router"
 import { shareLatest } from "~/rx"
+import { Main as Edit } from "./Edit"
 import { Main as Show } from "./Show"
 import { Main as Sign } from "./Sign"
 import { View } from "./View"
+
+enum State {
+  edit = "edit",
+  sign = "sign",
+  show = "show",
+}
 
 interface Sources {
   react: ReactSource
   router: RouterSource
   graph: GraphSource
+  action: ActionSource
 }
 
 export const Main = (sources: Sources, tagPrefix?: string) => {
@@ -39,14 +63,14 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
 
   const {
     router: { history$ },
+    graph: { me$ },
   } = sources
 
   const id$ = history$.pipe(
     switchMap((route) =>
       match(route)
-        .with({ name: routes.conversation.name }, ({ params }) => of(params.id))
-        .with({ name: routes.signConversation.name }, ({ params }) =>
-          of(params.id)
+        .when(singleConversationRoutesGroup.has, ({ params: { id } }) =>
+          id === NEWID ? EMPTY : of(id)
         )
         .otherwise(() => EMPTY)
     ),
@@ -84,32 +108,89 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const singleSources = { ...sources, props: { record$ } }
-  const show = Show(singleSources, tagScope)
-  const sign = Sign(singleSources, tagScope)
+  const redirectNotFound$ = userError$.pipe(
+    filter(({ code }) => code === ErrorCode.NotFound),
+    map((_) => push(routes.conversations())),
+    tag("redirectNotFound$"),
+    share()
+  )
 
-  const props$ = history$.pipe(
-    switchMap((route) =>
-      match(route.name)
-        .with(routes.signConversation.name, () => sign.value.props$)
-        .with(routes.conversation.name, () => show.value.props$)
-        .run()
-    )
+  const existingRecordSources = { ...sources, props: { record$ } }
+  const show = Show(existingRecordSources, tagScope)
+  const sign = Sign(existingRecordSources, tagScope)
+  const edit = Edit(existingRecordSources, tagScope)
+
+  const resolveState = (
+    id: ID,
+    me: Maybe<Customer>,
+    record: Conversation
+  ): State => {
+    return and(isCreatedBy(record, me), isStatusEditable(record.status))
+      ? State.edit
+      : State.show
+  }
+
+  const state$ = history$.pipe(
+    delayUntil(record$),
+    withLatestFrom(me$, record$),
+    map(([route, me, record]) =>
+      match(route)
+        .with({ name: routes.signConversation.name }, () => State.sign)
+        .when(singleConversationRoutesGroup.has, ({ params: { id } }) =>
+          resolveState(id, me, record)
+        )
+        .otherwise(() => State.show)
+    ),
+    distinctUntilChanged(),
+    tag("state$"),
+    shareLatest()
   )
 
   const react = merge(
-    props$.pipe(map((props) => h(View, { ...props }))),
-    userError$.pipe(map((error) => h(ErrorView, { error })))
+    userError$.pipe(map((error) => h(ErrorView, { error }))),
+    state$.pipe(
+      switchMap((state) =>
+        match(state)
+          .with(State.edit, () => edit.react)
+          .with(State.sign, () =>
+            sign.value.props$.pipe(map((props) => h(View, { ...props })))
+          )
+          .with(State.show, () =>
+            show.value.props$.pipe(map((props) => h(View, { ...props })))
+          )
+          .exhaustive()
+      )
+    )
   ).pipe(startWith(null), tag("react"))
 
-  const router = merge(sign.router, show.router)
-  const notice = merge(userErrorNotice$)
-  const track = merge(sign.track)
+  const router = merge(
+    //
+    edit.router,
+    sign.router,
+    show.router,
+    redirectNotFound$
+  )
+  const notice = merge(
+    //
+    edit.notice,
+    sign.notice,
+    userErrorNotice$
+  )
+  const track = merge(
+    //
+    edit.track,
+    sign.track
+  )
+  const graph = merge(
+    //
+    edit.graph
+  )
 
   return {
     react,
     router,
     notice,
     track,
+    graph,
   }
 }

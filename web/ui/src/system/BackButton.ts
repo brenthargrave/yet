@@ -15,7 +15,7 @@ export const BackButton: FC<Props> = ({ onClick, cta = "Back" }) =>
     {
       leftIcon: h(Icon, { as: FaChevronLeft }),
       // variant: "unstyled",
-      paddingLeft: 0,
+      // paddingLeft: 0,
       variant: "ghost",
       size: "sm",
       onClick,

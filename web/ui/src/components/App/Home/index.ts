@@ -7,6 +7,7 @@ import {
   switchMap,
 } from "rxjs"
 import { match } from "ts-pattern"
+import { Source as ActionSource } from "~/action"
 import { Onboarding } from "~/components/Onboarding"
 import { isAuthenticated, isOnboarding, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
@@ -23,6 +24,7 @@ interface Sources {
   react: ReactSource
   router: RouterSource
   graph: GraphSource
+  action: ActionSource
 }
 
 export const Home = (sources: Sources) => {

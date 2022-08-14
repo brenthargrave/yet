@@ -1,14 +1,13 @@
 import { h, ReactSource } from "@cycle/react"
-import { combineLatest, map, share, merge } from "rxjs"
-import { Source as GraphSource, Opp } from "~/graph"
+import { combineLatest, map, merge, share } from "rxjs"
+import { act, Actions } from "~/action"
+import { Opp, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { push, routes, Source as RouterSource } from "~/router"
 import { cb$, mapTo } from "~/rx"
 import { View } from "./View"
 
 interface Sources {
   react: ReactSource
-  router: RouterSource
   graph: GraphSource
 }
 
@@ -26,14 +25,14 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
 
   const embedOpp$ = onClickAdd$.pipe(tag("appendOpp$"), share())
 
-  const showCreate$ = onClickCreate$.pipe(
-    mapTo(push(routes.newConversationNewOpp())),
-    tag("showCreate$")
+  const create$ = onClickCreate$.pipe(
+    mapTo(act(Actions.createOpp)),
+    tag("create$")
   )
 
-  const showSingle$ = onClickOpp$.pipe(
-    map(({ id }) => push(routes.newConversationOpp({ id }))),
-    tag("showSingle$")
+  const show$ = onClickOpp$.pipe(
+    map((opp) => act(Actions.showOpp, { opp })),
+    tag("show$")
   )
 
   const props$ = combineLatest({
@@ -52,12 +51,12 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     tag("react")
   )
 
-  const router = merge(showCreate$, showSingle$)
+  const action = merge(create$, show$)
   const value = { embedOpp$ }
 
   return {
+    action,
     react,
-    router,
     value,
   }
 }

@@ -1,18 +1,22 @@
 import { ReactSource } from "@cycle/react"
 import { distinctUntilChanged, map, merge, share, switchMap } from "rxjs"
 import { match, P } from "ts-pattern"
+import { Source as ActionSource } from "~/action"
 import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { routes, Source as RouterSource } from "~/router"
-import { Main as Create } from "./Create"
-import { Edit } from "./Edit"
+import {
+  singleConversationRoutesGroup,
+  routes,
+  Source as RouterSource,
+  NEWID,
+} from "~/router"
 import { List } from "./List"
 import { Main as Single } from "./Single"
+import { Main as Create } from "./Single/Create"
 
 enum State {
-  create = "create",
-  edit = "edit",
   list = "list",
+  create = "create",
   single = "single",
 }
 
@@ -20,6 +24,7 @@ interface Sources {
   react: ReactSource
   router: RouterSource
   graph: GraphSource
+  action: ActionSource
 }
 
 export const Conversations = (sources: Sources, tagPrefix?: string) => {
@@ -31,28 +36,15 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
   } = sources
 
   const list = List(sources, tagScope)
-  const single = Single(sources, tagScope)
-
-  const edit = Edit(sources, tagScope)
   const create = Create(sources, tagScope)
+  const single = Single(sources, tagScope)
 
   const state$ = history$.pipe(
     map((route) =>
-      match(route.name)
-        .with(
-          P.union(
-            routes.newConversation.name,
-            routes.newConversationOpps.name,
-            routes.newConversationNewOpp.name,
-            routes.newConversationOpp.name
-          ),
-          () => State.create
-        )
-        .with(routes.editConversation.name, () => State.edit)
-        .with(routes.conversations.name, () => State.list)
-        .with(
-          P.union(routes.signConversation.name, routes.conversation.name),
-          () => State.single
+      match(route)
+        .with({ name: routes.conversations.name }, () => State.list)
+        .when(singleConversationRoutesGroup.has, ({ params: { id } }) =>
+          id === NEWID ? State.create : State.single
         )
         .otherwise(() => State.list)
     ),
@@ -64,9 +56,8 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
   const react = state$.pipe(
     switchMap((state) =>
       match(state)
-        .with(State.create, () => create.react)
-        .with(State.edit, () => edit.react)
         .with(State.list, () => list.react)
+        .with(State.create, () => create.react)
         .with(State.single, () => single.react)
         .exhaustive()
     ),
@@ -74,10 +65,28 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const track = merge(list.track, edit.track, create.track, single.track)
-  const router = merge(list.router, edit.router, create.router, single.router)
-  const notice = merge(edit.notice, create.notice, single.notice)
-  const graph = merge(create.graph, edit.graph)
+  const track = merge(
+    //
+    list.track,
+    create.track,
+    single.track
+  )
+  const router = merge(
+    //
+    list.router,
+    create.router,
+    single.router
+  )
+  const notice = merge(
+    //
+    create.notice,
+    single.notice
+  )
+  const graph = merge(
+    //
+    create.graph,
+    single.graph
+  )
 
   return {
     react,

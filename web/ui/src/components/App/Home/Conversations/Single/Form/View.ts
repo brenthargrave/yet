@@ -14,6 +14,11 @@ import { Props as WhoProps, View as Who } from "./Who"
 
 export type { Option, SelectedOption } from "./Who"
 
+export enum Mode {
+  create = "create",
+  edit = "edit",
+}
+
 export interface Props
   extends WhenProps,
     NoteEditorProps,
@@ -38,6 +43,7 @@ export interface Props
   onCloseAddOpp?: () => void
   oppsView: ReactNode
   noteInputRef?: Ref<HTMLTextAreaElement>
+  mode?: Mode
 }
 
 export const View = ({
@@ -70,6 +76,7 @@ export const View = ({
   onCloseAddOpp: onCloseAddApp,
   oppsView,
   noteInputRef,
+  mode = Mode.create,
   ...props
 }: Props) =>
   h(

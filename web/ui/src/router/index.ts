@@ -10,58 +10,66 @@ import {
   Route as _Route,
 } from "type-route"
 import { Stream } from "xstream"
-import { includes, isEmpty } from "~/fp"
+import { ID } from "~/graph"
 import { makeTagger } from "~/log"
 import { shareLatest } from "~/rx"
 
 const tagPrefix = "Router"
 const tag = makeTagger(tagPrefix)
 
+export const NEWID: ID = "new"
+
 const root = defineRoute("/")
 const conversations = root.extend("/c")
-const newConversation = conversations.extend("/new")
 const conversation = conversations.extend(
   { id: param.path.string },
   (p) => `/${p.id}`
 )
-const editConversation = conversation.extend("/edit")
 const signConversation = conversation.extend("/sign")
-const newConversationOpps = newConversation.extend("/o")
-const newConversationNewOpp = newConversationOpps.extend("/new")
-const newConversationOpp = newConversationOpps.extend(
-  { id: param.path.string },
-  (p) => `/${p.id}`
+const conversationOpps = conversation.extend("/o")
+const conversationOpp = conversationOpps.extend(
+  { oid: param.path.string },
+  (p) => `/${p.oid}`
 )
 const opps = root.extend("/o")
-const opp = opps.extend({ id: param.path.string }, (p) => `/${p.id}`)
+const opp = opps.extend({ oid: param.path.string }, (p) => `/${p.oid}`)
 
 export const { routes, useRoute, RouteProvider, session } = createRouter({
   in: defineRoute("/in"),
   out: defineRoute("/out"),
   root,
   conversations,
-  newConversation,
   conversation,
-  editConversation,
   signConversation,
-  newConversationOpps,
-  newConversationNewOpp,
-  newConversationOpp,
+  conversationOpps,
+  conversationOpp,
   opps,
   opp,
 })
 
-const newConversationOppsRoutes = [
-  routes.newConversationOpps,
-  routes.newConversationNewOpp,
-  routes.newConversationOpp,
-]
-export const newConversationOppsRoutesGroup = createGroup(
-  newConversationOppsRoutes
-)
-export const newConversationRoutesGroup = createGroup([
-  ...newConversationOppsRoutes,
-  routes.newConversation,
+export const routesOppsList = [routes.conversationOpps, routes.opps]
+export const routeGroupOppsList = createGroup(routesOppsList)
+export const routesOpp = [routes.conversationOpp, routes.opp]
+export const routeGroupOpp = createGroup(routesOpp)
+
+export const singleConversationRoutesGroup = createGroup([
+  routes.conversation,
+  routes.signConversation,
+  routes.conversationOpp,
+  routes.conversationOpps,
+])
+export const singleConversationOppRoutesGroup = createGroup([
+  routes.conversationOpp,
+])
+
+export const newConversationRouteGroup = createGroup([
+  routes.conversation,
+  routes.conversationOpp,
+])
+
+export const conversationOppsRouteGroup = createGroup([
+  routes.conversationOpp,
+  routes.conversationOpps,
 ])
 
 export type Route = _Route<typeof routes>
@@ -72,8 +80,21 @@ export const routeURL = (route: Route): string =>
 export const isRoute = (route: Route, expectedRoute: Route): boolean =>
   route.name === expectedRoute.name
 
-export const isNewConversationRoute = (route?: Route | null): boolean =>
-  route ? includes(route.name, newConversationRoutesGroup.routeNames) : false
+export const isNewConversationRoute = (route?: Route | null): boolean => {
+  if (route) {
+    return newConversationRouteGroup.has(route) && route.params.id === NEWID
+  }
+  return false
+}
+
+export const isConversationNewOppRoute = (route?: Route | null): boolean => {
+  if (route) {
+    return (
+      route.name === routes.conversationOpp.name && route.params.oid === NEWID
+    )
+  }
+  return false
+}
 
 export interface Source {
   history$: Observable<Route>

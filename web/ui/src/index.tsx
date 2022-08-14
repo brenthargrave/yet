@@ -7,6 +7,7 @@ import { makeDriver as makeRouterDriver } from "~/router"
 import { makeDriver as makeNoticeDriver } from "~/notice"
 import { makeDriver as makeGraphDriver } from "./graph/driver"
 import { makeDriver as makeTrackDriver } from "./track"
+import { makeDriver as makeActionDriver } from "~/action"
 
 // @ts-ignore
 const { VITE_API_ENV, VITE_SENTRY_DSN, VITE_SENTRY_DEBUG } = import.meta.env
@@ -30,4 +31,5 @@ run(App, {
   notice: makeNoticeDriver(),
   graph: makeGraphDriver(),
   track: makeTrackDriver(),
+  action: makeActionDriver(),
 })
