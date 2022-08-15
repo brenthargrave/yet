@@ -84,15 +84,12 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const _record$ = result$.pipe(filterResultOk(), tag("record$"), shareLatest())
+  const record$ = result$.pipe(filterResultOk(), tag("record$"), shareLatest())
+
   const liveRecord$ = id$.pipe(
     distinctUntilChanged(),
     switchMap((id) => subscribeConversation$({ id })),
     tag("liveRecord$"),
-    shareLatest()
-  )
-  const record$ = merge(_record$, liveRecord$).pipe(
-    tag("record$"),
     shareLatest()
   )
 
@@ -115,7 +112,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const existingRecordSources = { ...sources, props: { record$ } }
+  const existingRecordSources = { ...sources, props: { record$, liveRecord$ } }
   const show = Show(existingRecordSources, tagScope)
   const sign = Sign(existingRecordSources, tagScope)
   const edit = Edit(existingRecordSources, tagScope)

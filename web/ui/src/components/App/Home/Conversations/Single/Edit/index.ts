@@ -17,6 +17,7 @@ import { Form, Mode } from "../Form"
 
 interface Props {
   record$: Observable<Conversation>
+  liveRecord$: Observable<Conversation>
 }
 
 interface Sources {
@@ -31,7 +32,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const {
     router: { history$ },
     graph: { me$ },
-    props: { record$ },
+    props: { record$, liveRecord$ },
   } = sources
 
   const tagScope = `${tagPrefix}/Edit`
@@ -58,7 +59,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   } = Form(
     {
       ...sources,
-      props: { id$, record$ },
+      props: { id$, record$, liveRecord$ },
     },
     tagScope,
     Mode.edit

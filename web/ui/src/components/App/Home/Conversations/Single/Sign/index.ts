@@ -42,18 +42,26 @@ interface Sources {
   react: ReactSource
   router: RouterSource
   graph: GraphSource
-  props: { record$: Observable<Conversation> }
+  props: {
+    record$: Observable<Conversation>
+    liveRecord$: Observable<Conversation>
+  }
 }
 
 export const Main = (sources: Sources, tagPrefix?: string) => {
   const {
     router: { history$ },
     graph: { me$ },
-    props: { record$ },
+    props: { record$: _record$, liveRecord$ },
   } = sources
 
   const tagScope = `${tagPrefix}/Sign`
   const tag = makeTagger(tagScope)
+
+  const record$ = merge(_record$, liveRecord$).pipe(
+    tag("record"),
+    shareLatest()
+  )
 
   const review$ = combineLatest({
     route: history$,

@@ -89,6 +89,7 @@ const optionsToInvitees = (
 interface Props {
   id$: Observable<string>
   record$: Observable<DraftConversation>
+  liveRecord$: Observable<DraftConversation>
 }
 interface Sources {
   react: ReactSource
@@ -104,7 +105,7 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
 
   const {
     graph: { contacts$ },
-    props: { record$: _record$, id$ },
+    props: { id$, record$: _record$, liveRecord$ },
     router: { history$ },
   } = sources
 
@@ -158,25 +159,22 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     value: { embedOpp$ },
   } = opps
 
-  const liveRecord$ = id$.pipe(
-    switchMap((id) => subscribeConversation$({ id })),
-    tag("liveRecord$"),
-    shareLatest()
-  )
-  const record$ = merge(_record$, liveRecord$).pipe(
-    tag("record$"),
+  const record$ = _record$.pipe(tag("record$"), shareLatest())
+  const mergedRecord$ = merge(record$, liveRecord$).pipe(
+    tag("mergedRecord$"),
     shareLatest()
   )
 
-  const status$ = record$.pipe(
+  const status$ = mergedRecord$.pipe(
     pluck("status"),
     filter(isNotNullish),
     startWith(ConversationStatus.Draft),
+    distinctUntilChanged(),
     tag("status$"),
     shareLatest()
   )
 
-  const justSignedNotice$ = record$.pipe(
+  const justSignedNotice$ = mergedRecord$.pipe(
     pairwise(),
     filter(
       ([prev, curr]) =>
@@ -381,7 +379,7 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     shareLatest()
   )
 
-  const isExposed$ = record$.pipe(
+  const isExposed$ = mergedRecord$.pipe(
     map(hasBeenShared),
     startWith(false),
     tag("isExposed$"),

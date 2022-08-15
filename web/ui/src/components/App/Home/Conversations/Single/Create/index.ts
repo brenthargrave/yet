@@ -1,8 +1,12 @@
 import { ReactSource } from "@cycle/react"
-import { filter, map, of, switchMap } from "rxjs"
+import { distinctUntilChanged, filter, map, of, switchMap } from "rxjs"
 import { pairwiseStartWith } from "rxjs-etc/dist/esm/operators"
 import { Source as ActionSource } from "~/action"
-import { newConversation, Source as GraphSource } from "~/graph"
+import {
+  newConversation,
+  Source as GraphSource,
+  subscribeConversation$,
+} from "~/graph"
 import { makeTagger } from "~/log"
 import { isNewConversationRoute, Source as RouterSource } from "~/router"
 import { shareLatest } from "~/rx"
@@ -40,10 +44,17 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
+  const liveRecord$ = id$.pipe(
+    distinctUntilChanged(),
+    switchMap((id) => subscribeConversation$({ id })),
+    tag("liveRecord$"),
+    shareLatest()
+  )
+
   const { react, router, notice, track, graph } = Form(
     {
       ...sources,
-      props: { id$, record$ },
+      props: { id$, record$, liveRecord$ },
     },
     tagScope,
     Mode.create
