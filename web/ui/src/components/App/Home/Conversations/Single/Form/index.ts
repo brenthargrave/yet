@@ -490,7 +490,12 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
 
   const showOpps$ = onClickAddOpp$.pipe(
     withLatestFrom(record$),
-    map(([_, { id }]) => push(routes.conversationOpps({ id }))),
+    map(([_, { id }]) =>
+      match(mode)
+        .with(Mode.create, () => push(routes.conversationOpps({ id: NEWID })))
+        .with(Mode.edit, () => push(routes.conversationOpps({ id })))
+        .exhaustive()
+    ),
     tag("showOpp$"),
     share()
   )

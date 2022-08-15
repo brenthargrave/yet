@@ -18,7 +18,7 @@ export const View: FC<Props> = ({
   h(
     Box,
     {
-      //
+      fontSize: "sm",
       padding: 4,
       borderWidth: "1px",
       borderRadius: "lg",
