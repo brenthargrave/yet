@@ -1,4 +1,4 @@
-import { Divider, Spacer, Tooltip } from "@chakra-ui/react"
+import { Spacer, Tooltip } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { ReactNode, Ref } from "react"
 import { isEmpty, not } from "~/fp"
@@ -124,7 +124,6 @@ export const View = ({
           isDisabled: isDisabledEditing,
           noteInputRef,
         }),
-        h(Divider),
         h(
           ActionBar,
           {

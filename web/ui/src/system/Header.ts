@@ -25,6 +25,8 @@ export const Header: FC<Props> = ({
       padding,
       paddingLeft,
       paddingRight,
+      paddingTop: paddingDefault,
+      paddingBottom: paddingDefault,
     },
     [children]
   )

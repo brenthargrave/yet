@@ -1,10 +1,10 @@
-import { Box, Button } from "@chakra-ui/react"
+import { Box, Button, Divider } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { isEmpty, head } from "~/fp"
-import { ConversationStatus, statusText } from "~/graph"
+import { head, isEmpty } from "~/fp"
+import { ConversationStatus } from "~/graph"
 import { toSentence } from "~/i18n"
-import { Stack, Spacer } from "~/system"
+import { Spacer, Stack } from "~/system"
 
 export type OnClickPublish = () => void
 
@@ -28,47 +28,57 @@ export const View: FC<Props> = ({
     (name) => head(name.split(/(\s+)/)) ?? name
   )
   const participantList = toSentence(firstNames)
-  return h(Stack, { direction: "column", alignItems: "start", width: "100%" }, [
-    h(
-      Box,
-      {
-        display: "flex",
-        direction: "row",
-        alignItems: "center",
-        width: "100%",
-        space: 4,
-      },
-      [
-        h(
-          Stack,
-          {
-            direction: "row",
-            justifyContent: "start",
-            // alignItems: "start",
-            alignItems: "center",
-            width: "100%",
-          },
-          [
-            h(Stack, { direction: "column", gap: 1, alignItems: "start" }, [
-              h(
-                Button,
-                {
-                  autoFocus,
-                  isDisabled: isPublishDisabled,
-                  onClick: onClickPublish,
-                },
-                isEmpty(participantNames)
-                  ? `Publish`
-                  : `Publish with ${participantList}`
-              ),
-            ]),
-            h(Spacer),
-            children,
-          ]
-        ),
-      ]
-    ),
-  ])
+  return h(
+    Stack,
+    {
+      //
+      width: "100%",
+      paddingTop: 2,
+      direction: "column",
+      alignItems: "start",
+    },
+    [
+      h(Divider),
+      h(
+        Box,
+        {
+          display: "flex",
+          direction: "row",
+          alignItems: "center",
+          width: "100%",
+          space: 4,
+        },
+        [
+          h(
+            Stack,
+            {
+              direction: "row",
+              justifyContent: "start",
+              alignItems: "start",
+              width: "100%",
+            },
+            [
+              h(Stack, { direction: "column", gap: 1, alignItems: "start" }, [
+                h(
+                  Button,
+                  {
+                    autoFocus,
+                    isDisabled: isPublishDisabled,
+                    onClick: onClickPublish,
+                  },
+                  isEmpty(participantNames)
+                    ? `Publish`
+                    : `Publish with ${participantList}`
+                ),
+              ]),
+              h(Spacer),
+              children,
+            ]
+          ),
+        ]
+      ),
+    ]
+  )
 }
 
 View.displayName = "ActionBar"

@@ -59,7 +59,7 @@ export const View: FC<Props> = ({
           h(Spacer),
           h(CreateButton, { onClick: onClickCreate, cta: `New opp` }),
         ]),
-        h(List, { spacing: 4, paddingTop: 8 }, [
+        h(List, { spacing: 4, paddingTop: 4 }, [
           ...opps.map((opp, idx, all) => {
             const { org, role, desc, fee } = opp
             return h(ListItem, {}, [
