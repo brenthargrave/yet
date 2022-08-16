@@ -28,11 +28,7 @@ const MaxWidthView: FC = ({ children }) =>
       width: "100%",
       m: 0,
     },
-    [
-      //
-      h(NavView),
-      children,
-    ]
+    [children]
   )
 MaxWidthView.displayName = "MaxWidthView"
 
@@ -41,7 +37,10 @@ export const View: FC = ({ children }) =>
     //
     h(MaxWidthView, [
       //
-      children,
+      h(NavView, {}, [
+        //
+        children,
+      ]),
     ]),
   ])
 View.displayName = "HomeView"
