@@ -6,9 +6,11 @@ import {
   shareReplay,
   Subject,
   map,
+  merge,
 } from "rxjs"
 import { Source as WonkaSource, toObservable } from "wonka"
 import { Observable as ZenObservable } from "zen-observable-ts"
+import { pluck } from "~/fp"
 
 export type ObservableCallback<O> = { $: Observable<O>; cb: (t?: any) => void }
 export type ObservableCallbackTuple<O> = [(t?: any) => void, Observable<O>]
@@ -56,3 +58,7 @@ export const wonkaToRx = <T>(wonkaObservable: WonkaSource<T>): Observable<T> =>
 export function shareLatest<T>(bufferSize = 1): MonoTypeOperatorFunction<T> {
   return (source) => source.pipe(shareReplay({ refCount: true, bufferSize }))
 }
+
+// TODO: mergeProp("sink", source1, source2, ...)
+// export const mergeProp = (prop: string, ...sources: []) =>
+//   merge(...pluck(prop, sources))

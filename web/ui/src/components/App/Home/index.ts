@@ -3,6 +3,7 @@ import {
   combineLatest,
   distinctUntilChanged,
   map,
+  merge,
   share,
   switchMap,
 } from "rxjs"
@@ -14,6 +15,7 @@ import { makeTagger } from "~/log"
 import { Source as RouterSource } from "~/router"
 import { Conversations } from "./Conversations"
 import { View } from "./View"
+import { pluck } from "~/fp"
 
 enum State {
   onboarding = "onboarding",
@@ -38,12 +40,9 @@ export const Home = (sources: Sources) => {
   // NOTE: force onboarding everywhere in main app after auth
   const onboarding = Onboarding(sources)
 
-  const { react: conversationsView$, ...conversations } = Conversations(
-    sources,
-    tagScope
-  )
+  const conversations = Conversations(sources, tagScope)
 
-  const rootView$ = conversationsView$.pipe(
+  const rootView$ = conversations.react.pipe(
     map((subview) => h(View, [subview])),
     tag("rootView$")
   )
@@ -68,8 +67,16 @@ export const Home = (sources: Sources) => {
     share()
   )
 
+  const router = merge(...pluck("router", [conversations]))
+  const track = merge(...pluck("track", [conversations]))
+  const notice = merge(...pluck("notice", [conversations]))
+  const graph = merge(...pluck("graph", [conversations]))
+
   return {
     react,
-    ...conversations,
+    router,
+    track,
+    notice,
+    graph,
   }
 }

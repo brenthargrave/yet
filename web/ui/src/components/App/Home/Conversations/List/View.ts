@@ -84,4 +84,4 @@ export const View: FC<Props> = ({
         ),
       ])
 
-View.displayName = "Conversation.List.View"
+View.displayName = "ConversationListView"
