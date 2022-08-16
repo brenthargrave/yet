@@ -1,6 +1,7 @@
 import { DeleteIcon } from "@chakra-ui/icons"
-import { Button, IconButton } from "@chakra-ui/react"
+import { Button } from "@chakra-ui/react"
 import { h } from "@cycle/react"
+import { FC } from "react"
 
 export interface Props {
   onClick?: () => void
@@ -8,7 +9,7 @@ export interface Props {
   isDisabled?: boolean
 }
 
-export const DeleteButton = ({ onClick, isLoading, isDisabled }: Props) =>
+export const DeleteButton: FC<Props> = ({ onClick, isLoading, isDisabled }) =>
   h(
     Button,
     {

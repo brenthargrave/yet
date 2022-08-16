@@ -1,4 +1,4 @@
-import { Divider, Spacer } from "@chakra-ui/react"
+import { Divider, Spacer, Tooltip } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { ReactNode, Ref } from "react"
 import { isEmpty, not } from "~/fp"
@@ -92,11 +92,11 @@ export const View = ({
           onClick: onClickBack,
         }),
         h(Spacer),
-        h(DeleteButton, {
-          onClick: onClickDelete,
-          isLoading: isDeleting,
-          isDisabled: isDeleteDisabled,
-        }),
+        // h(DeleteButton, {
+        //   onClick: onClickDelete,
+        //   isLoading: isDeleting,
+        //   isDisabled: isDeleteDisabled,
+        // }),
       ]),
       h(Header, [
         h(Heading, { size: "md" }, "Conversation"),
@@ -125,13 +125,33 @@ export const View = ({
           noteInputRef,
         }),
         h(Divider),
-        h(ActionBar, {
-          status,
-          participantNames,
-          isPublishDisabled,
-          onClickPublish,
-          autoFocus: not(isEmpty(selectedOptions)),
-        }),
+        h(
+          ActionBar,
+          {
+            status,
+            participantNames,
+            isPublishDisabled,
+            onClickPublish,
+            autoFocus: not(isEmpty(selectedOptions)),
+          },
+          [
+            h(
+              Tooltip,
+              {
+                shouldWrapChildren: true,
+                label: "Disabled once shared",
+                isDisabled: !isDeleteDisabled,
+              },
+              [
+                h(DeleteButton, {
+                  onClick: onClickDelete,
+                  isLoading: isDeleting,
+                  isDisabled: isDeleteDisabled,
+                }),
+              ]
+            ),
+          ]
+        ),
       ]),
       h(PublishView, {
         isOpen: isOpenPublish,

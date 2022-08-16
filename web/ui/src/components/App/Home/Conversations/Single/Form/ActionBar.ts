@@ -4,7 +4,7 @@ import { FC } from "react"
 import { isEmpty, head } from "~/fp"
 import { ConversationStatus, statusText } from "~/graph"
 import { toSentence } from "~/i18n"
-import { Stack } from "~/system"
+import { Stack, Spacer } from "~/system"
 
 export type OnClickPublish = () => void
 
@@ -17,6 +17,7 @@ export interface Props {
 }
 
 export const View: FC<Props> = ({
+  children,
   isPublishDisabled,
   onClickPublish,
   participantNames = [],
@@ -38,21 +39,33 @@ export const View: FC<Props> = ({
         space: 4,
       },
       [
-        h(Stack, { direction: "row", justifyContent: "start" }, [
-          h(Stack, { direction: "column", gap: 1, alignItems: "start" }, [
-            h(
-              Button,
-              {
-                autoFocus,
-                isDisabled: isPublishDisabled,
-                onClick: onClickPublish,
-              },
-              isEmpty(participantNames)
-                ? `Publish`
-                : `Publish with ${participantList}`
-            ),
-          ]),
-        ]),
+        h(
+          Stack,
+          {
+            direction: "row",
+            justifyContent: "start",
+            // alignItems: "start",
+            alignItems: "center",
+            width: "100%",
+          },
+          [
+            h(Stack, { direction: "column", gap: 1, alignItems: "start" }, [
+              h(
+                Button,
+                {
+                  autoFocus,
+                  isDisabled: isPublishDisabled,
+                  onClick: onClickPublish,
+                },
+                isEmpty(participantNames)
+                  ? `Publish`
+                  : `Publish with ${participantList}`
+              ),
+            ]),
+            h(Spacer),
+            children,
+          ]
+        ),
       ]
     ),
   ])
