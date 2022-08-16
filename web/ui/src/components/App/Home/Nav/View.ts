@@ -1,58 +1,17 @@
 import {
-  Icon,
-  IconButton,
-  VStack,
-  Stack,
-  Spacer,
+  Box,
+  ButtonGroup,
   Divider,
   HStack,
-  Box,
-  Text,
-  ButtonGroup,
+  Icon,
+  IconButton,
+  Spacer,
+  Stack,
+  VStack,
 } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { borderColor } from "csx"
-import { FC, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { FC, useLayoutEffect, useRef, useState } from "react"
 import { TbArrowsSplit2, TbNotes } from "react-icons/tb"
-import { lightGray } from "~/system"
-
-// NOTE: make sure gutterWidth is wider than menu
-const gutterWidth = "48px"
-const ColumnNav: FC = ({ children }) =>
-  h(Stack, { width: "100%", direction: "row" }, [
-    h(VStack, { minWidth: gutterWidth }, [
-      h(HStack, { minWidth: gutterWidth, paddingTop: "100px" }, [
-        // Menu
-        h(Divider, { orientation: "vertical" }),
-      ]),
-      // h(Button, {
-      //   variant: "outline",
-      //   leftIcon: h(Icon, { as: TbArrowsSplit2 }),
-      // })
-    ]),
-    children,
-    h(VStack, { minWidth: gutterWidth }, [
-      //
-      h(Spacer),
-    ]),
-  ])
-
-interface P {
-  label: string
-}
-const ButtonContainer: FC<P> = ({ label, children }) =>
-  h(Stack, { direction: "column" }, [
-    //
-    children,
-    h(
-      Text,
-      {
-        //
-        size: "xs",
-      },
-      label
-    ),
-  ])
 
 interface Props {}
 
@@ -117,3 +76,26 @@ export const View: FC<Props> = ({ children }) => {
     ]),
   ])
 }
+
+View.displayName = "NavView"
+
+// NOTE: make sure gutterWidth is wider than menu
+const gutterWidth = "48px"
+const ColumnNav: FC = ({ children }) =>
+  h(Stack, { width: "100%", direction: "row" }, [
+    h(VStack, { minWidth: gutterWidth }, [
+      h(HStack, { minWidth: gutterWidth, paddingTop: "100px" }, [
+        // Menu
+        h(Divider, { orientation: "vertical" }),
+      ]),
+      // h(Button, {
+      //   variant: "outline",
+      //   leftIcon: h(Icon, { as: TbArrowsSplit2 }),
+      // })
+    ]),
+    children,
+    h(VStack, { minWidth: gutterWidth }, [
+      //
+      h(Spacer),
+    ]),
+  ])

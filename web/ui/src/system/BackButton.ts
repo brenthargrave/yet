@@ -17,7 +17,8 @@ export const BackButton: FC<Props> = ({ onClick, cta = "Back" }) =>
       // variant: "unstyled",
       // paddingLeft: 0,
       variant: "ghost",
-      size: "sm",
+      // size: "sm",
+      size: "xs",
       onClick,
     },
     cta

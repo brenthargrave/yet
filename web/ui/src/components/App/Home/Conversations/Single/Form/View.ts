@@ -1,4 +1,5 @@
-import { Spacer, Tooltip } from "@chakra-ui/react"
+import { ChevronLeftIcon } from "@chakra-ui/icons"
+import { IconButton, Spacer, Tooltip } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { ReactNode, Ref } from "react"
 import { isEmpty, not } from "~/fp"
@@ -87,16 +88,11 @@ export const View = ({
       justifyContent: "flex-start",
     },
     [
-      h(Header, [
+      h(Header, { padding: 0 }, [
         h(BackButton, {
           onClick: onClickBack,
         }),
         h(Spacer),
-        // h(DeleteButton, {
-        //   onClick: onClickDelete,
-        //   isLoading: isDeleting,
-        //   isDisabled: isDeleteDisabled,
-        // }),
       ]),
       h(Header, [
         h(Heading, { size: "md" }, "Conversation"),
