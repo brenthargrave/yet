@@ -81,6 +81,14 @@ export const App = (sources: Sources) => {
     tag("me$")
   )
 
+  const guardedHistory$ = history$.pipe(
+    switchMap((route) => {
+      // NOTE: redirect unsupported paths to root
+      return route.name ? EMPTY : of(push(routes.root()))
+    }),
+    tag("guardedHistory$")
+  )
+
   const state$ = combineLatest({
     route: history$,
     me: me$,
@@ -122,13 +130,6 @@ export const App = (sources: Sources) => {
     tag("react$")
   )
 
-  const guardedHistory$ = history$.pipe(
-    switchMap((route) => {
-      // redirect unsupported paths to root
-      return route.name ? EMPTY : of(push(routes.root()))
-    }),
-    tag("guardedHistory$")
-  )
   const router = merge(guardedHistory$, authRouter, homeRouter$).pipe(
     eatUnrecoverableError()
   )
