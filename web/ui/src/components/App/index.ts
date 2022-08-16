@@ -25,7 +25,6 @@ import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
 import { shareLatest } from "~/rx"
 import { toast } from "~/toast"
-import { Header } from "./Header"
 import { Home } from "./Home"
 import { View as AppView } from "./View"
 
@@ -57,36 +56,24 @@ export const App = (sources: Sources) => {
 
   const { token$, me$: cachedMe$ } = sources.graph
 
-  const { react: headerView$ } = Header(sources)
-
   const { react: landingView$ } = Landing(sources)
 
+  const home = Home(sources)
   const {
-    react: homeView$,
-    router: homeRouter$,
-    notice: homeNotice$,
-    graph: homeGraph$,
-    ...home
-  } = Home(sources)
-
-  const {
-    graph: authGraph$,
-    react: authView$,
-    router: authRouter,
-    notice: authNotice,
     value: { me$: authMe$ },
+    ...auth
   } = Auth(sources)
 
   const me$: Observable<null | Customer> = merge(authMe$, cachedMe$).pipe(
     tag("me$")
   )
 
-  const guardedHistory$ = history$.pipe(
+  const guardHistory$ = history$.pipe(
     switchMap((route) => {
       // NOTE: redirect unsupported paths to root
       return route.name ? EMPTY : of(push(routes.root()))
     }),
-    tag("guardedHistory$")
+    tag("guardHistory$")
   )
 
   const state$ = combineLatest({
@@ -110,15 +97,15 @@ export const App = (sources: Sources) => {
     switchMap((state) =>
       match(state)
         .with(State.landing, () => landingView$)
-        .with(State.auth, () => authView$)
-        .with(State.home, () => homeView$)
+        .with(State.auth, () => auth.react)
+        .with(State.home, () => home.react)
         .exhaustive()
     ),
     tag("bodyView$")
   )
 
-  const react = combineLatest({ header: headerView$, body: bodyView$ }).pipe(
-    map(({ header, body }) => h(AppView, { header, body })),
+  const react = combineLatest({ body: bodyView$ }).pipe(
+    map(({ body }) => h(AppView, { body })),
     eatUnrecoverableError((error, caught$) => {
       captureException(error)
       toast({
@@ -130,11 +117,11 @@ export const App = (sources: Sources) => {
     tag("react$")
   )
 
-  const router = merge(guardedHistory$, authRouter, homeRouter$).pipe(
+  const router = merge(guardHistory$, auth.router, home.router).pipe(
     eatUnrecoverableError()
   )
-  const notice = merge(authNotice, homeNotice$).pipe(eatUnrecoverableError())
-  const graph = merge(authGraph$, homeGraph$).pipe(eatUnrecoverableError())
+  const notice = merge(auth.notice, home.notice).pipe(eatUnrecoverableError())
+  const graph = merge(auth.graph, home.graph).pipe(eatUnrecoverableError())
   const track = merge(home.track).pipe(eatUnrecoverableError())
 
   return {

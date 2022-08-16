@@ -39,8 +39,11 @@ export const Home = (sources: Sources) => {
 
   // NOTE: force onboarding everywhere in main app after auth
   const onboarding = Onboarding(sources)
-
   const conversations = Conversations(sources, tagScope)
+
+  // TODO:FML
+  // const nav = Nav(sources)
+  // how need global state
 
   const rootView$ = conversations.react.pipe(
     map((subview) => h(View, [subview])),

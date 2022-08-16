@@ -5,7 +5,7 @@ import React, { FC, ReactNode } from "react"
 import { Stack } from "~/system"
 
 interface Props {
-  header: ReactNode
+  header?: ReactNode
   body: ReactNode
 }
 export const View: FC<Props> = ({ header, body }) => {
