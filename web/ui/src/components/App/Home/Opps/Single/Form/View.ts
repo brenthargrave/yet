@@ -100,10 +100,9 @@ export const View: FC<Props> = ({
         //
         h(Heading, { size: "md" }, headerCopy(target)),
         h(Spacer),
-        h(CancelButton, { onCancel }),
       ]),
       form({ onSubmit, style: { width: "100%" } }, [
-        h(Stack, { direction: "column", width: "100%", padding: 4, gap: 4 }, [
+        h(Stack, { direction: "column", width: "100%", gap: 4 }, [
           h(InputControl, { label: "Organization", isRequired: true }, [
             h(Input, {
               defaultValue: defaultValueOrg,

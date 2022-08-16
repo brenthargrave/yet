@@ -53,7 +53,7 @@ export const View: FC<Props> = ({
 }) =>
   isEmpty(opps)
     ? h(EmptyOppsView, { minHeight, onClickCreate })
-    : h(Stack, { minHeight, direction: "column", pt: 8 }, [
+    : h(Stack, { minHeight, direction: "column" }, [
         h(Header, { padding: 0 }, [
           h(Heading, { size: "md" }, "Your opportunities"),
           h(Spacer),
