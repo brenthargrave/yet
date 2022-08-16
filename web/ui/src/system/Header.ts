@@ -14,8 +14,8 @@ interface Props {
 export const Header: FC<Props> = ({
   paddingLeft = 0,
   paddingRight = 0,
-  paddingTop, //= paddingDefault,
-  paddingBottom, // = paddingDefault,
+  paddingTop = paddingDefault,
+  paddingBottom = paddingDefault,
   padding,
   children,
 }) =>
@@ -29,8 +29,8 @@ export const Header: FC<Props> = ({
       margin: 0,
       paddingLeft,
       paddingRight,
-      paddingTop: paddingDefault,
-      paddingBottom: paddingDefault,
+      paddingTop,
+      paddingBottom,
       padding,
     },
     [children]

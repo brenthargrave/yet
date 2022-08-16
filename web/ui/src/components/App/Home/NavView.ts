@@ -13,7 +13,11 @@ import { h } from "@cycle/react"
 import { FC, useLayoutEffect, useRef, useState } from "react"
 import { TbArrowsSplit2, TbNotes } from "react-icons/tb"
 
-interface Props {}
+export interface Props {
+  isVisible?: boolean
+  onClickConversations: () => void
+  onClickOpps: () => void
+}
 
 export const View: FC<Props> = ({ children }) => {
   const ref = useRef<HTMLElement>()
