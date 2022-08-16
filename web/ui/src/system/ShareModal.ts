@@ -46,7 +46,7 @@ export const ShareModal = ({
     canShare = navigator.canShare({ url, title: "Conversation" })
   }
 
-  return h(Modal, { isOpen, onClose }, [
+  return h(Modal, { isOpen, onClose, showFooter: true }, [
     h(Stack, { direction: "column", gap: 4 }, [
       cta && h(MarkdownView, { md: cta }),
       heading && h(Heading, { size: "sm" }, heading),
