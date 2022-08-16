@@ -1,7 +1,7 @@
 import { Box, VStack } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { white, maxWidth } from "~/system"
+import { white, maxWidth, paddingDefault } from "~/system"
 import { View as NavView } from "./Nav"
 
 const height = "100%"
@@ -26,7 +26,9 @@ const MaxWidthView: FC = ({ children }) =>
       maxWidth,
       height: "100%",
       width: "100%",
-      m: 0,
+      margin: 0,
+      paddingLeft: paddingDefault,
+      paddingRight: paddingDefault,
     },
     [children]
   )

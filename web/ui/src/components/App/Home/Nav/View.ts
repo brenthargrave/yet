@@ -13,19 +13,11 @@ import { TbArrowsSplit2 } from "react-icons/tb"
 
 // NOTE: make sure gutterWidth is wider than menu
 const gutterWidth = "48px"
-
-interface Props {}
-export const View: FC<Props> = ({ children }) =>
+const ColumnNav: FC = ({ children }) =>
   h(Stack, { width: "100%", direction: "row" }, [
     h(VStack, { minWidth: gutterWidth }, [
       h(HStack, { minWidth: gutterWidth, paddingTop: "100px" }, [
         // Menu
-        h(IconButton, {
-          icon: h(Icon, { as: TbArrowsSplit2 }),
-          size: "lg",
-          variant: "outline",
-          // variant: "ghost",
-        }),
         h(Divider, { orientation: "vertical" }),
       ]),
       // h(Button, {
@@ -38,4 +30,18 @@ export const View: FC<Props> = ({ children }) =>
       //
       h(Spacer),
     ]),
+  ])
+
+interface Props {}
+export const View: FC<Props> = ({ children }) =>
+  h(Stack, { direction: "column", width: "100%" }, [
+    h(HStack, {}, [
+      h(IconButton, {
+        icon: h(Icon, { as: TbArrowsSplit2 }),
+        size: "lg",
+        variant: "outline",
+        // variant: "ghost",
+      }),
+    ]),
+    children,
   ])

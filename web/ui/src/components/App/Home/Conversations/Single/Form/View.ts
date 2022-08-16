@@ -103,7 +103,7 @@ export const View = ({
         h(Spacer),
         h(Status, { status }),
       ]),
-      h(Stack, { direction: "column", width: "100%", padding: 4, pt: 0 }, [
+      h(Stack, { direction: "column", width: "100%", pt: 0 }, [
         h(When, {
           occurredAt,
           onChangeOccurredAt,

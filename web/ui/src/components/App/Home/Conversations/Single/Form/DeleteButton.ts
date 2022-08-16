@@ -12,7 +12,6 @@ export const DeleteButton = ({ onClick, isLoading, isDisabled }: Props) =>
   h(
     Button,
     {
-      paddingRight: 0,
       tabIndex: -1, // prevent focus
       leftIcon: h(DeleteIcon),
       size: "xs",

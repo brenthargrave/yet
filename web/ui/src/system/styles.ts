@@ -4,6 +4,7 @@ export const maxWidth = 468
 export const modalStyleProps = {
   minHeight: "70vh",
 }
+export const paddingDefault = 4
 
 export const white = "#fff"
 
