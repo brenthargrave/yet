@@ -7,11 +7,14 @@ import {
   Divider,
   HStack,
   Box,
+  Text,
+  ButtonGroup,
 } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { borderColor } from "csx"
 import { FC, useEffect, useLayoutEffect, useRef, useState } from "react"
-import { TbArrowsSplit2 } from "react-icons/tb"
+import { TbArrowsSplit2, TbNotes } from "react-icons/tb"
+import { lightGray } from "~/system"
 
 // NOTE: make sure gutterWidth is wider than menu
 const gutterWidth = "48px"
@@ -34,28 +37,43 @@ const ColumnNav: FC = ({ children }) =>
     ]),
   ])
 
+interface P {
+  label: string
+}
+const ButtonContainer: FC<P> = ({ label, children }) =>
+  h(Stack, { direction: "column" }, [
+    //
+    children,
+    h(
+      Text,
+      {
+        //
+        size: "xs",
+      },
+      label
+    ),
+  ])
+
 interface Props {}
 
 export const View: FC<Props> = ({ children }) => {
   const ref = useRef<HTMLElement>()
   const [left, setLeft] = useState(0)
-  const [menuH, setMenuH] = useState(0)
+  const [footerH, setFooterH] = useState(0)
   useLayoutEffect(() => {
     const clientWidth =
       window.innerWidth ||
       document.documentElement.clientWidth ||
       document.body.clientWidth
-    console.debug("client", clientWidth)
     const w = ref.current?.offsetWidth
     const h = ref.current?.offsetHeight
-    if (h) setMenuH(h)
-    console.debug("menu", clientWidth)
+    if (h) setFooterH(h)
     if (w && clientWidth) {
       const calc = clientWidth * 0.5 - w * 0.5
-      console.debug("calc", calc)
       setLeft(calc)
     }
   })
+
   return h(Stack, { direction: "column", width: "100%", height: "100%" }, [
     h(
       Stack,
@@ -65,44 +83,37 @@ export const View: FC<Props> = ({ children }) => {
           position: "fixed",
           left,
           bottom: 0,
-          // filter: "blur(2px)",
         },
         direction: "row",
         alignItems: "center",
         padding: 4,
         marginBottom: 4,
         backgroundColor: "white",
-        borderRadius: "full",
-        borderColor: "darkGray",
-        border: "2px",
+        borderRadius: "lg",
       },
       [
-        h(
-          HStack,
-          {
-            sx: {
-              // backdropFilter: "blur(5px)",
-            },
-          },
-          [
+        h(HStack, {}, [
+          h(ButtonGroup, { isAttached: false }, [
             h(IconButton, {
-              icon: h(Icon, { as: TbArrowsSplit2 }),
+              icon: h(Icon, { as: TbNotes }),
               size: "lg",
               variant: "outline",
-              // variant: "ghost",
             }),
             h(IconButton, {
               icon: h(Icon, { as: TbArrowsSplit2 }),
               size: "lg",
               variant: "outline",
-              // variant: "ghost",
+              color: "green.600",
             }),
-          ]
-        ),
+          ]),
+        ]),
       ]
     ),
     children,
     // NOTE: need an empty footer to make room for nav
-    h(Box, { width: "100%", minHeight: `${menuH}px` }, h(Spacer)),
+    h(Box, { width: "100%", minHeight: `${footerH}px` }, [
+      //
+      h(Spacer),
+    ]),
   ])
 }
