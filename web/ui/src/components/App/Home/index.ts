@@ -11,11 +11,11 @@ import {
   switchMap,
 } from "rxjs"
 import { match } from "ts-pattern"
-import { Source as ActionSource } from "~/action"
+import { Actions, Source as ActionSource } from "~/action"
 import { Onboarding } from "~/components/Onboarding"
 import { isAuthenticated, isOnboarding, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { Source as RouterSource } from "~/router"
+import { NEWID, push, routes, Source as RouterSource } from "~/router"
 import { Conversations } from "./Conversations"
 import { View } from "./View"
 import { isPresent, pluck } from "~/fp"
@@ -51,35 +51,31 @@ export const Home = (sources: Sources) => {
   const onboarding = Onboarding(sources)
   const conversations = Conversations(sources, tagScope)
 
-  const oppsState$ = of(OppsState.list)
-  // TODO:
-  // const oppsState$ = history$.pipe(
-  //   map((route) =>
-  //     match(route)
-  //       .with({ name: routes.conversationOpps.name }, () => OppsState.list)
-  //       .with({ name: routes.conversationOpp.name }, ({ params: { oid } }) =>
-  //         oid === NEWID ? OppsState.create : OppsState.single
-  //       )
-  //       .otherwise(() => OppsState.list)
-  //   ),
-  //   distinctUntilChanged(),
-  //   tag("oppsState$"),
-  //   shareLatest()
-  // )
+  const oppsState$ = history$.pipe(
+    map((route) =>
+      match(route)
+        .with({ name: routes.opps.name }, () => OppsState.list)
+        .with({ name: routes.opp.name }, ({ params: { oid } }) =>
+          oid === NEWID ? OppsState.create : OppsState.single
+        )
+        .otherwise(() => OppsState.list)
+    ),
+    distinctUntilChanged(),
+    tag("oppsState$"),
+    shareLatest()
+  )
 
-  const oppID$ = EMPTY
-  // TODO:
-  // const oppID$ = history$.pipe(
-  //   switchMap((route) =>
-  //     match(route)
-  //       .with({ name: routes.conversationOpp.name }, ({ params: { oid } }) =>
-  //         oid === NEWID ? EMPTY : of(oid)
-  //       )
-  //       .otherwise(() => EMPTY)
-  //   ),
-  //   tag("oppID$"),
-  //   shareLatest()
-  // )
+  const oppID$ = history$.pipe(
+    switchMap((route) =>
+      match(route)
+        .with({ name: routes.opp.name }, ({ params: { oid } }) =>
+          oid === NEWID ? EMPTY : of(oid)
+        )
+        .otherwise(() => EMPTY)
+    ),
+    tag("oppID$"),
+    shareLatest()
+  )
 
   const opps = Opps(
     {
@@ -91,6 +87,21 @@ export const Home = (sources: Sources) => {
       },
     },
     tagScope
+  )
+
+  const oppsRouter$ = opps.action.pipe(
+    map((action) =>
+      match(action)
+        .with({ type: Actions.listOpps }, () => push(routes.opps()))
+        .with({ type: Actions.createOpp }, () =>
+          push(routes.opp({ oid: NEWID }))
+        )
+        .with({ type: Actions.showOpp }, ({ opp }) =>
+          push(routes.opp({ oid: opp.id }))
+        )
+        .run()
+    ),
+    tag("oppsRouter$")
   )
 
   const [onClickConversations, onClickConvos$] = cb$(tag("onClickConvos$"))
@@ -156,9 +167,9 @@ export const Home = (sources: Sources) => {
     share()
   )
 
-  const router = merge(...pluck("router", [conversations]))
+  const router = merge(...pluck("router", [conversations]), oppsRouter$)
   const track = merge(...pluck("track", [conversations]))
-  const notice = merge(...pluck("notice", [conversations]))
+  const notice = merge(...pluck("notice", [conversations, opps]))
   const graph = merge(...pluck("graph", [conversations]))
 
   return {
