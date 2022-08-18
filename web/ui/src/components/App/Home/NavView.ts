@@ -40,6 +40,18 @@ export const View: FC<Props> = ({
       setLeft(calc)
     }
   })
+  const buttonRefConvos = useRef<HTMLButtonElement>()
+  const onClickConvosButton = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    onClickConversations()
+    buttonRefConvos.current?.blur()
+  }
+  const buttonRefOpps = useRef<HTMLButtonElement>()
+  const onClickOppsButton = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    onClickOpps()
+    buttonRefOpps.current?.blur()
+  }
 
   return h(Stack, { direction: "column", width: "100%", height: "100%" }, [
     h(
@@ -65,14 +77,16 @@ export const View: FC<Props> = ({
               icon: h(Icon, { as: TbNotes }),
               size: "lg",
               variant: "outline",
-              onClick: onClickConversations,
+              ref: buttonRefConvos,
+              onClick: onClickConvosButton,
             }),
             h(IconButton, {
               icon: h(Icon, { as: TbArrowsSplit2 }),
               size: "lg",
               variant: "outline",
               color: "green.600",
-              onClick: onClickOpps,
+              ref: buttonRefOpps,
+              onClick: onClickOppsButton,
             }),
           ]),
         ]),

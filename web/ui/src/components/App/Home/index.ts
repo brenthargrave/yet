@@ -121,7 +121,7 @@ export const Home = (sources: Sources) => {
       )
     )
     .pipe(
-      // TODO:
+      // TODO: how to cache last visited tab?
       // startWith(RootState.conversations),
       startWith(RootState.opps),
       distinctUntilChanged(),
