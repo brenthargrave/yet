@@ -15,18 +15,11 @@ import { Opp } from "~/graph"
 import { MarkdownView, bold, i } from "~/system"
 import { formatMoney } from "~/i18n"
 
-export enum Location {
-  show = "show",
-  list = "list",
-}
-
 export interface Props {
   opp: Opp
-  location: Location
-  onClickOpp?: (opp: Opp) => void
 }
 
-export const OppView: FC<Props> = ({ opp, location, onClickOpp }) => {
+export const OppView: FC<Props> = ({ opp }) => {
   const { role, org, desc, fee } = opp
   return h(
     Stack,
@@ -35,11 +28,6 @@ export const OppView: FC<Props> = ({ opp, location, onClickOpp }) => {
       alignItems: "start",
       width: "100%",
       spacing: 1,
-      ...(location === Location.list && {
-        style: { cursor: "pointer" },
-        onClick: () =>
-          location === Location.list && onClickOpp && onClickOpp(opp),
-      }),
     },
     [
       h(HStack, { width: "100%", alignItems: "start" }, [

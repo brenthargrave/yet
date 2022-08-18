@@ -1,7 +1,7 @@
 import { Heading, Spacer, Stack } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { Location, OppView } from "~/components/Opp"
+import { OppView } from "~/components/Opp"
 import { Opp } from "~/graph"
 import { Header } from "~/system"
 
@@ -19,11 +19,11 @@ export const View: FC<Props> = ({ opp }) =>
     },
     [
       h(Header, {}, [
-        //
+        // TODO: nav
         h(Heading, { size: "md" }, "Opportunity"),
         h(Spacer),
       ]),
-      h(OppView, { location: Location.show, opp }),
+      h(OppView, { opp }),
     ]
   )
 
