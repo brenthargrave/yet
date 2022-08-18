@@ -5,7 +5,15 @@ import { NoteView } from "~/components/Note"
 import { isEmpty, map } from "~/fp"
 import { Conversation, Customer, Maybe } from "~/graph"
 import { localizeDate } from "~/i18n"
-import { CreateButton, Divider, Header, Stack, Status, Text } from "~/system"
+import {
+  Nav,
+  CreateButton,
+  Divider,
+  Header,
+  Stack,
+  Status,
+  Text,
+} from "~/system"
 import { ParticipantsView } from "~/system/ParticipantsView"
 import { EmptyView, OnClickNew } from "./EmptyView"
 
@@ -30,6 +38,7 @@ export const View: FC<Props> = ({
   isEmpty(conversations)
     ? h(EmptyView, { onClickNew })
     : h(Stack, { direction: "column" }, [
+        h(Nav, {}),
         h(Header, [
           h(Heading, { size: "md" }, "Conversations"),
           h(Spacer),

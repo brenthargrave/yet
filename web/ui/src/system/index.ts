@@ -74,6 +74,7 @@ export * from "./styles"
 
 export * from "./AutosizeTextarea"
 export * from "./MarkdownView"
+export * from "./Nav"
 
 export { Header } from "./Header"
 export { BackButton } from "./BackButton"

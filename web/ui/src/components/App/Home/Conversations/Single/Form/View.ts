@@ -4,7 +4,7 @@ import { h } from "@cycle/react"
 import { ReactNode, Ref } from "react"
 import { isEmpty, not } from "~/fp"
 import { ConversationStatus, Invitee } from "~/graph"
-import { BackButton, Header, Heading, Stack, Status } from "~/system"
+import { BackButton, Header, Heading, Nav, Stack, Status } from "~/system"
 import { Props as ActionBarProps, View as ActionBar } from "./ActionBar"
 import { View as AddOppModal } from "./AddOppModal"
 import { DeleteButton } from "./DeleteButton"
@@ -88,12 +88,7 @@ export const View = ({
       justifyContent: "flex-start",
     },
     [
-      h(Header, {}, [
-        h(BackButton, {
-          onClick: onClickBack,
-        }),
-        h(Spacer),
-      ]),
+      h(Nav, { onClickBack }),
       h(Header, [
         h(Heading, { size: "md" }, "Conversation"),
         h(Spacer),
