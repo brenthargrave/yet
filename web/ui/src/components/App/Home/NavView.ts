@@ -19,7 +19,11 @@ export interface Props {
   onClickOpps: () => void
 }
 
-export const View: FC<Props> = ({ children }) => {
+export const View: FC<Props> = ({
+  children,
+  onClickConversations,
+  onClickOpps,
+}) => {
   const ref = useRef<HTMLElement>()
   const [left, setLeft] = useState(0)
   const [footerH, setFooterH] = useState(0)
@@ -61,12 +65,14 @@ export const View: FC<Props> = ({ children }) => {
               icon: h(Icon, { as: TbNotes }),
               size: "lg",
               variant: "outline",
+              onClick: onClickConversations,
             }),
             h(IconButton, {
               icon: h(Icon, { as: TbArrowsSplit2 }),
               size: "lg",
               variant: "outline",
               color: "green.600",
+              onClick: onClickOpps,
             }),
           ]),
         ]),
