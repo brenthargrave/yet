@@ -8,6 +8,11 @@ import { Main as List } from "./List"
 import { Single } from "./Single"
 import { Create } from "./Single/Create"
 
+export enum Location {
+  home = "home",
+  modal = "modal",
+}
+
 export enum State {
   list = "list",
   create = "create",
@@ -15,6 +20,7 @@ export enum State {
 }
 
 export interface Props {
+  location: Location
   state$: Observable<State>
   id$: Observable<ID>
 }
@@ -31,10 +37,10 @@ export const Opps = (sources: Sources, tagPrefix?: string) => {
   const tag = makeTagger(tagScope)
 
   const {
-    props: { state$, id$ },
+    props: { state$, id$, location },
   } = sources
 
-  const list = List(sources, tagScope)
+  const list = List({ ...sources, props: { location } }, tagScope)
   const create = Create({ ...sources, props: { state$ } }, tagScope)
   const single = Single({ ...sources, props: { state$, id$ } }, tagScope)
 

@@ -25,7 +25,7 @@ import { isNotNullish } from "rxjs-etc"
 import { match } from "ts-pattern"
 import { filterResultOk } from "ts-results/rxjs-operators"
 import { Actions, Source as ActionSource } from "~/action"
-import { Opps, State as OppsState } from "~/components/App/Home/Opps"
+import { Location, Opps, State as OppsState } from "~/components/App/Home/Opps"
 import { and, includes, map as _map, not, pluck as _pluck, prop } from "~/fp"
 import {
   Contact,
@@ -149,6 +149,7 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     {
       ...sources,
       props: {
+        location: Location.modal,
         state$: oppsState$,
         id$: oppID$,
       },

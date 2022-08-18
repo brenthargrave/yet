@@ -20,7 +20,7 @@ import { Conversations } from "./Conversations"
 import { View } from "./View"
 import { isPresent, pluck } from "~/fp"
 import { cb$, mapTo, shareLatest } from "~/rx"
-import { Opps, State as OppsState } from "~/components/App/Home/Opps"
+import { Opps, State as OppsState, Location } from "./Opps"
 
 enum State {
   onboarding = "onboarding",
@@ -85,6 +85,7 @@ export const Home = (sources: Sources) => {
     {
       ...sources,
       props: {
+        location: Location.home,
         state$: oppsState$,
         id$: oppID$,
       },
@@ -98,7 +99,9 @@ export const Home = (sources: Sources) => {
     onClickConvos$.pipe(mapTo(RootState.conversations)),
     onClickOpps$.pipe(mapTo(RootState.opps))
   ).pipe(
-    startWith(RootState.conversations),
+    // TODO:
+    // startWith(RootState.conversations),
+    startWith(RootState.opps),
     distinctUntilChanged(),
     tag("rootState$"),
     shareLatest()
@@ -106,8 +109,10 @@ export const Home = (sources: Sources) => {
 
   const isVisible$ = opps$.pipe(
     map(isPresent),
+    startWith(false),
     distinctUntilChanged(),
-    tag("isVisible$")
+    tag("isVisible$"),
+    shareLatest()
   )
 
   const props$ = combineLatest({

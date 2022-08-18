@@ -5,10 +5,16 @@ import { Opp, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { cb$, mapTo } from "~/rx"
 import { View } from "./View"
+import { Location } from ".."
+
+interface Props {
+  location: Location
+}
 
 interface Sources {
   react: ReactSource
   graph: GraphSource
+  props: Props
 }
 
 export const Main = (sources: Sources, tagPrefix?: string) => {
@@ -17,6 +23,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
 
   const {
     graph: { opps$ },
+    props: { location },
   } = sources
 
   const [onClickCreate, onClickCreate$] = cb$(tag("onClickNew$"))

@@ -23,10 +23,12 @@ import {
   Header,
   MarkdownView,
   modalStyleProps,
+  paddingDefault,
   Stack,
   Text,
 } from "~/system"
 import { EmptyOppsView, OnClickNew } from "./EmptyView"
+import { Location } from ".."
 
 // TODO: minHeight varies by render target (home vs. modal)
 const { minHeight } = modalStyleProps
@@ -36,7 +38,10 @@ const isNotLastItem = <T>(idx: number, all: T[]) => !(idx + 1 === all.length)
 const bold = (value: string) => `**${value}**`
 const i = (value: string) => `*${value}*`
 
+const isModal = (location: Location) => location === Location.modal
+
 export interface Props {
+  location: Location
   onClickCreate?: OnClickNew
   opps: Opp[]
   // viewer: Maybe<Customer>
@@ -45,6 +50,7 @@ export interface Props {
 }
 
 export const View: FC<Props> = ({
+  location,
   onClickCreate,
   opps = [],
   onClickAdd = () => null,
@@ -54,8 +60,8 @@ export const View: FC<Props> = ({
   isEmpty(opps)
     ? h(EmptyOppsView, { minHeight, onClickCreate })
     : h(Stack, { minHeight, direction: "column" }, [
-        h(Header, { padding: 0 }, [
-          h(Heading, { size: "md" }, "Your opportunities"),
+        h(Header, { padding: isModal(location) ? 0 : paddingDefault }, [
+          h(Heading, { size: "md" }, "Opportunities"),
           h(Spacer),
           h(CreateButton, { onClick: onClickCreate, cta: `New opp` }),
         ]),
@@ -71,17 +77,20 @@ export const View: FC<Props> = ({
                   gap: 3,
                 },
                 [
-                  h(IconButton, {
-                    icon: h(SmallAddIcon),
-                    variant: "ghost",
-                    size: "lg",
-                    onClick: () => onClickAdd(opp),
-                  }),
-                  h(Divider, {
-                    //
-                    orientation: "vertical",
-                    h: "40px",
-                  }),
+                  isModal(location) &&
+                    h(HStack, [
+                      h(IconButton, {
+                        icon: h(SmallAddIcon),
+                        variant: "ghost",
+                        size: "lg",
+                        onClick: () => onClickAdd(opp),
+                      }),
+                      h(Divider, {
+                        //
+                        orientation: "vertical",
+                        h: "40px",
+                      }),
+                    ]),
                   h(
                     Stack,
                     {
