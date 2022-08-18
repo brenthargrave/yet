@@ -60,7 +60,7 @@ export const View: FC<Props> = ({
   isEmpty(opps)
     ? h(EmptyOppsView, { minHeight, onClickCreate })
     : h(Stack, { minHeight, direction: "column" }, [
-        h(Header, { padding: isModal(location) ? 0 : paddingDefault }, [
+        h(Header, {}, [
           h(Heading, { size: "md" }, "Opportunities"),
           h(Spacer),
           h(CreateButton, { onClick: onClickCreate, cta: `New opp` }),

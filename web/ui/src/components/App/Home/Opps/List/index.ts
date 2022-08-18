@@ -50,6 +50,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     map((props) =>
       h(View, {
         ...props,
+        location,
         onClickCreate,
         onClickAdd,
         onClickOpp,

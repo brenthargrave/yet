@@ -88,7 +88,7 @@ export const View = ({
       justifyContent: "flex-start",
     },
     [
-      h(Header, { padding: 0 }, [
+      h(Header, {}, [
         h(BackButton, {
           onClick: onClickBack,
         }),
