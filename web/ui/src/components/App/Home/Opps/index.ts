@@ -58,7 +58,7 @@ export const Opps = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const action = merge(list.action, single.action)
+  const action = merge(list.action, single.action, create.action)
   const notice = merge(create.notice, single.notice)
   const value = { ...list.value }
 
