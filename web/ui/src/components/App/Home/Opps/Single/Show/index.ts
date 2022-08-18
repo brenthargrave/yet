@@ -1,10 +1,10 @@
 import { h, ReactSource } from "@cycle/react"
-import { combineLatest, map, merge, Observable, share, switchMap } from "rxjs"
+import { combineLatest, map, merge, Observable, share } from "rxjs"
+import { act, Actions } from "~/action"
 import { Opp, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { push, routes, Source as RouterSource } from "~/router"
-import { cb$ } from "~/rx"
-import { View, Props as ViewProps } from "./View"
+import { cb$, mapTo } from "~/rx"
+import { Props as ViewProps, View } from "./View"
 
 type Record = Opp
 
@@ -29,7 +29,7 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
 
   const [onClickBack, onClickBack$] = cb$(tag("onClickBack$"))
   const goToList$ = merge(onClickBack$).pipe(
-    map((_) => push(routes.opps())),
+    mapTo(act(Actions.listOpps)),
     tag("onClickBack$"),
     share()
   )
@@ -40,17 +40,17 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
   }).pipe(tag("props$"))
 
   const react = props$.pipe(
-    map((props) => h(View, { ...props })),
+    map((props) => h(View, { ...props, onClickBack })),
     tag("react")
   )
 
-  const router = merge(
+  const action = merge(
     //
     goToList$
   )
 
   return {
     react,
-    router,
+    action,
   }
 }

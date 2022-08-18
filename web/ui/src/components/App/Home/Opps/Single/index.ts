@@ -11,7 +11,7 @@ import {
 import { delayUntil, equals } from "rxjs-etc/dist/esm/operators"
 import { match } from "ts-pattern"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
-import { getOpp$, ID, isOwnedBy, me$, Source as GraphSource } from "~/graph"
+import { getOpp$, ID, me$, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { shareLatest } from "~/rx"
@@ -85,7 +85,7 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const action = merge(edit.action)
+  const action = merge(edit.action, show.action)
   const notice = merge(userErrorNotice$, edit.notice)
 
   return {

@@ -4,7 +4,6 @@ import { match } from "ts-pattern"
 import { Source as ActionSource } from "~/action"
 import { ID, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { Route } from "~/router"
 import { Main as List } from "./List"
 import { Single } from "./Single"
 import { Create } from "./Single/Create"
@@ -42,7 +41,6 @@ export const Opps = (sources: Sources, tagPrefix?: string) => {
   } = sources
 
   const list = List({ ...sources, props: { location } }, tagScope)
-  // TODO: pass location to create/single?
   const create = Create({ ...sources, props: { state$ } }, tagScope)
   const single = Single({ ...sources, props: { state$, id$ } }, tagScope)
 

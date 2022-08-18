@@ -29,9 +29,6 @@ import { isPresent, pluck } from "~/fp"
 import { cb$, mapTo, shareLatest } from "~/rx"
 import { Opps, State as OppsState, Location } from "./Opps"
 
-// @ts-ignore
-const { VITE_API_ENV: env } = import.meta.env
-
 enum State {
   onboarding = "onboarding",
   root = "root",
