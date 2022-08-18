@@ -106,17 +106,28 @@ export const Home = (sources: Sources) => {
 
   const [onClickConversations, onClickConvos$] = cb$(tag("onClickConvos$"))
   const [onClickOpps, onClickOpps$] = cb$(tag("onClickOpps$"))
-  const rootState$ = merge(
-    onClickConvos$.pipe(mapTo(RootState.conversations)),
-    onClickOpps$.pipe(mapTo(RootState.opps))
-  ).pipe(
-    // TODO:
-    // startWith(RootState.conversations),
-    startWith(RootState.opps),
-    distinctUntilChanged(),
-    tag("rootState$"),
-    shareLatest()
-  )
+  const rootRouter$ = merge(
+    onClickConvos$.pipe(mapTo(push(routes.conversations()))),
+    onClickOpps$.pipe(mapTo(push(routes.opps())))
+  ).pipe(tag("rootRouter$"), share())
+
+  const rootState$ = history$
+    .pipe(
+      map((route) =>
+        match(route.name)
+          .with(routes.conversations.name, () => RootState.conversations)
+          .with(routes.opps.name, () => RootState.opps)
+          .otherwise(() => RootState.conversations)
+      )
+    )
+    .pipe(
+      // TODO:
+      // startWith(RootState.conversations),
+      startWith(RootState.opps),
+      distinctUntilChanged(),
+      tag("rootState$"),
+      shareLatest()
+    )
 
   const isVisible$ = opps$.pipe(
     map(isPresent),
@@ -167,7 +178,11 @@ export const Home = (sources: Sources) => {
     share()
   )
 
-  const router = merge(...pluck("router", [conversations]), oppsRouter$)
+  const router = merge(
+    ...pluck("router", [conversations]),
+    rootRouter$,
+    oppsRouter$
+  )
   const track = merge(...pluck("track", [conversations]))
   const notice = merge(...pluck("notice", [conversations, opps]))
   const graph = merge(...pluck("graph", [conversations]))
