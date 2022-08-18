@@ -10,8 +10,20 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { FC, useLayoutEffect, useRef, useState } from "react"
+import { createRef, FC, useLayoutEffect, useRef, useState } from "react"
 import { TbArrowsSplit2, TbNotes } from "react-icons/tb"
+
+const ref = createRef<HTMLElement>()
+
+export const isFrom = (event: React.MouseEvent<HTMLElement>) => {
+  const rect = ref.current?.getBoundingClientRect()
+  if (!rect) return false
+  const x = event.clientX
+  const y = event.clientY
+  const result =
+    x > rect.left && x < rect.right && y > rect.top && y < rect.bottom
+  return result
+}
 
 export interface Props {
   isVisible?: boolean
@@ -24,7 +36,6 @@ export const View: FC<Props> = ({
   onClickConversations,
   onClickOpps,
 }) => {
-  const ref = useRef<HTMLElement>()
   const [left, setLeft] = useState(0)
   const [footerH, setFooterH] = useState(0)
   useLayoutEffect(() => {
@@ -42,15 +53,11 @@ export const View: FC<Props> = ({
   })
   const buttonRefConvos = useRef<HTMLButtonElement>()
   const onClickConvosButton = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation()
-    e.preventDefault()
     onClickConversations()
     buttonRefConvos.current?.blur()
   }
   const buttonRefOpps = useRef<HTMLButtonElement>()
   const onClickOppsButton = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation()
-    e.preventDefault()
     onClickOpps()
     buttonRefOpps.current?.blur()
   }
@@ -65,6 +72,7 @@ export const View: FC<Props> = ({
           position: "fixed",
           left,
           bottom: 0,
+          zIndex: 2,
         },
         direction: "row",
         alignItems: "center",

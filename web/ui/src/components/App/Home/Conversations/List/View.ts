@@ -11,15 +11,15 @@ import { EmptyView, OnClickNew } from "./EmptyView"
 
 type OnClickConversation = (c: Conversation) => void
 
+const isNotLastItem = (idx: number, all: Conversation[]) =>
+  !(idx + 1 === all.length)
+
 export interface Props {
   viewer: Maybe<Customer>
   conversations: Conversation[]
   onClickNew?: OnClickNew
   onClickConversation: OnClickConversation
 }
-
-const isNotLastItem = (idx: number, all: Conversation[]) =>
-  !(idx + 1 === all.length)
 
 export const View: FC<Props> = ({
   viewer,
@@ -47,7 +47,7 @@ export const View: FC<Props> = ({
               {
                 padding: 0,
                 style: { cursor: "pointer" },
-                onClick: (event: MouseEvent) => {
+                onClick: (event: React.MouseEvent<HTMLElement>) => {
                   // NOTE: ignore markdown link clicks
                   // @ts-ignore
                   const { href } = event.target
