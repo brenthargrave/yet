@@ -16,13 +16,18 @@ interface Props {
 
 export const MarkdownView: FC<Props> = ({ md, maxLines }) => {
   const mkd = md ?? ""
-  const truncated = maxLines
-    ? trim(join("\n", take(maxLines, split("\n", mkd)))).concat("\n...")
-    : mkd
+  let children = mkd
+  if (maxLines) {
+    const allLines = split("\n", mkd)
+    children = join("\n", take(maxLines, allLines))
+    if (allLines.length > maxLines) {
+      children = `${children}...`
+    }
+  }
   // NOTE: otherwise consecutive newlines don't generated breaks
   // TODO: PR fix on remarkBreaks lib
   // https://github.com/remarkjs/react-markdown/issues/278#issuecomment-628264062
-  const children = truncated.replace(/\n/gi, "\n &nbsp;")
+  children = children.replace(/\n/gi, "\n &nbsp;")
   return h(ReactMarkdown, {
     children,
     remarkPlugins: [remarkBreaks, remarkGfm],
