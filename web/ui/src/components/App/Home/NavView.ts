@@ -42,16 +42,19 @@ export const View: FC<Props> = ({
   })
   const buttonRefConvos = useRef<HTMLButtonElement>()
   const onClickConvosButton = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
     e.preventDefault()
     onClickConversations()
     buttonRefConvos.current?.blur()
   }
   const buttonRefOpps = useRef<HTMLButtonElement>()
   const onClickOppsButton = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
     e.preventDefault()
     onClickOpps()
     buttonRefOpps.current?.blur()
   }
+  const onClickOutside = (e: React.MouseEvent) => e.stopPropagation()
 
   return h(Stack, { direction: "column", width: "100%", height: "100%" }, [
     h(
@@ -69,6 +72,7 @@ export const View: FC<Props> = ({
         marginBottom: 4,
         backgroundColor: "white",
         borderRadius: "lg",
+        onClick: onClickOutside,
       },
       [
         h(HStack, {}, [
