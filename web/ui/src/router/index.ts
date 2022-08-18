@@ -72,6 +72,15 @@ export const conversationOppsRouteGroup = createGroup([
   routes.conversationOpps,
 ])
 
+export const anyConversationsRouteGroup = createGroup([
+  routes.conversations,
+  routes.conversation,
+  routes.signConversation,
+  routes.conversationOpps,
+  routes.conversationOpp,
+])
+export const anyRootOppsRouteGroup = createGroup([routes.opps, routes.opp])
+
 export type Route = _Route<typeof routes>
 
 export const routeURL = (route: Route): string =>

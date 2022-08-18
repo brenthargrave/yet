@@ -15,7 +15,14 @@ import { Actions, Source as ActionSource } from "~/action"
 import { Onboarding } from "~/components/Onboarding"
 import { isAuthenticated, isOnboarding, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { NEWID, push, routes, Source as RouterSource } from "~/router"
+import {
+  anyConversationsRouteGroup,
+  anyRootOppsRouteGroup,
+  NEWID,
+  push,
+  routes,
+  Source as RouterSource,
+} from "~/router"
 import { Conversations } from "./Conversations"
 import { View } from "./View"
 import { isPresent, pluck } from "~/fp"
@@ -114,9 +121,15 @@ export const Home = (sources: Sources) => {
   const rootState$ = history$
     .pipe(
       map((route) =>
-        match(route.name)
-          .with(routes.conversations.name, () => RootState.conversations)
-          .with(routes.opps.name, () => RootState.opps)
+        match(route)
+          .when(
+            (route) => anyConversationsRouteGroup.has(route),
+            () => RootState.conversations
+          )
+          .when(
+            (route) => anyRootOppsRouteGroup.has(route),
+            () => RootState.opps
+          )
           .otherwise(() => RootState.conversations)
       )
     )
