@@ -29,6 +29,9 @@ import { isPresent, pluck } from "~/fp"
 import { cb$, mapTo, shareLatest } from "~/rx"
 import { Opps, State as OppsState, Location } from "./Opps"
 
+// @ts-ignore
+const { VITE_API_ENV: env } = import.meta.env
+
 enum State {
   onboarding = "onboarding",
   root = "root",
@@ -134,9 +137,7 @@ export const Home = (sources: Sources) => {
       )
     )
     .pipe(
-      // TODO: how to cache last visited tab?
-      // startWith(RootState.conversations),
-      startWith(RootState.opps),
+      startWith(env === "dev" ? RootState.opps : RootState.conversations),
       distinctUntilChanged(),
       tag("rootState$"),
       shareLatest()
