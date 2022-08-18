@@ -137,7 +137,7 @@ export const Home = (sources: Sources) => {
       )
     )
     .pipe(
-      startWith(env === "dev" ? RootState.opps : RootState.conversations),
+      startWith(RootState.conversations),
       distinctUntilChanged(),
       tag("rootState$"),
       shareLatest()

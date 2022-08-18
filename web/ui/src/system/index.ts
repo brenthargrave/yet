@@ -73,11 +73,11 @@ export const PinInputField = (props: PinInputFieldProps) =>
 export * from "./styles"
 
 export * from "./AutosizeTextarea"
+export * from "./MarkdownView"
 
 export { Header } from "./Header"
 export { BackButton } from "./BackButton"
 export { CreateButton } from "./CreateButton"
-export { MarkdownView } from "./MarkdownView"
 export { ActionButton } from "./ActionButton"
 export { View as Modal } from "./Modal"
 export type { Props as ModalProps } from "./Modal"

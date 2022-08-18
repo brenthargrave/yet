@@ -17,10 +17,11 @@ import { error } from "~/notice"
 import { shareLatest } from "~/rx"
 import { State as OppsState } from ".."
 import { Edit } from "./Edit"
+import { Show } from "./Show"
 
 export enum State {
   edit = "edit",
-  // show = "show",
+  show = "show",
 }
 
 interface Props {
@@ -59,13 +60,15 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
   )
 
   const edit = Edit({ ...sources, props: { record$ } }, tagScope)
+  const show = Show({ ...sources, props: { record$ } }, tagScope)
 
   const state$ = oppsState$.pipe(
     equals(OppsState.single),
     delayUntil(record$),
     withLatestFrom(me$, record$),
     // TODO: vary state by Opp status (locked / cosigned?)
-    map(([_, me, opp]) => (isOwnedBy(opp, me) ? State.edit : State.edit)),
+    // map(([_, me, opp]) => (isOwnedBy(opp, me) ? State.edit : State.edit)),
+    map(([_, me, opp]) => State.show),
     distinctUntilChanged(),
     tag("state$"),
     shareLatest()
@@ -75,6 +78,7 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     switchMap((state) =>
       match(state)
         .with(State.edit, () => edit.react)
+        .with(State.show, () => show.react)
         .exhaustive()
     ),
     tag("react"),

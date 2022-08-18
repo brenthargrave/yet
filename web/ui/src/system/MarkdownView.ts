@@ -7,6 +7,9 @@ import remarkGfm from "remark-gfm"
 import { style } from "typestyle"
 import { join, split, take, trim } from "~/fp"
 
+export const bold = (value: string) => `**${value}**`
+export const i = (value: string) => `*${value}*`
+
 const className = style({ textDecoration: "underline" })
 
 interface Props {
