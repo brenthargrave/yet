@@ -14,10 +14,12 @@ import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
 import { shareLatest } from "~/rx"
 import { Form, Mode } from "../Form"
+import { State } from ".."
 
 interface Props {
   record$: Observable<Conversation>
   liveRecord$: Observable<Conversation>
+  state$: Observable<State>
 }
 
 interface Sources {
@@ -32,7 +34,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const {
     router: { history$ },
     graph: { me$ },
-    props: { record$, liveRecord$ },
+    props: { record$, liveRecord$, state$ },
   } = sources
 
   const tagScope = `${tagPrefix}/Edit`
@@ -41,9 +43,11 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const id$ = record$.pipe(pluck("id"), tag("id$"), shareLatest())
 
   const redirectNonCreatorsToShow$ = combineLatest({
+    state: state$,
     me: me$,
     record: record$,
   }).pipe(
+    filter(({ state }) => state === State.edit),
     filter(({ me, record }) => record.creator.id !== me?.id),
     map(({ me, record }) => push(routes.conversation({ id: record.id }))),
     tag("redirectNonCreatorToShow$"),

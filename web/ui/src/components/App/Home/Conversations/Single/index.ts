@@ -44,7 +44,7 @@ import { Main as Show } from "./Show"
 import { Main as Sign } from "./Sign"
 import { View } from "./View"
 
-enum State {
+export enum State {
   edit = "edit",
   sign = "sign",
   show = "show",
@@ -112,11 +112,6 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const existingRecordSources = { ...sources, props: { record$, liveRecord$ } }
-  const show = Show(existingRecordSources, tagScope)
-  const sign = Sign(existingRecordSources, tagScope)
-  const edit = Edit(existingRecordSources, tagScope)
-
   const resolveState = (
     id: ID,
     me: Maybe<Customer>,
@@ -142,6 +137,14 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     tag("state$"),
     shareLatest()
   )
+
+  const existingRecordSources = {
+    ...sources,
+    props: { state$, record$, liveRecord$ },
+  }
+  const show = Show(existingRecordSources, tagScope)
+  const sign = Sign(existingRecordSources, tagScope)
+  const edit = Edit(existingRecordSources, tagScope)
 
   const react = merge(
     userError$.pipe(map((error) => h(ErrorView, { error }))),

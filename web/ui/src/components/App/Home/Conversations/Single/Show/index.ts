@@ -22,6 +22,7 @@ import {
 import { makeTagger } from "~/log"
 import { isRoute, push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
+import { State } from ".."
 import { Intent } from "../View"
 
 interface Sources {
@@ -31,6 +32,7 @@ interface Sources {
   props: {
     record$: Observable<Conversation>
     liveRecord$: Observable<Conversation>
+    state$: Observable<State>
   }
 }
 
@@ -38,7 +40,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const {
     router: { history$ },
     graph: { me$ },
-    props: { record$: _record$, liveRecord$ },
+    props: { record$: _record$, liveRecord$, state$ },
   } = sources
 
   const tagScope = `${tagPrefix}/Show`
@@ -105,17 +107,15 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   )
 
   const redirectReviewerToSign$ = combineLatest({
-    route: history$,
+    state: state$,
     isSignable: statusIsSignable$,
     isReviewer: isReviewer$,
     notSigned: notSigned$,
   }).pipe(
+    filter(({ state }) => state === State.show),
     filter(
-      ({ route, isSignable, isReviewer, notSigned }) =>
-        route.name === routes.conversation.name &&
-        isReviewer &&
-        isSignable &&
-        notSigned
+      ({ isSignable, isReviewer, notSigned }) =>
+        isReviewer && isSignable && notSigned
     ),
     withLatestFrom(record$),
     map(([_, { id }]) => push(routes.signConversation({ id }))),

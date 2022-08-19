@@ -36,6 +36,7 @@ import { makeTagger } from "~/log"
 import { error, info } from "~/notice"
 import { push, routes, routeURL, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
+import { State } from ".."
 import { Intent, Step } from "../View"
 
 interface Sources {
@@ -45,6 +46,7 @@ interface Sources {
   props: {
     record$: Observable<Conversation>
     liveRecord$: Observable<Conversation>
+    state$: Observable<State>
   }
 }
 
@@ -52,7 +54,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const {
     router: { history$ },
     graph: { me$ },
-    props: { record$: _record$, liveRecord$ },
+    props: { record$: _record$, liveRecord$, state$ },
   } = sources
 
   const tagScope = `${tagPrefix}/Sign`
@@ -174,14 +176,13 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   )
 
   const redirectCreatorOrCosignerToShow$ = combineLatest({
-    route: history$,
+    state: state$,
     me: me$,
     record: record$,
   }).pipe(
-    filter(
-      ({ route, me, record }) =>
-        route.name === routes.signConversation.name &&
-        or(isCreatedBy(record, me), isSignedBy(record, me))
+    filter(({ state }) => state === State.sign),
+    filter(({ me, record }) =>
+      or(isCreatedBy(record, me), isSignedBy(record, me))
     ),
     map(({ me, record: { id } }) => push(routes.conversation({ id }))),
     tag("redirectCreatorOrCosignerToShow$"),
