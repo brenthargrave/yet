@@ -3,7 +3,7 @@ defmodule App.Opp do
   use Croma
   import Ecto.Changeset
   import App.Types
-  alias App.{Customer}
+  alias App.{Customer, Mention}
 
   typed_schema "opps" do
     belongs_to :creator, Customer
@@ -12,6 +12,8 @@ defmodule App.Opp do
     field :desc, :string
     field :url, :string
     field :fee, Money.Ecto.Composite.Type
+
+    has_many :mentions, Mention, on_delete: :delete_all
 
     timestamps(type: :utc_datetime_usec)
   end

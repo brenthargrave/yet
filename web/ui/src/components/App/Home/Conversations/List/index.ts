@@ -76,7 +76,8 @@ export const List = (sources: Sources, tagPrefix?: string) => {
   const react = props$.pipe(
     map(({ viewer, conversations }) =>
       h(View, { viewer, conversations, onClickNew, onClickConversation })
-    )
+    ),
+    tag("react")
   )
 
   const router = merge(newConvo$, editConvo$, redirectLurkerToRoot$)

@@ -37,6 +37,13 @@ defmodule AppWeb.Graph.Conversations do
     field(:inserted_at, non_null(:datetime))
   end
 
+  object :mention do
+    field(:id, non_null(:id))
+    field(:opp_id, non_null(:id))
+    field(:conversation_id, non_null(:id))
+    field(:inserted_at, non_null(:datetime))
+  end
+
   object :conversation do
     field(:id, non_null(:id))
     field(:creator, non_null(:contact))
@@ -48,6 +55,7 @@ defmodule AppWeb.Graph.Conversations do
     field(:deleted_at, :datetime)
     field(:signatures, non_null(list_of(non_null(:signature))))
     field(:reviews, non_null(list_of(non_null(:review))))
+    field(:mentions, non_null(list_of(non_null(:mention))))
   end
 
   input_object :invitee_input do
@@ -56,12 +64,18 @@ defmodule AppWeb.Graph.Conversations do
     field(:is_contact, non_null(:boolean))
   end
 
+  input_object :mention_input do
+    field(:id, non_null(:id))
+    field(:opp_id, non_null(:id))
+  end
+
   input_object :conversation_input do
     field(:id, non_null(:string))
     field(:invitees, non_null(list_of(non_null(:invitee_input))))
     field(:occurred_at, non_null(:datetime))
     field(:note, :string)
     field(:status, :conversation_status)
+    field(:mentions, non_null(list_of(non_null(:mention_input))))
   end
 
   object :conversation_payload do

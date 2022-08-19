@@ -26,7 +26,15 @@ import { match } from "ts-pattern"
 import { filterResultOk } from "ts-results/rxjs-operators"
 import { Actions, Source as ActionSource } from "~/action"
 import { Location, Opps, State as OppsState } from "~/components/App/Home/Opps"
-import { and, includes, map as _map, not, pluck as _pluck, prop } from "~/fp"
+import {
+  and,
+  includes,
+  map as _map,
+  match as _match,
+  not,
+  pluck as _pluck,
+  prop,
+} from "~/fp"
 import {
   Contact,
   Conversation,
@@ -41,11 +49,11 @@ import {
   isStatusEditable,
   isValidConversation,
   justSignedNotice,
+  MentionInput,
   oppEmbedText,
   proposeConversation$,
   refetchContacts,
   Source as GraphSource,
-  subscribeConversation$,
   track$,
   upsertConversation$,
 } from "~/graph"
@@ -112,7 +120,7 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
   // Opps
   const [onClickAddOpp, onClickAddOpp$] = cb$(tag("onClickAddOpp$"))
   const [onCloseAddOpp, _onCloseAddOpp$] = cb$(tag("onCloseAddOpp$"))
-  // ! why does ESC fail to close Opps modal but not Publish?
+  // ! TODO: why does ESC fail to close Opps modal but not Publish?
   const onEscape$ = fromEvent<KeyboardEvent>(document, "keydown").pipe(
     filter((e) => e.key === "Escape"),
     tag("escape$")
@@ -272,6 +280,24 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     shareLatest()
   )
 
+  const mentionInputs$: Observable<MentionInput[]> = note$.pipe(
+    filter(isNotNullish),
+    withLatestFrom(id$),
+    map(([note, cid]) => {
+      const matches = _match(/o\/[A-Z0-9]{26}/g, note)
+      const mentionInputs = matches.map((match) => {
+        return {
+          id: `c/${cid}/${match}`,
+          oppId: match.replace("o/", ""),
+        }
+      })
+      return mentionInputs
+    }),
+    startWith([]),
+    tag("mentionInputs$"),
+    shareLatest()
+  )
+
   const [onChangeOccurredAt, onChangeOccurredAt$] = cb$<Date>(
     tag("onChangeOccurredAt$")
   )
@@ -305,6 +331,7 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     invitees: invitees$,
     note: note$,
     occurredAt: occurredAt$,
+    mentions: mentionInputs$,
   }).pipe(tag("payload$"), shareLatest())
 
   const isValid$ = payload$.pipe(
@@ -522,8 +549,9 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
 
   const oppsRouter$ = opps.action.pipe(
     withLatestFrom(record$),
-    map(([action, { id, ...record }]) =>
-      match(action)
+    map(([action, { id: _id, ...record }]) => {
+      const id = mode === Mode.create ? NEWID : _id
+      return match(action)
         .with({ type: Actions.listOpps }, () =>
           push(routes.conversationOpps({ id }))
         )
@@ -534,7 +562,7 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
           push(routes.conversationOpp({ id, oid: opp.id }))
         )
         .run()
-    ),
+    }),
     tag("oppsRouter$")
   )
 
@@ -563,7 +591,7 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     knownInvitees: knownInvitees$,
     unknownInvitees: unknownInvitees$,
     isOpenAddOpp: isOpenAddOpp$,
-    oppsView: opps.react.pipe(tag("react")),
+    oppsView: opps.react,
   }).pipe(tag("props$"))
 
   const react = props$.pipe(
@@ -584,8 +612,10 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
         noteInputRef,
         mode,
       })
-    )
+    ),
+    tag("react")
   )
+
   const notice = merge(shareURLCopiedNotice$, justSignedNotice$, opps.notice)
   const track = merge(trackPropose$)
   const graph = merge(propose$)

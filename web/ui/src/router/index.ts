@@ -65,6 +65,7 @@ export const singleConversationOppRoutesGroup = createGroup([
 export const newConversationRouteGroup = createGroup([
   routes.conversation,
   routes.conversationOpp,
+  routes.conversationOpps,
 ])
 
 export const conversationOppsRouteGroup = createGroup([

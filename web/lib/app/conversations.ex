@@ -8,26 +8,29 @@ defmodule App.Conversations do
   import Ecto.Query
   import App.Helpers, only: [format_ecto_errors: 1]
 
-  @conversation_preloads [
+  @preloads [
     :creator,
     signatures: [:signer, :conversation],
-    reviews: [:reviewer, :conversation]
+    reviews: [:reviewer, :conversation],
+    mentions: [:opp]
   ]
 
   defun upsert_conversation(
           customer,
-          %{id: id, invitees: invitees, note: note, occurred_at: occurred_at} = _input
+          %{id: id, invitees: invitees, note: note, occurred_at: occurred_at, mentions: mentions} =
+            _input
         ) :: Brex.Result.s(Conversation.t()) do
     attrs = %{
       creator: customer,
       id: id,
       invitees: invitees,
       note: note,
+      mentions: Enum.map(mentions, &Map.put(&1, :conversation_id, id)),
       occurred_at: occurred_at || Timex.now()
     }
 
     Repo.get(Conversation, id)
-    |> Repo.preload(@conversation_preloads)
+    |> Repo.preload(@preloads)
     |> lift(nil, :not_found)
     |> convert_error(:not_found, %Conversation{})
     # only creator can edit
@@ -44,14 +47,14 @@ defmodule App.Conversations do
     )
     |> fmap(&Conversation.changeset(&1, attrs))
     |> bind(&Repo.insert_or_update(&1))
-    |> fmap(&Repo.preload(&1, @conversation_preloads))
+    |> fmap(&Repo.preload(&1, @preloads))
     |> fmap(&Conversation.update_subscriptions/1)
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 
   defun get_conversation(id :: id()) :: Brex.Result.s(Conversation.t()) do
     Repo.get(Conversation, id)
-    |> Repo.preload(@conversation_preloads)
+    |> Repo.preload(@preloads)
     |> lift(nil, :not_found)
   end
 
@@ -60,7 +63,7 @@ defmodule App.Conversations do
           viewer :: Customer.t()
         ) :: Brex.Result.s(Conversation.t()) do
     Repo.get(Conversation, id)
-    |> Repo.preload(@conversation_preloads)
+    |> Repo.preload(@preloads)
     |> lift(nil, :not_found)
     |> bind(&if &1.creator == viewer, do: ok(&1), else: error(:unauthorized))
     |> fmap(&Conversation.tombstone_changeset(&1))
@@ -70,7 +73,7 @@ defmodule App.Conversations do
   defun get_conversations(viewer :: Customer.t()) :: Brex.Result.s(list(Conversation.t())) do
     signed =
       from(c in Conversation,
-        preload: ^@conversation_preloads,
+        preload: ^@preloads,
         join: signature in assoc(c, :signatures),
         where: signature.signer_id == ^viewer.id,
         where: c.status != :deleted
@@ -78,7 +81,7 @@ defmodule App.Conversations do
 
     reviewed =
       from(c in Conversation,
-        preload: ^@conversation_preloads,
+        preload: ^@preloads,
         join: review in assoc(c, :reviews),
         where: review.reviewer_id == ^viewer.id,
         where: c.status != :deleted
@@ -86,7 +89,7 @@ defmodule App.Conversations do
 
     created =
       from(c in Conversation,
-        preload: ^@conversation_preloads,
+        preload: ^@preloads,
         where: c.creator_id == ^viewer.id,
         where: c.status != :deleted
       )
@@ -105,7 +108,7 @@ defmodule App.Conversations do
     }
 
     Repo.get(Conversation, id)
-    |> Repo.preload(@conversation_preloads)
+    |> Repo.preload(@preloads)
     |> lift(nil, :not_found)
     |> fmap(&Map.put(attrs, :conversation, &1))
     |> fmap(&Signature.changeset(%Signature{}, &1))
@@ -114,7 +117,7 @@ defmodule App.Conversations do
     |> fmap(& &1.conversation)
     |> fmap(&Conversation.signed_changeset/1)
     |> bind(&Repo.insert_or_update(&1))
-    |> fmap(&Repo.preload(&1, @conversation_preloads, force: true, in_parallel: true))
+    |> fmap(&Repo.preload(&1, @preloads, force: true, in_parallel: true))
     |> fmap(&Conversation.update_subscriptions/1)
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
@@ -124,7 +127,7 @@ defmodule App.Conversations do
           %{id: id} = _input
         ) :: Brex.Result.s(Conversation.t()) do
     Repo.get(Conversation, id)
-    |> Repo.preload(@conversation_preloads)
+    |> Repo.preload(@preloads)
     |> lift(nil, :not_found)
     |> bind(&if &1.creator == customer, do: ok(&1), else: error(:unauthorized))
     |> fmap(&Conversation.proposed_changeset/1)
@@ -141,7 +144,7 @@ defmodule App.Conversations do
     attrs = %{reviewer: customer}
 
     Repo.get(Conversation, id)
-    |> Repo.preload(@conversation_preloads)
+    |> Repo.preload(@preloads)
     |> lift(nil, :not_found)
     # NOTE: can't review own conversation
     |> bind(&if &1.creator != customer, do: ok(&1), else: error(:unauthorized))

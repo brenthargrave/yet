@@ -103,5 +103,12 @@ defmodule App.Repo.Migrations.CreateEvents do
     create(index(:opps, [:org]))
     create(index(:opps, [:role]))
     create(index(:opps, [:url]))
+
+    create table(:mentions, primary_key: false) do
+      add :id, :string, primary_key: true
+      add :conversation_id, references(:conversations, on_delete: :delete_all)
+      add :opp_id, references(:opps, on_delete: :delete_all)
+      timestamps()
+    end
   end
 end

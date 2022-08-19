@@ -18,7 +18,7 @@ import {
 import { isNotNullish } from "rxjs-etc"
 import { switchMap } from "rxjs/operators"
 import { Err, Ok, Result } from "ts-results"
-import { descend, prop, has, sortBy, ascend } from "~/fp"
+import { descend, prop } from "~/fp"
 import { makeTagger } from "~/log"
 import { shareLatest, zenToRx } from "~/rx"
 import { getId } from "./anon"
@@ -26,7 +26,6 @@ import { client, tokenCacheKey } from "./apollo"
 import {
   CheckTokenDocument,
   ContactsDocument,
-  Conversation,
   ConversationChangedDocument,
   ConversationChangedInput,
   ConversationInput,
@@ -68,8 +67,8 @@ import { client as urqlClient } from "./urql"
 export { loggedIn, loggedOut } from "./driver"
 export type { Commands, Source } from "./driver"
 export * from "./generated"
-export type ID = Scalars["ID"]
 export * from "./models"
+export type ID = Scalars["ID"]
 
 const tag = makeTagger("graph")
 

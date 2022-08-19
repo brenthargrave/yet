@@ -14,11 +14,11 @@ import {
   symmetricDifferenceWith,
 } from "~/fp"
 import { Contact, Conversation, Customer, Invitee, MakeOptional } from ".."
-import { ConversationStatus } from "../generated"
+import { ConversationStatus, ConversationInput } from "../generated"
 
 export type DraftConversation = MakeOptional<
-  Conversation,
-  "status" | "creator" | "signatures" | "reviews"
+  ConversationInput,
+  "status" | "mentions"
 >
 
 type Note = string | null | undefined
@@ -71,11 +71,8 @@ export const makeInvitee = (): Invitee => {
 export const makeConversation = (): DraftConversation => ({
   id: makeId(),
   occurredAt: makeDate(),
-  creator: makeParticipant(),
   invitees: [makeInvitee(), makeInvitee()],
   note: faker.lorem.paragraph(),
-  signatures: [],
-  reviews: [],
   status: faker.helpers.arrayElement([
     ConversationStatus.Draft,
     ConversationStatus.Proposed,

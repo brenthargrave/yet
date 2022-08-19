@@ -36,6 +36,12 @@ fragment ConversationProps on Conversation {
       ...ContactProps
     }
   }
+  mentions {
+    id
+    oppId
+    conversationId
+    insertedAt
+  }
 }
 
 fragment UserErrorProps on UserError {
