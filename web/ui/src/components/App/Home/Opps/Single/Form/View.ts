@@ -13,6 +13,7 @@ import {
   Header,
   Heading,
   Input,
+  Nav,
   Spacer,
   Stack,
 } from "~/system"
@@ -20,6 +21,7 @@ import { CancelButton } from "./CancelButton"
 import { InputControl } from "./InputControl"
 import { MoneyInput } from "./MoneyInput"
 import { UrlInput } from "./UrlInput"
+import { Location } from ".."
 
 type Callback = (value: string) => void
 const makeOnChange =
@@ -40,9 +42,11 @@ const headerCopy = (target: Target) =>
     .with(Target.edit, () => "Opportunity")
     .exhaustive()
 
+const isHome = (location: Location) => location === Location.home
+
 export interface Props {
+  location: Location
   target?: Target
-  showNav?: boolean
   onChangeOrg?: () => void
   defaultValueOrg?: string
   onChangeRole?: () => void
@@ -56,11 +60,12 @@ export interface Props {
   isDisabledSubmit?: boolean
   onSubmit?: () => void
   onCancel?: () => void
+  onClickBack?: () => void
 }
 
 export const View: FC<Props> = ({
+  location = Location.home,
   target = Target.create,
-  showNav = false,
   onChangeOrg,
   defaultValueOrg,
   onChangeRole,
@@ -74,6 +79,7 @@ export const View: FC<Props> = ({
   isDisabledSubmit = true,
   onSubmit: _onSubmit,
   onCancel,
+  onClickBack,
   ...props
 }) => {
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = (e) => {
@@ -88,14 +94,7 @@ export const View: FC<Props> = ({
       justifyContent: "flex-start",
     },
     [
-      // only display nav from Home
-      showNav &&
-        h(Header, [
-          h(BackButton, {
-            onClick: () => null, // onClickBack,
-          }),
-          h(Spacer),
-        ]),
+      h(Nav, { onClickBack }),
       h(Header, [
         //
         h(Heading, { size: "md" }, headerCopy(target)),

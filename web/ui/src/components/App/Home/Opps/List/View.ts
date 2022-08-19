@@ -12,7 +12,14 @@ import { FC } from "react"
 import { OppView } from "~/components/Opp"
 import { isEmpty } from "~/fp"
 import { Opp } from "~/graph"
-import { CreateButton, Divider, Header, modalStyleProps, Stack } from "~/system"
+import {
+  CreateButton,
+  Divider,
+  Header,
+  modalStyleProps,
+  Nav,
+  Stack,
+} from "~/system"
 import { Location } from ".."
 import { EmptyOppsView, OnClickNew } from "./EmptyView"
 
@@ -43,12 +50,13 @@ export const View: FC<Props> = ({
   isEmpty(opps)
     ? h(EmptyOppsView, { minHeight, onClickCreate })
     : h(Stack, { minHeight, direction: "column" }, [
+        h(Nav),
         h(Header, {}, [
           h(Heading, { size: "md" }, "Opportunities"),
           h(Spacer),
           h(CreateButton, { onClick: onClickCreate, cta: `New opp` }),
         ]),
-        h(List, { spacing: 4, paddingTop: 4 }, [
+        h(List, { spacing: 4 }, [
           ...opps.map((opp, idx, all) => {
             return h(ListItem, {}, [
               h(

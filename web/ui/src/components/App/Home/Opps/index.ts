@@ -41,8 +41,11 @@ export const Opps = (sources: Sources, tagPrefix?: string) => {
   } = sources
 
   const list = List({ ...sources, props: { location } }, tagScope)
-  const create = Create({ ...sources, props: { state$ } }, tagScope)
-  const single = Single({ ...sources, props: { state$, id$ } }, tagScope)
+  const create = Create({ ...sources, props: { state$, location } }, tagScope)
+  const single = Single(
+    { ...sources, props: { state$, id$, location } },
+    tagScope
+  )
 
   const react = state$.pipe(
     switchMap((state) =>

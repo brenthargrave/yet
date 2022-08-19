@@ -28,6 +28,7 @@ import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { cb$, mapTo, shareLatest } from "~/rx"
 import { Target, View } from "./View"
+import { Location } from ".."
 
 export { Target }
 
@@ -36,6 +37,7 @@ type EditableOpp = Omit<Opp, "creator" | "insertedAt">
 interface Props {
   record$: Observable<EditableOpp>
   target: Target
+  location: Location
 }
 
 interface Sources {
@@ -49,7 +51,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const tag = makeTagger(tagScope)
 
   const {
-    props: { record$, target },
+    props: { record$, target, location },
   } = sources
 
   const id$ = record$.pipe(pluck("id"), tag("id$"), share())
@@ -66,6 +68,12 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const [onChangeFee, onChangeFee$] = cb$<Money>(tag("onChangeFee$"))
   const [onSubmit, onSubmit$] = cb$(tag("onSubmit$"))
   const [onCancel, onCancel$] = cb$(tag("onCancel$"))
+  const [onClickBack, onClickBack$] = cb$(tag("onClickBack$"))
+  const goToList$ = merge(onClickBack$).pipe(
+    mapTo(act(Actions.listOpps)),
+    tag("onClickBack$"),
+    share()
+  )
 
   const org$ = record$.pipe(
     pluck("org"),
@@ -163,6 +171,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     map((props) =>
       h(View, {
         ...props,
+        location,
         target,
         onChangeOrg,
         onChangeRole,
@@ -171,11 +180,12 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
         onChangeFee,
         onSubmit,
         onCancel,
+        onClickBack,
       })
     )
   )
 
-  const action = merge(showList$)
+  const action = merge(showList$, goToList$)
   const notice = merge(userErrorNotice$)
   return {
     react,

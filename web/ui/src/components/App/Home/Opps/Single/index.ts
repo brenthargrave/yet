@@ -15,9 +15,11 @@ import { getOpp$, ID, me$, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { shareLatest } from "~/rx"
-import { State as OppsState } from ".."
+import { State as OppsState, Location } from ".."
 import { Edit } from "./Edit"
 import { Show } from "./Show"
+
+export { Location }
 
 export enum State {
   edit = "edit",
@@ -27,6 +29,7 @@ export enum State {
 interface Props {
   state$: Observable<OppsState>
   id$: Observable<ID>
+  location: Location
 }
 
 interface Sources {
@@ -40,7 +43,7 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
   const tag = makeTagger(tagScope)
 
   const {
-    props: { state$: oppsState$, id$ },
+    props: { state$: oppsState$, id$, location },
   } = sources
 
   const result$ = id$.pipe(
@@ -59,8 +62,8 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const edit = Edit({ ...sources, props: { record$ } }, tagScope)
-  const show = Show({ ...sources, props: { record$ } }, tagScope)
+  const edit = Edit({ ...sources, props: { record$, location } }, tagScope)
+  const show = Show({ ...sources, props: { record$, location } }, tagScope)
 
   const state$ = oppsState$.pipe(
     equals(OppsState.single),

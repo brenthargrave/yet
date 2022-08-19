@@ -12,6 +12,7 @@ import {
   Header,
   Heading,
   MarkdownView,
+  Nav,
   ShareModal,
   Spacer,
   Stack,
@@ -80,13 +81,7 @@ export const View: FC<Props> = ({
       justifyContent: "flex-start",
     },
     [
-      !isSigning(intent) &&
-        h(Header, {}, [
-          h(BackButton, { cta: "", onClick: onClickBack }),
-          // TODO: sign in/up button
-          // h(Divider),
-          // h(AuthButton)
-        ]),
+      !isSigning(intent) && h(Nav, { onClickBack }),
       h(ShareModal, {
         isOpen: isReading(intent) && isOpenShare,
         onClose: onCloseShare,
@@ -122,7 +117,6 @@ export const View: FC<Props> = ({
         {
           direction: "column",
           width: "100%",
-          padding: 4,
           gap: 4,
           style: {
             ...(isObscured && {
@@ -132,7 +126,8 @@ export const View: FC<Props> = ({
           },
         },
         [
-          h(Stack, { direction: "row" }, [
+          h(Header, [
+            //
             h(Heading, { size: "md" }, "Conversation"),
             h(Spacer),
           ]),

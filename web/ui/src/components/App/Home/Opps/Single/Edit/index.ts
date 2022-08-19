@@ -3,9 +3,11 @@ import { Observable } from "rxjs"
 import { Opp, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { Form, Target } from "../Form"
+import { Location } from ".."
 
 interface Props {
   record$: Observable<Opp>
+  location: Location
 }
 
 interface Sources {
@@ -19,13 +21,13 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
   const tag = makeTagger(tagScope)
 
   const {
-    props: { record$ },
+    props: { record$, location },
   } = sources
 
   const form = Form(
     {
       ...sources,
-      props: { record$, target: Target.edit },
+      props: { record$, target: Target.edit, location },
     },
     tagScope
   )
