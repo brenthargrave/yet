@@ -25,7 +25,7 @@ import {
 } from "~/router"
 import { Conversations } from "./Conversations"
 import { View } from "./View"
-import { isPresent, pluck } from "~/fp"
+import { isEmpty, isPresent, pluck } from "~/fp"
 import { cb$, mapTo, shareLatest } from "~/rx"
 import { Opps, State as OppsState, Location } from "./Opps"
 
@@ -140,16 +140,16 @@ export const Home = (sources: Sources) => {
       shareLatest()
     )
 
-  const isVisible$ = opps$.pipe(
-    map(isPresent),
+  const showMenu$ = opps$.pipe(
+    map((opps) => !isEmpty(opps)),
     startWith(false),
     distinctUntilChanged(),
-    tag("isVisible$"),
+    tag("showMenu$"),
     shareLatest()
   )
 
   const props$ = combineLatest({
-    isVisible: isVisible$,
+    showMenu: showMenu$,
   }).pipe(tag("props$"))
 
   const subview$ = rootState$.pipe(

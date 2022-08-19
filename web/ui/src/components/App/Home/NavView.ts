@@ -26,7 +26,7 @@ export const isFrom = (event: React.MouseEvent<HTMLElement>) => {
 }
 
 export interface Props {
-  isVisible?: boolean
+  showMenu?: boolean
   onClickConversations: () => void
   onClickOpps: () => void
 }
@@ -35,6 +35,7 @@ export const View: FC<Props> = ({
   children,
   onClickConversations,
   onClickOpps,
+  showMenu = false,
 }) => {
   const [left, setLeft] = useState(0)
   const [footerH, setFooterH] = useState(0)
@@ -64,46 +65,47 @@ export const View: FC<Props> = ({
   const onClickOutside = (e: React.MouseEvent) => e.stopPropagation()
 
   return h(Stack, { direction: "column", width: "100%", height: "100%" }, [
-    h(
-      Stack,
-      {
-        ref,
-        sx: {
-          position: "fixed",
-          left,
-          bottom: 0,
-          zIndex: 2,
+    showMenu &&
+      h(
+        Stack,
+        {
+          ref,
+          sx: {
+            position: "fixed",
+            left,
+            bottom: 0,
+            zIndex: 2,
+          },
+          direction: "row",
+          alignItems: "center",
+          padding: 4,
+          marginBottom: 4,
+          backgroundColor: "white",
+          borderRadius: "lg",
+          onClick: onClickOutside,
         },
-        direction: "row",
-        alignItems: "center",
-        padding: 4,
-        marginBottom: 4,
-        backgroundColor: "white",
-        borderRadius: "lg",
-        onClick: onClickOutside,
-      },
-      [
-        h(HStack, {}, [
-          h(ButtonGroup, { isAttached: false }, [
-            h(IconButton, {
-              icon: h(Icon, { as: TbNotes }),
-              size: "lg",
-              variant: "outline",
-              ref: buttonRefConvos,
-              onClick: onClickConvosButton,
-            }),
-            h(IconButton, {
-              icon: h(Icon, { as: TbArrowsSplit2 }),
-              size: "lg",
-              variant: "outline",
-              color: "green.600",
-              ref: buttonRefOpps,
-              onClick: onClickOppsButton,
-            }),
+        [
+          h(HStack, {}, [
+            h(ButtonGroup, { isAttached: false }, [
+              h(IconButton, {
+                icon: h(Icon, { as: TbNotes }),
+                size: "lg",
+                variant: "outline",
+                ref: buttonRefConvos,
+                onClick: onClickConvosButton,
+              }),
+              h(IconButton, {
+                icon: h(Icon, { as: TbArrowsSplit2 }),
+                size: "lg",
+                variant: "outline",
+                color: "green.600",
+                ref: buttonRefOpps,
+                onClick: onClickOppsButton,
+              }),
+            ]),
           ]),
-        ]),
-      ]
-    ),
+        ]
+      ),
     children,
     // NOTE: need an empty footer to make room for nav
     h(Box, { width: "100%", minHeight: `${footerH}px` }, [
