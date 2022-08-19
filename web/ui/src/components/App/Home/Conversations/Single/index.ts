@@ -123,6 +123,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   }
 
   const state$ = history$.pipe(
+    filter((route) => singleConversationRoutesGroup.has(route)),
     delayUntil(record$),
     withLatestFrom(me$, record$),
     map(([route, me, record]) =>
