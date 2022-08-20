@@ -14,15 +14,14 @@ import {
 } from "rxjs"
 import { any, not } from "~/fp"
 import {
-  isSignedBy,
   Conversation,
   isSignableStatus,
+  isSignedBy,
   Source as GraphSource,
 } from "~/graph"
 import { makeTagger } from "~/log"
-import { isRoute, push, routes, Source as RouterSource } from "~/router"
+import { push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
-import { State } from ".."
 import { Intent } from "../View"
 
 interface Sources {
@@ -31,25 +30,19 @@ interface Sources {
   graph: GraphSource
   props: {
     record$: Observable<Conversation>
-    liveRecord$: Observable<Conversation>
-    state$: Observable<State>
   }
 }
 
-export const Main = (sources: Sources, tagPrefix?: string) => {
+export const Show = (sources: Sources, tagPrefix?: string) => {
   const {
-    router: { history$ },
     graph: { me$ },
-    props: { record$: _record$, liveRecord$, state$ },
+    props: { record$: _record$ },
   } = sources
 
   const tagScope = `${tagPrefix}/Show`
   const tag = makeTagger(tagScope)
 
-  const record$ = merge(_record$, liveRecord$).pipe(
-    tag("record"),
-    shareLatest()
-  )
+  const record$ = _record$.pipe(tag("record"), shareLatest())
 
   const [onClickBack, onClickBack$] = cb$(tag("onClickBack$"))
   const goToList$ = merge(onClickBack$).pipe(
@@ -107,12 +100,10 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   )
 
   const redirectReviewerToSign$ = combineLatest({
-    state: state$,
     isSignable: statusIsSignable$,
     isReviewer: isReviewer$,
     notSigned: notSigned$,
   }).pipe(
-    filter(({ state }) => state === State.show),
     filter(
       ({ isSignable, isReviewer, notSigned }) =>
         isReviewer && isSignable && notSigned

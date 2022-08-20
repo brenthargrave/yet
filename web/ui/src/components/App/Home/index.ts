@@ -166,7 +166,7 @@ export const Home = (sources: Sources) => {
     map(({ subview, props }) =>
       h(View, { ...props, onClickConversations, onClickOpps }, [subview])
     ),
-    tag("rootState$")
+    tag("rootView$")
   )
 
   const state$ = combineLatest({ me }).pipe(

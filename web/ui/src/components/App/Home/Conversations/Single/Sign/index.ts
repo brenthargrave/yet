@@ -29,14 +29,12 @@ import {
   reviewConversation$,
   signConversation$,
   Source as GraphSource,
-  subscribeConversation$,
   track$,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { error, info } from "~/notice"
 import { push, routes, routeURL, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
-import { State } from ".."
 import { Intent, Step } from "../View"
 
 interface Sources {
@@ -45,40 +43,32 @@ interface Sources {
   graph: GraphSource
   props: {
     record$: Observable<Conversation>
-    liveRecord$: Observable<Conversation>
-    state$: Observable<State>
   }
 }
 
-export const Main = (sources: Sources, tagPrefix?: string) => {
+export const Sign = (sources: Sources, tagPrefix?: string) => {
   const {
-    router: { history$ },
     graph: { me$ },
-    props: { record$: _record$, liveRecord$, state$ },
+    props: { record$: _record$ },
   } = sources
 
   const tagScope = `${tagPrefix}/Sign`
   const tag = makeTagger(tagScope)
 
-  const record$ = merge(_record$, liveRecord$).pipe(
-    tag("record"),
-    shareLatest()
-  )
+  const record$ = _record$.pipe(tag("record$"), shareLatest())
 
   const review$ = combineLatest({
-    route: history$,
     record: record$,
     me: me$,
   }).pipe(
     filter(
-      ({ route, record, me }) =>
+      ({ record, me }) =>
         isOnboard(me) &&
-        route.name === routes.signConversation.name &&
         record.status === ConversationStatus.Proposed &&
         !isCreatedBy(record, me) &&
         !isReviewedBy(record, me)
     ),
-    switchMap(({ route, record }) =>
+    switchMap(({ record }) =>
       reviewConversation$({ id: record.id }).pipe(
         catchError((error, caugh$) => EMPTY)
       )
@@ -86,6 +76,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     tag("review$"),
     share()
   )
+
   const trackReview$ = review$.pipe(
     filterResultOk(),
     mergeMap((record) =>
@@ -176,11 +167,9 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   )
 
   const redirectCreatorOrCosignerToShow$ = combineLatest({
-    state: state$,
     me: me$,
     record: record$,
   }).pipe(
-    filter(({ state }) => state === State.sign),
     filter(({ me, record }) =>
       or(isCreatedBy(record, me), isSignedBy(record, me))
     ),
@@ -201,7 +190,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   return {
     router,
     notice,
-    value,
     track,
+    value,
   }
 }

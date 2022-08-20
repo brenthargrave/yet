@@ -10,13 +10,13 @@ import {
   Source as RouterSource,
   NEWID,
 } from "~/router"
+import { shareLatest } from "~/rx"
 import { List } from "./List"
-import { Main as Single } from "./Single"
-import { Main as Create } from "./Single/Create"
+import { Single } from "./Single"
+import { pluck } from "~/fp"
 
-enum State {
+export enum State {
   list = "list",
-  create = "create",
   single = "single",
 }
 
@@ -35,29 +35,25 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
     router: { history$ },
   } = sources
 
-  const list = List(sources, tagScope)
-  const create = Create(sources, tagScope)
-  const single = Single(sources, tagScope)
-
   const state$ = history$.pipe(
     map((route) =>
       match(route)
         .with({ name: routes.conversations.name }, () => State.list)
-        .when(singleConversationRoutesGroup.has, ({ params: { id } }) =>
-          id === NEWID ? State.create : State.single
-        )
+        .when(singleConversationRoutesGroup.has, () => State.single)
         .otherwise(() => State.list)
     ),
     distinctUntilChanged(),
     tag("state$"),
-    share()
+    shareLatest()
   )
+
+  const list = List(sources, tagScope)
+  const single = Single(sources, tagScope)
 
   const react = state$.pipe(
     switchMap((state) =>
       match(state)
         .with(State.list, () => list.react)
-        .with(State.create, () => create.react)
         .with(State.single, () => single.react)
         .exhaustive()
     ),
@@ -65,28 +61,10 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const track = merge(
-    //
-    list.track,
-    create.track,
-    single.track
-  )
-  const router = merge(
-    //
-    list.router,
-    create.router,
-    single.router
-  )
-  const notice = merge(
-    //
-    create.notice,
-    single.notice
-  )
-  const graph = merge(
-    //
-    create.graph,
-    single.graph
-  )
+  const track = merge(...pluck("track", [list, single]))
+  const router = merge(...pluck("router", [list, single]))
+  const notice = merge(...pluck("notice", [single]))
+  const graph = merge(...pluck("graph", [single]))
 
   return {
     react,

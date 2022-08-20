@@ -49,7 +49,7 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
   const result$ = id$.pipe(
     switchMap((id) => getOpp$(id)),
     tag("result$"),
-    shareLatest()
+    share()
   )
 
   const record$ = result$.pipe(filterResultOk(), tag("record$"), shareLatest())
@@ -84,6 +84,7 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
         .with(State.show, () => show.react)
         .exhaustive()
     ),
+    delayUntil(result$),
     tag("react"),
     share()
   )

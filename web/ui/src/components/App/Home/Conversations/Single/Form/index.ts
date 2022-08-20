@@ -22,6 +22,7 @@ import {
   withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
+import { equals } from "rxjs-etc/dist/esm/operators"
 import { match } from "ts-pattern"
 import { filterResultOk } from "ts-results/rxjs-operators"
 import { Actions, Source as ActionSource } from "~/action"
@@ -68,6 +69,8 @@ import {
   Source as RouterSource,
 } from "~/router"
 import { cb$, shareLatest } from "~/rx"
+import { State } from ".."
+import { NestedOpps } from "./NestedOpps"
 import { Mode, Option as ContactOption, SelectedOption, View } from "./View"
 
 export { Mode }
@@ -94,17 +97,16 @@ const optionsToInvitees = (
   })
 }
 
-interface Props {
-  id$: Observable<string>
-  record$: Observable<DraftConversation>
-  liveRecord$: Observable<DraftConversation>
-}
 interface Sources {
   react: ReactSource
   router: RouterSource
   graph: GraphSource
-  props: Props
   action: ActionSource
+  props: {
+    id$: Observable<string>
+    record$: Observable<DraftConversation>
+    liveRecord$: Observable<DraftConversation>
+  }
 }
 
 export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
@@ -125,54 +127,16 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     filter((e) => e.key === "Escape"),
     tag("escape$")
   )
-  const onCloseAddOpp$ = merge(_onCloseAddOpp$, onEscape$)
-
-  const oppsState$ = history$.pipe(
-    map((route) =>
-      match(route)
-        .with({ name: routes.conversationOpps.name }, () => OppsState.list)
-        .with({ name: routes.conversationOpp.name }, ({ params: { oid } }) =>
-          oid === NEWID ? OppsState.create : OppsState.single
-        )
-        .otherwise(() => OppsState.list)
-    ),
-    distinctUntilChanged(),
-    tag("oppsState$"),
-    shareLatest()
-  )
-
-  const oppID$ = history$.pipe(
-    switchMap((route) =>
-      match(route)
-        .with({ name: routes.conversationOpp.name }, ({ params: { oid } }) =>
-          oid === NEWID ? EMPTY : of(oid)
-        )
-        .otherwise(() => EMPTY)
-    ),
-    tag("oppID$"),
-    shareLatest()
-  )
-
-  const opps = Opps(
-    {
-      ...sources,
-      props: {
-        location: Location.modal,
-        state$: oppsState$,
-        id$: oppID$,
-      },
-    },
-    tagPrefix
-  )
-  const {
-    value: { embedOpp$ },
-  } = opps
-
   const record$ = _record$.pipe(tag("record$"), shareLatest())
   const mergedRecord$ = merge(record$, liveRecord$).pipe(
     tag("mergedRecord$"),
     shareLatest()
   )
+  const onCloseAddOpp$ = merge(_onCloseAddOpp$, onEscape$)
+  const opps = NestedOpps(sources, tagPrefix, mode)
+  const {
+    value: { embedOpp$ },
+  } = opps
 
   const status$ = mergedRecord$.pipe(
     pluck("status"),
@@ -185,8 +149,10 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
 
   const justSignedNotice$ = mergedRecord$.pipe(
     pairwise(),
+    tag("THIS"),
     filter(
       ([prev, curr]) =>
+        prev?.id === curr.id &&
         prev.status !== ConversationStatus.Signed &&
         curr.status === ConversationStatus.Signed
     ),
@@ -197,6 +163,7 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     tap((_) => refetchContacts()),
     share()
   )
+
   const redirectJustSignedToShow$ = justSignedNotice$.pipe(
     withLatestFrom(id$),
     map(([_, id]) => push(routes.conversation({ id }))),
@@ -547,31 +514,12 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     share()
   )
 
-  const oppsRouter$ = opps.action.pipe(
-    withLatestFrom(record$),
-    map(([action, { id: _id, ...record }]) => {
-      const id = mode === Mode.create ? NEWID : _id
-      return match(action)
-        .with({ type: Actions.listOpps }, () =>
-          push(routes.conversationOpps({ id }))
-        )
-        .with({ type: Actions.createOpp }, () =>
-          push(routes.conversationOpp({ id, oid: NEWID }))
-        )
-        .with({ type: Actions.showOpp }, ({ opp }) =>
-          push(routes.conversationOpp({ id, oid: opp.id }))
-        )
-        .run()
-    }),
-    tag("oppsRouter$")
-  )
-
   const router = merge(
     goToList$,
     redirectJustSignedToShow$,
     showOpps$,
     hideOpps$,
-    oppsRouter$
+    opps.router
   )
 
   const props$ = combineLatest({
