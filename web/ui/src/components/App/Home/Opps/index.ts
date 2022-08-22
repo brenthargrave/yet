@@ -55,8 +55,7 @@ export const Opps = (sources: Sources, tagPrefix?: string) => {
         .with(State.single, () => single.react)
         .exhaustive()
     ),
-    tag("react"),
-    share()
+    tag("react")
   )
 
   const action = merge(list.action, single.action, create.action)

@@ -1,23 +1,26 @@
 import { ReactSource } from "@cycle/react"
 import { distinctUntilChanged, map, merge, share, switchMap } from "rxjs"
-import { match, P } from "ts-pattern"
+import { equals } from "rxjs-etc/dist/esm/operators"
+import { match } from "ts-pattern"
 import { Source as ActionSource } from "~/action"
+import { pluck } from "~/fp"
 import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import {
-  singleConversationRoutesGroup,
-  routes,
-  Source as RouterSource,
   NEWID,
+  routes,
+  singleConversationRoutesGroup,
+  Source as RouterSource,
 } from "~/router"
 import { shareLatest } from "~/rx"
 import { List } from "./List"
 import { Single } from "./Single"
-import { pluck } from "~/fp"
+import { Create } from "./Single/Create"
 
 export enum State {
   list = "list",
   single = "single",
+  create = "create",
 }
 
 interface Sources {
@@ -39,7 +42,9 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
     map((route) =>
       match(route)
         .with({ name: routes.conversations.name }, () => State.list)
-        .when(singleConversationRoutesGroup.has, () => State.single)
+        .when(singleConversationRoutesGroup.has, ({ params: { id } }) =>
+          id === NEWID ? State.create : State.single
+        )
         .otherwise(() => State.list)
     ),
     distinctUntilChanged(),
@@ -49,22 +54,27 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
 
   const list = List(sources, tagScope)
   const single = Single(sources, tagScope)
+  const create = Create(
+    { ...sources, props: { reset$: state$.pipe(equals(State.create)) } },
+    tagScope
+  )
 
   const react = state$.pipe(
     switchMap((state) =>
       match(state)
         .with(State.list, () => list.react)
         .with(State.single, () => single.react)
+        .with(State.create, () => create.react)
         .exhaustive()
     ),
     tag("react"),
     share()
   )
 
-  const track = merge(...pluck("track", [list, single]))
-  const router = merge(...pluck("router", [list, single]))
-  const notice = merge(...pluck("notice", [single]))
-  const graph = merge(...pluck("graph", [single]))
+  const router = merge(...pluck("router", [list, single, create]))
+  const notice = merge(...pluck("notice", [single, create]))
+  const track = merge(...pluck("track", [list, single, create]))
+  const graph = merge(...pluck("graph", [single, create]))
 
   return {
     react,

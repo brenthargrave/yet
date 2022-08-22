@@ -15,7 +15,9 @@ export interface Props {
   headingCopy: string
   inputPlaceholder: string
   submitButtonCopy: string
+  formRef?: Ref<HTMLFormElement>
   inputRef?: Ref<HTMLInputElement>
+  buttonRef?: Ref<HTMLButtonElement>
 }
 export const View = ({
   attr,
@@ -28,6 +30,8 @@ export const View = ({
   inputPlaceholder,
   submitButtonCopy,
   inputRef,
+  formRef,
+  buttonRef,
 }: Props) => {
   const key = `input-${attr}`
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = (e) => {
@@ -38,15 +42,15 @@ export const View = ({
     const { value } = e.currentTarget
     onChangeInput(value)
   }
-  return h(Center, { width: "100%", height: "100%" }, [
-    form({ onSubmit }, [
+  return h(Center, { key, width: "100%", height: "100%" }, [
+    form({ onSubmit, ref: formRef }, [
       h(Center, { width: "100vw", height: "100vh" }, [
         h(Stack, { direction: "column", align: "center", gap: 2 }, [
           h(Heading, { size }, headingCopy),
           h(InputGroup, { size, key: `group-${attr}` }, [
             h(Input, {
               ref: inputRef,
-              key,
+              // key,
               autoFocus: true,
               placeholder: inputPlaceholder,
               isRequired: true,
@@ -57,6 +61,7 @@ export const View = ({
           h(
             Button,
             {
+              ref: buttonRef,
               isDisabled: isSubmitButtonDisabled,
               size,
               width: "100%",

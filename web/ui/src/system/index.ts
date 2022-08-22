@@ -50,7 +50,9 @@ export const AlertTitle = (props: AlertTitleProps) => h(_AlertTitle, props)
 export const AlertDescription = (props: AlertDescriptionProps) =>
   h(_AlertDescription, props)
 export const Box = (props: BoxProps) => h(_Box, props)
-export const Button = (props: ButtonProps) => h(_Button, props)
+export const Button = forwardRef(({ ...rest }: ButtonProps, ref) =>
+  h(_Button, { ...rest, ref })
+)
 export const Center = (props: CenterProps) => h(_Center, props)
 export const Divider = (props: DividerProps) => h(_Divider, props)
 export const Flex = (props: FlexProps) => h(_Flex, props)

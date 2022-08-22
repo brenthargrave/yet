@@ -35,6 +35,7 @@ import {
   not,
   pluck as _pluck,
   prop,
+  uniqBy,
 } from "~/fp"
 import {
   Contact,
@@ -149,7 +150,6 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
 
   const justSignedNotice$ = mergedRecord$.pipe(
     pairwise(),
-    tag("THIS"),
     filter(
       ([prev, curr]) =>
         prev?.id === curr.id &&
@@ -258,7 +258,7 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
           oppId: match.replace("o/", ""),
         }
       })
-      return mentionInputs
+      return uniqBy(prop("id"), mentionInputs)
     }),
     startWith([]),
     tag("mentionInputs$"),

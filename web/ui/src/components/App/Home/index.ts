@@ -195,7 +195,7 @@ export const Home = (sources: Sources) => {
     oppsRouter$
   )
   const track = merge(...pluck("track", [conversations]))
-  const notice = merge(...pluck("notice", [conversations, opps]))
+  const notice = merge(...pluck("notice", [conversations, opps, onboarding]))
   const graph = merge(...pluck("graph", [conversations]))
 
   return {

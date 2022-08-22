@@ -117,10 +117,12 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
         inputRef,
       })
     }),
-    tag("react"),
     tap(() => {
-      inputRef.current?.focus()
-    })
+      setTimeout(() => {
+        inputRef.current?.focus()
+      }, 300)
+    }),
+    tag("react")
   )
 
   const notice = userError$.pipe(

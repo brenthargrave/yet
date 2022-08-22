@@ -2,6 +2,7 @@ import { h, ReactSource } from "@cycle/react"
 import { and } from "ramda"
 import {
   combineLatest,
+  distinctUntilChanged,
   EMPTY,
   filter,
   map,
@@ -12,10 +13,9 @@ import {
   switchMap,
   withLatestFrom,
 } from "rxjs"
-import { delayUntil, equals } from "rxjs-etc/dist/esm/operators"
+import { isNotNullish } from "rxjs-etc"
 import { match } from "ts-pattern"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
-import { isNotNullish } from "rxjs-etc"
 import { Source as ActionSource } from "~/action"
 import { ErrorView } from "~/components/App/ErrorView"
 import { pluck } from "~/fp"
@@ -37,15 +37,13 @@ import {
   singleConversationRoutesGroup,
   Source as RouterSource,
 } from "~/router"
-import { shareLatest } from "~/rx"
 import { Main as Edit } from "./Edit"
 import { Show } from "./Show"
 import { Sign } from "./Sign"
 import { View } from "./View"
-import { Create } from "./Create"
 
 export enum State {
-  create = "create",
+  pending = "pending",
   edit = "edit",
   sign = "sign",
   show = "show",
@@ -85,12 +83,12 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const record$ = result$.pipe(filterResultOk(), tag("record$"), shareLatest())
+  const record$ = result$.pipe(filterResultOk(), tag("record$"), share())
 
   const liveRecord$ = id$.pipe(
     switchMap((id) => subscribeConversation$({ id })),
     tag("liveRecord$"),
-    shareLatest()
+    share()
   )
 
   const userError$ = result$.pipe(filterResultErr(), tag("userError$"), share())
@@ -114,16 +112,15 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
       match(route)
         .with({ name: routes.signConversation.name }, () => State.sign)
         .when(singleConversationRoutesGroup.has, ({ params: { id } }) => {
-          if (id === NEWID) return State.create
           const created = isCreatedBy(record, me)
           const editable = isStatusEditable(record.status)
           const result = and(created, editable)
           return result ? State.edit : State.show
         })
-        .otherwise(() => State.show)
+        .otherwise(() => State.pending)
     ),
-    tag("state$"),
-    shareLatest()
+    distinctUntilChanged(),
+    tag("state$")
   )
 
   const stateRecord$ = (state: State, record$: Observable<Conversation>) => {
@@ -136,14 +133,9 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
       ),
       filter(isNotNullish),
       tag("stateRecord$"),
-      shareLatest()
+      share()
     )
   }
-
-  const create = Create(
-    { ...sources, props: { reset$: state$.pipe(equals(State.create)) } },
-    tagScope
-  )
 
   const sign = Sign(
     {
@@ -175,7 +167,7 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     state$.pipe(
       switchMap((state) =>
         match(state)
-          .with(State.create, () => create.react)
+          .with(State.pending, () => EMPTY)
           .with(State.edit, () => edit.react)
           .with(State.sign, () =>
             sign.value.props$.pipe(map((props) => h(View, { ...props })))
@@ -183,22 +175,20 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
           .with(State.show, () =>
             show.value.props$.pipe(map((props) => h(View, { ...props })))
           )
+          // .run()
           .exhaustive()
       )
     )
-  ).pipe(delayUntil(result$), tag("react"))
+  ).pipe(tag("react"))
 
-  const notice = merge(
-    ...pluck("notice", [create, edit, sign]),
-    userErrorNotice$
-  )
+  const notice = merge(...pluck("notice", [edit, sign]), userErrorNotice$)
 
   const router = merge(
-    ...pluck("router", [create, edit, sign, show]),
+    ...pluck("router", [edit, sign, show]),
     redirectNotFound$
   )
-  const track = merge(...pluck("track", [create, edit, sign]))
-  const graph = merge(...pluck("graph", [create, edit]))
+  const track = merge(...pluck("track", [edit, sign]))
+  const graph = merge(...pluck("graph", [edit]))
 
   return {
     react,
