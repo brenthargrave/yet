@@ -105,8 +105,15 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const state$ = record$.pipe(
+  // NOTE: include liveRecord for "just signed" redirect from Form
+  const mergedRecord$ = merge(record$, liveRecord$).pipe(
+    tag("mergedRecord$"),
+    share()
+  )
+
+  const state$ = mergedRecord$.pipe(
     withLatestFrom(history$, me$),
+    tag("THIS record history me"),
     map(([record, route, me]) =>
       match(route)
         .with({ name: routes.signConversation.name }, () => State.sign)
