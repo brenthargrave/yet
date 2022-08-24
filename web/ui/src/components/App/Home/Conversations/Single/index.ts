@@ -9,6 +9,7 @@ import {
   Observable,
   of,
   share,
+  startWith,
   switchMap,
   withLatestFrom,
 } from "rxjs"
@@ -40,6 +41,7 @@ import { Main as Edit } from "./Edit"
 import { Show } from "./Show"
 import { Sign } from "./Sign"
 import { View } from "./View"
+import { shareLatest } from "~/rx"
 
 export enum State {
   pending = "pending",
@@ -73,7 +75,7 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
         .otherwise(() => EMPTY)
     ),
     tag("id$"),
-    share()
+    shareLatest()
   )
 
   const result$ = id$.pipe(
@@ -82,12 +84,12 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const record$ = result$.pipe(filterResultOk(), tag("record$"), share())
+  const record$ = result$.pipe(filterResultOk(), tag("record$"), shareLatest())
 
   const liveRecord$ = id$.pipe(
     switchMap((id) => subscribeConversation$({ id })),
     tag("liveRecord$"),
-    share()
+    shareLatest()
   )
 
   const userError$ = result$.pipe(filterResultErr(), tag("userError$"), share())
@@ -105,27 +107,35 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  // NOTE: include liveRecord for "just signed" redirect from Form
-  const mergedRecord$ = merge(record$, liveRecord$).pipe(
-    tag("mergedRecord$"),
-    share()
+  const isLoading$ = combineLatest({ id: id$, opp: record$ }).pipe(
+    map(({ id, opp }) => opp.id !== id),
+    startWith(true),
+    tag("isLoading$"),
+    shareLatest()
   )
 
-  const state$ = mergedRecord$.pipe(
-    withLatestFrom(history$, me$),
-    tag("THIS record history me"),
-    map(([record, route, me]) =>
-      match(route)
-        .with({ name: routes.signConversation.name }, () => State.sign)
-        .when(singleConversationRoutesGroup.has, ({ params: { id } }) => {
-          const created = isCreatedBy(record, me)
-          const editable = isStatusEditable(record.status)
-          return and(created, editable) ? State.edit : State.show
-        })
-        .otherwise(() => State.pending)
+  const state$ = combineLatest({
+    isLoading: isLoading$,
+    record: record$,
+    route: history$,
+    me: me$,
+  }).pipe(
+    map(({ isLoading, record, route, me }) =>
+      isLoading
+        ? State.pending
+        : match(route)
+            .with({ name: routes.signConversation.name }, () => State.sign)
+            .when(singleConversationRoutesGroup.has, ({ params: { id } }) => {
+              const created = isCreatedBy(record, me)
+              const editable = isStatusEditable(record.status)
+              return and(created, editable) ? State.edit : State.show
+            })
+            .otherwise(() => State.pending)
     ),
+    startWith(State.pending),
     distinctUntilChanged(),
-    tag("state$")
+    tag("state$"),
+    shareLatest()
   )
 
   const stateRecord$ = (state: State, record$: Observable<Conversation>) => {
@@ -138,7 +148,7 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
       ),
       filter(isNotNullish),
       tag("stateRecord$"),
-      share()
+      shareLatest()
     )
   }
 
@@ -180,7 +190,6 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
           .with(State.show, () =>
             show.value.props$.pipe(map((props) => h(View, { ...props })))
           )
-          // .run()
           .exhaustive()
       )
     )

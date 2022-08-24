@@ -42,7 +42,7 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
   const tagScope = `${tagPrefix}/Show`
   const tag = makeTagger(tagScope)
 
-  const record$ = _record$.pipe(tag("record"), shareLatest())
+  const record$ = _record$.pipe(tag("record$"), shareLatest())
 
   const [onClickBack, onClickBack$] = cb$(tag("onClickBack$"))
   const goToList$ = merge(onClickBack$).pipe(
@@ -94,7 +94,7 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
   )
   const notSigned$ = combineLatest({ me: me$, record: record$ }).pipe(
     map(({ record, me }) => not(isSignedBy(record, me))),
-    startWith(true),
+    startWith(false),
     distinctUntilChanged(),
     tag("notSigned$")
   )
