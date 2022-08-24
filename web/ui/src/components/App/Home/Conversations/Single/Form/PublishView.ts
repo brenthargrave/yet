@@ -29,7 +29,7 @@ export const PublishView: FC<Props> = ({
   const ctaParts: string[] = []
   if (isNotEmpty(knownInvitees)) {
     const names = toSentence(boldNames(knownInvitees))
-    ctaParts.push(`We just texted ${names} to cosign.`)
+    ctaParts.push(`We just texted ${names} to cosign these notes.`)
   }
   if (isNotEmpty(unknownInvitees)) {
     const names = toSentence(boldNames(unknownInvitees))
