@@ -3,7 +3,7 @@ defmodule App.Conversation do
   use Croma
   import Ecto.Changeset
   import App.Types
-  alias App.{Customer, Signature, Review, Mention}
+  alias App.{Customer, Signature, Review, Mention, Opp}
 
   typed_schema "conversations" do
     embeds_many :invitees, Invitee, on_replace: :delete do
@@ -22,6 +22,7 @@ defmodule App.Conversation do
     has_many :signatures, Signature, on_delete: :delete_all
     has_many :reviews, Review, on_delete: :delete_all
     has_many :mentions, Mention, on_delete: :delete_all, on_replace: :delete_if_exists
+    many_to_many :opps, Opp, join_through: "mentions"
 
     timestamps(type: :utc_datetime_usec)
   end

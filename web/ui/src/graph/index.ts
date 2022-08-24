@@ -324,6 +324,7 @@ export const signConversation$ = (input: SignInput) => {
       refetchQueries: [
         { query: GetConversationsDocument },
         { query: ContactsDocument },
+        { query: GetOppsDocument },
       ],
     })
   ).pipe(

@@ -9,18 +9,39 @@ defmodule App.Opps do
   import App.Helpers, only: [format_ecto_errors: 1]
 
   @preloads [
-    :creator
+    :creator,
+    :mentions,
+    :conversations
   ]
 
   defun opps(viewer :: Customer.t()) :: Brex.Result.s(list(Opp.t())) do
-    created =
+    created_opps =
       from(o in Opp,
-        preload: ^@preloads,
-        where: o.creator_id == ^viewer.id,
-        order_by: [desc: o.inserted_at]
+        where: o.creator_id == ^viewer.id
       )
 
-    Repo.all(created)
+    through_conversations_created =
+      from(o in Opp,
+        join: c in assoc(o, :conversations),
+        where: c.creator_id == ^viewer.id
+      )
+
+    through_conversations_signed =
+      from(o in Opp,
+        join: c in assoc(o, :conversations),
+        join: s in assoc(c, :signatures),
+        where: s.signer_id == ^viewer.id
+      )
+
+    union_query = union(created_opps, ^through_conversations_created)
+    union_query = union(union_query, ^through_conversations_signed)
+
+    Repo.all(
+      from(o in subquery(union_query),
+        preload: ^@preloads,
+        order_by: [desc: o.inserted_at]
+      )
+    )
     |> ok()
   end
 
