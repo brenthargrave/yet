@@ -5,7 +5,7 @@ fragment ContactProps on Contact {
   role
 }
 
-fragment ConversationProps on Conversation {
+fragment BaseConversationProps on Conversation {
   id
   creator {
     ...ContactProps
@@ -28,6 +28,10 @@ fragment ConversationProps on Conversation {
       ...ContactProps
     }
   }
+}
+
+fragment ConversationProps on Conversation {
+  ...BaseConversationProps
   reviews {
     id
     conversationId

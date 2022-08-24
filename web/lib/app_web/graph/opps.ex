@@ -12,6 +12,7 @@ defmodule AppWeb.Graph.Opps do
     field(:url, :string)
     field(:creator, non_null(:contact))
     field(:inserted_at, non_null(:datetime))
+    field(:conversations, non_null(list_of(non_null(:conversation))))
   end
 
   object :opps_payload do

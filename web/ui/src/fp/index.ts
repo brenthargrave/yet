@@ -39,6 +39,7 @@ import values from "ramda/es/values"
 const isEmpty = (i: any): boolean => isNil(i) || _isEmpty(i)
 const isNotEmpty = (i: any): boolean => not(isEmpty(i))
 const isPresent = (i: any): boolean => not(isNil(i))
+const isNotLastItem = (idx: number, all: any[]) => !(idx + 1 === all.length)
 
 export {
   all,
@@ -80,4 +81,5 @@ export {
   trim,
   uniqBy,
   values,
+  isNotLastItem,
 }

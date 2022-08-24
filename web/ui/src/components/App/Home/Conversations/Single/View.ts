@@ -1,6 +1,6 @@
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { ConversationView } from "~/components/Conversation"
+import { ConversationView } from "~/components/Conversation/View"
 import { Conversation, Customer, Maybe } from "~/graph"
 import { localizeDate, t } from "~/i18n"
 import { routes, routeURL } from "~/router"

@@ -81,7 +81,9 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
   }).pipe(
     map(({ isLoading, oppsState, opp, me }) => {
       if (oppsState !== OppsState.single || isLoading) return State.pending
-      return isOwnedBy(opp, me) ? State.edit : State.show
+      // ! TODO: how present edit without a distinct url/param?
+      // return isOwnedBy(opp, me) ? State.edit : State.show
+      return State.show
     }),
     startWith(State.pending),
     distinctUntilChanged(),

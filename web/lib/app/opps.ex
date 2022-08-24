@@ -11,7 +11,12 @@ defmodule App.Opps do
   @preloads [
     :creator,
     :mentions,
-    :conversations
+    conversations: [
+      :creator,
+      :mentions,
+      reviews: [:reviewer],
+      signatures: [:signer]
+    ]
   ]
 
   defun opps(viewer :: Customer.t()) :: Brex.Result.s(list(Opp.t())) do

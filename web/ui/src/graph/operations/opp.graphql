@@ -12,6 +12,9 @@ fragment OppProps on Opp {
     ...ContactProps
   }
   insertedAt
+  conversations {
+    ...BaseConversationProps
+  }
 }
 
 fragment OppPayloadProps on OppPayload {

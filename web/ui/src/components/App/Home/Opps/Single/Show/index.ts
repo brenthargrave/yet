@@ -37,6 +37,7 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
   )
 
   const props$: Observable<ViewProps> = combineLatest({
+    viewer: me$,
     location: of(location),
     opp: record$,
     // viewer: me$,
