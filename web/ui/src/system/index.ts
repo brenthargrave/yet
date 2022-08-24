@@ -43,6 +43,7 @@ import {
   TextProps,
   forwardRef,
 } from "@chakra-ui/react"
+import { FC } from "react"
 
 export const Alert = (props: AlertProps) => h(_Alert, props)
 export const AlertIcon = (props: AlertIconProps) => h(_AlertIcon, props)
@@ -77,6 +78,7 @@ export * from "./styles"
 export * from "./AutosizeTextarea"
 export * from "./MarkdownView"
 export * from "./Nav"
+export * from "./FullWidthVStack"
 
 export { Header } from "./Header"
 export { BackButton } from "./BackButton"

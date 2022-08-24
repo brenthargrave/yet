@@ -1,6 +1,7 @@
 import { Heading, List, ListItem, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
+import { ConversationView } from "~/components/Conversation"
 import { NoteView } from "~/components/Note"
 import { isEmpty, map } from "~/fp"
 import { Conversation, Customer, Maybe } from "~/graph"
@@ -13,6 +14,7 @@ import {
   Stack,
   Status,
   Text,
+  FullWidthVStack,
 } from "~/system"
 import { ParticipantsView } from "~/system/ParticipantsView"
 import { EmptyView, OnClickNew } from "./EmptyView"
@@ -37,7 +39,7 @@ export const View: FC<Props> = ({
 }) =>
   isEmpty(conversations)
     ? h(EmptyView, { onClickNew })
-    : h(Stack, { direction: "column" }, [
+    : h(FullWidthVStack, {}, [
         h(Nav, {}),
         h(Header, [
           h(Heading, { size: "md" }, "Conversations"),
@@ -46,7 +48,7 @@ export const View: FC<Props> = ({
         ]),
         h(
           List,
-          { spacing: 8, paddingTop: 4 },
+          { spacing: 8, paddingTop: 4, width: "100%" },
           conversations.map((conversation, idx, all) => {
             const { creator, signatures, invitees, note, occurredAt, status } =
               conversation
@@ -64,27 +66,7 @@ export const View: FC<Props> = ({
                 },
               },
               [
-                h(Stack, { direction: "column" }, [
-                  h(Stack, { direction: "row", alignItems: "center" }, [
-                    h(ParticipantsView, {
-                      viewer,
-                      status,
-                      creator,
-                      invitees,
-                      signers,
-                    }),
-                    // h(Heading, { size: "sm" }, [
-                    //   // TODO: replace invitees w/ state-dep list
-                    //   join(", ", map(prop("name"), invitees)),
-                    // ]),
-                    h(Spacer),
-                    h(Stack, { direction: "column", alignItems: "end" }, [
-                      h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
-                      h(Status, { status }),
-                    ]),
-                  ]),
-                  h(NoteView, { note, maxLines: 10 }),
-                ]),
+                h(ConversationView, { viewer, conversation, maxLines: 10 }),
                 isNotLastItem(idx, all) && h(Divider, { padding: 4 }),
               ]
             )

@@ -81,6 +81,11 @@ export const anyConversationsRouteGroup = createGroup([
   routes.conversationOpp,
 ])
 export const anyRootOppsRouteGroup = createGroup([routes.opps, routes.opp])
+export const anyPotentialEditRouteGroup = createGroup([
+  routes.conversation,
+  routes.conversationOpp,
+  routes.opp,
+])
 
 export type Route = _Route<typeof routes>
 

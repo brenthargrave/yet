@@ -15,6 +15,7 @@ import { Opp } from "~/graph"
 import {
   CreateButton,
   Divider,
+  FullWidthVStack,
   Header,
   modalStyleProps,
   Nav,
@@ -49,14 +50,14 @@ export const View: FC<Props> = ({
 }) =>
   isEmpty(opps)
     ? h(EmptyOppsView, { minHeight, onClickCreate })
-    : h(Stack, { minHeight, direction: "column" }, [
+    : h(FullWidthVStack, { minHeight }, [
         h(Nav),
         h(Header, {}, [
           h(Heading, { size: "md" }, "Opportunities"),
           h(Spacer),
           h(CreateButton, { onClick: onClickCreate, cta: `New opp` }),
         ]),
-        h(List, { spacing: 4 }, [
+        h(List, { spacing: 4, width: "100%" }, [
           ...opps.map((opp, idx, all) => {
             return h(ListItem, {}, [
               h(

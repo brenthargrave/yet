@@ -4,7 +4,15 @@ import { h } from "@cycle/react"
 import { ReactNode, Ref } from "react"
 import { isEmpty, not } from "~/fp"
 import { ConversationStatus, Invitee } from "~/graph"
-import { BackButton, Header, Heading, Nav, Stack, Status } from "~/system"
+import {
+  BackButton,
+  FullWidthVStack,
+  Header,
+  Heading,
+  Nav,
+  Stack,
+  Status,
+} from "~/system"
 import { Props as ActionBarProps, View as ActionBar } from "./ActionBar"
 import { View as AddOppModal } from "./AddOppModal"
 import { DeleteButton } from "./DeleteButton"
@@ -80,82 +88,74 @@ export const View = ({
   mode = Mode.create,
   ...props
 }: Props) =>
-  h(
-    Stack,
-    {
-      direction: "column",
-      align: "start",
-      justifyContent: "flex-start",
-    },
-    [
-      h(Nav, { onClickBack }),
-      h(Header, [
-        h(Heading, { size: "md" }, "Conversation"),
-        h(Spacer),
-        h(Status, { status }),
-      ]),
-      h(Stack, { direction: "column", width: "100%", pt: 0 }, [
-        h(When, {
-          occurredAt,
-          onChangeOccurredAt,
-          isDisabled: isDisabledEditing,
-        }),
-        h(Who, {
-          onSelect,
-          options,
-          selectedOptions,
-          isDisabled: isDisabledEditing,
-          autoFocus: isEmpty(selectedOptions),
-        }),
-        h(NoteEditor, {
+  h(FullWidthVStack, {}, [
+    h(Nav, { onClickBack }),
+    h(Header, [
+      h(Heading, { size: "md" }, "Conversation"),
+      h(Spacer),
+      h(Status, { status }),
+    ]),
+    h(Stack, { id: "edit", direction: "column", width: "100%", pt: 0 }, [
+      h(When, {
+        occurredAt,
+        onChangeOccurredAt,
+        isDisabled: isDisabledEditing,
+      }),
+      h(Who, {
+        onSelect,
+        options,
+        selectedOptions,
+        isDisabled: isDisabledEditing,
+        autoFocus: isEmpty(selectedOptions),
+      }),
+      h(NoteEditor, {
+        status,
+        note,
+        onChangeNote,
+        onClickAddOpp,
+        isDisabled: isDisabledEditing,
+        noteInputRef,
+      }),
+      h(
+        ActionBar,
+        {
           status,
-          note,
-          onChangeNote,
-          onClickAddOpp,
-          isDisabled: isDisabledEditing,
-          noteInputRef,
-        }),
-        h(
-          ActionBar,
-          {
-            status,
-            participantNames,
-            isPublishDisabled,
-            onClickPublish,
-            autoFocus: not(isEmpty(selectedOptions)),
-          },
-          [
-            h(
-              Tooltip,
-              {
-                shouldWrapChildren: true,
-                label: "Disabled once shared",
-                isDisabled: !isDeleteDisabled,
-              },
-              [
-                h(DeleteButton, {
-                  onClick: onClickDelete,
-                  isLoading: isDeleting,
-                  isDisabled: isDeleteDisabled,
-                }),
-              ]
-            ),
-          ]
-        ),
-      ]),
-      h(PublishView, {
-        isOpen: isOpenPublish,
-        onClose: onClosePublish,
-        shareURL,
-        onShareURLCopied,
-        onClickShareViaApp: onClickShare,
-        knownInvitees,
-        unknownInvitees,
-      }),
-      h(AddOppModal, {
-        isOpen: isOpenAddOpp,
-        onClose: onCloseAddApp,
-        oppsView,
-      }),
-    ]
-  )
+          participantNames,
+          isPublishDisabled,
+          onClickPublish,
+          autoFocus: not(isEmpty(selectedOptions)),
+        },
+        [
+          h(
+            Tooltip,
+            {
+              shouldWrapChildren: true,
+              label: "Disabled once shared",
+              isDisabled: !isDeleteDisabled,
+            },
+            [
+              h(DeleteButton, {
+                onClick: onClickDelete,
+                isLoading: isDeleting,
+                isDisabled: isDeleteDisabled,
+              }),
+            ]
+          ),
+        ]
+      ),
+    ]),
+    h(PublishView, {
+      isOpen: isOpenPublish,
+      onClose: onClosePublish,
+      shareURL,
+      onShareURLCopied,
+      onClickShareViaApp: onClickShare,
+      knownInvitees,
+      unknownInvitees,
+    }),
+    h(AddOppModal, {
+      isOpen: isOpenAddOpp,
+      onClose: onCloseAddApp,
+      oppsView,
+    }),
+  ])

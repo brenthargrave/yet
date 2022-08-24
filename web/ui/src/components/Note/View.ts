@@ -3,7 +3,7 @@ import { h } from "@cycle/react"
 import { FC } from "react"
 import { MarkdownView } from "~/system"
 
-interface Props {
+export interface Props {
   note: string | null | undefined
   maxLines?: number
   isObscured?: boolean

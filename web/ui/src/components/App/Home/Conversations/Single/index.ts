@@ -1,5 +1,4 @@
 import { h, ReactSource } from "@cycle/react"
-import { and } from "ramda"
 import {
   combineLatest,
   distinctUntilChanged,
@@ -16,9 +15,9 @@ import {
 import { isNotNullish } from "rxjs-etc"
 import { match } from "ts-pattern"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
+import { and, pluck } from "~/fp"
 import { Source as ActionSource } from "~/action"
 import { ErrorView } from "~/components/App/ErrorView"
-import { pluck } from "~/fp"
 import {
   Conversation,
   ErrorCode,
@@ -114,8 +113,7 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
         .when(singleConversationRoutesGroup.has, ({ params: { id } }) => {
           const created = isCreatedBy(record, me)
           const editable = isStatusEditable(record.status)
-          const result = and(created, editable)
-          return result ? State.edit : State.show
+          return and(created, editable) ? State.edit : State.show
         })
         .otherwise(() => State.pending)
     ),

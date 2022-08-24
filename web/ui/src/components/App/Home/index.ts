@@ -1,6 +1,7 @@
 import { h, ReactSource } from "@cycle/react"
 import {
   combineLatest,
+  delay,
   distinctUntilChanged,
   EMPTY,
   map,
@@ -13,26 +14,28 @@ import {
 import { match } from "ts-pattern"
 import { Actions, Source as ActionSource } from "~/action"
 import { Onboarding } from "~/components/Onboarding"
+import { isEmpty, pluck } from "~/fp"
 import { isAuthenticated, isOnboarding, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import {
   anyConversationsRouteGroup,
+  anyPotentialEditRouteGroup,
   anyRootOppsRouteGroup,
   NEWID,
   push,
   routes,
   Source as RouterSource,
 } from "~/router"
-import { Conversations } from "./Conversations"
-import { View } from "./View"
-import { isEmpty, isPresent, pluck } from "~/fp"
 import { cb$, mapTo, shareLatest } from "~/rx"
-import { Opps, State as OppsState, Location } from "./Opps"
+import { Conversations } from "./Conversations"
+import { Location, Opps, State as OppsState } from "./Opps"
+import { View } from "./View"
 
 enum State {
   onboarding = "onboarding",
   root = "root",
 }
+
 enum RootState {
   conversations = "conversations",
   opps = "opps",
@@ -50,7 +53,7 @@ export const Home = (sources: Sources) => {
   const tag = makeTagger(tagScope)
 
   const {
-    graph: { me$: me, opps$ },
+    graph: { me$, opps$ },
     router: { history$ },
   } = sources
 
@@ -140,8 +143,34 @@ export const Home = (sources: Sources) => {
       shareLatest()
     )
 
-  const showMenu$ = opps$.pipe(
+  const hasOpps$ = opps$.pipe(
     map((opps) => !isEmpty(opps)),
+    startWith(false),
+    distinctUntilChanged(),
+    tag("hasOpps$"),
+    shareLatest()
+  )
+
+  const isEditing$ = history$.pipe(
+    delay(90),
+    map((route) =>
+      match(route)
+        .when(
+          anyPotentialEditRouteGroup.has,
+          () => !!document.getElementById("edit")
+        )
+        .otherwise(() => false)
+    ),
+    startWith(false),
+    tag("isEditing$"),
+    shareLatest()
+  )
+
+  const showMenu$ = combineLatest({
+    hasOpps: hasOpps$,
+    isEditing: isEditing$,
+  }).pipe(
+    map(({ hasOpps, isEditing }) => hasOpps && !isEditing),
     startWith(false),
     distinctUntilChanged(),
     tag("showMenu$"),
@@ -169,7 +198,7 @@ export const Home = (sources: Sources) => {
     tag("rootView$")
   )
 
-  const state$ = combineLatest({ me }).pipe(
+  const state$ = combineLatest({ me: me$ }).pipe(
     map(({ me }) =>
       isAuthenticated(me) && isOnboarding(me) ? State.onboarding : State.root
     ),

@@ -33,7 +33,6 @@ export const View: FC<Props> = ({
   minHeight,
 }) =>
   h(Modal, {
-    // isCentered: true,
     autoFocus,
     closeOnEsc: true,
     closeOnOverlayClick: true,

@@ -1,17 +1,16 @@
 import {
   Box,
-  ButtonGroup,
   Divider,
+  Hide,
   HStack,
-  Icon,
-  IconButton,
+  Show,
   Spacer,
   Stack,
   VStack,
 } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { createRef, FC, useLayoutEffect, useRef, useState } from "react"
-import { TbArrowsSplit2, TbNotes } from "react-icons/tb"
+import { createRef, FC, useLayoutEffect, useState } from "react"
+import { MenuView, Orientation } from "./MenuView"
 
 const ref = createRef<HTMLElement>()
 
@@ -52,88 +51,76 @@ export const View: FC<Props> = ({
       setLeft(calc)
     }
   })
-  const buttonRefConvos = useRef<HTMLButtonElement>()
-  const onClickConvosButton = (e: React.MouseEvent<HTMLButtonElement>) => {
-    onClickConversations()
-    buttonRefConvos.current?.blur()
-  }
-  const buttonRefOpps = useRef<HTMLButtonElement>()
-  const onClickOppsButton = (e: React.MouseEvent<HTMLButtonElement>) => {
-    onClickOpps()
-    buttonRefOpps.current?.blur()
-  }
+
   const onClickOutside = (e: React.MouseEvent) => e.stopPropagation()
 
+  const gutterWidth = { base: "0px", md: "100px" }
+
   return h(Stack, { direction: "column", width: "100%", height: "100%" }, [
-    showMenu &&
-      h(
-        Stack,
-        {
-          ref,
-          sx: {
-            position: "fixed",
-            left,
-            bottom: 0,
-            zIndex: 2,
-          },
-          direction: "row",
-          alignItems: "center",
-          padding: 4,
-          marginBottom: 4,
-          backgroundColor: "white",
-          borderRadius: "lg",
-          onClick: onClickOutside,
-        },
-        [
-          h(HStack, {}, [
-            h(ButtonGroup, { isAttached: false }, [
-              h(IconButton, {
-                icon: h(Icon, { as: TbNotes }),
-                size: "lg",
-                variant: "outline",
-                ref: buttonRefConvos,
-                onClick: onClickConvosButton,
-              }),
-              h(IconButton, {
-                icon: h(Icon, { as: TbArrowsSplit2 }),
-                size: "lg",
-                variant: "outline",
-                color: "green.600",
-                ref: buttonRefOpps,
-                onClick: onClickOppsButton,
-              }),
-            ]),
+    h(Stack, { width: "100%", direction: "row" }, [
+      h(VStack, { minWidth: gutterWidth }, [
+        showMenu &&
+          h(Show, { above: "sm" }, [
+            h(
+              HStack,
+              {
+                minWidth: gutterWidth,
+                sx: { position: "sticky", top: "60px" },
+                justify: "end",
+                paddingRight: 4,
+              },
+              [
+                h(MenuView, {
+                  orientation: Orientation.vertical,
+                  onClickConversations,
+                  onClickOpps,
+                }),
+                h(Divider, { orientation: "vertical" }),
+              ]
+            ),
           ]),
-        ]
-      ),
-    children,
+      ]),
+      children,
+      h(VStack, { minWidth: gutterWidth }, [
+        //
+        h(Spacer),
+      ]),
+    ]),
     // NOTE: need an empty footer to make room for nav
     h(Box, { width: "100%", minHeight: `${footerH}px` }, [
       //
       h(Spacer),
     ]),
+    showMenu &&
+      h(Hide, { above: "sm" }, [
+        h(
+          Stack,
+          {
+            ref,
+            sx: {
+              position: "fixed",
+              left,
+              bottom: 0,
+              zIndex: 2,
+            },
+            direction: "row",
+            alignItems: "center",
+            padding: 4,
+            marginBottom: 4,
+            backgroundColor: "white",
+            borderRadius: "lg",
+            onClick: onClickOutside,
+          },
+          [
+            h(MenuView, {
+              orientation: Orientation.horizontal,
+              onClickConversations,
+              onClickOpps,
+            }),
+          ]
+        ),
+      ]),
   ])
 }
 
 View.displayName = "NavView"
-
-// NOTE: make sure gutterWidth is wider than menu
-const gutterWidth = "48px"
-const ColumnNav: FC = ({ children }) =>
-  h(Stack, { width: "100%", direction: "row" }, [
-    h(VStack, { minWidth: gutterWidth }, [
-      h(HStack, { minWidth: gutterWidth, paddingTop: "100px" }, [
-        // Menu
-        h(Divider, { orientation: "vertical" }),
-      ]),
-      // h(Button, {
-      //   variant: "outline",
-      //   leftIcon: h(Icon, { as: TbArrowsSplit2 }),
-      // })
-    ]),
-    children,
-    h(VStack, { minWidth: gutterWidth }, [
-      //
-      h(Spacer),
-    ]),
-  ])
