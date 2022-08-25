@@ -51,7 +51,7 @@ export const MenuView: FC<Props> = ({
 
   const stack = orientation === Orientation.horizontal ? HStack : VStack
   return h(stack, { gap: 1 }, [
-    h(Tooltip, { shouldWrapChildren: true, label: "Timeline" }, [
+    h(Tooltip, { shouldWrapChildren: true, label: "Home" }, [
       h(IconButton, {
         icon: h(Icon, { as: iconHome }),
         size: "lg",
