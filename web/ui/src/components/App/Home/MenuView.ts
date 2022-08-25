@@ -46,7 +46,7 @@ export const MenuView: FC<Props> = ({
         icon: h(Icon, { as: TbArrowsSplit2 }),
         size: "lg",
         variant: "outline",
-        color: "green.600",
+        // color: "green.600",
         ref: buttonRefOpps,
         onClick: onClickOppsButton,
       }),
