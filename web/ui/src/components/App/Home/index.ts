@@ -114,9 +114,12 @@ export const Home = (sources: Sources) => {
     tag("oppsRouter$")
   )
 
+  const [onClickHome, onClickHome$] = cb$(tag("onClickHome$"))
   const [onClickConversations, onClickConvos$] = cb$(tag("onClickConvos$"))
   const [onClickOpps, onClickOpps$] = cb$(tag("onClickOpps$"))
+
   const rootRouter$ = merge(
+    onClickHome$.pipe(mapTo(push(routes.root()))),
     onClickConvos$.pipe(mapTo(push(routes.conversations()))),
     onClickOpps$.pipe(mapTo(push(routes.opps())))
   ).pipe(tag("rootRouter$"), share())
@@ -193,7 +196,9 @@ export const Home = (sources: Sources) => {
 
   const rootView$ = combineLatest({ subview: subview$, props: props$ }).pipe(
     map(({ subview, props }) =>
-      h(View, { ...props, onClickConversations, onClickOpps }, [subview])
+      h(View, { ...props, onClickConversations, onClickOpps, onClickHome }, [
+        subview,
+      ])
     ),
     tag("rootView$")
   )

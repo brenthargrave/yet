@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { createRef, FC, useLayoutEffect, useState } from "react"
-import { MenuView, Orientation } from "./MenuView"
+import { MenuView, Orientation, Props as MenuProps } from "./MenuView"
 
 const ref = createRef<HTMLElement>()
 
@@ -24,17 +24,16 @@ export const isFrom = (event: React.MouseEvent<HTMLElement>) => {
   return result
 }
 
-export interface Props {
+export interface Props extends Omit<MenuProps, "orientation"> {
   showMenu?: boolean
-  onClickConversations: () => void
-  onClickOpps: () => void
 }
 
 export const View: FC<Props> = ({
   children,
+  showMenu = false,
   onClickConversations,
   onClickOpps,
-  showMenu = false,
+  onClickHome,
 }) => {
   const [left, setLeft] = useState(0)
   const [footerH, setFooterH] = useState(0)
@@ -74,6 +73,7 @@ export const View: FC<Props> = ({
                   orientation: Orientation.vertical,
                   onClickConversations,
                   onClickOpps,
+                  onClickHome,
                 }),
                 h(Divider, { orientation: "vertical" }),
               ]
@@ -116,6 +116,7 @@ export const View: FC<Props> = ({
               orientation: Orientation.horizontal,
               onClickConversations,
               onClickOpps,
+              onClickHome,
             }),
           ]
         ),
