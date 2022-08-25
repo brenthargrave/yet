@@ -1,4 +1,4 @@
-import { Icon, IconButton, HStack, VStack } from "@chakra-ui/react"
+import { Icon, IconButton, HStack, VStack, Tooltip } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC, useRef } from "react"
 import { TbArrowsSplit2, TbNotes } from "react-icons/tb"
@@ -32,20 +32,24 @@ export const MenuView: FC<Props> = ({
 
   const stack = orientation === Orientation.horizontal ? HStack : VStack
   return h(stack, { gap: 1 }, [
-    h(IconButton, {
-      icon: h(Icon, { as: TbNotes }),
-      size: "lg",
-      variant: "outline",
-      ref: buttonRefConvos,
-      onClick: onClickConvosButton,
-    }),
-    h(IconButton, {
-      icon: h(Icon, { as: TbArrowsSplit2 }),
-      size: "lg",
-      variant: "outline",
-      color: "green.600",
-      ref: buttonRefOpps,
-      onClick: onClickOppsButton,
-    }),
+    h(Tooltip, { shouldWrapChildren: true, label: "Conversations" }, [
+      h(IconButton, {
+        icon: h(Icon, { as: TbNotes }),
+        size: "lg",
+        variant: "outline",
+        ref: buttonRefConvos,
+        onClick: onClickConvosButton,
+      }),
+    ]),
+    h(Tooltip, { shouldWrapChildren: true, label: "Opportunities" }, [
+      h(IconButton, {
+        icon: h(Icon, { as: TbArrowsSplit2 }),
+        size: "lg",
+        variant: "outline",
+        color: "green.600",
+        ref: buttonRefOpps,
+        onClick: onClickOppsButton,
+      }),
+    ]),
   ])
 }
