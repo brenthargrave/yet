@@ -29,6 +29,7 @@ import {
 import { cb$, mapTo, shareLatest } from "~/rx"
 import { Conversations } from "./Conversations"
 import { Location, Opps, State as OppsState } from "./Opps"
+import { Timeline } from "./Timeline"
 import { View } from "./View"
 
 enum State {
@@ -39,6 +40,7 @@ enum State {
 enum RootState {
   conversations = "conversations",
   opps = "opps",
+  timeline = "timeline",
 }
 
 interface Sources {
@@ -60,6 +62,7 @@ export const Home = (sources: Sources) => {
   // NOTE: force onboarding everywhere in main app after auth
   const onboarding = Onboarding(sources)
   const conversations = Conversations(sources, tagScope)
+  const timeline = Timeline(sources, tagScope)
 
   const oppsState$ = history$.pipe(
     map((route) =>
@@ -128,6 +131,7 @@ export const Home = (sources: Sources) => {
     .pipe(
       map((route) =>
         match(route)
+          .with({ name: routes.root.name }, () => RootState.timeline)
           .when(
             (route) => anyConversationsRouteGroup.has(route),
             () => RootState.conversations
@@ -136,7 +140,7 @@ export const Home = (sources: Sources) => {
             (route) => anyRootOppsRouteGroup.has(route),
             () => RootState.opps
           )
-          .otherwise(() => RootState.conversations)
+          .otherwise(() => RootState.timeline)
       )
     )
     .pipe(
@@ -187,6 +191,7 @@ export const Home = (sources: Sources) => {
   const subview$ = rootState$.pipe(
     switchMap((state) =>
       match(state)
+        .with(RootState.timeline, () => timeline.react)
         .with(RootState.conversations, () => conversations.react)
         .with(RootState.opps, () => opps.react)
         .exhaustive()

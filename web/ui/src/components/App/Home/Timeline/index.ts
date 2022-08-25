@@ -10,15 +10,10 @@ enum State {
   ready = "ready",
 }
 
-export interface Props {
-  state$: Observable<State>
-}
-
 export interface Sources {
   react: ReactSource
   graph: GraphSource
   action: ActionSource
-  props: Props
 }
 
 export const Timeline = (sources: Sources, tagPrefix?: string) => {

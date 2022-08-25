@@ -3,4 +3,4 @@ import { FC } from "react"
 
 interface Props {}
 
-export const View: FC<Props> = ({}) => h("b", "TODO")
+export const View: FC<Props> = () => h("b", "TODO")
