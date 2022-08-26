@@ -4,7 +4,7 @@ defmodule AppWeb.Resolvers.Timeline do
   use TypedStruct
   use Brex.Result
   alias App.Conversation
-  # alias App.Timeline
+  alias App.Timeline
   require Logger
 
   typedstruct module: TimelinePayload do
@@ -16,7 +16,7 @@ defmodule AppWeb.Resolvers.Timeline do
           _args,
           %{context: %{customer: customer}} = _resolution
         ) :: resolver_result(TimelinePayload.t()) do
-    # Conversations.get_conversations(customer)
+    Timeline.get_events(customer)
     # |> fmap(&%ConversationsPayload{conversations: &1})
   end
 

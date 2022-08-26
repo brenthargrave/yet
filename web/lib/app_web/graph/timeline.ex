@@ -1,15 +1,24 @@
 defmodule AppWeb.Graph.Timeline do
   use Absinthe.Schema.Notation
   alias AppWeb.Resolvers.Timeline
-  alias App.{Conversation}
+  # alias App.{Conversation}
   # import_types(Absinthe.Type.Custom)
 
+  enum :timeline_event_type do
+    value(:conversation_published, as: "conversation_published")
+  end
+
+  object :conversation_event do
+    field(:type, non_null(:timeline_event_type))
+    field(:conversation, :conversation)
+  end
+
   union :timeline_event do
-    types([:conversation])
+    types([:conversation_event])
 
     resolve_type(fn
-      %Conversation{}, _ ->
-        :conversation
+      %{type: "conversation_published"}, _ ->
+        :conversation_event
     end)
   end
 
@@ -28,7 +37,4 @@ defmodule AppWeb.Graph.Timeline do
       resolve(&Timeline.get_timeline/3)
     end
   end
-
-  # object :timeline_subscriptions do
-  # end
 end
