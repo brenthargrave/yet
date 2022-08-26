@@ -8,3 +8,6 @@ generates:
       - typescript
       - typescript-operations
       - typed-document-node
+    config:
+      nonOptionalTypename: true
+      avoidOptionals: true

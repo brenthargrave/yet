@@ -566,7 +566,7 @@ export const getTimeline$ = () => {
   ).pipe(
     tag("THIS raw"),
     map((data) => {
-      const { events } = data!.getTimeline!
+      const { events } = data.getTimeline!
       return new Ok(events)
     }),
     catchError((error, _caught$) => {

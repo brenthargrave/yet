@@ -13,6 +13,13 @@ query GetTimeline {
           ...ConversationProps
         }
       }
+      ...on ContactProfileChanged {
+        type
+        occurredAt
+        contact {
+          ...ContactProps
+        }
+      }
     }
   }
 }
