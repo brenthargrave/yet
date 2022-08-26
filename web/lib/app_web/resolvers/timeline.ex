@@ -21,6 +21,7 @@ defmodule AppWeb.Resolvers.Timeline do
   end
 
   def get_timeline(_parent, _args, _resolution) do
-    ok([])
+    {:ok, []}
+    |> fmap(&%TimelinePayload{events: &1})
   end
 end

@@ -3,7 +3,6 @@ defmodule AppWeb.Resolvers.Conversations do
   use App.Types
   use TypedStruct
   use Brex.Result
-  # import ShorterMaps
   alias App.Conversations
   alias App.Conversation
   alias App.UserError
@@ -86,17 +85,5 @@ defmodule AppWeb.Resolvers.Conversations do
         ) :: resolver_result(ConversationPayload.t()) do
     Conversations.review_conversation(customer, input)
     |> fmap(&%ConversationPayload{conversation: &1})
-  end
-
-  defun get_contacts(
-          _parent,
-          _args,
-          %{context: %{customer: customer}} = _resolution
-        ) :: resolver_result(term()) do
-    ok(Conversations.get_contacts(customer))
-  end
-
-  def get_contacts(_parent, _args, _resolution) do
-    ok([])
   end
 end

@@ -1,7 +1,11 @@
 defmodule AppWeb.Graph.Conversations do
   use Absinthe.Schema.Notation
-  alias AppWeb.Resolvers.Conversations
   import_types(Absinthe.Type.Custom)
+
+  alias AppWeb.Resolvers.{
+    Conversations,
+    Contacts
+  }
 
   object :contact do
     field(:id, non_null(:id))
@@ -149,7 +153,7 @@ defmodule AppWeb.Graph.Conversations do
     end
 
     field :contacts, non_null(list_of(non_null(:contact))) do
-      resolve(&Conversations.get_contacts/3)
+      resolve(&Contacts.get_contacts/3)
     end
   end
 

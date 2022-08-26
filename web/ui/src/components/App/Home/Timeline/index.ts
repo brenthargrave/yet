@@ -68,10 +68,6 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
   // conversation
   // profileChange
 
-  // TODO: subscribe to "conversationPublished-{id}"
-  // TODO: alternately - should be able to figure out all
-  // # potential subscribers -> creator, creator's contacts, signer's contacts
-
   const result$ = getTimeline$().pipe(tag("result$"), share())
 
   const events$ = result$.pipe(

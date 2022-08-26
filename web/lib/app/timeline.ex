@@ -9,55 +9,45 @@ defmodule App.Timeline do
   alias App.{
     Repo,
     Conversation,
-    Signature,
-    Contact,
-    Review,
+    Contacts,
     Customer,
-    Notification,
     TimelineEvent
   }
-
-  # import Ecto.Query
-  # import App.Helpers, only: [format_ecto_errors: 1]
 
   @preloads [
     conversation: [
       :creator,
       signatures: [:signer, :conversation],
       reviews: [:reviewer, :conversation],
-      mentions: [:opp]
+      mentions: [opp: :creator]
     ]
   ]
 
   defun get_events(viewer :: Customer.t()) :: Brex.Result.s(list(Conversation.t())) do
-    # published = from(e in TimelineEvent)
+    contact_ids =
+      Contacts.get_contacts(viewer)
+      |> IO.inspect()
+      |> Enum.map(&Map.get(&1, :id))
+      |> IO.inspect()
 
-    # signed =
-    #   from(c in Conversation,
-    #     preload: ^@preloads,
-    #     join: signature in assoc(c, :signatures),
-    #     where: signature.signer_id == ^viewer.id,
-    #     where: c.status != :deleted
-    #   )
+    query =
+      from(e in TimelineEvent,
+        preload: ^@preloads,
+        join: c in assoc(e, :conversation),
+        join: s in assoc(c, :signatures),
+        # NOTE: contact signs conversation
+        where: s.signer_id in ^contact_ids,
+        # NOTE: contact publishes conversation
+        or_where: c.creator_id in ^contact_ids,
+        # NOTE: mentions of my created opps
+        full_join: o in assoc(c, :opps),
+        or_where: o.creator_id == ^viewer.id,
+        # ? TODO: mentions of opps I've been exposed to?
+        order_by: [desc: e.occurred_at],
+        distinct: e.id
+      )
 
-    # reviewed =
-    #   from(c in Conversation,
-    #     preload: ^@preloads,
-    #     join: review in assoc(c, :reviews),
-    #     where: review.reviewer_id == ^viewer.id,
-    #     where: c.status != :deleted
-    #   )
-
-    # created =
-    #   from(c in Conversation,
-    #     preload: ^@preloads,
-    #     where: c.creator_id == ^viewer.id,
-    #     where: c.status != :deleted
-    #   )
-
-    # Repo.all(from(c in created, union: ^signed, union: ^reviewed))
-    # []
-    Repo.all(from(e in TimelineEvent, preload: ^@preloads))
+    Repo.all(query)
     |> IO.inspect()
     |> ok()
   end
