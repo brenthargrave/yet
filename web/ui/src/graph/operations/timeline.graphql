@@ -1,11 +1,6 @@
 query GetTimeline {
   getTimeline {
     events {
-      # occurredAt
-      # type
-      # conversation {
-      #   ...ConversationProps
-      # }
       ...on ConversationPublished {
         type
         occurredAt

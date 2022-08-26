@@ -10,4 +10,3 @@ generates:
       - typed-document-node
     config:
       nonOptionalTypename: true
-      avoidOptionals: true
