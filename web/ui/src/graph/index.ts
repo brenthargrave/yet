@@ -564,6 +564,7 @@ export const getTimeline$ = () => {
       })
     )
   ).pipe(
+    tag("THIS raw"),
     map((data) => {
       const { events } = data!.getTimeline!
       return new Ok(events)
@@ -572,6 +573,6 @@ export const getTimeline$ = () => {
       console.error(error)
       throw new GraphDefaultQueryError(error.message)
     }),
-    tag("getTimeline$")
+    tag("THIS getTimeline$")
   )
 }

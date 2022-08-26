@@ -8,6 +8,7 @@ import {
   mapTo,
   merge,
   startWith,
+  share,
 } from "rxjs"
 import { filterResultOk } from "ts-results/rxjs-operators"
 import { Source as ActionSource } from "~/action"
@@ -71,13 +72,13 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
   // TODO: alternately - should be able to figure out all
   // # potential subscribers -> creator, creator's contacts, signer's contacts
 
-  const result$ = getTimeline$()
+  const result$ = getTimeline$().pipe(tag("result$"), share())
 
   const events$ = result$.pipe(
     filterResultOk(),
     startWith([]),
-    tag("events$"),
-    shareLatest()
+    tag("THIS events$"),
+    share()
   )
 
   const props$ = combineLatest({ events: events$ }).pipe(

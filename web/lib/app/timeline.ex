@@ -4,18 +4,34 @@ defmodule App.Timeline do
   use TypedStruct
   use Brex.Result
   use Timex
-  alias App.{Repo, Conversation, Signature, Contact, Review, Customer, Notification}
+  import Ecto.Query
+
+  alias App.{
+    Repo,
+    Conversation,
+    Signature,
+    Contact,
+    Review,
+    Customer,
+    Notification,
+    TimelineEvent
+  }
+
   # import Ecto.Query
   # import App.Helpers, only: [format_ecto_errors: 1]
 
-  # @preloads [
-  #   :creator,
-  #   signatures: [:signer, :conversation],
-  #   reviews: [:reviewer, :conversation],
-  #   mentions: [:opp]
-  # ]
+  @preloads [
+    conversation: [
+      :creator,
+      signatures: [:signer, :conversation],
+      reviews: [:reviewer, :conversation],
+      mentions: [:opp]
+    ]
+  ]
 
   defun get_events(viewer :: Customer.t()) :: Brex.Result.s(list(Conversation.t())) do
+    # published = from(e in TimelineEvent)
+
     # signed =
     #   from(c in Conversation,
     #     preload: ^@preloads,
@@ -40,7 +56,9 @@ defmodule App.Timeline do
     #   )
 
     # Repo.all(from(c in created, union: ^signed, union: ^reviewed))
-    []
+    # []
+    Repo.all(from(e in TimelineEvent, preload: ^@preloads))
+    |> IO.inspect()
     |> ok()
   end
 end

@@ -1,25 +1,60 @@
 defmodule AppWeb.Graph.Timeline do
   use Absinthe.Schema.Notation
   alias AppWeb.Resolvers.Timeline
-  # alias App.{Conversation}
-  # import_types(Absinthe.Type.Custom)
+  alias App.{TimelineEvent}
 
+  # ! interface
+  # enum :timeline_event_type do
+  #   value(:conversation_published)
+  # end
+
+  # interface :timeline_event do
+  #   field(:type, non_null(:timeline_event_type))
+  #   field(:occurred_at, non_null(:datetime))
+
+  #   resolve_type(fn
+  #     %{type: :conversation_published}, _ -> :conversation_published
+  #     _, _ -> nil
+  #   end)
+  # end
+
+  # object :conversation_published do
+  #   field(:type, non_null(:timeline_event_type))
+  #   field(:occurred_at, non_null(:datetime))
+  #   field(:conversation, :conversation)
+  # end
+
+  # # !
+  # enum :timeline_event_type do
+  #   value(:conversation_published)
+  # end
+
+  # object :timeline_event do
+  #   field(:type, non_null(:timeline_event_type))
+  #   field(:occurred_at, non_null(:datetime))
+  #   field(:conversation, :conversation)
+  # end
+
+  # ! union
   enum :timeline_event_type do
-    value(:conversation_published, as: "conversation_published")
+    value(:conversation_published)
   end
 
   object :conversation_published do
     field(:type, non_null(:timeline_event_type))
     field(:occurred_at, non_null(:datetime))
-    field(:conversation, :conversation)
+    field(:conversation, non_null(:conversation))
   end
 
   union :timeline_event do
     types([:conversation_published])
 
     resolve_type(fn
-      %{type: "conversation_published"}, _ ->
+      %TimelineEvent{type: :conversation_published}, _ ->
         :conversation_published
+
+      _, _ ->
+        nil
     end)
   end
 

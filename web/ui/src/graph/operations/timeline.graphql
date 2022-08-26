@@ -1,8 +1,11 @@
 query GetTimeline {
   getTimeline {
-    __typename
     events {
-      __typename
+      # occurredAt
+      # type
+      # conversation {
+      #   ...ConversationProps
+      # }
       ...on ConversationPublished {
         type
         occurredAt
