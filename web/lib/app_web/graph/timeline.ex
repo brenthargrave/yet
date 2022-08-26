@@ -62,9 +62,6 @@ defmodule AppWeb.Graph.Timeline do
 
       %TimelineEvent{type: :contact_profile_changed}, _ ->
         :contact_profile_changed
-
-      _, _ ->
-        nil
     end)
   end
 

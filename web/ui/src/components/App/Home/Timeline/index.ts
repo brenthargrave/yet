@@ -74,6 +74,7 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
 
   const result$ = getTimeline$().pipe(tag("result$"), share())
 
+  // const events$ = of([])
   const events$ = result$.pipe(
     filterResultOk(),
     startWith([]),

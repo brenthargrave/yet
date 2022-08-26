@@ -7,7 +7,7 @@ import {
   Props as EmptyViewProps,
 } from "~/components/App/Home/Conversations/List/EmptyView"
 import { isEmpty } from "~/fp"
-import { TimelineEvent, TimelineEventType } from "~/graph"
+import { TimelineEvent, ConversationPublished } from "~/graph"
 import { FullWidthVStack, Header, modalStyleProps, Nav } from "~/system"
 
 // TODO: wat? minHeight?
@@ -30,32 +30,18 @@ export const View: FC<Props> = ({ events, onClickNew }) =>
         h(
           List,
           { spacing: 8, paddingTop: 4, width: "100%" },
-          events.map(({ type, ...event }, idx, all) => {
-            // return (
-            //   type === TimelineEventType.ConversationPublished &&
-            //   h(ListItem, {}, [h(Text, event.con )])
-            // )
-            return match(event).with(
-              { type: TimelineEventType.ConversationPublished },
-              ({ occurredAt }) => h("b", occurredAt)
-            )
-            //     return h(
-            //       ListItem,
-            //       {
-            //         padding: 0,
-            //         style: { cursor: "pointer" },
-            //         onClick: (event: React.MouseEvent<HTMLElement>) => {
-            //           // NOTE: ignore markdown link clicks
-            //           // @ts-ignore
-            //           const { href } = event.target
-            //           if (!href) onClickConversation(conversation)
-            //         },
-            //       },
-            //       [
-            //         h(ConversationView, { viewer, conversation, maxLines: 10 }),
-            //         isNotLastItem(idx, all) && h(Divider, { padding: 4 }),
-            //       ]
-            //     )
+          events.map((event, idx, all) => {
+            return match(event)
+              .with(
+                { __typename: "ConversationPublished" },
+                ({ conversation }) => h("span", conversation.status)
+                // h(ListItem, {}, [
+                //   //
+                //   h(Text, conversation.status),
+                // ])
+              )
+              .run()
+            // .otherwise(() => h("b", "loading"))
           })
         ),
       ])
