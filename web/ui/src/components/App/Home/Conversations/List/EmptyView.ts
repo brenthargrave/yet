@@ -5,7 +5,7 @@ import { t } from "~/i18n"
 
 export type OnClickNew = () => void
 
-interface Props {
+export interface Props {
   onClickNew?: OnClickNew
 }
 

@@ -4,7 +4,18 @@ defmodule App.Conversations do
   use TypedStruct
   use Brex.Result
   use Timex
-  alias App.{Repo, Conversation, Signature, Contact, Review, Customer, Notification}
+
+  alias App.{
+    Repo,
+    Conversation,
+    Signature,
+    Contact,
+    Review,
+    Customer,
+    Notification,
+    TimelineEvent
+  }
+
   import Ecto.Query
   import App.Helpers, only: [format_ecto_errors: 1]
 
@@ -119,6 +130,7 @@ defmodule App.Conversations do
     |> bind(&Repo.insert_or_update(&1))
     |> fmap(&Repo.preload(&1, @preloads, force: true, in_parallel: true))
     |> fmap(&Conversation.update_subscriptions/1)
+    |> fmap(&tap_add_timeline_event/1)
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 
@@ -201,6 +213,19 @@ defmodule App.Conversations do
     end)
 
     signature
+  end
+
+  defun tap_add_timeline_event(conversation :: Conversation.t()) :: Conversation.t() do
+    # NOTE: only on first signature
+    if Enum.count(conversation.signatures) == 1 do
+      TimelineEvent.conversation_published_changeset(%{
+        occurred_at: Timex.now(),
+        conversation: conversation
+      })
+      |> Repo.insert()
+    end
+
+    conversation
   end
 
   defun notify_registered_invitees(conversation :: Conversation.t()) :: Conversation.t() do

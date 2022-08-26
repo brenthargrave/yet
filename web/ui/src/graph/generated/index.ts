@@ -47,6 +47,12 @@ export type ConversationChangedInput = {
   id: Scalars['ID'];
 };
 
+export type ConversationEvent = {
+  __typename?: 'ConversationEvent';
+  conversation?: Maybe<Conversation>;
+  type: TimelineEventType;
+};
+
 export type ConversationInput = {
   id: Scalars['String'];
   invitees: Array<InviteeInput>;
@@ -288,6 +294,7 @@ export type RootQueryType = {
   getConversations?: Maybe<ConversationsPayload>;
   getOpp?: Maybe<OppPayload>;
   getOpps?: Maybe<OppsPayload>;
+  getTimeline?: Maybe<TimelinePayload>;
   me?: Maybe<Customer>;
 };
 
@@ -343,6 +350,17 @@ export type SubmitPhoneInput = {
 };
 
 export type SubmitPhoneResult = UserError | Verification;
+
+export type TimelineEvent = ConversationEvent;
+
+export enum TimelineEventType {
+  ConversationPublished = 'CONVERSATION_PUBLISHED'
+}
+
+export type TimelinePayload = {
+  __typename?: 'TimelinePayload';
+  events: Array<TimelineEvent>;
+};
 
 export type Token = {
   __typename?: 'Token';
