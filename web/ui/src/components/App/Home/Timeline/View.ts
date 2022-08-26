@@ -6,18 +6,18 @@ import {
   Props as EmptyViewProps,
 } from "~/components/App/Home/Conversations/List/EmptyView"
 import { isEmpty } from "~/fp"
-import { Conversation } from "~/graph"
+import { ConversationPublished, TimelineEvent } from "~/graph"
 import { FullWidthVStack, Header, modalStyleProps, Nav } from "~/system"
 
 // TODO: wat? minHeight?
 const { minHeight } = modalStyleProps
 
 export interface Props extends EmptyViewProps {
-  conversations: Conversation[]
+  events: ConversationPublished[]
 }
 
-export const View: FC<Props> = ({ conversations, onClickNew }) =>
-  isEmpty(conversations)
+export const View: FC<Props> = ({ events, onClickNew }) =>
+  isEmpty(events)
     ? h(EmptyView, { onClickNew })
     : h(FullWidthVStack, { minHeight }, [
         h(Nav),

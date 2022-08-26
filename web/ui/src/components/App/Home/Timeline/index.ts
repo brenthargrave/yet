@@ -7,9 +7,16 @@ import {
   switchMap,
   mapTo,
   merge,
+  startWith,
 } from "rxjs"
+import { filterResultOk } from "ts-results/rxjs-operators"
 import { Source as ActionSource } from "~/action"
-import { Source as GraphSource } from "~/graph"
+import {
+  ConversationPublished,
+  getTimeline$,
+  Source as GraphSource,
+  TimelineEvent,
+} from "~/graph"
 import { makeTagger } from "~/log"
 import { NEWID, push, routes } from "~/router"
 import { shareLatest, cb$ } from "~/rx"
@@ -64,7 +71,16 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
   // TODO: alternately - should be able to figure out all
   // # potential subscribers -> creator, creator's contacts, signer's contacts
 
-  const props$ = combineLatest({ conversations: conversations$ }).pipe(
+  const result$ = getTimeline$()
+
+  const events$ = result$.pipe(
+    filterResultOk(),
+    startWith([]),
+    tag("events$"),
+    shareLatest()
+  )
+
+  const props$ = combineLatest({ events: events$ }).pipe(
     tag("props$"),
     shareLatest()
   )

@@ -39,6 +39,7 @@ import {
   GetConversationsDocument,
   GetOppDocument,
   GetOppsDocument,
+  GetTimelineDocument,
   MeDocument,
   OppInput,
   ProfileInput,
@@ -546,5 +547,31 @@ export const getOpp$ = (id: string) => {
       throw new GraphDefaultQueryError(error.message)
     }),
     tag("getOpp$")
+  )
+}
+
+export const getTimeline$ = () => {
+  return merge(
+    from(
+      client.query({
+        query: GetTimelineDocument,
+        fetchPolicy: "network-only",
+      })
+    ).pipe(
+      map(({ data, errors }) => {
+        if (errors) throw new GraphError(JSON.stringify(errors))
+        return data
+      })
+    )
+  ).pipe(
+    map((data) => {
+      const { events } = data!.getTimeline!
+      return new Ok(events)
+    }),
+    catchError((error, _caught$) => {
+      console.error(error)
+      throw new GraphDefaultQueryError(error.message)
+    }),
+    tag("getTimeline$")
   )
 }

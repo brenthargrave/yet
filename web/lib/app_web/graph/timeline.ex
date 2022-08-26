@@ -8,17 +8,18 @@ defmodule AppWeb.Graph.Timeline do
     value(:conversation_published, as: "conversation_published")
   end
 
-  object :conversation_event do
+  object :conversation_published do
     field(:type, non_null(:timeline_event_type))
+    field(:occurred_at, non_null(:datetime))
     field(:conversation, :conversation)
   end
 
   union :timeline_event do
-    types([:conversation_event])
+    types([:conversation_published])
 
     resolve_type(fn
       %{type: "conversation_published"}, _ ->
-        :conversation_event
+        :conversation_published
     end)
   end
 
