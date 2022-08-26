@@ -39,7 +39,7 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
   const tag = makeTagger(tagScope)
 
   const {
-    graph: { conversations$ },
+    graph: { me$, conversations$ },
   } = sources
 
   const [onClickNew, clickNew$] = cb$(tag("clickNew$"))
@@ -74,7 +74,6 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
 
   const result$ = getTimeline$().pipe(tag("result$"), share())
 
-  // const events$ = of([])
   const events$ = result$.pipe(
     filterResultOk(),
     startWith([]),
@@ -82,7 +81,7 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const props$ = combineLatest({ events: events$ }).pipe(
+  const props$ = combineLatest({ viewer: me$, events: events$ }).pipe(
     tag("props$"),
     shareLatest()
   )
