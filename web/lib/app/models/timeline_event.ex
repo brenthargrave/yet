@@ -5,14 +5,17 @@ defmodule App.TimelineEvent do
   import App.Types
   alias App.{Conversation}
 
-  typed_schema "conversations" do
+  typed_schema "timeline_events" do
+    timestamps(type: :utc_datetime_usec)
+
     field :type, Ecto.Enum,
       values: [:conversation_published],
       default: :conversation_published
 
-    belongs_to :conversation, Conversation
+    field :occurred_at, :utc_datetime_usec
 
-    timestamps(type: :utc_datetime_usec)
+    # conversations_published
+    belongs_to :conversation, Conversation
   end
 
   def conversation_published_changeset(attrs) do

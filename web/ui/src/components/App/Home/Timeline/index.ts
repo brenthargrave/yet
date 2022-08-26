@@ -36,7 +36,7 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
 
   const [onClickNew, clickNew$] = cb$(tag("clickNew$"))
   const newConvo$ = clickNew$.pipe(
-    mapTo(push(routes.conversation({ id: NEWID })))
+    map(() => push(routes.conversation({ id: NEWID })))
   )
 
   // TODO: network
