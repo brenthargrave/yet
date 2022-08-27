@@ -25,48 +25,64 @@ defmodule App.Timeline do
   ]
 
   defun handle_published(conversation :: Conversation.t()) :: Conversation.t() do
-    participants =
-      Conversation.get_participants(conversation)
-      |> IO.inspect(label: "participants")
+    creator = conversation.creator
+    participants = Conversation.get_participants(conversation)
 
     # all contacts of signers
     # all contacts of creator
-    participants_contacts =
-      Contacts.get_contacts(participants)
-      |> IO.inspect(label: "participants_contacts")
-
-    # for each opp mentioned everyone who has previously discussed it
-    all_opps_viewers =
-      Conversation.all_viewers_of_opps(conversation)
-      |> IO.inspect(label: "all_opps_viewers")
+    participants_contacts = Contacts.get_contacts_for_viewers(participants)
 
     opps_ids =
       conversation.opps
+      |> IO.inspect(label: "opps")
       |> Enum.map(&Map.get(&1, :id))
       |> IO.inspect(label: "opps_ids")
 
-    # query =
-    #   from(
-    #     contact in Contact,
-    #     join: conversation in assoc(contact, :conversations),
-    #     join: mentions in assoc(conversation, :mentions),
-    #     where: conversation.id == ^conversation.id,
-    #     where: mentions.opp_id in opps_ids
-    #   )
+    # all owners of conversations mentioning this convo's opps
+    creators =
+      from(contact in Contact,
+        join: conversation in assoc(contact, :conversations),
+        left_join: opp in assoc(conversation, :opps),
+        where: opp.id in ^opps_ids
+      )
 
-    # ? why would I need to see a convo if I just signed it?
-    # except: creator
-    # except: signers
+    # ditto, but all signers
+    signers =
+      from(contact in Contact,
+        join: signature in assoc(contact, :signatures),
+        join: conversation in assoc(signature, :conversation),
+        left_join: opp in assoc(conversation, :opps),
+        where: opp.id in ^opps_ids
+      )
 
-    # TODO: async creates
+    all_opps_viewers =
+      Repo.all(
+        from contact in Contact,
+          union: ^creators,
+          union: ^signers,
+          distinct: contact.id
+      )
 
-    # TimelineEvent.conversation_published_changeset(%{
-    #   occurred_at: Timex.now(),
-    #   conversation: conversation
-    # })
-    # |> Repo.insert()
+    # participants_ids = Enum.map(participants, &Map.get(&1, :id))
 
-    # TODO: subscriptions
+    all_viewers =
+      participants
+      |> Enum.concat(all_opps_viewers)
+      |> Enum.uniq_by(&Map.get(&1, :id))
+      # ? TODO: participants don't need informing of own conversation
+      # |> Enum.drop_while(&Enum.member?(participants_ids, &1.id))
+      |> IO.inspect(label: "all_viewers")
+
+    Enum.each(all_viewers, fn viewer ->
+      TimelineEvent.conversation_published_changeset(%{
+        viewer: viewer,
+        occurred_at: Timex.now(),
+        conversation: conversation
+      })
+      |> Repo.insert()
+
+      # TODO: notify subscriptions
+    end)
 
     conversation
   end

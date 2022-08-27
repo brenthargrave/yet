@@ -24,7 +24,6 @@ defmodule App.Conversation do
     field :deleted_at, :utc_datetime_usec
     field :occurred_at, :utc_datetime_usec
     field :proposed_at, :utc_datetime_usec
-    field :participant_ids, {:array, :string}
 
     has_many :signatures, Signature, on_delete: :delete_all
     has_many :reviews, Review, on_delete: :delete_all
@@ -38,15 +37,11 @@ defmodule App.Conversation do
   end
 
   def changeset(record, attrs) do
-    creator = attrs[:creator]
-
     record
     |> cast(attrs, [:id, :note, :occurred_at])
-    |> put_assoc(:creator, creator)
+    |> put_assoc(:creator, attrs[:creator])
     |> put_assoc(:mentions, attrs[:mentions])
     |> cast_embed(:invitees, with: &invitee_changeset/2)
-    |> IO.inspect(label: "THIS")
-    |> change(participant_ids: append_ids(record.participant_ids || [], [creator.id]))
   end
 
   def invitee_changeset(record, attrs) do
@@ -74,13 +69,8 @@ defmodule App.Conversation do
   end
 
   def signed_changeset(signature) do
-    record = signature.conversation
-
-    participant_ids = append_ids(record.participant_ids, [signature.signer_id])
-
-    record
+    signature.record
     |> change(status: :signed)
-    |> change(participant_ids: participant_ids)
   end
 
   defun update_subscriptions(conversation :: __MODULE__.t()) :: __MODULE__.t() do

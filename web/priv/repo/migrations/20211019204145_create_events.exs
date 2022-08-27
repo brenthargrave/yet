@@ -37,7 +37,6 @@ defmodule App.Repo.Migrations.CreateEvents do
       add :deleted_at, :utc_datetime_usec
       add :occurred_at, :utc_datetime_usec
       add :proposed_at, :utc_datetime_usec
-      add :participant_ids, {:array, :string}, default: []
       timestamps()
     end
 
@@ -46,7 +45,6 @@ defmodule App.Repo.Migrations.CreateEvents do
     create(index(:conversations, [:deleted_at]))
     create(index(:conversations, [:occurred_at]))
     create(index(:conversations, [:proposed_at]))
-    create(index(:conversations, [:participant_ids]))
 
     create table(:signatures) do
       add :signer_id, references(:customers, on_delete: :delete_all)

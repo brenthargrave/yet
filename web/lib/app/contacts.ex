@@ -16,17 +16,27 @@ defmodule App.Contacts do
     get_contacts_for_viewers([viewer])
   end
 
-  defp get_contacts_for_viewers(viewers) do
-    viewer_ids = Enum.map(viewers, &Map.get(&1, :id))
+  def get_contacts_for_viewers(viewers) do
+    viewer_ids = viewers |> Enum.map(&Map.get(&1, :id))
 
-    Repo.all(
+    signers =
       from(contact in Contact,
-        join: conversation in assoc(contact, :conversations),
-        # NOTE: https://elixirforum.com/t/ecto-left-in-right/20004/4
-        where: fragment("? @> ?", conversation.participant_ids, ^viewer_ids),
+        join: signature in assoc(contact, :signatures),
+        join: conversation in assoc(signature, :conversation),
+        where: conversation.creator_id in ^viewer_ids,
         where: conversation.status != :deleted,
         distinct: contact.id
       )
-    )
+
+    creators =
+      from(contact in Contact,
+        join: conversation in assoc(contact, :conversations),
+        join: signature in assoc(conversation, :signatures),
+        where: signature.signer_id in ^viewer_ids,
+        where: conversation.status != :deleted,
+        distinct: contact.id
+      )
+
+    Repo.all(from c in signers, union: ^creators)
   end
 end
