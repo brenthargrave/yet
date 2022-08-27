@@ -167,17 +167,6 @@ defmodule App.Conversations do
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 
-  defun get_contacts(viewer :: Customer.t()) :: Brex.Result.s(list(term())) do
-    Repo.all(
-      from(contact in Contact,
-        join: conversation in assoc(contact, :conversations),
-        where: ^viewer.id in conversation.participant_ids,
-        where: conversation.status != :deleted,
-        distinct: contact.id
-      )
-    )
-  end
-
   ## Helpers
 
   def clear_signatures(conversation_id) do

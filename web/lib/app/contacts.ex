@@ -13,10 +13,18 @@ defmodule App.Contacts do
   }
 
   defun get_contacts(viewer :: Customer.t()) :: list(Contact.t()) do
-    contacts_for_viewers([viewer])
+    # Repo.all(
+    #   from(contact in Contact,
+    #     join: conversation in assoc(contact, :conversations),
+    #     where: ^viewer.id in conversation.participant_ids,
+    #     where: conversation.status != :deleted,
+    #     distinct: contact.id
+    #   )
+    # )
+    get_contacts_for_viewers([viewer])
   end
 
-  defunp contacts_for_viewers(viewers :: list(Contact.t())) :: list(Contact.t()) do
+  defp get_contacts_for_viewers(viewers) do
     viewer_ids = Enum.map(viewers, &Map.get(&1, :id))
 
     signers =
