@@ -3,7 +3,13 @@ defmodule App.Conversation do
   use Croma
   import Ecto.Changeset
   import App.Types
-  alias App.{Customer, Signature, Review, Mention}
+
+  alias App.{
+    Customer,
+    Signature,
+    Review,
+    Mention
+  }
 
   typed_schema "conversations" do
     embeds_many :invitees, Invitee, on_replace: :delete do
@@ -79,5 +85,11 @@ defmodule App.Conversation do
 
   defun show_url(conversation :: __MODULE__.t()) :: String.t() do
     ~s<https://#{System.get_env("HOST")}/c/#{conversation.id}>
+  end
+
+  defun get_participants(conversation :: __MODULE__.t()) :: list(Contact.t()) do
+    signers = conversation.signatures |> Enum.map(&Map.get(&1, :signer))
+    creator = conversation.creator
+    [creator | signers]
   end
 end

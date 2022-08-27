@@ -17,4 +17,9 @@ defmodule App.Contact do
       foreign_key: :creator_id,
       on_delete: :delete_all
   end
+
+  defun get_ids(contacts :: list(Contact.t())) :: list(String.t()) do
+    contacts
+    |> Enum.map(&Map.get(&1, :id))
+  end
 end

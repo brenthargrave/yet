@@ -3,7 +3,7 @@ defmodule App.TimelineEvent do
   use Croma
   import Ecto.Changeset
   import App.Types
-  alias App.{Conversation}
+  alias App.{Conversation, Contact}
 
   typed_schema "timeline_events" do
     timestamps(type: :utc_datetime_usec)
