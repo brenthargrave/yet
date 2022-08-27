@@ -9,6 +9,7 @@ defmodule App.Timeline do
   alias App.{
     Repo,
     Conversation,
+    Conversations,
     Contacts,
     Contact,
     Customer,
@@ -24,8 +25,28 @@ defmodule App.Timeline do
     ]
   ]
 
-  defun handle_published(conversation :: Conversation.t()) :: Conversation.t() do
-    creator = conversation.creator
+  defun async_handle_published(
+          conversation :: Conversation.t(),
+          notify_subscriptions \\ false
+        ) ::
+          Conversation.t() do
+    Task.Supervisor.async_nolink(App.TaskSupervisor, fn ->
+      handle_published(conversation, notify_subscriptions)
+      # ! TODO: backfill every time someone makes a new contact
+      # if notify_subscriptions do
+      #   from(c in Conversation, where: c.status != :deleted)
+      #   |> Repo.all(preload: Conversations.preloads())
+      #   |> Enum.each(&handle_published(&1, false))
+      # end
+    end)
+
+    conversation
+  end
+
+  defun handle_published(
+          conversation :: Conversation.t(),
+          notify_subscriptions \\ false
+        ) :: Conversation.t() do
     participants = Conversation.get_participants(conversation)
 
     # all contacts of signers
@@ -66,23 +87,23 @@ defmodule App.Timeline do
     # participants_ids = Enum.map(participants, &Map.get(&1, :id))
 
     all_viewers =
-      participants
+      participants_contacts
       |> Enum.concat(all_opps_viewers)
       |> Enum.uniq_by(&Map.get(&1, :id))
       # ? TODO: participants don't need informing of own conversation
       # |> Enum.drop_while(&Enum.member?(participants_ids, &1.id))
       |> IO.inspect(label: "all_viewers")
 
-    Enum.each(all_viewers, fn viewer ->
+    Enum.map(all_viewers, fn viewer ->
       TimelineEvent.conversation_published_changeset(%{
         viewer: viewer,
-        occurred_at: Timex.now(),
         conversation: conversation
       })
-      |> Repo.insert()
+      |> Repo.insert!(on_conflict: :nothing)
 
-      # TODO: notify subscriptions
+      # TODO: notify subscriptions if  notify arg
     end)
+    |> IO.inspect(label: "events")
 
     conversation
   end
@@ -101,6 +122,10 @@ defmodule App.Timeline do
     #     join: s in assoc(c, :signatures),
     #     where: o.creator_id == ^viewer.id,
     #     or_where: )
+
+    # all conversations my contacts have signed or created
+    # where viewer not sig signer or conv creator
+    # or where converstion mentions opp id IN all opps i've been epxose to0
 
     # query =
     #   from(e in TimelineEvent,

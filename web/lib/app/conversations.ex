@@ -21,10 +21,15 @@ defmodule App.Conversations do
 
   @preloads [
     :creator,
+    :opps,
     signatures: [:signer, :conversation],
     reviews: [:reviewer, :conversation],
     mentions: [:opp]
   ]
+
+  def preloads() do
+    @preloads
+  end
 
   defun upsert_conversation(
           customer,
@@ -122,6 +127,7 @@ defmodule App.Conversations do
     |> Repo.preload(@preloads)
     |> lift(nil, :not_found)
     |> fmap(&Map.put(attrs, :conversation, &1))
+    # TODO: multi
     |> fmap(&Signature.changeset(%Signature{}, &1))
     |> bind(&Repo.insert(&1))
     |> fmap(&tap_notify_creator_of_signature(&1, conversation_url))
@@ -129,12 +135,7 @@ defmodule App.Conversations do
     |> bind(&Repo.insert_or_update(&1))
     |> fmap(&Repo.preload(&1, @preloads, force: true, in_parallel: true))
     |> fmap(&Conversation.update_subscriptions/1)
-    # |> fmap(&Timeline.handle_published/1)
-    |> fmap(
-      &Task.Supervisor.async_nolink(App.TaskSupervisor, fn ->
-        Timeline.handle_published(&1)
-      end)
-    )
+    |> fmap(&Timeline.async_handle_published(&1, true))
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 

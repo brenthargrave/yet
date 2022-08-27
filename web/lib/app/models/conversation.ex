@@ -69,7 +69,7 @@ defmodule App.Conversation do
   end
 
   def signed_changeset(signature) do
-    signature.record
+    signature.conversation
     |> change(status: :signed)
   end
 

@@ -114,8 +114,9 @@ defmodule App.Repo.Migrations.CreateEvents do
     create(index(:mentions, [:conversation_id]))
     create(index(:mentions, [:opp_id]))
 
-    create table(:timeline_events) do
+    create table(:timeline_events, primary_key: false) do
       timestamps()
+      add :id, :string, primary_key: true
       add :type, :string, null: false
       add :viewer_id, references(:customers, on_delete: :delete_all)
       add :occurred_at, :utc_datetime_usec, null: false
@@ -123,6 +124,7 @@ defmodule App.Repo.Migrations.CreateEvents do
       add :conversation_id, references(:conversations, on_delete: :delete_all)
     end
 
+    create(unique_index(:timeline_events, [:id]))
     create(index(:timeline_events, [:type]))
     create(index(:timeline_events, [:viewer_id]))
     create(index(:timeline_events, [:occurred_at]))

@@ -3,8 +3,13 @@ defmodule App.TimelineEvent do
   use Croma
   import Ecto.Changeset
   import App.Types
-  alias App.{Conversation, Customer}
 
+  alias App.{
+    Conversation,
+    Contact
+  }
+
+  @primary_key {:id, :string, []}
   typed_schema "timeline_events" do
     timestamps(type: :utc_datetime_usec)
 
@@ -12,7 +17,7 @@ defmodule App.TimelineEvent do
       values: [:conversation_published],
       default: :conversation_published
 
-    belongs_to :viewer, Customer
+    belongs_to :viewer, Contact
 
     field :occurred_at, :utc_datetime_usec
 
@@ -21,9 +26,17 @@ defmodule App.TimelineEvent do
   end
 
   def conversation_published_changeset(attrs) do
+    type = :conversation_published
+    conversation = attrs[:conversation]
+    vid = attrs[:viewer].id
+    cid = conversation.id
+    id = "t:#{type}/cid:#{cid}/vid:#{vid}"
+    attrs = Map.put(attrs, :id, id)
+    attrs = Map.put(attrs, :occurred_at, conversation.occurred_at)
+
     %__MODULE__{}
     |> change(type: :conversation_published)
-    |> change(occurred_at: attrs[:occurred_at])
+    |> cast(attrs, [:id, :occurred_at])
     |> put_assoc(:viewer, attrs[:viewer])
     |> put_assoc(:conversation, attrs[:conversation])
     |> validate_required([:conversation, :viewer])
