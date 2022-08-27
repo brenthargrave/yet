@@ -51,8 +51,8 @@ export const View: FC<Props> = ({
         h(OppView, { opp, viewer }),
         // mention history
         h(Divider, { orientation: "horizontal" }),
-        h(FullWidthVStack, { gap: 4, pt: 0 }, [
-          h(Header, {}, [h(Heading, { size: "sm" }, "Mentions")]),
+        h(FullWidthVStack, { gap: 0, pt: 0 }, [
+          h(Header, {}, [h(Heading, { size: "xs" }, "Recent Mentions")]),
           h(List, { width: "100%", spacing: 8, pl: 2, pr: 2, pt: 0 }, [
             // TODO: empty mentions view
             ...events.map((event, idx, all) =>
