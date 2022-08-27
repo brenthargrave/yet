@@ -11,7 +11,7 @@ import { h } from "@cycle/react"
 import { FC } from "react"
 import { OppView } from "~/components/Opp"
 import { isEmpty } from "~/fp"
-import { Opp } from "~/graph"
+import { Customer, Maybe, Opp } from "~/graph"
 import {
   CreateButton,
   Divider,
@@ -33,20 +33,20 @@ const isModal = (location: Location) => location === Location.modal
 
 export interface Props {
   location: Location
+  viewer: Maybe<Customer>
   onClickCreate?: OnClickNew
   opps: Opp[]
-  // viewer: Maybe<Customer>
   onClickAdd?: (opp: Opp) => void
   onClickOpp?: (opp: Opp) => void
 }
 
 export const View: FC<Props> = ({
   location,
+  viewer,
   onClickCreate,
   opps = [],
   onClickAdd = () => null,
   onClickOpp = () => null,
-  // viewer,
 }) =>
   isEmpty(opps)
     ? h(EmptyOppsView, { minHeight, onClickCreate })
@@ -93,7 +93,7 @@ export const View: FC<Props> = ({
                     },
                     [
                       //
-                      h(OppView, { opp }),
+                      h(OppView, { opp, viewer }),
                     ]
                   ),
                 ]

@@ -1,9 +1,19 @@
 import { h, ReactSource } from "@cycle/react"
-import { combineLatest, map, merge, Observable, of, share } from "rxjs"
+import {
+  combineLatest,
+  map,
+  merge,
+  Observable,
+  of,
+  share,
+  startWith,
+  switchMap,
+} from "rxjs"
+import { filterResultOk } from "ts-results/rxjs-operators"
 import { act, Actions } from "~/action"
-import { Opp, Source as GraphSource } from "~/graph"
+import { getTimeline$, Opp, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { cb$, mapTo } from "~/rx"
+import { cb$, mapTo, shareLatest } from "~/rx"
 import { Location } from ".."
 import { Props as ViewProps, View } from "./View"
 
@@ -36,11 +46,19 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
+  const events$ = record$.pipe(
+    switchMap((opp) => getTimeline$({ filters: { opps: [opp.id] } })),
+    filterResultOk(),
+    startWith([]),
+    tag("events$"),
+    shareLatest()
+  )
+
   const props$: Observable<ViewProps> = combineLatest({
-    viewer: me$,
     location: of(location),
+    viewer: me$,
     opp: record$,
-    // viewer: me$,
+    events: events$,
   }).pipe(tag("props$"))
 
   const react = props$.pipe(

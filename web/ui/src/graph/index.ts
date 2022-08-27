@@ -55,6 +55,7 @@ import {
   SubmitPhoneDocument,
   SubmitPhoneInput,
   SubmitPhoneResult,
+  TimelineInput,
   TrackEventDocument,
   TrackEventInput,
   UpdateProfileDocument,
@@ -550,12 +551,13 @@ export const getOpp$ = (id: string) => {
   )
 }
 
-export const getTimeline$ = () => {
+export const getTimeline$ = (input: TimelineInput = {}) => {
   return merge(
     from(
       client.query({
         query: GetTimelineDocument,
         fetchPolicy: "network-only",
+        variables: { input },
       })
     ).pipe(
       map(({ data, errors }) => {

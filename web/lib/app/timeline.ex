@@ -110,15 +110,37 @@ defmodule App.Timeline do
     conversation
   end
 
-  defun get_events(viewer :: Customer.t()) :: Brex.Result.s(list(Conversation.t())) do
-    Repo.all(
+  @type ids :: list(String.t())
+  @type filters :: %{opp_ids: ids()}
+  @type input :: %{filters: filters()}
+  defun get_events(
+          viewer :: Customer.t(),
+          input :: input()
+        ) :: Brex.Result.s(list(Conversation.t())) do
+    opp_ids =
+      input
+      |> get_in([:filters, :opps])
+
+    base =
       from(e in TimelineEvent,
         preload: ^@preloads,
         where: e.viewer_id == ^viewer.id,
         order_by: [desc: e.occurred_at],
         distinct: e.id
       )
-    )
+
+    query =
+      if is_nil(opp_ids),
+        do: base,
+        else:
+          from(e in base,
+            join: c in assoc(e, :conversation),
+            join: o in assoc(c, :opps),
+            where: e.type == :conversation_published,
+            where: o.id in ^opp_ids
+          )
+
+    Repo.all(query)
     |> ok()
   end
 end

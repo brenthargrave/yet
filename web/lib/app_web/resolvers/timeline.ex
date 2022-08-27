@@ -12,12 +12,13 @@ defmodule AppWeb.Resolvers.Timeline do
 
   defun get_timeline(
           _parent,
-          _args,
+          %{input: input} = _args,
           %{context: %{customer: customer}} = _resolution
         ) :: resolver_result(TimelinePayload.t()) do
-    Timeline.get_events(customer)
+    Timeline.get_events(customer, input)
     |> fmap(&%TimelinePayload{events: &1})
-    |> IO.inspect()
+
+    # |> IO.inspect()
   end
 
   def get_timeline(_parent, _args, _resolution) do

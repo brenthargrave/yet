@@ -22,7 +22,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const tag = makeTagger(tagScope)
 
   const {
-    graph: { opps$ },
+    graph: { me$, opps$ },
     props: { location },
   } = sources
 
@@ -43,6 +43,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   )
 
   const props$ = combineLatest({
+    viewer: me$,
     opps: opps$,
   }).pipe(tag("props$"), share())
 

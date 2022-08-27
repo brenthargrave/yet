@@ -1,5 +1,5 @@
-query GetTimeline {
-  getTimeline {
+query GetTimeline($input: TimelineInput) {
+  getTimeline(input: $input) {
     events {
       ...on ConversationPublished {
         type
