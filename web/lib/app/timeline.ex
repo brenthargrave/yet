@@ -11,6 +11,7 @@ defmodule App.Timeline do
     Conversation,
     Contacts,
     Customer,
+    Opp,
     TimelineEvent
   }
 
@@ -30,6 +31,14 @@ defmodule App.Timeline do
       |> Enum.map(&Map.get(&1, :id))
       |> IO.inspect()
 
+    # opp_ids_subquery =
+    #   from(o in Opp,
+    #     select: [c.id],
+    #     join: c in assoc(c, :conversation),
+    #     join: s in assoc(c, :signatures),
+    #     where: o.creator_id == ^viewer.id,
+    #     or_where: )
+
     query =
       from(e in TimelineEvent,
         preload: ^@preloads,
@@ -43,6 +52,7 @@ defmodule App.Timeline do
         full_join: o in assoc(c, :opps),
         or_where: o.creator_id == ^viewer.id,
         # ? TODO: mentions of opps I've been exposed to?
+        # Yes... given you want to receive attribution for forwarding it.
         order_by: [desc: e.occurred_at],
         distinct: e.id
       )
