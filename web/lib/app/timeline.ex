@@ -45,14 +45,14 @@ defmodule App.Timeline do
       |> Enum.map(&Map.get(&1, :id))
       |> IO.inspect(label: "opps_ids")
 
-    query =
-      from(
-        contact in Contact,
-        join: conversation in assoc(contact, :conversations),
-        join: mentions in assoc(conversation, :mentions),
-        where: conversation.id == ^conversation.id,
-        where: mentions.opp_id in opps_ids
-      )
+    # query =
+    #   from(
+    #     contact in Contact,
+    #     join: conversation in assoc(contact, :conversations),
+    #     join: mentions in assoc(conversation, :mentions),
+    #     where: conversation.id == ^conversation.id,
+    #     where: mentions.opp_id in opps_ids
+    #   )
 
     # ? why would I need to see a convo if I just signed it?
     # except: creator

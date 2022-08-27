@@ -125,7 +125,6 @@ defmodule App.Conversations do
     |> fmap(&Signature.changeset(%Signature{}, &1))
     |> bind(&Repo.insert(&1))
     |> fmap(&tap_notify_creator_of_signature(&1, conversation_url))
-    |> fmap(& &1.conversation)
     |> fmap(&Conversation.signed_changeset/1)
     |> bind(&Repo.insert_or_update(&1))
     |> fmap(&Repo.preload(&1, @preloads, force: true, in_parallel: true))
@@ -169,25 +168,14 @@ defmodule App.Conversations do
   end
 
   defun get_contacts(viewer :: Customer.t()) :: Brex.Result.s(list(term())) do
-    signers =
-      from(contact in Contact,
-        join: signature in assoc(contact, :signatures),
-        join: conversation in assoc(signature, :conversation),
-        where: conversation.creator_id == ^viewer.id,
-        where: conversation.status != :deleted,
-        distinct: contact.id
-      )
-
-    creators =
+    Repo.all(
       from(contact in Contact,
         join: conversation in assoc(contact, :conversations),
-        join: signature in assoc(conversation, :signatures),
-        where: signature.signer_id == ^viewer.id,
+        where: ^viewer.id in conversation.participant_ids,
         where: conversation.status != :deleted,
         distinct: contact.id
       )
-
-    Repo.all(from c in signers, union: ^creators)
+    )
   end
 
   ## Helpers
