@@ -5,7 +5,7 @@ import { NoteView, Props as NoteViewProps } from "~/components/Note"
 import { isEmpty, map } from "~/fp"
 import { Conversation, Customer, Maybe } from "~/graph"
 import { localizeDate } from "~/i18n"
-import { MarkdownView, Stack, Status, Text } from "~/system"
+import { Stack, Status, Text } from "~/system"
 import { ParticipantsView } from "~/system/ParticipantsView"
 import { MentionsView } from "./MentionsView"
 
@@ -39,7 +39,6 @@ export const ConversationView: FC<Props> = ({
           invitees,
           signers,
         }),
-        showOpps && !isEmpty(opps) && h(MentionsView, { opps }),
       ]),
       h(Spacer),
       h(
@@ -50,13 +49,28 @@ export const ConversationView: FC<Props> = ({
           minWidth: "99px", // NOTE: fixed to prevent date wrap
         },
         [
-          h(Text, { fontSize: "sm" }, localizeDate(new Date("01-28-2022"))),
+          h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
           showStatus && h(Status, { status }),
         ]
       ),
     ]),
+    showOpps && !isEmpty(opps) && h(MentionsView, { opps }),
     showNote && h(NoteView, { note, maxLines, isObscured }),
   ])
 }
 
 ConversationView.displayName = "ConversationView"
+
+type ConversationPublishedViewProps = Omit<
+  Props,
+  "showStatus" | "showOpps" | "maxLines"
+>
+export const ConversationPublishedView: FC<ConversationPublishedViewProps> = (
+  props
+) =>
+  h(ConversationView, {
+    ...props,
+    maxLines: 10,
+    showStatus: false,
+    showOpps: true,
+  })

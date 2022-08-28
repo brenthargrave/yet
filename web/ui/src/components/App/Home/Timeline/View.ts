@@ -6,7 +6,7 @@ import {
   EmptyView,
   Props as EmptyViewProps,
 } from "~/components/App/Home/Conversations/List/EmptyView"
-import { ConversationView } from "~/components/Conversation/View"
+import { ConversationPublishedView } from "~/components/Conversation/View"
 import { isEmpty, isNotLastItem } from "~/fp"
 import { Customer, Maybe, TimelineEvent } from "~/graph"
 import { FullWidthVStack, Header, modalStyleProps, Nav } from "~/system"
@@ -47,12 +47,9 @@ export const View: FC<Props> = ({ state, viewer, events, onClickNew }) =>
                 { __typename: "ConversationPublished" },
                 ({ conversation, occurredAt }) =>
                   h(ListItem, {}, [
-                    h(ConversationView, {
+                    h(ConversationPublishedView, {
                       viewer,
                       conversation,
-                      maxLines: 10,
-                      showStatus: false,
-                      showOpps: true,
                     }),
                     isNotLastItem(idx, all) && h(Divider, { padding: 4 }),
                   ])

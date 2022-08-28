@@ -15,6 +15,7 @@ import { FullWidthVStack, Header, Nav } from "~/system"
 import { Location } from ".."
 import { isNotLastItem } from "~/fp"
 import { ConversationView } from "~/components/Conversation"
+import { ConversationPublishedView } from "~/components/Conversation/View"
 
 export interface Props {
   viewer: Maybe<Customer>
@@ -49,7 +50,6 @@ export const View: FC<Props> = ({
       },
       [
         h(OppView, { opp, viewer }),
-        // mention history
         h(Divider, { orientation: "horizontal" }),
         h(FullWidthVStack, { gap: 0, pt: 0 }, [
           h(Header, {}, [h(Heading, { size: "xs" }, "Recent Mentions")]),
@@ -61,10 +61,9 @@ export const View: FC<Props> = ({
                   { __typename: "ConversationPublished" },
                   ({ conversation, occurredAt }) =>
                     h(ListItem, {}, [
-                      h(ConversationView, {
+                      h(ConversationPublishedView, {
                         viewer,
                         conversation,
-                        maxLines: 10,
                       }),
                       isNotLastItem(idx, all) && h(Divider, { padding: 4 }),
                     ])
