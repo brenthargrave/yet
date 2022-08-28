@@ -80,6 +80,7 @@ export * from "./MarkdownView"
 export * from "./Nav"
 export * from "./FullWidthVStack"
 export * from "./LinkedListItem"
+export * from "./FullWidthList"
 
 export { Header } from "./Header"
 export { BackButton } from "./BackButton"

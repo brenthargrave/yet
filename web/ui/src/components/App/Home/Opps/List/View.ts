@@ -15,6 +15,7 @@ import { Customer, Maybe, Opp } from "~/graph"
 import {
   CreateButton,
   Divider,
+  FullWidthList,
   FullWidthVStack,
   Header,
   modalStyleProps,
@@ -57,7 +58,7 @@ export const View: FC<Props> = ({
           h(Spacer),
           h(CreateButton, { onClick: onClickCreate, cta: `New opp` }),
         ]),
-        h(List, { spacing: 4, width: "100%" }, [
+        h(FullWidthList, [
           ...opps.map((opp, idx, all) => {
             return h(ListItem, {}, [
               h(

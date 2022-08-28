@@ -11,7 +11,7 @@ import { FC } from "react"
 import { match } from "ts-pattern"
 import { OppView } from "~/components/Opp"
 import { Customer, Maybe, Opp, TimelineEvent } from "~/graph"
-import { FullWidthVStack, Header, Nav } from "~/system"
+import { FullWidthList, FullWidthVStack, Header, Nav } from "~/system"
 import { Location } from ".."
 import { isNotLastItem } from "~/fp"
 import { ConversationView } from "~/components/Conversation"
@@ -53,14 +53,14 @@ export const View: FC<Props> = ({
         h(Divider, { orientation: "horizontal" }),
         h(FullWidthVStack, { gap: 0, pt: 0 }, [
           h(Header, {}, [h(Heading, { size: "xs" }, "Recent Mentions")]),
-          h(List, { width: "100%", spacing: 8, pl: 2, pr: 2, pt: 0 }, [
-            // TODO: empty mentions view
+          // TODO: empty mentions view
+          h(FullWidthList, [
             ...events.map((event, idx, all) =>
               match(event)
                 .with(
                   { __typename: "ConversationPublished" },
                   ({ conversation }) =>
-                    h(ListItem, {}, [
+                    h(ListItem, { key: idx }, [
                       h(ConversationPublishedView, {
                         viewer,
                         conversation,

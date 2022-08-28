@@ -1,4 +1,4 @@
-import { Divider, Heading, List, ListItem, Spacer } from "@chakra-ui/react"
+import { Divider, Heading, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { match } from "ts-pattern"
@@ -10,6 +10,7 @@ import { ConversationPublishedView } from "~/components/Conversation/View"
 import { isEmpty, isNotLastItem } from "~/fp"
 import { Conversation, Customer, Maybe, TimelineEvent } from "~/graph"
 import {
+  FullWidthList,
   FullWidthVStack,
   Header,
   LinkedListItem,
@@ -41,7 +42,7 @@ export const View: FC<Props> = ({
   onClickConversation,
 }) =>
   state === State.loading
-    ? null // TODO: loading view instead?
+    ? null // TODO: loading view?
     : isEmpty(events)
     ? h(EmptyView, { onClickNew })
     : h(FullWidthVStack, { minHeight }, [
@@ -51,9 +52,7 @@ export const View: FC<Props> = ({
           h(Heading, { size: "md" }, "Latest"),
           h(Spacer),
         ]),
-        h(
-          List,
-          { spacing: 8, paddingTop: 4, width: "100%" },
+        h(FullWidthList, [
           events.map((event, idx, all) =>
             match(event)
               .with(
@@ -61,7 +60,10 @@ export const View: FC<Props> = ({
                 ({ conversation }) =>
                   h(
                     LinkedListItem,
-                    { onClick: () => onClickConversation(conversation) },
+                    {
+                      key: idx,
+                      onClick: () => onClickConversation(conversation),
+                    },
                     [
                       h(ConversationPublishedView, {
                         viewer,
@@ -73,6 +75,6 @@ export const View: FC<Props> = ({
               )
               .with({ __typename: "ContactProfileChanged" }, () => null)
               .exhaustive()
-          )
-        ),
+          ),
+        ]),
       ])

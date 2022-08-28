@@ -1,12 +1,13 @@
-import { Heading, List, ListItem, Spacer } from "@chakra-ui/react"
+import { Heading, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { ConversationView } from "~/components/Conversation/View"
-import { isEmpty, map, isNotLastItem } from "~/fp"
+import { isEmpty, isNotLastItem } from "~/fp"
 import { Conversation, Customer, Maybe } from "~/graph"
 import {
   CreateButton,
   Divider,
+  FullWidthList,
   FullWidthVStack,
   Header,
   LinkedListItem,
@@ -39,12 +40,11 @@ export const View: FC<Props> = ({
           h(CreateButton, { onClick: onClickNew }),
         ]),
         h(
-          List,
-          { spacing: 8, paddingTop: 4, width: "100%" },
+          FullWidthList,
           conversations.map((conversation, idx, all) => {
             return h(
               LinkedListItem,
-              { onClick: () => onClickConversation(conversation) },
+              { key: idx, onClick: () => onClickConversation(conversation) },
               [
                 h(ConversationView, { viewer, conversation, maxLines: 10 }),
                 isNotLastItem(idx, all) && h(Divider, { padding: 4 }),
