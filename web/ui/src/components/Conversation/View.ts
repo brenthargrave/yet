@@ -13,6 +13,7 @@ export interface Props extends Omit<NoteViewProps, "note"> {
   viewer: Maybe<Customer>
   conversation: Conversation
   showStatus?: boolean
+  showOpps?: boolean
 }
 
 export const ConversationView: FC<Props> = ({
@@ -21,6 +22,7 @@ export const ConversationView: FC<Props> = ({
   maxLines,
   isObscured,
   showStatus = true,
+  showOpps = false,
 }) => {
   const { creator, signatures, invitees, note, occurredAt, status, opps } =
     conversation
@@ -40,7 +42,7 @@ export const ConversationView: FC<Props> = ({
         showStatus && h(Status, { status }),
       ]),
     ]),
-    !isEmpty(opps) && h(MentionsView, { opps }),
+    showOpps && !isEmpty(opps) && h(MentionsView, { opps }),
     h(NoteView, { note, maxLines, isObscured }),
   ])
 }

@@ -50,8 +50,9 @@ export const View: FC<Props> = ({ state, viewer, events, onClickNew }) =>
                     h(ConversationView, {
                       viewer,
                       conversation,
-                      showStatus: false,
                       maxLines: 10,
+                      showStatus: false,
+                      showOpps: true,
                     }),
                     isNotLastItem(idx, all) && h(Divider, { padding: 4 }),
                   ])
