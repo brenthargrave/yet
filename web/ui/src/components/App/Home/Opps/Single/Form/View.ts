@@ -88,7 +88,7 @@ export const View: FC<Props> = ({
     if (_onSubmit) _onSubmit()
   }
   return h(FullWidthVStack, {}, [
-    h(Nav, { onClickBack }),
+    h(Nav, { onClickBack, backButtonText: "Opps" }),
     h(Header, [
       h(Heading, { size: "md" }, headerCopy(target)),
       h(Spacer),

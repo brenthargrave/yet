@@ -25,7 +25,7 @@ export const View: FC<Props> = ({
   onClickBack,
 }) => {
   return h(FullWidthVStack, {}, [
-    h(Nav, { onClickBack }),
+    h(Nav, { onClickBack, backButtonText: "Opps" }),
     h(Header, {}, [
       //
       h(Heading, { size: "md" }, "Opportunity"),

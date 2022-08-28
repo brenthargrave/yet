@@ -11,14 +11,13 @@ import {
   share,
   startWith,
   switchMap,
-  withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { match } from "ts-pattern"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
-import { and, pluck } from "~/fp"
 import { Source as ActionSource } from "~/action"
 import { ErrorView } from "~/components/App/ErrorView"
+import { and, pluck } from "~/fp"
 import {
   Conversation,
   ErrorCode,
@@ -37,11 +36,11 @@ import {
   singleConversationRoutesGroup,
   Source as RouterSource,
 } from "~/router"
+import { shareLatest } from "~/rx"
 import { Main as Edit } from "./Edit"
 import { Show } from "./Show"
 import { Sign } from "./Sign"
 import { View } from "./View"
-import { shareLatest } from "~/rx"
 
 export enum State {
   pending = "pending",
