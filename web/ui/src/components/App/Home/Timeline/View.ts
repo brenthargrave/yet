@@ -47,7 +47,12 @@ export const View: FC<Props> = ({ state, viewer, events, onClickNew }) =>
                 { __typename: "ConversationPublished" },
                 ({ conversation, occurredAt }) =>
                   h(ListItem, {}, [
-                    h(ConversationView, { viewer, conversation, maxLines: 10 }),
+                    h(ConversationView, {
+                      viewer,
+                      conversation,
+                      showStatus: false,
+                      maxLines: 10,
+                    }),
                     isNotLastItem(idx, all) && h(Divider, { padding: 4 }),
                   ])
               )

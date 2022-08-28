@@ -53,7 +53,7 @@ export const View: FC<Props> = ({
     : h(FullWidthVStack, { minHeight }, [
         h(Nav),
         h(Header, {}, [
-          h(Heading, { size: "md" }, "Opportunities"),
+          h(Heading, { size: "md" }, "Your Opportunities"),
           h(Spacer),
           h(CreateButton, { onClick: onClickCreate, cta: `New opp` }),
         ]),

@@ -10,11 +10,9 @@ import {
   Maybe,
 } from "~/graph"
 import { toSentence } from "~/i18n"
-import { MarkdownView } from "~/system"
+import { MarkdownView, bold } from "~/system"
 
 type Participant = Omit<Invitee, "__typename" | "isContact">
-
-const bold = (inner: string) => `**${inner}**`
 
 const personalizedName = (me: Maybe<Customer>, subject: Contact | Invitee) =>
   !!me && me.id === subject.id ? "You" : subject.name

@@ -2,21 +2,18 @@ import { h, ReactSource } from "@cycle/react"
 import {
   combineLatest,
   distinctUntilChanged,
-  EMPTY,
   map,
   merge,
-  of,
   share,
   startWith,
-  switchMap,
 } from "rxjs"
 import { filterResultOk } from "ts-results/rxjs-operators"
 import { Source as ActionSource } from "~/action"
 import { getTimeline$, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { NEWID, push, routes } from "~/router"
-import { cb$, mapTo, shareLatest } from "~/rx"
-import { View, State } from "./View"
+import { cb$, shareLatest } from "~/rx"
+import { State, View } from "./View"
 
 export interface Sources {
   react: ReactSource

@@ -27,7 +27,7 @@ export const View: FC<Props> = ({
     : h(FullWidthVStack, {}, [
         h(Nav, {}),
         h(Header, [
-          h(Heading, { size: "md" }, "Conversations"),
+          h(Heading, { size: "md" }, "Your Conversations"),
           h(Spacer),
           h(CreateButton, { onClick: onClickNew }),
         ]),
