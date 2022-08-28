@@ -59,7 +59,7 @@ export const View: FC<Props> = ({
               match(event)
                 .with(
                   { __typename: "ConversationPublished" },
-                  ({ conversation, occurredAt }) =>
+                  ({ conversation }) =>
                     h(ListItem, {}, [
                       h(ConversationPublishedView, {
                         viewer,

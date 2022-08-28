@@ -73,4 +73,5 @@ export const ConversationPublishedView: FC<ConversationPublishedViewProps> = (
     maxLines: 10,
     showStatus: false,
     showOpps: true,
+    // showNote: false,
   })

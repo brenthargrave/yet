@@ -26,16 +26,13 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
   const tag = makeTagger(tagScope)
 
   const {
-    graph: { me$, conversations$ },
+    graph: { me$ },
   } = sources
 
   const [onClickNew, clickNew$] = cb$(tag("clickNew$"))
   const newConvo$ = clickNew$.pipe(
     map(() => push(routes.conversation({ id: NEWID })))
   )
-
-  // ! Opps
-  // X, Y discussed [Opp], [Opp2] and [Opp3]
 
   const result$ = getTimeline$().pipe(tag("result$"), share())
 
@@ -58,14 +55,7 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
     state: state$,
     viewer: me$,
     events: events$,
-  }).pipe(
-    // // NOTE: block render until ready
-    // switchMap(({ state, ...props }) =>
-    //   state === State.loading ? EMPTY : of(props)
-    // ),
-    tag("props$"),
-    shareLatest()
-  )
+  }).pipe(tag("props$"), shareLatest())
 
   const react = props$.pipe(map((props) => h(View, { ...props, onClickNew })))
 

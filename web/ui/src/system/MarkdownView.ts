@@ -12,6 +12,9 @@ export const i = (value: string) => `*${value}*`
 
 const className = style({ textDecoration: "underline" })
 
+// @ts-ignore
+const { VITE_HOST } = import.meta.env
+
 interface Props {
   md?: string | null
   maxLines?: number
@@ -34,7 +37,10 @@ export const MarkdownView: FC<Props> = ({ md, maxLines }) => {
   return h(ReactMarkdown, {
     children,
     remarkPlugins: [remarkBreaks, remarkGfm],
-    linkTarget: "_blank",
+    // NOTE: open off-domain links in new tab
+    // linkTarget: "_blank"
+    linkTarget: (href, children, title) =>
+      href.includes(VITE_HOST) ? "_blank" : "_self",
     skipHtml: false,
     components: {
       a: ({ node, href, children, ...props }) =>
