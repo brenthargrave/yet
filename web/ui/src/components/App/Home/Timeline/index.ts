@@ -1,32 +1,22 @@
 import { h, ReactSource } from "@cycle/react"
 import {
-  Observable,
-  of,
   combineLatest,
+  distinctUntilChanged,
+  EMPTY,
   map,
-  switchMap,
-  mapTo,
   merge,
-  startWith,
+  of,
   share,
+  startWith,
+  switchMap,
 } from "rxjs"
 import { filterResultOk } from "ts-results/rxjs-operators"
 import { Source as ActionSource } from "~/action"
-import {
-  ConversationPublished,
-  getTimeline$,
-  Source as GraphSource,
-  TimelineEvent,
-} from "~/graph"
+import { getTimeline$, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { NEWID, push, routes } from "~/router"
-import { shareLatest, cb$ } from "~/rx"
-import { View, Props as ViewProps } from "./View"
-
-enum State {
-  loading = "loading",
-  ready = "ready",
-}
+import { cb$, mapTo, shareLatest } from "~/rx"
+import { View, State } from "./View"
 
 export interface Sources {
   react: ReactSource
@@ -47,26 +37,8 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
     map(() => push(routes.conversation({ id: NEWID })))
   )
 
-  // TODO: network
-  // Contacts (signed yours U you signed theirs)
-  // > converastions
-  // ? signed your conversation ("X cosigned your converastion")
-  // noted a converastion
-
   // ! Opps
-  // mentioned your opp(s) (owned by you)
-  // mentioned opportunity (any you've signed) ! no, if you don't own it
-
-  // its' just converastions
-  // - X noted conversation
-  // - X signed conversation
-  // - X mentioned your opps: - list, - list20
-
   // X, Y discussed [Opp], [Opp2] and [Opp3]
-
-  // const events$ = getTimeline(viewer, filters: opp: id)
-  // conversation
-  // profileChange
 
   const result$ = getTimeline$().pipe(tag("result$"), share())
 
@@ -77,7 +49,23 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const props$ = combineLatest({ viewer: me$, events: events$ }).pipe(
+  const state$ = events$.pipe(
+    map(() => State.ready),
+    startWith(State.loading),
+    distinctUntilChanged(),
+    tag("state$"),
+    shareLatest()
+  )
+
+  const props$ = combineLatest({
+    state: state$,
+    viewer: me$,
+    events: events$,
+  }).pipe(
+    // // NOTE: block render until ready
+    // switchMap(({ state, ...props }) =>
+    //   state === State.loading ? EMPTY : of(props)
+    // ),
     tag("props$"),
     shareLatest()
   )

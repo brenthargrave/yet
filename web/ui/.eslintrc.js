@@ -46,6 +46,7 @@ module.exports = {
     "@typescript-eslint/no-empty-interface": "off",
     // prevent single-line arrays
     // "array-element-newline": "always",
+    "no-nested-ternary": "off",
   },
   settings: {
     "import/resolver": "node",

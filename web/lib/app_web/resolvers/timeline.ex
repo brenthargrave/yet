@@ -17,8 +17,6 @@ defmodule AppWeb.Resolvers.Timeline do
         ) :: resolver_result(TimelinePayload.t()) do
     Timeline.get_events(customer, input)
     |> fmap(&%TimelinePayload{events: &1})
-
-    # |> IO.inspect()
   end
 
   def get_timeline(_parent, _args, _resolution) do

@@ -1,11 +1,4 @@
-import {
-  Divider,
-  Heading,
-  Spacer,
-  List,
-  ListItem,
-  Text,
-} from "@chakra-ui/react"
+import { Divider, Heading, List, ListItem, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { match } from "ts-pattern"
@@ -13,21 +6,30 @@ import {
   EmptyView,
   Props as EmptyViewProps,
 } from "~/components/App/Home/Conversations/List/EmptyView"
-import { isEmpty, isNotLastItem } from "~/fp"
-import { TimelineEvent, ConversationPublished, Maybe, Customer } from "~/graph"
-import { FullWidthVStack, Header, modalStyleProps, Nav } from "~/system"
 import { ConversationView } from "~/components/Conversation/View"
+import { isEmpty, isNotLastItem } from "~/fp"
+import { Customer, Maybe, TimelineEvent } from "~/graph"
+import { FullWidthVStack, Header, modalStyleProps, Nav } from "~/system"
+
+export enum State {
+  loading = "loading",
+  ready = "ready",
+}
 
 // TODO: wat? minHeight?
 const { minHeight } = modalStyleProps
 
 export interface Props extends EmptyViewProps {
+  state: State
   viewer: Maybe<Customer>
   events: TimelineEvent[]
 }
 
-export const View: FC<Props> = ({ viewer, events, onClickNew }) =>
-  isEmpty(events)
+// eslint-disable-next-line react/function-component-definition
+export const View: FC<Props> = ({ state, viewer, events, onClickNew }) =>
+  state === State.loading
+    ? null // TODO: loading view instead?
+    : isEmpty(events)
     ? h(EmptyView, { onClickNew })
     : h(FullWidthVStack, { minHeight }, [
         h(Nav),
