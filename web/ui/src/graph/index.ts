@@ -18,6 +18,7 @@ import {
 import { isNotNullish } from "rxjs-etc"
 import { switchMap } from "rxjs/operators"
 import { Err, Ok, Result } from "ts-results"
+import { resultMap } from "ts-results/rxjs-operators"
 import { descend, prop } from "~/fp"
 import { makeTagger } from "~/log"
 import { shareLatest, zenToRx } from "~/rx"
@@ -566,15 +567,15 @@ export const getTimeline$ = (input: TimelineInput = {}) => {
       })
     )
   ).pipe(
-    tag("THIS raw"),
     map((data) => {
       const { events } = data.getTimeline!
       return new Ok(events)
     }),
+    resultMap((events) => events.sort(descend(prop("occurredAt")))),
     catchError((error, _caught$) => {
       console.error(error)
       throw new GraphDefaultQueryError(error.message)
     }),
-    tag("THIS getTimeline$")
+    tag("getTimeline$")
   )
 }
