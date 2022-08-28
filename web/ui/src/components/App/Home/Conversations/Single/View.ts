@@ -68,7 +68,8 @@ export const View: FC<Props> = ({
   const occurredAtDesc = localizeDate(occurredAt)
 
   return h(FullWidthVStack, {}, [
-    !isSigning(intent) && h(Nav, { onClickBack }),
+    !isSigning(intent) &&
+      h(Nav, { onClickBack, backButtonText: "Conversations" }),
     h(ShareModal, {
       isOpen: isReading(intent) && isOpenShare,
       onClose: onCloseShare,

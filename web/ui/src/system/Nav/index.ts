@@ -5,12 +5,14 @@ import { BackButton, Header } from "~/system"
 
 interface Props {
   onClickBack?: () => void
+  backButtonText?: string
 }
 
-export const Nav: FC<Props> = ({ onClickBack }) =>
+export const Nav: FC<Props> = ({ onClickBack, backButtonText: cta }) =>
   h(Header, { paddingBottom: 0 }, [
     onClickBack &&
       h(BackButton, {
+        cta,
         onClick: onClickBack,
       }),
     h(Spacer, { minHeight: "24px" }),

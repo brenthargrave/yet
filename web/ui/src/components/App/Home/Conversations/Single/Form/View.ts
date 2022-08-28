@@ -1,18 +1,9 @@
-import { ChevronLeftIcon } from "@chakra-ui/icons"
-import { IconButton, Spacer, Tooltip } from "@chakra-ui/react"
+import { Spacer, Tooltip } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { ReactNode, Ref } from "react"
 import { isEmpty, not } from "~/fp"
 import { ConversationStatus, Invitee } from "~/graph"
-import {
-  BackButton,
-  FullWidthVStack,
-  Header,
-  Heading,
-  Nav,
-  Stack,
-  Status,
-} from "~/system"
+import { FullWidthVStack, Header, Heading, Nav, Stack, Status } from "~/system"
 import { Props as ActionBarProps, View as ActionBar } from "./ActionBar"
 import { View as AddOppModal } from "./AddOppModal"
 import { DeleteButton } from "./DeleteButton"
@@ -89,7 +80,7 @@ export const View = ({
   ...props
 }: Props) =>
   h(FullWidthVStack, {}, [
-    h(Nav, { onClickBack }),
+    h(Nav, { onClickBack, backButtonText: "Conversations" }),
     h(Header, [
       h(Heading, { size: "md" }, "Conversation"),
       h(Spacer),
