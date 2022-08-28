@@ -8,8 +8,14 @@ import {
 } from "~/components/App/Home/Conversations/List/EmptyView"
 import { ConversationPublishedView } from "~/components/Conversation/View"
 import { isEmpty, isNotLastItem } from "~/fp"
-import { Customer, Maybe, TimelineEvent } from "~/graph"
-import { FullWidthVStack, Header, modalStyleProps, Nav } from "~/system"
+import { Conversation, Customer, Maybe, TimelineEvent } from "~/graph"
+import {
+  FullWidthVStack,
+  Header,
+  LinkedListItem,
+  modalStyleProps,
+  Nav,
+} from "~/system"
 
 export enum State {
   loading = "loading",
@@ -23,10 +29,17 @@ export interface Props extends EmptyViewProps {
   state: State
   viewer: Maybe<Customer>
   events: TimelineEvent[]
+  onClickConversation: (c: Conversation) => void
 }
 
 // eslint-disable-next-line react/function-component-definition
-export const View: FC<Props> = ({ state, viewer, events, onClickNew }) =>
+export const View: FC<Props> = ({
+  state,
+  viewer,
+  events,
+  onClickNew,
+  onClickConversation,
+}) =>
   state === State.loading
     ? null // TODO: loading view instead?
     : isEmpty(events)
@@ -46,13 +59,17 @@ export const View: FC<Props> = ({ state, viewer, events, onClickNew }) =>
               .with(
                 { __typename: "ConversationPublished" },
                 ({ conversation }) =>
-                  h(ListItem, {}, [
-                    h(ConversationPublishedView, {
-                      viewer,
-                      conversation,
-                    }),
-                    isNotLastItem(idx, all) && h(Divider, { padding: 4 }),
-                  ])
+                  h(
+                    LinkedListItem,
+                    { onClick: () => onClickConversation(conversation) },
+                    [
+                      h(ConversationPublishedView, {
+                        viewer,
+                        conversation,
+                      }),
+                      isNotLastItem(idx, all) && h(Divider, { padding: 4 }),
+                    ]
+                  )
               )
               .with({ __typename: "ContactProfileChanged" }, () => null)
               .exhaustive()

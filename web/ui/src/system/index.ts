@@ -79,6 +79,7 @@ export * from "./AutosizeTextarea"
 export * from "./MarkdownView"
 export * from "./Nav"
 export * from "./FullWidthVStack"
+export * from "./LinkedListItem"
 
 export { Header } from "./Header"
 export { BackButton } from "./BackButton"

@@ -9,7 +9,7 @@ import {
 } from "rxjs"
 import { filterResultOk } from "ts-results/rxjs-operators"
 import { Source as ActionSource } from "~/action"
-import { getTimeline$, Source as GraphSource } from "~/graph"
+import { Conversation, getTimeline$, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { NEWID, push, routes } from "~/router"
 import { cb$, shareLatest } from "~/rx"
@@ -32,6 +32,11 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
   const [onClickNew, clickNew$] = cb$(tag("clickNew$"))
   const newConvo$ = clickNew$.pipe(
     map(() => push(routes.conversation({ id: NEWID })))
+  )
+
+  const [onClickConversation, clickConvo$] = cb$<Conversation>(tag("clickNew$"))
+  const showConvo$ = clickConvo$.pipe(
+    map(({ id }) => push(routes.conversation({ id })))
   )
 
   const result$ = getTimeline$().pipe(tag("result$"), share())
@@ -57,9 +62,11 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
     events: events$,
   }).pipe(tag("props$"), shareLatest())
 
-  const react = props$.pipe(map((props) => h(View, { ...props, onClickNew })))
+  const react = props$.pipe(
+    map((props) => h(View, { ...props, onClickNew, onClickConversation }))
+  )
 
-  const router = merge(newConvo$)
+  const router = merge(newConvo$, showConvo$)
 
   return {
     react,
