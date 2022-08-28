@@ -40,11 +40,8 @@ fragment ConversationProps on Conversation {
       ...ContactProps
     }
   }
-  mentions {
-    id
-    oppId
-    conversationId
-    insertedAt
+  opps {
+    ...OppProps
   }
 }
 

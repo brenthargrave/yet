@@ -9,14 +9,7 @@ defmodule App.Opps do
   import App.Helpers, only: [format_ecto_errors: 1]
 
   @preloads [
-    :creator,
-    :mentions,
-    conversations: [
-      :creator,
-      :mentions,
-      reviews: [:reviewer],
-      signatures: [:signer]
-    ]
+    :creator
   ]
 
   defun opps(viewer :: Customer.t()) :: Brex.Result.s(list(Opp.t())) do

@@ -8,7 +8,6 @@ import {
   Invitee,
   isStatusClosed,
   Maybe,
-  Mention,
   Opp,
   oppUrl,
 } from "~/graph"
@@ -26,17 +25,10 @@ const oppsText = (opps: Opp[]) => toSentence(opps.map(oppLink))
 
 export interface Props {
   // viewer: Maybe<Customer>
-  mentions: Mention[]
+  opps: Opp[]
 }
 
-export const MentionsView: FC<Props> = ({
-  // viewer,
-  // status,
-  // creator,
-  // invitees,
-  mentions,
-}) => {
-  const opps = mentions.map((m) => m.opp)
+export const MentionsView: FC<Props> = ({ opps }) => {
   const md = `Discussed opps: ${oppsText(opps)}`
   return h(MarkdownView, { md })
 }

@@ -51,7 +51,7 @@ const makeOrg = () => faker.company.companyName()
 const makeRole = () => faker.name.jobTitle()
 const makeBool = () => faker.datatype.boolean()
 
-export const makeParticipant = (): Contact => {
+export const makeParticipant = (): Omit<Contact, "__typename"> => {
   return {
     id: makeId(),
     name: makeName(),
@@ -60,7 +60,7 @@ export const makeParticipant = (): Contact => {
   }
 }
 
-export const makeInvitee = (): Invitee => {
+export const makeInvitee = (): Omit<Invitee, "__typename"> => {
   return {
     id: makeId(),
     name: makeName(),

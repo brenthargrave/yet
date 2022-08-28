@@ -22,7 +22,7 @@ export const ConversationView: FC<Props> = ({
   isObscured,
   showStatus = true,
 }) => {
-  const { creator, signatures, invitees, note, occurredAt, status, mentions } =
+  const { creator, signatures, invitees, note, occurredAt, status, opps } =
     conversation
   const signers = map((sig) => sig.signer, signatures)
   return h(Stack, { direction: "column" }, [
@@ -40,7 +40,7 @@ export const ConversationView: FC<Props> = ({
         showStatus && h(Status, { status }),
       ]),
     ]),
-    !isEmpty(mentions) && h(MentionsView, { mentions }),
+    !isEmpty(opps) && h(MentionsView, { opps }),
     h(NoteView, { note, maxLines, isObscured }),
   ])
 }

@@ -20,10 +20,9 @@ defmodule App.Timeline do
   @preloads [
     conversation: [
       :creator,
-      :opps,
+      opps: [:creator],
       signatures: [:signer, :conversation],
-      reviews: [:reviewer, :conversation],
-      mentions: [:opp]
+      reviews: [:reviewer, :conversation]
     ]
   ]
 
