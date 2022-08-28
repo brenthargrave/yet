@@ -6,13 +6,13 @@ import { EmptyViewBase } from "~/system"
 export type OnClickNew = () => void
 
 interface Props {
-  onClickCreate?: OnClickNew
+  onClickNew?: OnClickNew
 }
 
 const text = (text: string) =>
   h(Text, { align: "center", size: "md", pt: 0 }, text)
 
-export const EmptyView: FC<Props> = ({ onClickCreate: onClickNew, ...props }) =>
+export const EmptyView: FC<Props> = ({ onClickNew, ...props }) =>
   h(EmptyViewBase, { ...props }, [
     h(
       Heading,

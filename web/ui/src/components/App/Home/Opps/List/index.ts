@@ -26,13 +26,13 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     props: { location },
   } = sources
 
-  const [onClickCreate, onClickCreate$] = cb$(tag("onClickNew$"))
+  const [onClickNew, onClickNew$] = cb$(tag("onClickNew$"))
   const [onClickOpp, onClickOpp$] = cb$<Opp>(tag("onClickOpp$"))
   const [onClickAdd, onClickAdd$] = cb$<Opp>(tag("onClickAdd$"))
 
   const embedOpp$ = onClickAdd$.pipe(tag("appendOpp$"), share())
 
-  const create$ = onClickCreate$.pipe(
+  const create$ = onClickNew$.pipe(
     mapTo(act(Actions.createOpp)),
     tag("create$")
   )
@@ -52,7 +52,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
       h(View, {
         ...props,
         location,
-        onClickCreate,
+        onClickNew,
         onClickAdd,
         onClickOpp,
       })

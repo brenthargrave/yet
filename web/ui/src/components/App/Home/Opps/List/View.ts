@@ -25,7 +25,7 @@ const isModal = (location: Location) => location === Location.modal
 export interface Props {
   location: Location
   viewer: Maybe<Customer>
-  onClickCreate?: OnClickNew
+  onClickNew?: OnClickNew
   opps: Opp[]
   onClickAdd?: (opp: Opp) => void
   onClickOpp?: (opp: Opp) => void
@@ -34,19 +34,19 @@ export interface Props {
 export const View: FC<Props> = ({
   location,
   viewer,
-  onClickCreate,
+  onClickNew,
   opps = [],
   onClickAdd = () => null,
   onClickOpp = () => null,
 }) =>
   isEmpty(opps)
-    ? h(EmptyView, { ...containerProps, onClickCreate })
+    ? h(EmptyView, { ...containerProps, onClickNew })
     : h(FullWidthVStack, { ...containerProps }, [
         h(Nav),
         h(Header, {}, [
           h(Heading, { size: "md" }, "Your Opportunities"),
           h(Spacer),
-          h(CreateButton, { onClick: onClickCreate, cta: `New opp` }),
+          h(CreateButton, { onClick: onClickNew, cta: `New opp` }),
         ]),
         h(FullWidthList, [
           ...opps.map((opp, idx, all) => {

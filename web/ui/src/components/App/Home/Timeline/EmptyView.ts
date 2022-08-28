@@ -12,11 +12,11 @@ export interface Props {
 
 export const EmptyView: FC<Props> = ({ onClickNew, ...props }) =>
   h(EmptyViewBase, { ...props }, [
-    h(Heading, { size: "md" }, `No network activity to view just yet.`),
+    h(Heading, { size: "md" }, `No network activity just yet.`),
     h(
       Text,
       { align: "center" },
-      `Share notes of your conversations with others to grow your network.`
+      `To get started, share notes of your conversations with others to grow your network.`
     ),
     h(Button, { onClick: onClickNew }, t(`note.empty.buttonCopy`)),
   ])
