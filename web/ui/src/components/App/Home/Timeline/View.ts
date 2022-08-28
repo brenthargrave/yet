@@ -42,7 +42,7 @@ export const View: FC<Props> = ({
   onClickConversation,
 }) =>
   state === State.loading
-    ? null // TODO: loading view?
+    ? null
     : isEmpty(events)
     ? h(EmptyView, { onClickNew })
     : h(FullWidthVStack, { minHeight }, [

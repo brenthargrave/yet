@@ -1,12 +1,5 @@
 import { SmallAddIcon } from "@chakra-ui/icons"
-import {
-  Heading,
-  HStack,
-  IconButton,
-  List,
-  ListItem,
-  Spacer,
-} from "@chakra-ui/react"
+import { Heading, HStack, IconButton, ListItem, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { OppView } from "~/components/Opp"
