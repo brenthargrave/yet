@@ -3,7 +3,15 @@ import { h } from "@cycle/react"
 import { ReactNode, Ref } from "react"
 import { isEmpty, not } from "~/fp"
 import { ConversationStatus, Invitee } from "~/graph"
-import { FullWidthVStack, Header, Heading, Nav, Stack, Status } from "~/system"
+import {
+  containerProps,
+  FullWidthVStack,
+  Header,
+  Heading,
+  Nav,
+  Stack,
+  Status,
+} from "~/system"
 import { Props as ActionBarProps, View as ActionBar } from "./ActionBar"
 import { View as AddOppModal } from "./AddOppModal"
 import { DeleteButton } from "./DeleteButton"
@@ -79,7 +87,7 @@ export const View = ({
   mode = Mode.create,
   ...props
 }: Props) =>
-  h(FullWidthVStack, {}, [
+  h(FullWidthVStack, { ...containerProps }, [
     h(Nav, { onClickBack, backButtonText: "Conversations" }),
     h(Header, [
       h(Heading, { size: "md" }, "Conversation"),

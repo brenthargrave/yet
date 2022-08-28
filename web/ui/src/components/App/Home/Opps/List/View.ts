@@ -6,20 +6,17 @@ import { OppView } from "~/components/Opp"
 import { isEmpty } from "~/fp"
 import { Customer, Maybe, Opp } from "~/graph"
 import {
+  containerProps,
   CreateButton,
   Divider,
   FullWidthList,
   FullWidthVStack,
   Header,
-  modalStyleProps,
   Nav,
   Stack,
 } from "~/system"
 import { Location } from ".."
-import { EmptyOppsView, OnClickNew } from "./EmptyView"
-
-// TODO: minHeight varies by render target (home vs. modal)
-const { minHeight } = modalStyleProps
+import { EmptyView, OnClickNew } from "./EmptyView"
 
 const isNotLastItem = <T>(idx: number, all: T[]) => !(idx + 1 === all.length)
 
@@ -43,8 +40,8 @@ export const View: FC<Props> = ({
   onClickOpp = () => null,
 }) =>
   isEmpty(opps)
-    ? h(EmptyOppsView, { minHeight, onClickCreate })
-    : h(FullWidthVStack, { minHeight }, [
+    ? h(EmptyView, { ...containerProps, onClickCreate })
+    : h(FullWidthVStack, { ...containerProps }, [
         h(Nav),
         h(Header, {}, [
           h(Heading, { size: "md" }, "Your Opportunities"),

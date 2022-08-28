@@ -5,6 +5,7 @@ import { ConversationView } from "~/components/Conversation/View"
 import { isEmpty, isNotLastItem } from "~/fp"
 import { Conversation, Customer, Maybe } from "~/graph"
 import {
+  containerProps,
   CreateButton,
   Divider,
   FullWidthList,
@@ -31,8 +32,8 @@ export const View: FC<Props> = ({
   onClickConversation,
 }) =>
   isEmpty(conversations)
-    ? h(EmptyView, { onClickNew })
-    : h(FullWidthVStack, {}, [
+    ? h(EmptyView, { onClickNew, ...containerProps })
+    : h(FullWidthVStack, { ...containerProps }, [
         h(Nav, {}),
         h(Header, [
           h(Heading, { size: "md" }, "Your Conversations"),

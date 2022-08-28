@@ -14,6 +14,7 @@ import {
   Spacer,
   Stack,
   bold,
+  containerProps,
 } from "~/system"
 import { View as AuthPrompt } from "./AuthPrompt"
 import { ShareButton } from "./ShareButton"
@@ -67,7 +68,7 @@ export const View: FC<Props> = ({
   const creatorName = creator.name
   const occurredAtDesc = localizeDate(occurredAt)
 
-  return h(FullWidthVStack, {}, [
+  return h(FullWidthVStack, { ...containerProps }, [
     !isSigning(intent) &&
       h(Nav, { onClickBack, backButtonText: "Conversations" }),
     h(ShareModal, {

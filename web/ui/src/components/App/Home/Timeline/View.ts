@@ -10,11 +10,11 @@ import { ConversationPublishedView } from "~/components/Conversation/View"
 import { isEmpty, isNotLastItem } from "~/fp"
 import { Conversation, Customer, Maybe, TimelineEvent } from "~/graph"
 import {
+  containerProps,
   FullWidthList,
   FullWidthVStack,
   Header,
   LinkedListItem,
-  modalStyleProps,
   Nav,
 } from "~/system"
 
@@ -22,9 +22,6 @@ export enum State {
   loading = "loading",
   ready = "ready",
 }
-
-// TODO: wat? minHeight?
-const { minHeight } = modalStyleProps
 
 export interface Props extends EmptyViewProps {
   state: State
@@ -44,8 +41,8 @@ export const View: FC<Props> = ({
   state === State.loading
     ? null
     : isEmpty(events)
-    ? h(EmptyView, { onClickNew })
-    : h(FullWidthVStack, { minHeight }, [
+    ? h(EmptyView, { onClickNew, ...containerProps })
+    : h(FullWidthVStack, { ...containerProps }, [
         h(Nav),
         h(Header, {}, [
           //

@@ -6,6 +6,13 @@ export const maxWidth = { base: "468px", md: "678px" }
 export const modalStyleProps = {
   minHeight: "70vh",
 }
+
+export const containerProps = {
+  minHeight: "70vh",
+  width: "100%",
+  height: "100%",
+}
+
 export const paddingDefault = 4
 
 export const white = "#fff"

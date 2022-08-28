@@ -1,15 +1,8 @@
 import { h } from "@cycle/react"
 import { FC, ReactNode } from "react"
-import {
-  Modal,
-  Text,
-  Stack,
-  Header,
-  BackButton,
-  modalStyleProps,
-} from "~/system"
+import { containerProps, Modal } from "~/system"
 
-const { minHeight } = modalStyleProps
+const { minHeight } = containerProps
 
 export interface Props {
   isOpen: boolean
