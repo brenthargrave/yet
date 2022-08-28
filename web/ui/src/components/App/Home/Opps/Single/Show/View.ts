@@ -44,15 +44,18 @@ export const View: FC<Props> = ({
       FullWidthVStack,
       {
         pt: 4,
+        gap: 6,
       },
       [
-        h(OppView, { opp, viewer }),
+        h(OppView, { opp, viewer, pb: 2 }),
         h(Divider, { orientation: "horizontal" }),
-        h(FullWidthVStack, { isBody: true }, [
-          h(Header, {}, [h(Heading, { size: "xs" }, "Recent Mentions")]),
+        h(FullWidthVStack, { isBody: true, pt: 0, mt: 0 }, [
+          h(Header, { padding: 0 }, [
+            h(Heading, { size: "xs" }, "Recent Mentions"),
+          ]),
           // TODO: empty mentions view
           isEmpty(events)
-            ? h(FullWidthVStack, { fontSize: "sm", gap: 4 }, [
+            ? h(FullWidthVStack, { fontSize: "sm" }, [
                 h(MarkdownView, {
                   md: `No mentions in anyone's conversations just yet!
 

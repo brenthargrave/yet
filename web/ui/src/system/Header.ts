@@ -1,9 +1,9 @@
-import { Box } from "@chakra-ui/react"
+import { Box, BoxProps } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { FC, ReactNode } from "react"
+import { FC } from "react"
 import { paddingDefault } from "~/system"
 
-interface Props {
+interface Props extends BoxProps {
   paddingLeft?: number
   paddingRight?: number
   paddingTop?: number
@@ -18,6 +18,7 @@ export const Header: FC<Props> = ({
   paddingBottom = paddingDefault,
   padding,
   children,
+  ...props
 }) =>
   h(
     Box,
