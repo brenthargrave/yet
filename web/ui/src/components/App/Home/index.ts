@@ -177,7 +177,7 @@ export const Home = (sources: Sources) => {
     hasOpps: hasOpps$,
     isEditing: isEditing$,
   }).pipe(
-    map(({ hasOpps, isEditing }) => !isEditing),
+    map(({ hasOpps, isEditing }) => true),
     startWith(false),
     distinctUntilChanged(),
     tag("showMenu$"),
