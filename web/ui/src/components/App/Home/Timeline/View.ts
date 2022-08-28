@@ -2,10 +2,6 @@ import { Divider, Heading, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { match } from "ts-pattern"
-import {
-  EmptyView,
-  Props as EmptyViewProps,
-} from "~/components/App/Home/Conversations/List/EmptyView"
 import { ConversationPublishedView } from "~/components/Conversation/View"
 import { isEmpty, isNotLastItem } from "~/fp"
 import { Conversation, Customer, Maybe, TimelineEvent } from "~/graph"
@@ -17,6 +13,7 @@ import {
   LinkedListItem,
   Nav,
 } from "~/system"
+import { EmptyView, Props as EmptyViewProps } from "./EmptyView"
 
 export enum State {
   loading = "loading",

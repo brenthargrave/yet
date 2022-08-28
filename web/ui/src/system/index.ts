@@ -81,6 +81,7 @@ export * from "./Nav"
 export * from "./FullWidthVStack"
 export * from "./LinkedListItem"
 export * from "./FullWidthList"
+export * from "./EmptyViewBase"
 
 export { Header } from "./Header"
 export { BackButton } from "./BackButton"
