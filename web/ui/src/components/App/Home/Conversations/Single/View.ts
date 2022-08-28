@@ -88,11 +88,13 @@ export const View: FC<Props> = ({
           justifyContent: "start",
           backgroundColor: "#fafafa",
           padding: 4,
+          marginBottom: 0,
         },
         [
           h(MarkdownView, {
             md: `**${bold(creatorName)}** requested that you cosign these notes.
-             ${t(`conversations.sign.once-signed`)}
+
+            ${t(`conversations.sign.once-signed`)}
             `,
           }),
         ]
