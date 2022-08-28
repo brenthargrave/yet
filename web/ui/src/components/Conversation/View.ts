@@ -13,6 +13,7 @@ export interface Props extends Omit<NoteViewProps, "note"> {
   viewer: Maybe<Customer>
   conversation: Conversation
   showStatus?: boolean
+  showNote?: boolean
   showOpps?: boolean
 }
 
@@ -22,28 +23,39 @@ export const ConversationView: FC<Props> = ({
   maxLines,
   isObscured,
   showStatus = true,
+  showNote = true,
   showOpps = false,
 }) => {
   const { creator, signatures, invitees, note, occurredAt, status, opps } =
     conversation
   const signers = map((sig) => sig.signer, signatures)
   return h(Stack, { direction: "column" }, [
-    h(Stack, { direction: "row", alignItems: "center" }, [
-      h(ParticipantsView, {
-        viewer,
-        status,
-        creator,
-        invitees,
-        signers,
-      }),
-      h(Spacer),
-      h(Stack, { direction: "column", alignItems: "end" }, [
-        h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
-        showStatus && h(Status, { status }),
+    h(Stack, { direction: "row", alignItems: "start" }, [
+      h(Stack, { direction: "column", alignItems: "start" }, [
+        h(ParticipantsView, {
+          viewer,
+          status,
+          creator,
+          invitees,
+          signers,
+        }),
+        showOpps && !isEmpty(opps) && h(MentionsView, { opps }),
       ]),
+      h(Spacer),
+      h(
+        Stack,
+        {
+          direction: "column",
+          alignItems: "end",
+          minWidth: "99px", // NOTE: fixed to prevent date wrap
+        },
+        [
+          h(Text, { fontSize: "sm" }, localizeDate(new Date("01-28-2022"))),
+          showStatus && h(Status, { status }),
+        ]
+      ),
     ]),
-    showOpps && !isEmpty(opps) && h(MentionsView, { opps }),
-    h(NoteView, { note, maxLines, isObscured }),
+    showNote && h(NoteView, { note, maxLines, isObscured }),
   ])
 }
 
