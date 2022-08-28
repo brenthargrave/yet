@@ -2,7 +2,7 @@ import { ListItem } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 
-export interface Props {
+interface Props {
   onClick?: () => void
 }
 

@@ -21,7 +21,7 @@ export type Scalars = {
 };
 
 export type Contact = {
-  __typename: 'Contact';
+  __typename?: 'Contact';
   id: Scalars['ID'];
   name: Scalars['String'];
   org: Scalars['String'];
@@ -29,14 +29,14 @@ export type Contact = {
 };
 
 export type ContactProfileChanged = {
-  __typename: 'ContactProfileChanged';
+  __typename?: 'ContactProfileChanged';
   contact: Contact;
   occurredAt: Scalars['DateTime'];
   type: TimelineEventType;
 };
 
 export type Conversation = {
-  __typename: 'Conversation';
+  __typename?: 'Conversation';
   creator: Contact;
   deletedAt?: Maybe<Scalars['DateTime']>;
   id: Scalars['ID'];
@@ -64,13 +64,13 @@ export type ConversationInput = {
 };
 
 export type ConversationPayload = {
-  __typename: 'ConversationPayload';
+  __typename?: 'ConversationPayload';
   conversation?: Maybe<Conversation>;
   userError?: Maybe<UserError>;
 };
 
 export type ConversationPublished = {
-  __typename: 'ConversationPublished';
+  __typename?: 'ConversationPublished';
   conversation: Conversation;
   occurredAt: Scalars['DateTime'];
   type: TimelineEventType;
@@ -84,7 +84,7 @@ export enum ConversationStatus {
 }
 
 export type ConversationsPayload = {
-  __typename: 'ConversationsPayload';
+  __typename?: 'ConversationsPayload';
   conversations: Array<Conversation>;
 };
 
@@ -93,7 +93,7 @@ export enum Currency {
 }
 
 export type Customer = {
-  __typename: 'Customer';
+  __typename?: 'Customer';
   e164: Scalars['String'];
   id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
@@ -113,7 +113,7 @@ export enum ErrorCode {
 }
 
 export type Event = {
-  __typename: 'Event';
+  __typename?: 'Event';
   anonId: Scalars['String'];
   name: EventName;
 };
@@ -131,7 +131,7 @@ export type EventProperties = {
 };
 
 export type Invitee = {
-  __typename: 'Invitee';
+  __typename?: 'Invitee';
   id: Scalars['ID'];
   isContact: Scalars['Boolean'];
   name: Scalars['String'];
@@ -149,7 +149,7 @@ export type MentionInput = {
 };
 
 export type Money = {
-  __typename: 'Money';
+  __typename?: 'Money';
   amount: Scalars['Int'];
   currency: Currency;
 };
@@ -160,7 +160,7 @@ export type MoneyInput = {
 };
 
 export type Opp = {
-  __typename: 'Opp';
+  __typename?: 'Opp';
   creator: Contact;
   desc?: Maybe<Scalars['String']>;
   fee: Money;
@@ -181,13 +181,13 @@ export type OppInput = {
 };
 
 export type OppPayload = {
-  __typename: 'OppPayload';
+  __typename?: 'OppPayload';
   opp?: Maybe<Opp>;
   userError?: Maybe<UserError>;
 };
 
 export type OppsPayload = {
-  __typename: 'OppsPayload';
+  __typename?: 'OppsPayload';
   opps: Array<Opp>;
 };
 
@@ -209,7 +209,7 @@ export type ProposeInput = {
 };
 
 export type Review = {
-  __typename: 'Review';
+  __typename?: 'Review';
   conversationId: Scalars['ID'];
   id: Scalars['ID'];
   insertedAt: Scalars['DateTime'];
@@ -221,7 +221,7 @@ export type ReviewInput = {
 };
 
 export type RootMutationType = {
-  __typename: 'RootMutationType';
+  __typename?: 'RootMutationType';
   deleteConversation?: Maybe<ConversationPayload>;
   propose?: Maybe<ConversationPayload>;
   review?: Maybe<ConversationPayload>;
@@ -285,7 +285,7 @@ export type RootMutationTypeUpsertOppArgs = {
 };
 
 export type RootQueryType = {
-  __typename: 'RootQueryType';
+  __typename?: 'RootQueryType';
   checkToken?: Maybe<TokenPayload>;
   contacts: Array<Contact>;
   events: Array<Event>;
@@ -313,7 +313,7 @@ export type RootQueryTypeGetTimelineArgs = {
 };
 
 export type RootSubscriptionType = {
-  __typename: 'RootSubscriptionType';
+  __typename?: 'RootSubscriptionType';
   conversationChanged?: Maybe<Conversation>;
 };
 
@@ -329,7 +329,7 @@ export type SignInput = {
 };
 
 export type Signature = {
-  __typename: 'Signature';
+  __typename?: 'Signature';
   conversationId: Scalars['ID'];
   id: Scalars['ID'];
   signedAt: Scalars['DateTime'];
@@ -342,7 +342,7 @@ export type SubmitCodeInput = {
 };
 
 export type SubmitCodePayload = {
-  __typename: 'SubmitCodePayload';
+  __typename?: 'SubmitCodePayload';
   me: Customer;
   verification: Verification;
 };
@@ -371,17 +371,17 @@ export type TimelineInput = {
 };
 
 export type TimelinePayload = {
-  __typename: 'TimelinePayload';
+  __typename?: 'TimelinePayload';
   events: Array<TimelineEvent>;
 };
 
 export type Token = {
-  __typename: 'Token';
+  __typename?: 'Token';
   value?: Maybe<Scalars['String']>;
 };
 
 export type TokenPayload = {
-  __typename: 'TokenPayload';
+  __typename?: 'TokenPayload';
   token?: Maybe<Token>;
 };
 
@@ -393,19 +393,19 @@ export type TrackEventInput = {
 };
 
 export type UpdateProfilePayload = {
-  __typename: 'UpdateProfilePayload';
+  __typename?: 'UpdateProfilePayload';
   me?: Maybe<Customer>;
   userError?: Maybe<UserError>;
 };
 
 export type UserError = {
-  __typename: 'UserError';
+  __typename?: 'UserError';
   code?: Maybe<ErrorCode>;
   message: Scalars['String'];
 };
 
 export type Verification = {
-  __typename: 'Verification';
+  __typename?: 'Verification';
   status: VerificationStatus;
 };
 
@@ -420,144 +420,144 @@ export type TrackEventMutationVariables = Exact<{
 }>;
 
 
-export type TrackEventMutation = { __typename: 'RootMutationType', trackEvent?: { __typename: 'Event', name: EventName, anonId: string } | null };
+export type TrackEventMutation = { __typename?: 'RootMutationType', trackEvent?: { __typename?: 'Event', name: EventName, anonId: string } | null };
 
 export type GetEventsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetEventsQuery = { __typename: 'RootQueryType', events: Array<{ __typename: 'Event', name: EventName, anonId: string }> };
+export type GetEventsQuery = { __typename?: 'RootQueryType', events: Array<{ __typename?: 'Event', name: EventName, anonId: string }> };
 
 export type CheckTokenQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CheckTokenQuery = { __typename: 'RootQueryType', checkToken?: { __typename: 'TokenPayload', token?: { __typename: 'Token', value?: string | null } | null } | null };
+export type CheckTokenQuery = { __typename?: 'RootQueryType', checkToken?: { __typename?: 'TokenPayload', token?: { __typename?: 'Token', value?: string | null } | null } | null };
 
-export type AuthenticatedCustomerPropsFragment = { __typename: 'Customer', id: string, token: string, e164: string, name?: string | null, org?: string | null, role?: string | null };
+export type AuthenticatedCustomerPropsFragment = { __typename?: 'Customer', id: string, token: string, e164: string, name?: string | null, org?: string | null, role?: string | null };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename: 'RootQueryType', me?: { __typename: 'Customer', id: string, token: string, e164: string, name?: string | null, org?: string | null, role?: string | null } | null };
+export type MeQuery = { __typename?: 'RootQueryType', me?: { __typename?: 'Customer', id: string, token: string, e164: string, name?: string | null, org?: string | null, role?: string | null } | null };
 
 export type SubmitPhoneMutationVariables = Exact<{
   input: SubmitPhoneInput;
 }>;
 
 
-export type SubmitPhoneMutation = { __typename: 'RootMutationType', submitPhone?: { __typename: 'UserError', message: string } | { __typename: 'Verification', status: VerificationStatus } | null };
+export type SubmitPhoneMutation = { __typename?: 'RootMutationType', submitPhone?: { __typename?: 'UserError', message: string } | { __typename?: 'Verification', status: VerificationStatus } | null };
 
 export type SubmitCodeMutationVariables = Exact<{
   input: SubmitCodeInput;
 }>;
 
 
-export type SubmitCodeMutation = { __typename: 'RootMutationType', submitCode?: { __typename: 'SubmitCodePayload', me: { __typename: 'Customer', id: string, token: string, e164: string, name?: string | null, org?: string | null, role?: string | null }, verification: { __typename: 'Verification', status: VerificationStatus } } | { __typename: 'UserError', message: string } | null };
+export type SubmitCodeMutation = { __typename?: 'RootMutationType', submitCode?: { __typename?: 'SubmitCodePayload', me: { __typename?: 'Customer', id: string, token: string, e164: string, name?: string | null, org?: string | null, role?: string | null }, verification: { __typename?: 'Verification', status: VerificationStatus } } | { __typename?: 'UserError', message: string } | null };
 
 export type UpdateProfileMutationVariables = Exact<{
   input: ProfileInput;
 }>;
 
 
-export type UpdateProfileMutation = { __typename: 'RootMutationType', updateProfile?: { __typename: 'UpdateProfilePayload', me?: { __typename: 'Customer', id: string, name?: string | null, org?: string | null, role?: string | null } | null, userError?: { __typename: 'UserError', message: string } | null } | null };
+export type UpdateProfileMutation = { __typename?: 'RootMutationType', updateProfile?: { __typename?: 'UpdateProfilePayload', me?: { __typename?: 'Customer', id: string, name?: string | null, org?: string | null, role?: string | null } | null, userError?: { __typename?: 'UserError', message: string } | null } | null };
 
-export type ContactPropsFragment = { __typename: 'Contact', id: string, name: string, org: string, role: string };
+export type ContactPropsFragment = { __typename?: 'Contact', id: string, name: string, org: string, role: string };
 
-export type BaseConversationPropsFragment = { __typename: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }> };
+export type BaseConversationPropsFragment = { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename?: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename?: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }> };
 
-export type ConversationPropsFragment = { __typename: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename: 'Money', amount: number, currency: Currency }, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }> };
+export type ConversationPropsFragment = { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename?: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename?: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename?: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }> };
 
-export type UserErrorPropsFragment = { __typename: 'UserError', code?: ErrorCode | null, message: string };
+export type UserErrorPropsFragment = { __typename?: 'UserError', code?: ErrorCode | null, message: string };
 
-export type ConversationPayloadPropsFragment = { __typename: 'ConversationPayload', conversation?: { __typename: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename: 'Money', amount: number, currency: Currency }, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }> } | null, userError?: { __typename: 'UserError', code?: ErrorCode | null, message: string } | null };
+export type ConversationPayloadPropsFragment = { __typename?: 'ConversationPayload', conversation?: { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename?: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename?: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename?: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }> } | null, userError?: { __typename?: 'UserError', code?: ErrorCode | null, message: string } | null };
 
 export type GetConversationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetConversationsQuery = { __typename: 'RootQueryType', getConversations?: { __typename: 'ConversationsPayload', conversations: Array<{ __typename: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename: 'Money', amount: number, currency: Currency }, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }> }> } | null };
+export type GetConversationsQuery = { __typename?: 'RootQueryType', getConversations?: { __typename?: 'ConversationsPayload', conversations: Array<{ __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename?: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename?: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename?: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }> }> } | null };
 
 export type ViewConversationQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type ViewConversationQuery = { __typename: 'RootQueryType', getConversation?: { __typename: 'ConversationPayload', conversation?: { __typename: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename: 'Money', amount: number, currency: Currency }, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }> } | null, userError?: { __typename: 'UserError', code?: ErrorCode | null, message: string } | null } | null };
+export type ViewConversationQuery = { __typename?: 'RootQueryType', getConversation?: { __typename?: 'ConversationPayload', conversation?: { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename?: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename?: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename?: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }> } | null, userError?: { __typename?: 'UserError', code?: ErrorCode | null, message: string } | null } | null };
 
 export type UpsertConversationMutationVariables = Exact<{
   input: ConversationInput;
 }>;
 
 
-export type UpsertConversationMutation = { __typename: 'RootMutationType', upsertConversation?: { __typename: 'ConversationPayload', conversation?: { __typename: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename: 'Money', amount: number, currency: Currency }, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }> } | null, userError?: { __typename: 'UserError', code?: ErrorCode | null, message: string } | null } | null };
+export type UpsertConversationMutation = { __typename?: 'RootMutationType', upsertConversation?: { __typename?: 'ConversationPayload', conversation?: { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename?: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename?: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename?: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }> } | null, userError?: { __typename?: 'UserError', code?: ErrorCode | null, message: string } | null } | null };
 
 export type DeleteConversationMutationVariables = Exact<{
   input: DeleteConversationInput;
 }>;
 
 
-export type DeleteConversationMutation = { __typename: 'RootMutationType', deleteConversation?: { __typename: 'ConversationPayload', conversation?: { __typename: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename: 'Money', amount: number, currency: Currency }, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }> } | null, userError?: { __typename: 'UserError', code?: ErrorCode | null, message: string } | null } | null };
+export type DeleteConversationMutation = { __typename?: 'RootMutationType', deleteConversation?: { __typename?: 'ConversationPayload', conversation?: { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename?: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename?: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename?: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }> } | null, userError?: { __typename?: 'UserError', code?: ErrorCode | null, message: string } | null } | null };
 
 export type SignConversationMutationVariables = Exact<{
   input: SignInput;
 }>;
 
 
-export type SignConversationMutation = { __typename: 'RootMutationType', sign?: { __typename: 'ConversationPayload', conversation?: { __typename: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename: 'Money', amount: number, currency: Currency }, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }> } | null, userError?: { __typename: 'UserError', code?: ErrorCode | null, message: string } | null } | null };
+export type SignConversationMutation = { __typename?: 'RootMutationType', sign?: { __typename?: 'ConversationPayload', conversation?: { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename?: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename?: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename?: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }> } | null, userError?: { __typename?: 'UserError', code?: ErrorCode | null, message: string } | null } | null };
 
 export type ProposeConversationMutationVariables = Exact<{
   input: ProposeInput;
 }>;
 
 
-export type ProposeConversationMutation = { __typename: 'RootMutationType', propose?: { __typename: 'ConversationPayload', conversation?: { __typename: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename: 'Money', amount: number, currency: Currency }, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }> } | null, userError?: { __typename: 'UserError', code?: ErrorCode | null, message: string } | null } | null };
+export type ProposeConversationMutation = { __typename?: 'RootMutationType', propose?: { __typename?: 'ConversationPayload', conversation?: { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename?: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename?: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename?: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }> } | null, userError?: { __typename?: 'UserError', code?: ErrorCode | null, message: string } | null } | null };
 
 export type ReviewConversationMutationVariables = Exact<{
   input: ReviewInput;
 }>;
 
 
-export type ReviewConversationMutation = { __typename: 'RootMutationType', review?: { __typename: 'ConversationPayload', conversation?: { __typename: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename: 'Money', amount: number, currency: Currency }, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }> } | null, userError?: { __typename: 'UserError', code?: ErrorCode | null, message: string } | null } | null };
+export type ReviewConversationMutation = { __typename?: 'RootMutationType', review?: { __typename?: 'ConversationPayload', conversation?: { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename?: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename?: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename?: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }> } | null, userError?: { __typename?: 'UserError', code?: ErrorCode | null, message: string } | null } | null };
 
 export type ContactsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ContactsQuery = { __typename: 'RootQueryType', contacts: Array<{ __typename: 'Contact', id: string, name: string, org: string, role: string }> };
+export type ContactsQuery = { __typename?: 'RootQueryType', contacts: Array<{ __typename?: 'Contact', id: string, name: string, org: string, role: string }> };
 
 export type ConversationChangedSubscriptionVariables = Exact<{
   input: ConversationChangedInput;
 }>;
 
 
-export type ConversationChangedSubscription = { __typename: 'RootSubscriptionType', conversationChanged?: { __typename: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename: 'Money', amount: number, currency: Currency }, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }> } | null };
+export type ConversationChangedSubscription = { __typename?: 'RootSubscriptionType', conversationChanged?: { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename?: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename?: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename?: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }> } | null };
 
-export type OppPropsFragment = { __typename: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename: 'Money', amount: number, currency: Currency }, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string } };
+export type OppPropsFragment = { __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } };
 
-export type OppPayloadPropsFragment = { __typename: 'OppPayload', opp?: { __typename: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename: 'Money', amount: number, currency: Currency }, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string } } | null, userError?: { __typename: 'UserError', code?: ErrorCode | null, message: string } | null };
+export type OppPayloadPropsFragment = { __typename?: 'OppPayload', opp?: { __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } } | null, userError?: { __typename?: 'UserError', code?: ErrorCode | null, message: string } | null };
 
 export type GetOppsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetOppsQuery = { __typename: 'RootQueryType', getOpps?: { __typename: 'OppsPayload', opps: Array<{ __typename: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename: 'Money', amount: number, currency: Currency }, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string } }> } | null };
+export type GetOppsQuery = { __typename?: 'RootQueryType', getOpps?: { __typename?: 'OppsPayload', opps: Array<{ __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }> } | null };
 
 export type UpsertOppMutationVariables = Exact<{
   input: OppInput;
 }>;
 
 
-export type UpsertOppMutation = { __typename: 'RootMutationType', upsertOpp?: { __typename: 'OppPayload', opp?: { __typename: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename: 'Money', amount: number, currency: Currency }, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string } } | null, userError?: { __typename: 'UserError', code?: ErrorCode | null, message: string } | null } | null };
+export type UpsertOppMutation = { __typename?: 'RootMutationType', upsertOpp?: { __typename?: 'OppPayload', opp?: { __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } } | null, userError?: { __typename?: 'UserError', code?: ErrorCode | null, message: string } | null } | null };
 
 export type GetOppQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type GetOppQuery = { __typename: 'RootQueryType', getOpp?: { __typename: 'OppPayload', opp?: { __typename: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename: 'Money', amount: number, currency: Currency }, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string } } | null, userError?: { __typename: 'UserError', code?: ErrorCode | null, message: string } | null } | null };
+export type GetOppQuery = { __typename?: 'RootQueryType', getOpp?: { __typename?: 'OppPayload', opp?: { __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } } | null, userError?: { __typename?: 'UserError', code?: ErrorCode | null, message: string } | null } | null };
 
 export type GetTimelineQueryVariables = Exact<{
   input?: InputMaybe<TimelineInput>;
 }>;
 
 
-export type GetTimelineQuery = { __typename: 'RootQueryType', getTimeline?: { __typename: 'TimelinePayload', events: Array<{ __typename: 'ContactProfileChanged', type: TimelineEventType, occurredAt: any, contact: { __typename: 'Contact', id: string, name: string, org: string, role: string } } | { __typename: 'ConversationPublished', type: TimelineEventType, occurredAt: any, conversation: { __typename: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename: 'Money', amount: number, currency: Currency }, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename: 'Contact', id: string, name: string, org: string, role: string } }> } }> } | null };
+export type GetTimelineQuery = { __typename?: 'RootQueryType', getTimeline?: { __typename?: 'TimelinePayload', events: Array<{ __typename?: 'ContactProfileChanged', type: TimelineEventType, occurredAt: any, contact: { __typename?: 'Contact', id: string, name: string, org: string, role: string } } | { __typename?: 'ConversationPublished', type: TimelineEventType, occurredAt: any, conversation: { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename?: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename?: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename?: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }> } }> } | null };
 
 export const AuthenticatedCustomerPropsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuthenticatedCustomerProps"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Customer"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"e164"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"org"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]} as unknown as DocumentNode<AuthenticatedCustomerPropsFragment, unknown>;
 export const ContactPropsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ContactProps"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Contact"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"org"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]} as unknown as DocumentNode<ContactPropsFragment, unknown>;

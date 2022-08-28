@@ -74,7 +74,7 @@ export const View: FC<Props> = ({
                   )
               )
               .with({ __typename: "ContactProfileChanged" }, () => null)
-              .exhaustive()
+              .run()
           ),
         ]),
       ])
