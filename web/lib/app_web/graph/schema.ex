@@ -25,5 +25,6 @@ defmodule AppWeb.Graph.Schema do
 
   subscription do
     import_fields(:conversations_subscriptions)
+    import_fields(:timeline_subscriptions)
   end
 end

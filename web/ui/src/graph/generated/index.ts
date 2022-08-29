@@ -316,11 +316,17 @@ export type RootQueryTypeGetTimelineArgs = {
 export type RootSubscriptionType = {
   __typename?: 'RootSubscriptionType';
   conversationChanged?: Maybe<Conversation>;
+  timelineEventsAdded?: Maybe<TimelinePayload>;
 };
 
 
 export type RootSubscriptionTypeConversationChangedArgs = {
   input: ConversationChangedInput;
+};
+
+
+export type RootSubscriptionTypeTimelineEventsAddedArgs = {
+  input: TimelineEventsAddedInput;
 };
 
 export type SignInput = {
@@ -362,6 +368,10 @@ export enum TimelineEventType {
   ContactProfileChanged = 'CONTACT_PROFILE_CHANGED',
   ConversationPublished = 'CONVERSATION_PUBLISHED'
 }
+
+export type TimelineEventsAddedInput = {
+  id: Scalars['ID'];
+};
 
 export type TimelineFilters = {
   opps?: InputMaybe<Array<Scalars['ID']>>;

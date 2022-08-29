@@ -96,13 +96,18 @@ defmodule App.Timeline do
       |> IO.inspect(label: "all_viewers")
 
     Enum.map(all_viewers, fn viewer ->
-      TimelineEvent.conversation_published_changeset(%{
-        viewer: viewer,
-        conversation: conversation
-      })
-      |> Repo.insert!(on_conflict: :nothing)
+      event =
+        TimelineEvent.conversation_published_changeset(%{
+          viewer: viewer,
+          conversation: conversation
+        })
+        |> Repo.insert!(on_conflict: :nothing)
 
-      # TODO: notify subscriptions if  notify arg
+      Absinthe.Subscription.publish(
+        AppWeb.Endpoint,
+        [event],
+        timeline_events_added: viewer.id
+      )
     end)
     |> IO.inspect(label: "events")
 

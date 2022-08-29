@@ -50,4 +50,22 @@ defmodule AppWeb.Graph.Timeline do
       resolve(&Timeline.get_timeline/3)
     end
   end
+
+  input_object :timeline_events_added_input do
+    field(:id, non_null(:id))
+  end
+
+  object :timeline_subscriptions do
+    field :timeline_events_added, :timeline_payload do
+      arg(:input, non_null(:timeline_events_added_input))
+
+      config(fn args, _ ->
+        {:ok, topic: args.input.id}
+      end)
+
+      resolve(fn payload, _, _ ->
+        {:ok, payload}
+      end)
+    end
+  end
 end
