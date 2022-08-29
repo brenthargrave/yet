@@ -17,6 +17,8 @@ defmodule App.Timeline do
     TimelineEvent
   }
 
+  alias AppWeb.Resolvers.Timeline.{TimelinePayload}
+
   @preloads [
     conversation: [
       :creator,
@@ -103,13 +105,17 @@ defmodule App.Timeline do
         })
         |> Repo.insert!(on_conflict: :nothing)
 
+      payload =
+        %TimelinePayload{events: [event]}
+        |> IO.inspect(label: "payload")
+
       Absinthe.Subscription.publish(
         AppWeb.Endpoint,
-        [event],
+        payload,
         timeline_events_added: viewer.id
       )
+      |> IO.inspect(label: "timeline_events_added")
     end)
-    |> IO.inspect(label: "events")
 
     conversation
   end
