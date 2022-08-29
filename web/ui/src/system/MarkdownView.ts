@@ -40,7 +40,7 @@ export const MarkdownView: FC<Props> = ({ md, maxLines }) => {
     // NOTE: open off-domain links in new tab
     // linkTarget: "_blank"
     linkTarget: (href, children, title) =>
-      href.includes(VITE_HOST) ? "_blank" : "_self",
+      href.includes(VITE_HOST) ? "_self" : "_blank",
     skipHtml: false,
     components: {
       a: ({ node, href, children, ...props }) =>
