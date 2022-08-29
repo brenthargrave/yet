@@ -2,7 +2,6 @@ defmodule AppWeb.Resolvers.Analytics do
   alias App.Analytics
 
   def track_event(_parent, %{input: input}, _resolution) do
-    IO.puts(inspect(input))
     %{name: name, anon_id: anon_id} = input
     name = Recase.to_snake(name)
 

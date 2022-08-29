@@ -3,7 +3,7 @@ defmodule App.Opp do
   use Croma
   import Ecto.Changeset
   import App.Types
-  alias App.{Customer, Mention}
+  alias App.{Customer, Mention, OppVersion}
 
   typed_schema "opps" do
     belongs_to :creator, Customer
@@ -20,12 +20,14 @@ defmodule App.Opp do
       through: [:mentions, :conversation],
       preload_order: [desc: :inserted_at]
 
+    has_many :opp_versions, OppVersion, on_delete: :delete_all
+
     timestamps(type: :utc_datetime_usec)
   end
 
   def changeset(record, attrs) do
     record
-    |> cast(attrs, [:id, :role, :org, :desc, :fee, :url])
+    |> cast(attrs, [:id, :role, :org, :fee, :desc, :url])
     |> validate_required([:id, :role, :org, :fee])
     |> put_assoc(:creator, attrs[:creator])
     |> put_assoc(:owner, attrs[:owner])

@@ -13,9 +13,11 @@ defmodule App.Conversations do
     Review,
     Customer,
     Notification,
-    Timeline
+    Timeline,
+    OppVersion
   }
 
+  alias Ecto.Multi
   import Ecto.Query
   import App.Helpers, only: [format_ecto_errors: 1]
 
@@ -125,13 +127,14 @@ defmodule App.Conversations do
     Repo.get(Conversation, id)
     |> Repo.preload(@preloads)
     |> lift(nil, :not_found)
-    |> fmap(&Map.put(attrs, :conversation, &1))
     # TODO: multi
-    |> fmap(&Signature.changeset(%Signature{}, &1))
-    |> bind(&Repo.insert(&1))
+    |> fmap(&Map.put(attrs, :conversation, &1))
+    |> fmap(&Signature.changeset/1)
+    |> bind(&Repo.insert/1)
     |> fmap(&tap_notify_creator_of_signature(&1, conversation_url))
+    |> fmap(&tap_save_opp_versions/1)
     |> fmap(&Conversation.signed_changeset/1)
-    |> bind(&Repo.insert_or_update(&1))
+    |> bind(&Repo.insert_or_update/1)
     |> fmap(&Repo.preload(&1, @preloads, force: true, in_parallel: true))
     |> fmap(&Conversation.update_subscriptions/1)
     |> fmap(&Timeline.async_handle_published(&1, true))
@@ -225,5 +228,21 @@ defmodule App.Conversations do
     end)
 
     conversation
+  end
+
+  defun tap_save_opp_versions(signature :: Signature.t()) :: Signature.t() do
+    Task.Supervisor.async_nolink(App.TaskSupervisor, fn ->
+      signature.conversation.opps
+      |> Enum.map(fn opp ->
+        opp
+        |> Map.from_struct()
+        |> Map.put(:opp, opp)
+        |> Map.put(:signature, signature)
+        |> OppVersion.changeset()
+        |> Repo.insert!()
+      end)
+    end)
+
+    signature
   end
 end

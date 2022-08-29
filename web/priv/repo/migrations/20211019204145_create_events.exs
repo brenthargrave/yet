@@ -90,8 +90,8 @@ defmodule App.Repo.Migrations.CreateEvents do
     """
 
     create table(:opps) do
-      add :creator_id, references(:customers, on_delete: :delete_all)
-      add :owner_id, references(:customers, on_delete: :delete_all)
+      add :creator_id, references(:customers, on_delete: :delete_all), null: false
+      add :owner_id, references(:customers, on_delete: :delete_all), null: false
       add :org, :string, null: false
       add :role, :string, null: false
       add :desc, :text
@@ -131,5 +131,22 @@ defmodule App.Repo.Migrations.CreateEvents do
     create(index(:timeline_events, [:viewer_id]))
     create(index(:timeline_events, [:occurred_at]))
     create(index(:timeline_events, [:conversation_id]))
+
+    create table(:opp_versions) do
+      add :signature_id, references(:signatures, on_delete: :delete_all), null: false
+      add :opp_id, references(:opps, on_delete: :delete_all), null: false
+      # NOTE: duplicate mutable opps fields
+      add :owner_id, references(:customers, on_delete: :delete_all), null: false
+      add :org, :string, null: false
+      add :role, :string, null: false
+      add :desc, :text
+      add :url, :text
+      add :fee, :money_with_currency, null: false
+      timestamps()
+    end
+
+    create(index(:opp_versions, [:signature_id]))
+    create(index(:opp_versions, [:opp_id]))
+    create(unique_index(:opp_versions, [:signature_id, :opp_id]))
   end
 end

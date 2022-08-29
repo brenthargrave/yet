@@ -21,7 +21,6 @@ defmodule App.Auth.Twilio do
           service: service()
         )
 
-      IO.puts(inspect(res))
       res
     else
       # NOTE: repurpose Twilio's magic numbers to stub responses.
@@ -47,7 +46,6 @@ defmodule App.Auth.Twilio do
           service: service()
         )
 
-      IO.puts(inspect(res))
       res
     else
       case code do

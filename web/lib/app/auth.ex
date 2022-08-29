@@ -40,7 +40,6 @@ defmodule App.Auth do
   defun submit_code(e164 :: e164(), code :: number()) :: submit_code_result() do
     # TODO: event
     res = Twilio.check_verification(e164, code)
-    IO.puts(inspect(res))
 
     case res do
       # NOTE: Twilio responds "pending" when incorrect code submitted

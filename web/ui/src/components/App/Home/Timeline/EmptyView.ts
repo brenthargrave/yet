@@ -16,7 +16,7 @@ export const EmptyView: FC<Props> = ({ onClickNew, ...props }) =>
     h(
       Text,
       { align: "center" },
-      `To get started, share notes of your conversations with others to grow your network.`
+      `Share notes of your conversations with others to grow your network.`
     ),
     h(Button, { onClick: onClickNew }, t(`note.empty.buttonCopy`)),
   ])

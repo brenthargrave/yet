@@ -63,9 +63,7 @@ defmodule App.Timeline do
 
     opps_ids =
       conversation.opps
-      |> IO.inspect(label: "opps")
       |> Enum.map(&Map.get(&1, :id))
-      |> IO.inspect(label: "opps_ids")
 
     # all owners of conversations mentioning this convo's opps
     creators =
@@ -98,7 +96,6 @@ defmodule App.Timeline do
       |> Enum.uniq_by(&Map.get(&1, :id))
       # NOTE: exclude participants, no need to see own activity
       |> Enum.drop_while(&Enum.member?(participants_ids, &1.id))
-      |> IO.inspect(label: "all_viewers")
 
     Enum.map(all_viewers, fn viewer ->
       event =
@@ -108,16 +105,13 @@ defmodule App.Timeline do
         })
         |> Repo.insert!(on_conflict: :nothing)
 
-      payload =
-        %TimelinePayload{events: [event]}
-        |> IO.inspect(label: "payload")
+      payload = %TimelinePayload{events: [event]}
 
       Absinthe.Subscription.publish(
         AppWeb.Endpoint,
         payload,
         timeline_events_added: viewer.id
       )
-      |> IO.inspect(label: "timeline_events_added")
     end)
 
     conversation

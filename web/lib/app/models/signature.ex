@@ -4,18 +4,19 @@ defmodule App.Signature do
   use Brex.Result
   import Ecto.Changeset
   import App.Types
-  alias App.{Customer, Conversation}
+  alias App.{Customer, Conversation, OppVersion}
   alias Ecto.Changeset
 
   typed_schema "signatures" do
+    timestamps(type: :utc_datetime_usec)
     belongs_to(:conversation, Conversation)
     belongs_to(:signer, Customer)
     field(:signed_at, :utc_datetime_usec)
-    timestamps(type: :utc_datetime_usec)
+    has_many :opp_versions, OppVersion, on_delete: :delete_all
   end
 
-  def changeset(record, attrs) do
-    record
+  def changeset(attrs) do
+    %__MODULE__{}
     |> cast(attrs, [:id, :signed_at])
     |> put_assoc(:signer, attrs[:signer])
     |> put_assoc(:conversation, attrs[:conversation])

@@ -92,12 +92,4 @@ defmodule App.Conversation do
     creator = conversation.creator
     [creator | signers]
   end
-
-  defunp append_ids(old :: list(String.t()), new :: list(String.t())) :: list(String.t()) do
-    old
-    |> Enum.concat(new)
-    |> List.flatten()
-    |> Enum.uniq()
-    |> IO.inspect()
-  end
 end
