@@ -2,14 +2,22 @@ import { h, ReactSource } from "@cycle/react"
 import {
   combineLatest,
   distinctUntilChanged,
+  filter,
   map,
   merge,
   share,
   startWith,
+  switchMap,
 } from "rxjs"
+import { isNotNullish } from "rxjs-etc"
 import { filterResultOk } from "ts-results/rxjs-operators"
 import { Source as ActionSource } from "~/action"
-import { Conversation, getTimeline$, Source as GraphSource } from "~/graph"
+import {
+  Conversation,
+  getTimeline$,
+  Source as GraphSource,
+  subscribeTimeline$,
+} from "~/graph"
 import { makeTagger } from "~/log"
 import { NEWID, push, routes } from "~/router"
 import { cb$, shareLatest } from "~/rx"
@@ -41,14 +49,31 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
 
   const result$ = getTimeline$().pipe(tag("result$"), share())
 
-  const events$ = result$.pipe(
+  const initiaLevents$ = result$.pipe(
     filterResultOk(),
     startWith([]),
     tag("THIS events$"),
     share()
   )
 
-  const state$ = events$.pipe(
+  const newEvents$ = me$.pipe(
+    filter(isNotNullish),
+    switchMap(({ id }) => subscribeTimeline$({ id })),
+    tag("newEvents$"),
+    shareLatest()
+  )
+
+  const events$ = merge(
+    initiaLevents$,
+    newEvents$.pipe(
+      switchMap(() => getTimeline$()),
+      filterResultOk(),
+      tag("newEvents$ -> refetched"),
+      shareLatest()
+    )
+  )
+
+  const state$ = initiaLevents$.pipe(
     map(() => State.ready),
     startWith(State.loading),
     distinctUntilChanged(),

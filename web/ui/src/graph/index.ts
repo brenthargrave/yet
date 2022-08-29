@@ -56,6 +56,8 @@ import {
   SubmitPhoneDocument,
   SubmitPhoneInput,
   SubmitPhoneResult,
+  TimelineEventsAddedDocument,
+  TimelineEventsAddedInput,
   TimelineInput,
   TrackEventDocument,
   TrackEventInput,
@@ -579,3 +581,28 @@ export const getTimeline$ = (input: TimelineInput = {}) => {
     tag("getTimeline$")
   )
 }
+
+export const subscribeTimeline$ = (input: TimelineEventsAddedInput) =>
+  from(
+    zenToRx(
+      client.subscribe({
+        query: TimelineEventsAddedDocument,
+        variables: { input },
+        fetchPolicy: "no-cache",
+      })
+    ).pipe(
+      map((result) => {
+        const { context, data, errors, extensions } = result
+        if (errors) throw new GraphError(JSON.stringify(errors))
+        return data
+      })
+    )
+  ).pipe(
+    map((data) => data?.timelineEventsAdded),
+    filter(isNotNullish),
+    catchError((error, _caught$) => {
+      console.error(error)
+      throw new GraphDefaultQueryError(error.message)
+    }),
+    tag("subscribeTimeline$")
+  )

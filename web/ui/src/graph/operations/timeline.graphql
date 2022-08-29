@@ -1,20 +1,30 @@
-query GetTimeline($input: TimelineInput) {
-  getTimeline(input: $input) {
-    events {
-      ...on ConversationPublished {
-        type
-        occurredAt
-        conversation {
-          ...ConversationProps
-        }
-      }
-      ...on ContactProfileChanged {
-        type
-        occurredAt
-        contact {
-          ...ContactProps
-        }
+fragment TimelinePayloadProps on TimelinePayload {
+  events {
+    ...on ConversationPublished {
+      type
+      occurredAt
+      conversation {
+        ...ConversationProps
       }
     }
+    ...on ContactProfileChanged {
+      type
+      occurredAt
+      contact {
+        ...ContactProps
+      }
+    }
+  }
+}
+
+query GetTimeline($input: TimelineInput) {
+  getTimeline(input: $input) {
+    ...TimelinePayloadProps
+  }
+}
+
+subscription TimelineEventsAdded($input: TimelineEventsAddedInput!) {
+  timelineEventsAdded(input: $input) {
+    ...TimelinePayloadProps
   }
 }
