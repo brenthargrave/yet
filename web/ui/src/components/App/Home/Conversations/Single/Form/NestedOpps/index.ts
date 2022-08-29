@@ -82,19 +82,19 @@ export const NestedOpps = (
 
   const router = opps.action.pipe(
     withLatestFrom(record$),
-    map(([action, { id: _id, ...record }]) => {
+    switchMap(([action, { id: _id, ...record }]) => {
       const id = mode === Mode.create ? NEWID : _id
       return match(action)
         .with({ type: Actions.listOpps }, () =>
-          push(routes.conversationOpps({ id }))
+          of(push(routes.conversationOpps({ id })))
         )
         .with({ type: Actions.createOpp }, () =>
-          push(routes.conversationOpp({ id, oid: NEWID }))
+          of(push(routes.conversationOpp({ id, oid: NEWID })))
         )
         .with({ type: Actions.showOpp }, ({ opp }) =>
-          push(routes.conversationOpp({ id, oid: opp.id }))
+          of(push(routes.conversationOpp({ id, oid: opp.id })))
         )
-        .run()
+        .otherwise(() => EMPTY)
     }),
     tag("router")
   )
@@ -102,5 +102,6 @@ export const NestedOpps = (
   return {
     router,
     ...nestedOpps,
+    action,
   }
 }

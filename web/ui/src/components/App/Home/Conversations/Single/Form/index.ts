@@ -567,6 +567,7 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
   const notice = merge(shareURLCopiedNotice$, justSignedNotice$, opps.notice)
   const track = merge(trackPropose$)
   const graph = merge(propose$)
+  const action = merge(opps.action)
 
   return {
     react,
@@ -574,5 +575,6 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     notice,
     track,
     graph,
+    action,
   }
 }

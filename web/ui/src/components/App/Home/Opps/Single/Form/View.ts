@@ -1,5 +1,5 @@
-import { CheckIcon } from "@chakra-ui/icons"
-import { FormControl, FormLabel, VStack } from "@chakra-ui/react"
+import { CheckIcon, EditIcon, ViewIcon } from "@chakra-ui/icons"
+import { FormControl, FormLabel, Icon, VStack } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { form } from "@cycle/react-dom"
 import { FC } from "react"
@@ -62,6 +62,7 @@ export interface Props {
   onSubmit?: () => void
   onCancel?: () => void
   onClickBack?: () => void
+  onClickShow?: () => void
 }
 
 export const View: FC<Props> = ({
@@ -81,6 +82,7 @@ export const View: FC<Props> = ({
   onSubmit: _onSubmit,
   onCancel,
   onClickBack,
+  onClickShow,
   ...props
 }) => {
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = (e) => {
@@ -92,8 +94,16 @@ export const View: FC<Props> = ({
     h(Header, [
       h(Heading, { size: "md" }, headerCopy(target)),
       h(Spacer),
-      // h(Button),
-      //
+      target !== Target.create &&
+        h(
+          Button,
+          {
+            leftIcon: h(Icon, { as: ViewIcon }),
+            size: "xs",
+            onClick: onClickShow,
+          },
+          `View`
+        ),
     ]),
     form({ id: "edit", onSubmit, style: { width: "100%" } }, [
       h(Stack, { direction: "column", width: "100%", gap: 2 }, [

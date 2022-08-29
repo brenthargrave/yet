@@ -46,6 +46,13 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
+  const [onClickEdit, onClickEdit$] = cb$(tag("onClickEdit$"))
+  const clickEdit$ = onClickEdit$.pipe(
+    map(() => act(Actions.editOpp)),
+    tag("clickEdit$"),
+    share()
+  )
+
   const events$ = record$.pipe(
     switchMap((opp) => getTimeline$({ filters: { opps: [opp.id] } })),
     filterResultOk(),
@@ -62,13 +69,14 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
   }).pipe(tag("props$"))
 
   const react = props$.pipe(
-    map((props) => h(View, { ...props, onClickBack })),
+    map((props) => h(View, { ...props, onClickBack, onClickEdit })),
     tag("react")
   )
 
   const action = merge(
     //
-    goToList$
+    goToList$,
+    clickEdit$
   )
 
   return {

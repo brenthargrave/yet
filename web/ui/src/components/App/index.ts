@@ -123,6 +123,7 @@ export const App = (sources: Sources) => {
   const notice = merge(auth.notice, home.notice).pipe(eatUnrecoverableError())
   const graph = merge(auth.graph, home.graph).pipe(eatUnrecoverableError())
   const track = merge(home.track).pipe(eatUnrecoverableError())
+  const action = merge(home.action)
 
   return {
     react,
@@ -130,5 +131,6 @@ export const App = (sources: Sources) => {
     notice,
     graph,
     track,
+    action,
   }
 }

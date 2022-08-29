@@ -1,4 +1,14 @@
-import { Box, Divider, Heading, ListItem, Spacer, Text } from "@chakra-ui/react"
+import { EditIcon } from "@chakra-ui/icons"
+import { GoGear } from "react-icons/go"
+import {
+  Box,
+  Divider,
+  Heading,
+  Icon,
+  ListItem,
+  Spacer,
+  Text,
+} from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { match } from "ts-pattern"
@@ -13,6 +23,7 @@ import {
   MarkdownView,
   Nav,
   CreateButton,
+  Button,
 } from "~/system"
 import { Location } from ".."
 
@@ -23,6 +34,7 @@ export interface Props {
   events: TimelineEvent[]
   onClickBack?: () => void
   onClickNewConv?: () => void
+  onClickEdit?: () => void
 }
 
 export const View: FC<Props> = ({
@@ -32,6 +44,7 @@ export const View: FC<Props> = ({
   events = [],
   onClickBack,
   onClickNewConv,
+  onClickEdit,
 }) => {
   return h(FullWidthVStack, {}, [
     h(Nav, { onClickBack, backButtonText: "Opps" }),
@@ -39,6 +52,15 @@ export const View: FC<Props> = ({
       //
       h(Heading, { size: "md" }, "Opportunity"),
       h(Spacer),
+      h(
+        Button,
+        {
+          leftIcon: h(Icon, { as: EditIcon }),
+          size: "xs",
+          onClick: onClickEdit,
+        },
+        `Edit`
+      ),
     ]),
     h(
       FullWidthVStack,

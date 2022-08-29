@@ -75,6 +75,7 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
   const notice = merge(...pluck("notice", [single, create]))
   const track = merge(...pluck("track", [list, single, create]))
   const graph = merge(...pluck("graph", [single, create]))
+  const action = merge(...pluck("action", [single, create]))
 
   return {
     react,
@@ -82,5 +83,6 @@ export const Conversations = (sources: Sources, tagPrefix?: string) => {
     track,
     notice,
     graph,
+    action,
   }
 }

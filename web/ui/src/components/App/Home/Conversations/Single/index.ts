@@ -202,6 +202,7 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
   )
   const track = merge(...pluck("track", [edit, sign]))
   const graph = merge(...pluck("graph", [edit]))
+  const action = merge(...pluck("action", [edit]))
 
   return {
     react,
@@ -209,5 +210,6 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     notice,
     track,
     graph,
+    action,
   }
 }

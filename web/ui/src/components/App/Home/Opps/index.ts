@@ -1,4 +1,5 @@
 import { ReactSource } from "@cycle/react"
+import { map, pipe } from "remeda"
 import { merge, Observable, share, switchMap } from "rxjs"
 import { match } from "ts-pattern"
 import { Source as ActionSource } from "~/action"
@@ -7,6 +8,7 @@ import { makeTagger } from "~/log"
 import { Main as List } from "./List"
 import { Single } from "./Single"
 import { Create } from "./Single/Create"
+import { pluck } from "~/fp"
 
 export enum Location {
   home = "home",
@@ -58,8 +60,8 @@ export const Opps = (sources: Sources, tagPrefix?: string) => {
     tag("react")
   )
 
-  const action = merge(list.action, single.action, create.action)
-  const notice = merge(create.notice, single.notice)
+  const action = merge(...pluck("action", [create, single, list]))
+  const notice = merge(...pluck("notice", [create, single]))
   const value = { ...list.value }
 
   return {

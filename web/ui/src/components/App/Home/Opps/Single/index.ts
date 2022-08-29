@@ -5,6 +5,7 @@ import {
   EMPTY,
   map,
   merge,
+  mergeWith,
   Observable,
   share,
   startWith,
@@ -12,6 +13,7 @@ import {
 } from "rxjs"
 import { match } from "ts-pattern"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
+import { Actions, Source as ActionSource } from "~/action"
 import { getOpp$, ID, isOwnedBy, me$, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
@@ -37,6 +39,7 @@ interface Props {
 interface Sources {
   react: ReactSource
   graph: GraphSource
+  action: ActionSource
   props: Props
 }
 
@@ -45,6 +48,7 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
   const tag = makeTagger(tagScope)
 
   const {
+    action: { action$ },
     props: { state$: oppsState$, id$, location },
   } = sources
 
@@ -73,6 +77,16 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
   const edit = Edit({ ...sources, props: { record$, location } }, tagScope)
   const show = Show({ ...sources, props: { record$, location } }, tagScope)
 
+  const internalRouter$ = action$.pipe(
+    map((action) =>
+      match(action)
+        .with({ type: Actions.editOpp }, () => State.edit)
+        .with({ type: Actions.showOpp }, () => State.show)
+        .otherwise(() => State.show)
+    ),
+    share()
+  )
+
   const state$ = combineLatest({
     isLoading: isLoading$,
     oppsState: oppsState$,
@@ -81,10 +95,9 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
   }).pipe(
     map(({ isLoading, oppsState, opp, me }) => {
       if (oppsState !== OppsState.single || isLoading) return State.pending
-      // ! TODO: how present edit without a distinct url/param?
-      // return isOwnedBy(opp, me) ? State.edit : State.show
       return State.show
     }),
+    mergeWith(internalRouter$),
     startWith(State.pending),
     distinctUntilChanged(),
     tag("state$"),

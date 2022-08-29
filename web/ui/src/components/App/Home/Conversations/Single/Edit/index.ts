@@ -61,6 +61,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     notice: formNotice$,
     track,
     graph,
+    action,
   } = Form(
     {
       ...sources,
@@ -79,5 +80,6 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     router,
     track,
     graph,
+    action,
   }
 }

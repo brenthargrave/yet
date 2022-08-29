@@ -6,6 +6,7 @@ export enum Actions {
   listOpps = "listOpps",
   createOpp = "createOpp",
   showOpp = "showOpp",
+  editOpp = "editOpp",
 }
 
 interface ListOpps {
@@ -21,7 +22,12 @@ interface ShowOpp {
   opp: Opp
 }
 
-export type Action = ListOpps | CreateOpp | ShowOpp
+interface EditOpp {
+  type: Actions.editOpp
+  opp: Opp
+}
+
+export type Action = ListOpps | CreateOpp | ShowOpp | EditOpp
 
 export const act = (type: Actions, args?: Omit<Action, "type">): Action =>
   ({

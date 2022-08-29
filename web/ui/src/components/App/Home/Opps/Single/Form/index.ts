@@ -74,6 +74,13 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     tag("onClickBack$"),
     share()
   )
+  const [onClickShow, onClickShow$] = cb$(tag("onClickShow$"))
+  const clickShow$ = onClickShow$.pipe(
+    withLatestFrom(record$),
+    map(([_, opp]) => act(Actions.showOpp, { opp })),
+    tag("clickShow$"),
+    share()
+  )
 
   const org$ = record$.pipe(
     pluck("org"),
@@ -181,11 +188,12 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
         onSubmit,
         onCancel,
         onClickBack,
+        onClickShow,
       })
     )
   )
 
-  const action = merge(showList$, goToList$)
+  const action = merge(showList$, goToList$, clickShow$)
   const notice = merge(userErrorNotice$)
   return {
     react,

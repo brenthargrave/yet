@@ -1,4 +1,4 @@
-import { ChevronLeftIcon } from "@chakra-ui/icons"
+import { SmallCloseIcon } from "@chakra-ui/icons"
 import { h } from "@cycle/react"
 import { Button } from "~/system"
 
@@ -11,7 +11,7 @@ export const CancelButton = ({ onCancel, ...props }: Props) =>
     Button,
     {
       variant: "ghost",
-      leftIcon: h(ChevronLeftIcon),
+      leftIcon: h(SmallCloseIcon),
       size: "sm",
       onClick: onCancel,
       ...props,

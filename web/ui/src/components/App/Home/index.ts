@@ -103,16 +103,16 @@ export const Home = (sources: Sources) => {
   )
 
   const oppsRouter$ = opps.action.pipe(
-    map((action) =>
+    switchMap((action) =>
       match(action)
-        .with({ type: Actions.listOpps }, () => push(routes.opps()))
+        .with({ type: Actions.listOpps }, () => of(push(routes.opps())))
         .with({ type: Actions.createOpp }, () =>
-          push(routes.opp({ oid: NEWID }))
+          of(push(routes.opp({ oid: NEWID })))
         )
         .with({ type: Actions.showOpp }, ({ opp }) =>
-          push(routes.opp({ oid: opp.id }))
+          of(push(routes.opp({ oid: opp.id })))
         )
-        .run()
+        .otherwise(() => EMPTY)
     ),
     tag("oppsRouter$")
   )
@@ -236,6 +236,7 @@ export const Home = (sources: Sources) => {
   const track = merge(...pluck("track", [conversations]))
   const notice = merge(...pluck("notice", [conversations, opps, onboarding]))
   const graph = merge(...pluck("graph", [conversations]))
+  const action = merge(...pluck("action", [opps, conversations]))
 
   return {
     react,
@@ -243,5 +244,6 @@ export const Home = (sources: Sources) => {
     track,
     notice,
     graph,
+    action,
   }
 }
