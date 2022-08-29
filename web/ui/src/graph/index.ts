@@ -3,6 +3,7 @@
 /* eslint max-classes-per-file: 0 */
 
 import { captureException } from "@sentry/react"
+import { filter as _filter, pipe, reverse, sort } from "remeda"
 import {
   BehaviorSubject,
   catchError,
@@ -19,7 +20,6 @@ import { isNotNullish } from "rxjs-etc"
 import { switchMap } from "rxjs/operators"
 import { Err, Ok, Result } from "ts-results"
 import { resultMap } from "ts-results/rxjs-operators"
-import { descend, prop } from "~/fp"
 import { makeTagger } from "~/log"
 import { shareLatest, zenToRx } from "~/rx"
 import { getId } from "./anon"
@@ -461,16 +461,18 @@ export const conversations$ = token$.pipe(
       tag("watchQuery(conversations) > filter(isNotNullish)")
     )
   }),
-  tag("conversations$"),
   map((conversations) =>
-    conversations
-      .filter((c) => c.status !== ConversationStatus.Deleted)
-      .sort(descend(prop("occurredAt")))
+    pipe(
+      conversations,
+      _filter((c) => c.status !== ConversationStatus.Deleted),
+      sort((c) => c.occurredAt),
+      reverse()
+    )
   ),
-  tag("conversations$ - DELETED"),
   catchError((error, _caught$) => {
     throw new GraphDefaultQueryError(error.message)
   }),
+  tag("conversations$"),
   shareLatest()
 )
 
@@ -573,7 +575,13 @@ export const getTimeline$ = (input: TimelineInput = {}) => {
       const { events } = data.getTimeline!
       return new Ok(events)
     }),
-    resultMap((events) => events.sort(descend(prop("occurredAt")))),
+    resultMap((events) =>
+      pipe(
+        events,
+        sort((e) => e.occurredAt),
+        reverse()
+      )
+    ),
     catchError((error, _caught$) => {
       console.error(error)
       throw new GraphDefaultQueryError(error.message)
