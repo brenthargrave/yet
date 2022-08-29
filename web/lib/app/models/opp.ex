@@ -7,6 +7,7 @@ defmodule App.Opp do
 
   typed_schema "opps" do
     belongs_to :creator, Customer
+    belongs_to :owner, Customer
     field :role, :string
     field :org, :string
     field :desc, :string
@@ -27,5 +28,6 @@ defmodule App.Opp do
     |> cast(attrs, [:id, :role, :org, :desc, :fee, :url])
     |> validate_required([:id, :role, :org, :fee])
     |> put_assoc(:creator, attrs[:creator])
+    |> put_assoc(:owner, attrs[:owner])
   end
 end

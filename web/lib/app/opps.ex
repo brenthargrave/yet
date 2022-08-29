@@ -9,13 +9,14 @@ defmodule App.Opps do
   import App.Helpers, only: [format_ecto_errors: 1]
 
   @preloads [
-    :creator
+    :creator,
+    :owner
   ]
 
   defun opps(viewer :: Customer.t()) :: Brex.Result.s(list(Opp.t())) do
     created_opps =
       from(o in Opp,
-        where: o.creator_id == ^viewer.id
+        where: o.owner_id == ^viewer.id
       )
 
     through_conversations_created =
@@ -48,6 +49,7 @@ defmodule App.Opps do
           input
         ) :: Brex.Result.s(Opp.t()) do
     attrs = Map.put(input, :creator, customer)
+    attrs = Map.put(attrs, :owner, customer)
 
     Repo.get(Opp, attrs.id)
     |> Repo.preload(@preloads)
@@ -55,7 +57,7 @@ defmodule App.Opps do
     |> convert_error(:not_found, %Opp{})
     # only creator can edit
     |> bind(
-      &if !is_nil(&1.creator_id) && &1.creator_id != customer.id,
+      &if !is_nil(&1.owner_id) && &1.owner_id != customer.id,
         do: error(:unauthorized),
         else: ok(&1)
     )

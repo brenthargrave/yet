@@ -91,6 +91,7 @@ defmodule App.Repo.Migrations.CreateEvents do
 
     create table(:opps) do
       add :creator_id, references(:customers, on_delete: :delete_all)
+      add :owner_id, references(:customers, on_delete: :delete_all)
       add :org, :string, null: false
       add :role, :string, null: false
       add :desc, :text
@@ -100,6 +101,7 @@ defmodule App.Repo.Migrations.CreateEvents do
     end
 
     create(index(:opps, [:creator_id]))
+    create(index(:opps, [:owner_id]))
     create(index(:opps, [:org]))
     create(index(:opps, [:role]))
     create(index(:opps, [:url]))

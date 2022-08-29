@@ -26,4 +26,4 @@ export const newOpp = () => ({
 })
 
 export const isOwnedBy = (opp: Opp, customer: Maybe<Customer>) =>
-  opp.creator.id === customer?.id
+  opp.owner.id === customer?.id

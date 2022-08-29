@@ -32,7 +32,7 @@ import { Location } from ".."
 
 export { Target }
 
-type EditableOpp = Omit<Opp, "creator" | "insertedAt">
+type EditableOpp = Omit<Opp, "creator" | "owner" | "insertedAt">
 
 interface Props {
   record$: Observable<EditableOpp>

@@ -11,6 +11,9 @@ fragment OppProps on Opp {
   creator {
     ...ContactProps
   }
+  owner {
+    ...ContactProps
+  }
   insertedAt
 }
 

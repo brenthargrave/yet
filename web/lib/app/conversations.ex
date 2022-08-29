@@ -21,7 +21,7 @@ defmodule App.Conversations do
 
   @preloads [
     :creator,
-    opps: [:creator],
+    opps: [:creator, :owner],
     signatures: [:signer, :conversation],
     reviews: [:reviewer, :conversation]
   ]
