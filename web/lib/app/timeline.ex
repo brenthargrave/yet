@@ -35,12 +35,16 @@ defmodule App.Timeline do
           Conversation.t() do
     Task.Supervisor.async_nolink(App.TaskSupervisor, fn ->
       handle_published(conversation, notify_subscriptions)
-      # ! TODO: backfill every time someone makes a new contact
-      # if notify_subscriptions do
-      #   from(c in Conversation, where: c.status != :deleted)
-      #   |> Repo.all(preload: Conversations.preloads())
-      #   |> Enum.each(&handle_published(&1, false))
-      # end
+      # ! TODO: find a scalable solution
+      # NOTE: rerun for all prior records every time someone makes new contacts
+      if notify_subscriptions do
+        from(c in Conversation,
+          where: c.status != :deleted,
+          preload: ^Conversations.preloads()
+        )
+        |> Repo.all()
+        |> Enum.each(&handle_published(&1, false))
+      end
     end)
 
     conversation
@@ -51,6 +55,7 @@ defmodule App.Timeline do
           notify_subscriptions \\ false
         ) :: Conversation.t() do
     participants = Conversation.get_participants(conversation)
+    participants_ids = Enum.map(participants, & &1.id)
 
     # all contacts of signers
     # all contacts of creator
@@ -87,14 +92,12 @@ defmodule App.Timeline do
           distinct: contact.id
       )
 
-    # participants_ids = Enum.map(participants, &Map.get(&1, :id))
-
     all_viewers =
       participants_contacts
       |> Enum.concat(all_opps_viewers)
       |> Enum.uniq_by(&Map.get(&1, :id))
-      # ? TODO: participants don't need informing of own conversation
-      # |> Enum.drop_while(&Enum.member?(participants_ids, &1.id))
+      # NOTE: exclude participants, no need to see own activity
+      |> Enum.drop_while(&Enum.member?(participants_ids, &1.id))
       |> IO.inspect(label: "all_viewers")
 
     Enum.map(all_viewers, fn viewer ->
