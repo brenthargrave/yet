@@ -2,19 +2,9 @@ import { Divider, Heading, Spacer, Text } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import {} from "remeda"
-import { match } from "ts-pattern"
-import { ConversationPublishedView } from "~/components/Conversation/View"
 import { TimelineEventList } from "~/components/TimelineEvent"
-import { isNotLastItem } from "~/fp"
 import { Conversation, Customer, Profile } from "~/graph"
-import {
-  containerProps,
-  FullWidthList,
-  FullWidthVStack,
-  Header,
-  LinkedListItem,
-  Nav,
-} from "~/system"
+import { containerProps, FullWidthVStack, Header, Nav } from "~/system"
 
 export enum State {
   loading = "loading",
@@ -56,15 +46,16 @@ export const View: FC<Props> = ({
           ]),
           // Activity
           h(Divider),
-          h(FullWidthVStack, [
-            h(Heading, { size: "sm" }, `Activity`),
-            // TODO:
-            // Activity visible to: Your Contacts | Extended Network
-            // Contacts see: full conversations
-            // Network sees: conversations w/o notes, opps mentioned
-            // both see: role/title updates
-            h(TimelineEventList, { viewer, events, onClickConversation }),
-          ]),
+          // TODO: profile events preview by persona?
+          // Activity visible to: Your Contacts | Extended Network
+          // Contacts see: full conversations
+          // Network sees: conversations w/o notes, opps mentioned
+          // both see: role/title updates
+          false &&
+            h(FullWidthVStack, [
+              h(Heading, { size: "sm" }, `Activity`),
+              h(TimelineEventList, { viewer, events, onClickConversation }),
+            ]),
         ]),
       ])
 }
