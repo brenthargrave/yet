@@ -1,0 +1,12 @@
+query GetProfile($input: GetProfileInput) {
+  getProfile(input: $input) {
+    profile {
+      contact {
+        ...ContactProps
+      }
+      events {
+        __typename
+      }
+    }
+  }
+}

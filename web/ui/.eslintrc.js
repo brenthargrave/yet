@@ -47,6 +47,8 @@ module.exports = {
     // prevent single-line arrays
     // "array-element-newline": "always",
     "no-nested-ternary": "off",
+    // NOTE: complains when react fn defs begin w/ ternary ops
+    "react/function-component-definition": "off",
   },
   settings: {
     "import/resolver": "node",

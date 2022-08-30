@@ -10,11 +10,17 @@ import {
   share,
   startWith,
   switchMap,
+  withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { filterResultOk } from "ts-results/rxjs-operators"
 import { Source as ActionSource } from "~/action"
-import { Conversation, getTimeline$, Source as GraphSource } from "~/graph"
+import {
+  Conversation,
+  getProfile$,
+  getTimeline$,
+  Source as GraphSource,
+} from "~/graph"
 import { makeTagger } from "~/log"
 import { NEWID, push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
@@ -47,22 +53,22 @@ export const Profile = (sources: Sources, tagPrefix?: string) => {
   //   map(({ id }) => push(routes.conversation({ id })))
   // )
 
-  // const result$ = history$.pipe(
-  //   switchMap((route) =>
-  //     route.name === routes.root.name ? getTimeline$() : EMPTY
-  //   ),
-  //   tag("result$"),
-  //   shareLatest()
-  // )
+  const result$ = combineLatest({ route: history$, me: me$ }).pipe(
+    switchMap(({ route, me }) =>
+      route.name === routes.profile.name ? getProfile$({ id: me.id }) : EMPTY
+    ),
+    tag("result$"),
+    shareLatest()
+  )
 
-  // const events$ = result$.pipe(
-  //   filterResultOk(),
-  //   startWith([]),
-  //   tag("events$"),
-  //   share()
-  // )
+  const profile$ = result$.pipe(
+    //
+    filterResultOk(),
+    tag("profile$"),
+    share()
+  )
 
-  const state$ = of(true).pipe(
+  const state$ = profile$.pipe(
     map(() => State.ready),
     startWith(State.loading),
     distinctUntilChanged(),
@@ -73,6 +79,7 @@ export const Profile = (sources: Sources, tagPrefix?: string) => {
   const props$ = combineLatest({
     state: state$,
     viewer: me$,
+    profile: profile$,
   }).pipe(tag("props$"), shareLatest())
 
   const react = props$.pipe(map((props) => h(View, { ...props })))

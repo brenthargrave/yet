@@ -130,6 +130,10 @@ export type EventProperties = {
   conversation?: InputMaybe<Scalars['ID']>;
 };
 
+export type GetProfileInput = {
+  id: Scalars['ID'];
+};
+
 export type Invitee = {
   __typename?: 'Invitee';
   id: Scalars['ID'];
@@ -192,10 +196,21 @@ export type OppsPayload = {
   opps: Array<Opp>;
 };
 
+export type Profile = {
+  __typename?: 'Profile';
+  contact: Contact;
+  events: Array<TimelineEvent>;
+};
+
 export type ProfileInput = {
   id: Scalars['String'];
   prop: ProfileProp;
   value: Scalars['String'];
+};
+
+export type ProfilePayload = {
+  __typename?: 'ProfilePayload';
+  profile: Profile;
 };
 
 export enum ProfileProp {
@@ -294,6 +309,7 @@ export type RootQueryType = {
   getConversations?: Maybe<ConversationsPayload>;
   getOpp?: Maybe<OppPayload>;
   getOpps?: Maybe<OppsPayload>;
+  getProfile?: Maybe<ProfilePayload>;
   getTimeline?: Maybe<TimelinePayload>;
   me?: Maybe<Customer>;
 };
@@ -306,6 +322,11 @@ export type RootQueryTypeGetConversationArgs = {
 
 export type RootQueryTypeGetOppArgs = {
   id: Scalars['ID'];
+};
+
+
+export type RootQueryTypeGetProfileArgs = {
+  input?: InputMaybe<GetProfileInput>;
 };
 
 
@@ -563,6 +584,13 @@ export type GetOppQueryVariables = Exact<{
 
 export type GetOppQuery = { __typename?: 'RootQueryType', getOpp?: { __typename?: 'OppPayload', opp?: { __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string }, owner: { __typename?: 'Contact', id: string, name: string, org: string, role: string } } | null, userError?: { __typename?: 'UserError', code?: ErrorCode | null, message: string } | null } | null };
 
+export type GetProfileQueryVariables = Exact<{
+  input?: InputMaybe<GetProfileInput>;
+}>;
+
+
+export type GetProfileQuery = { __typename?: 'RootQueryType', getProfile?: { __typename?: 'ProfilePayload', profile: { __typename?: 'Profile', contact: { __typename?: 'Contact', id: string, name: string, org: string, role: string }, events: Array<{ __typename: 'ContactProfileChanged' } | { __typename: 'ConversationPublished' }> } } | null };
+
 export type TimelinePayloadPropsFragment = { __typename?: 'TimelinePayload', events: Array<{ __typename?: 'ContactProfileChanged', type: TimelineEventType, occurredAt: any, contact: { __typename?: 'Contact', id: string, name: string, org: string, role: string } } | { __typename?: 'ConversationPublished', type: TimelineEventType, occurredAt: any, conversation: { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename?: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, opps: Array<{ __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string }, owner: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }>, creator: { __typename?: 'Contact', id: string, name: string, org: string, role: string }, invitees: Array<{ __typename?: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename?: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename?: 'Contact', id: string, name: string, org: string, role: string } }> } }> };
 
 export type GetTimelineQueryVariables = Exact<{
@@ -607,5 +635,6 @@ export const ConversationChangedDocument = {"kind":"Document","definitions":[{"k
 export const GetOppsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetOpps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getOpps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"opps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"OppProps"}}]}}]}}]}},...OppPropsFragmentDoc.definitions]} as unknown as DocumentNode<GetOppsQuery, GetOppsQueryVariables>;
 export const UpsertOppDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpsertOpp"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"OppInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"upsertOpp"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"OppPayloadProps"}}]}}]}},...OppPayloadPropsFragmentDoc.definitions]} as unknown as DocumentNode<UpsertOppMutation, UpsertOppMutationVariables>;
 export const GetOppDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetOpp"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getOpp"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"OppPayloadProps"}}]}}]}},...OppPayloadPropsFragmentDoc.definitions]} as unknown as DocumentNode<GetOppQuery, GetOppQueryVariables>;
+export const GetProfileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetProfile"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"GetProfileInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getProfile"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"profile"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"contact"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ContactProps"}}]}},{"kind":"Field","name":{"kind":"Name","value":"events"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]}}]}}]}},...ContactPropsFragmentDoc.definitions]} as unknown as DocumentNode<GetProfileQuery, GetProfileQueryVariables>;
 export const GetTimelineDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTimeline"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"TimelineInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getTimeline"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TimelinePayloadProps"}}]}}]}},...TimelinePayloadPropsFragmentDoc.definitions]} as unknown as DocumentNode<GetTimelineQuery, GetTimelineQueryVariables>;
 export const TimelineEventsAddedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"TimelineEventsAdded"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TimelineEventsAddedInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"timelineEventsAdded"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TimelinePayloadProps"}}]}}]}},...TimelinePayloadPropsFragmentDoc.definitions]} as unknown as DocumentNode<TimelineEventsAddedSubscription, TimelineEventsAddedSubscriptionVariables>;

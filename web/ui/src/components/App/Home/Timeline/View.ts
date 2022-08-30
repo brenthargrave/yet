@@ -27,7 +27,6 @@ export interface Props extends EmptyViewProps {
   onClickConversation: (c: Conversation) => void
 }
 
-// eslint-disable-next-line react/function-component-definition
 export const View: FC<Props> = ({
   state,
   viewer,

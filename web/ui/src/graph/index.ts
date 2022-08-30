@@ -40,6 +40,8 @@ import {
   GetConversationsDocument,
   GetOppDocument,
   GetOppsDocument,
+  GetProfileDocument,
+  GetProfileInput,
   GetTimelineDocument,
   MeDocument,
   OppInput,
@@ -614,3 +616,30 @@ export const subscribeTimeline$ = (input: TimelineEventsAddedInput) =>
     }),
     tag("subscribeTimeline$")
   )
+
+export const getProfile$ = (input: GetProfileInput) => {
+  return merge(
+    from(
+      client.query({
+        query: GetProfileDocument,
+        variables: { input },
+        fetchPolicy: "network-only",
+      })
+    ).pipe(
+      map(({ data, errors }) => {
+        if (errors) throw new GraphError(JSON.stringify(errors))
+        return data
+      })
+    )
+  ).pipe(
+    map((data) => {
+      const profile = data!.getProfile!.profile!
+      return Ok(profile)
+    }),
+    catchError((error, _caught$) => {
+      console.error(error)
+      throw new GraphDefaultQueryError(error.message)
+    }),
+    tag("getProfile$")
+  )
+}

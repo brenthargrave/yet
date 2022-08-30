@@ -25,10 +25,4 @@ defmodule AppWeb.Graph.Onboarding do
       resolve(&Onboarding.update_profile/3)
     end
   end
-
-  # object :onboarding_queries do
-  # field :events, non_null(list_of(non_null(:event))) do
-  #   resolve(&Resolvers.Analytics.events/3)
-  # end
-  # end
 end
