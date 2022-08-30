@@ -29,6 +29,7 @@ import {
 import { cb$, mapTo, shareLatest } from "~/rx"
 import { Conversations } from "./Conversations"
 import { Location, Opps, State as OppsState } from "./Opps"
+import { Profile } from "./Profile"
 import { Timeline } from "./Timeline"
 import { View } from "./View"
 
@@ -41,6 +42,7 @@ enum RootState {
   conversations = "conversations",
   opps = "opps",
   timeline = "timeline",
+  profile = "profile",
 }
 
 interface Sources {
@@ -63,6 +65,7 @@ export const Home = (sources: Sources) => {
   const onboarding = Onboarding(sources)
   const conversations = Conversations(sources, tagScope)
   const timeline = Timeline(sources, tagScope)
+  const profile = Profile(sources, tagScope)
 
   const oppsState$ = history$.pipe(
     map((route) =>
@@ -120,11 +123,13 @@ export const Home = (sources: Sources) => {
   const [onClickHome, onClickHome$] = cb$(tag("onClickHome$"))
   const [onClickConversations, onClickConvos$] = cb$(tag("onClickConvos$"))
   const [onClickOpps, onClickOpps$] = cb$(tag("onClickOpps$"))
+  const [onClickProfile, onClickProfile$] = cb$(tag("onClickProfile$"))
 
   const rootRouter$ = merge(
     onClickHome$.pipe(mapTo(push(routes.root()))),
     onClickConvos$.pipe(mapTo(push(routes.conversations()))),
-    onClickOpps$.pipe(mapTo(push(routes.opps())))
+    onClickOpps$.pipe(mapTo(push(routes.opps()))),
+    onClickProfile$.pipe(mapTo(push(routes.profile())))
   ).pipe(tag("rootRouter$"), share())
 
   const rootState$ = history$
@@ -132,6 +137,7 @@ export const Home = (sources: Sources) => {
       map((route) =>
         match(route)
           .with({ name: routes.root.name }, () => RootState.timeline)
+          .with({ name: routes.profile.name }, () => RootState.profile)
           .when(
             (route) => anyConversationsRouteGroup.has(route),
             () => RootState.conversations
@@ -194,6 +200,7 @@ export const Home = (sources: Sources) => {
         .with(RootState.timeline, () => timeline.react)
         .with(RootState.conversations, () => conversations.react)
         .with(RootState.opps, () => opps.react)
+        .with(RootState.profile, () => profile.react)
         .exhaustive()
     ),
     tag("subview$")
@@ -201,9 +208,17 @@ export const Home = (sources: Sources) => {
 
   const rootView$ = combineLatest({ subview: subview$, props: props$ }).pipe(
     map(({ subview, props }) =>
-      h(View, { ...props, onClickConversations, onClickOpps, onClickHome }, [
-        subview,
-      ])
+      h(
+        View,
+        {
+          ...props,
+          onClickConversations,
+          onClickOpps,
+          onClickHome,
+          onClickProfile,
+        },
+        [subview]
+      )
     ),
     tag("rootView$")
   )

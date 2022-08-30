@@ -33,6 +33,7 @@ const conversationOpp = conversationOpps.extend(
 )
 const opps = root.extend("/o")
 const opp = opps.extend({ oid: param.path.string }, (p) => `/${p.oid}`)
+const profile = root.extend("/profile")
 
 export const { routes, useRoute, RouteProvider, session } = createRouter({
   in: defineRoute("/in"),
@@ -45,6 +46,7 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
   conversationOpp,
   opps,
   opp,
+  profile,
 })
 
 export const routesOppsList = [routes.conversationOpps, routes.opps]
