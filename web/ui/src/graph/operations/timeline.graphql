@@ -1,19 +1,29 @@
+fragment TimelineEventProps on TimelineEvent {
+  ...on ConversationPublished {
+    type
+    occurredAt
+    conversation {
+      ...ConversationProps
+      creator {
+        id
+        name
+        org
+        role
+      }
+    }
+  }
+  ...on ContactProfileChanged {
+    type
+    occurredAt
+    contact {
+      ...ContactProps
+    }
+  }
+}
+
 fragment TimelinePayloadProps on TimelinePayload {
   events {
-    ...on ConversationPublished {
-      type
-      occurredAt
-      conversation {
-        ...ConversationProps
-      }
-    }
-    ...on ContactProfileChanged {
-      type
-      occurredAt
-      contact {
-        ...ContactProps
-      }
-    }
+    ...TimelineEventProps
   }
 }
 

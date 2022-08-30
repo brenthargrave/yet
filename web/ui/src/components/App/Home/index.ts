@@ -29,7 +29,7 @@ import {
 import { cb$, mapTo, shareLatest } from "~/rx"
 import { Conversations } from "./Conversations"
 import { Location, Opps, State as OppsState } from "./Opps"
-import { Profile } from "./Profile"
+import { Profiles } from "./Profile"
 import { Timeline } from "./Timeline"
 import { View } from "./View"
 
@@ -65,7 +65,7 @@ export const Home = (sources: Sources) => {
   const onboarding = Onboarding(sources)
   const conversations = Conversations(sources, tagScope)
   const timeline = Timeline(sources, tagScope)
-  const profile = Profile(sources, tagScope)
+  const profiles = Profiles(sources, tagScope)
 
   const oppsState$ = history$.pipe(
     map((route) =>
@@ -200,7 +200,7 @@ export const Home = (sources: Sources) => {
         .with(RootState.timeline, () => timeline.react)
         .with(RootState.conversations, () => conversations.react)
         .with(RootState.opps, () => opps.react)
-        .with(RootState.profile, () => profile.react)
+        .with(RootState.profile, () => profiles.react)
         .exhaustive()
     ),
     tag("subview$")

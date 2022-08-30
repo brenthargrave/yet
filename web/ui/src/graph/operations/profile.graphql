@@ -5,7 +5,7 @@ query GetProfile($input: GetProfileInput) {
         ...ContactProps
       }
       events {
-        __typename
+        ...TimelineEventProps
       }
     }
   }

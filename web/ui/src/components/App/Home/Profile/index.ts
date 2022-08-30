@@ -5,25 +5,18 @@ import {
   EMPTY,
   filter,
   map,
-  merge,
-  of,
+  Observable,
   share,
   startWith,
   switchMap,
-  withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { filterResultOk } from "ts-results/rxjs-operators"
 import { Source as ActionSource } from "~/action"
-import {
-  Conversation,
-  getProfile$,
-  getTimeline$,
-  Source as GraphSource,
-} from "~/graph"
+import { getProfile$, Profile, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { NEWID, push, routes, Source as RouterSource } from "~/router"
-import { cb$, shareLatest } from "~/rx"
+import { routes, Source as RouterSource } from "~/router"
+import { shareLatest } from "~/rx"
 import { State, View } from "./View"
 
 export interface Sources {
@@ -33,7 +26,7 @@ export interface Sources {
   action: ActionSource
 }
 
-export const Profile = (sources: Sources, tagPrefix?: string) => {
+export const Profiles = (sources: Sources, tagPrefix?: string) => {
   const tagScope = `${tagPrefix}/Timeline`
   const tag = makeTagger(tagScope)
 
@@ -61,7 +54,7 @@ export const Profile = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const profile$ = result$.pipe(
+  const profile$: Observable<Profile> = result$.pipe(
     //
     filterResultOk(),
     tag("profile$"),
