@@ -34,6 +34,7 @@ export const View: FC<Props> = ({
   onClickConversations,
   onClickOpps,
   onClickHome,
+  onClickProfile,
 }) => {
   const [left, setLeft] = useState(0)
   const [footerH, setFooterH] = useState(0)
@@ -74,6 +75,7 @@ export const View: FC<Props> = ({
                   onClickConversations,
                   onClickOpps,
                   onClickHome,
+                  onClickProfile,
                 }),
                 h(Divider, { orientation: "vertical" }),
               ]
@@ -117,6 +119,7 @@ export const View: FC<Props> = ({
               onClickConversations,
               onClickOpps,
               onClickHome,
+              onClickProfile,
             }),
           ]
         ),

@@ -3,10 +3,12 @@ import { h } from "@cycle/react"
 import { FC, Ref, useRef, RefObject } from "react"
 import { FiHome } from "react-icons/fi"
 import { TbArrowsSplit2, TbNotes } from "react-icons/tb"
+import { CgProfile } from "react-icons/cg"
 
 const iconConversations = TbNotes
 const iconOpps = TbArrowsSplit2
 const iconHome = FiHome
+const iconProfile = CgProfile
 
 export enum Orientation {
   horizontal = "horizontal",
@@ -18,6 +20,7 @@ export interface Props {
   onClickConversations: () => void
   onClickOpps: () => void
   onClickHome: () => void
+  onClickProfile: () => void
 }
 
 const onClickBlur = (
@@ -32,22 +35,25 @@ const onClickBlur = (
 
 export const MenuView: FC<Props> = ({
   orientation,
-  onClickConversations,
-  onClickOpps,
-  onClickHome,
+  onClickConversations: _onClickConvos,
+  onClickOpps: _onClickOpps,
+  onClickHome: _onClickHome,
+  onClickProfile: _onClickProfile,
 }) => {
   const buttonRefConvos = useRef<HTMLButtonElement>()
-  const onClickConvosButton = (e: React.MouseEvent<HTMLButtonElement>) => {
-    onClickConversations()
+  const onClickConvos = (e: React.MouseEvent<HTMLButtonElement>) => {
+    _onClickConvos()
     buttonRefConvos.current?.blur()
   }
   const buttonRefOpps = useRef<HTMLButtonElement>()
-  const onClickOppsButton = (e: React.MouseEvent<HTMLButtonElement>) => {
-    onClickOpps()
+  const onClickOpps = (e: React.MouseEvent<HTMLButtonElement>) => {
+    _onClickOpps()
     buttonRefOpps.current?.blur()
   }
   const buttonRefHome = useRef<HTMLButtonElement>()
-  const onClickHomeButton = onClickBlur(buttonRefHome, onClickHome)
+  const onClickHome = onClickBlur(buttonRefHome, _onClickHome)
+  const buttonRefProfile = useRef<HTMLButtonElement>()
+  const onClickProfile = onClickBlur(buttonRefProfile, _onClickProfile)
 
   const stack = orientation === Orientation.horizontal ? HStack : VStack
   return h(stack, { gap: 1 }, [
@@ -57,7 +63,7 @@ export const MenuView: FC<Props> = ({
         size: "lg",
         variant: "outline",
         ref: buttonRefHome,
-        onClick: onClickHomeButton,
+        onClick: onClickHome,
       }),
     ]),
     h(Tooltip, { shouldWrapChildren: true, label: "Conversations" }, [
@@ -66,7 +72,7 @@ export const MenuView: FC<Props> = ({
         size: "lg",
         variant: "outline",
         ref: buttonRefConvos,
-        onClick: onClickConvosButton,
+        onClick: onClickConvos,
       }),
     ]),
     h(Tooltip, { shouldWrapChildren: true, label: "Opportunities" }, [
@@ -76,7 +82,16 @@ export const MenuView: FC<Props> = ({
         variant: "outline",
         // color: "green.600",
         ref: buttonRefOpps,
-        onClick: onClickOppsButton,
+        onClick: onClickOpps,
+      }),
+    ]),
+    h(Tooltip, { shouldWrapChildren: true, label: "Profile" }, [
+      h(IconButton, {
+        icon: h(Icon, { as: iconProfile }),
+        size: "lg",
+        variant: "outline",
+        ref: buttonRefProfile,
+        onClick: onClickProfile,
       }),
     ]),
   ])
