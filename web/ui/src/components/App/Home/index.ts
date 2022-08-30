@@ -29,7 +29,7 @@ import {
 import { cb$, mapTo, shareLatest } from "~/rx"
 import { Conversations } from "./Conversations"
 import { Location, Opps, State as OppsState } from "./Opps"
-import { Profiles } from "./Profile"
+import { Profiles } from "./Profiles"
 import { Timeline } from "./Timeline"
 import { View } from "./View"
 

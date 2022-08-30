@@ -24,6 +24,7 @@ import {
   Nav,
   CreateButton,
   Button,
+  EditButton,
 } from "~/system"
 import { Location } from ".."
 
@@ -52,15 +53,7 @@ export const View: FC<Props> = ({
       //
       h(Heading, { size: "md" }, "Opportunity"),
       h(Spacer),
-      h(
-        Button,
-        {
-          leftIcon: h(Icon, { as: EditIcon }),
-          size: "xs",
-          onClick: onClickEdit,
-        },
-        `Edit`
-      ),
+      h(EditButton, { onClick: onClickEdit }),
     ]),
     h(
       FullWidthVStack,

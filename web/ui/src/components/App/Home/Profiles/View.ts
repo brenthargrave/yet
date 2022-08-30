@@ -4,7 +4,13 @@ import { FC } from "react"
 import {} from "remeda"
 import { TimelineEventList } from "~/components/TimelineEvent"
 import { Conversation, Customer, Profile } from "~/graph"
-import { containerProps, FullWidthVStack, Header, Nav } from "~/system"
+import {
+  containerProps,
+  EditButton,
+  FullWidthVStack,
+  Header,
+  Nav,
+} from "~/system"
 
 export enum State {
   loading = "loading",
@@ -15,6 +21,7 @@ export interface Props {
   state: State
   viewer: Customer
   profile: Profile
+  onClickEdit?: () => void
   onClickConversation?: (c: Conversation) => void
 }
 
@@ -22,6 +29,7 @@ export const View: FC<Props> = ({
   state,
   viewer,
   profile,
+  onClickEdit,
   onClickConversation,
 }) => {
   const { contact, events } = profile
@@ -36,7 +44,7 @@ export const View: FC<Props> = ({
           //
           h(Heading, { size: "md" }, "Your Profile"),
           h(Spacer),
-          // Edit
+          h(EditButton, { onClick: onClickEdit }),
         ]),
         h(FullWidthVStack, { gap: 4, pt: 4 }, [
           // Contact

@@ -16,7 +16,7 @@ import { Source as ActionSource } from "~/action"
 import { getProfile$, Profile, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { routes, Source as RouterSource } from "~/router"
-import { shareLatest } from "~/rx"
+import { shareLatest, cb$ } from "~/rx"
 import { State, View } from "./View"
 
 export interface Sources {
@@ -36,8 +36,8 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
   } = sources
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"))
 
-  // const [onClickNew, clickNew$] = cb$(tag("clickNew$"))
-  // const newConvo$ = clickNew$.pipe(
+  const [onClickEdit, clickEdit$] = cb$(tag("clickEdit$"))
+  // const newConvo$ = clickEdit$.pipe(
   //   map(() => push(routes.conversation({ id: NEWID })))
   // )
 
@@ -75,7 +75,8 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
     profile: profile$,
   }).pipe(tag("props$"), shareLatest())
 
-  const react = props$.pipe(map((props) => h(View, { ...props })))
+  const cbs = [onClickEdit]
+  const react = props$.pipe(map((props) => h(View, { ...props, ...cbs })))
 
   // const router = merge(newConvo$, showConvo$)
 
