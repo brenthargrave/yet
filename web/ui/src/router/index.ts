@@ -33,7 +33,9 @@ const conversationOpp = conversationOpps.extend(
 )
 const opps = root.extend("/o")
 const opp = opps.extend({ oid: param.path.string }, (p) => `/${p.oid}`)
-const profile = root.extend("/profile")
+// const profiles = root.extend("/p")
+// const profile = profiles.extend({ pid: param.path.string }, (p) => `/${p.pid}`)
+const me = root.extend("/me")
 
 export const { routes, useRoute, RouteProvider, session } = createRouter({
   in: defineRoute("/in"),
@@ -46,8 +48,17 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
   conversationOpp,
   opps,
   opp,
-  profile,
+  // profiles,
+  // profile,
+  me,
 })
+
+export const routesProfilesList = [
+  // routes.profiles,
+  // routes.profiles,
+  routes.me,
+]
+export const routeGroupProfiles = createGroup(routesProfilesList)
 
 export const routesOppsList = [routes.conversationOpps, routes.opps]
 export const routeGroupOppsList = createGroup(routesOppsList)

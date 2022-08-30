@@ -23,6 +23,7 @@ import {
   anyRootOppsRouteGroup,
   NEWID,
   push,
+  routeGroupProfiles,
   routes,
   Source as RouterSource,
 } from "~/router"
@@ -42,7 +43,7 @@ enum RootState {
   conversations = "conversations",
   opps = "opps",
   timeline = "timeline",
-  profile = "profile",
+  profiles = "profile",
 }
 
 interface Sources {
@@ -129,15 +130,17 @@ export const Home = (sources: Sources) => {
     onClickHome$.pipe(mapTo(push(routes.root()))),
     onClickConvos$.pipe(mapTo(push(routes.conversations()))),
     onClickOpps$.pipe(mapTo(push(routes.opps()))),
-    onClickProfile$.pipe(mapTo(push(routes.profile())))
+    onClickProfile$.pipe(mapTo(push(routes.me())))
   ).pipe(tag("rootRouter$"), share())
 
   const rootState$ = history$
     .pipe(
       map((route) =>
         match(route)
-          .with({ name: routes.root.name }, () => RootState.timeline)
-          .with({ name: routes.profile.name }, () => RootState.profile)
+          .when(
+            (route) => routeGroupProfiles.has(route),
+            () => RootState.profiles
+          )
           .when(
             (route) => anyConversationsRouteGroup.has(route),
             () => RootState.conversations
@@ -145,6 +148,10 @@ export const Home = (sources: Sources) => {
           .when(
             (route) => anyRootOppsRouteGroup.has(route),
             () => RootState.opps
+          )
+          .when(
+            (route) => routeGroupProfiles.has(route),
+            () => RootState.profiles
           )
           .otherwise(() => RootState.timeline)
       )
@@ -200,7 +207,7 @@ export const Home = (sources: Sources) => {
         .with(RootState.timeline, () => timeline.react)
         .with(RootState.conversations, () => conversations.react)
         .with(RootState.opps, () => opps.react)
-        .with(RootState.profile, () => profiles.react)
+        .with(RootState.profiles, () => profiles.react)
         .exhaustive()
     ),
     tag("subview$")

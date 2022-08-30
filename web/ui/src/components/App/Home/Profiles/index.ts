@@ -11,13 +11,19 @@ import {
   switchMap,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
+import { match } from "ts-pattern"
 import { filterResultOk } from "ts-results/rxjs-operators"
 import { Source as ActionSource } from "~/action"
 import { getProfile$, Profile, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { routes, Source as RouterSource } from "~/router"
 import { shareLatest, cb$ } from "~/rx"
-import { State, View } from "./View"
+import { Show } from "./Show"
+
+export enum State {
+  show = "show",
+  pending = "pending",
+}
 
 export interface Sources {
   react: ReactSource
@@ -27,7 +33,7 @@ export interface Sources {
 }
 
 export const Profiles = (sources: Sources, tagPrefix?: string) => {
-  const tagScope = `${tagPrefix}/Timeline`
+  const tagScope = `${tagPrefix}/Profiles`
   const tag = makeTagger(tagScope)
 
   const {
@@ -36,49 +42,29 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
   } = sources
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"))
 
-  const [onClickEdit, clickEdit$] = cb$(tag("clickEdit$"))
-  // const newConvo$ = clickEdit$.pipe(
-  //   map(() => push(routes.conversation({ id: NEWID })))
-  // )
-
-  // const [onClickConversation, clickConvo$] = cb$<Conversation>(tag("clickNew$"))
-  // const showConvo$ = clickConvo$.pipe(
-  //   map(({ id }) => push(routes.conversation({ id })))
-  // )
-
-  const result$ = combineLatest({ route: history$, me: me$ }).pipe(
-    switchMap(({ route, me }) =>
-      route.name === routes.profile.name ? getProfile$({ id: me.id }) : EMPTY
+  const state$ = history$.pipe(
+    map((route) =>
+      match(route)
+        .with({ name: routes.me.name }, () => State.show)
+        .otherwise(() => State.pending)
     ),
-    tag("result$"),
-    shareLatest()
-  )
-
-  const profile$: Observable<Profile> = result$.pipe(
-    //
-    filterResultOk(),
-    tag("profile$"),
-    share()
-  )
-
-  const state$ = profile$.pipe(
-    map(() => State.ready),
-    startWith(State.loading),
     distinctUntilChanged(),
-    tag("state$"),
+    tag("THIS state$"),
     shareLatest()
   )
 
-  const props$ = combineLatest({
-    state: state$,
-    viewer: me$,
-    profile: profile$,
-  }).pipe(tag("props$"), shareLatest())
+  const show = Show(sources, tagScope)
 
-  const cbs = [onClickEdit]
-  const react = props$.pipe(map((props) => h(View, { ...props, ...cbs })))
-
-  // const router = merge(newConvo$, showConvo$)
+  const react = state$.pipe(
+    switchMap((state) =>
+      match(state)
+        .with(State.show, () => show.react)
+        .with(State.pending, () => EMPTY)
+        // .with(State.edit)
+        .exhaustive()
+    ),
+    tag("THIS react")
+  )
 
   return {
     react,
