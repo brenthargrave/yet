@@ -4,8 +4,22 @@ query GetProfile($input: GetProfileInput) {
       contact {
         ...ContactProps
       }
+      # ! NOTE: codegen fails on an extracted TimelineEventProps
       events {
-        ...TimelineEventProps
+        ...on ConversationPublished {
+          type
+          occurredAt
+          conversation {
+            ...ConversationProps
+          }
+        }
+        ...on ContactProfileChanged {
+          type
+          occurredAt
+          contact {
+            ...ContactProps
+          }
+        }
       }
     }
   }

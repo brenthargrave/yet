@@ -4,8 +4,9 @@ import { FC } from "react"
 import {} from "remeda"
 import { match } from "ts-pattern"
 import { ConversationPublishedView } from "~/components/Conversation/View"
+import { TimelineEventList } from "~/components/TimelineEvent"
 import { isNotLastItem } from "~/fp"
-import { Customer, Profile } from "~/graph"
+import { Conversation, Customer, Profile } from "~/graph"
 import {
   containerProps,
   FullWidthList,
@@ -24,9 +25,15 @@ export interface Props {
   state: State
   viewer: Customer
   profile: Profile
+  onClickConversation?: (c: Conversation) => void
 }
 
-export const View: FC<Props> = ({ state, viewer, profile }) => {
+export const View: FC<Props> = ({
+  state,
+  viewer,
+  profile,
+  onClickConversation,
+}) => {
   const { contact, events } = profile
   const { name, role, org } = contact
   const bio = [role, org].join(" at ")
@@ -41,7 +48,7 @@ export const View: FC<Props> = ({ state, viewer, profile }) => {
           h(Spacer),
           // Edit
         ]),
-        h(FullWidthVStack, { gap: 4 }, [
+        h(FullWidthVStack, { gap: 4, pt: 4 }, [
           // Contact
           h(FullWidthVStack, [
             h(Heading, { size: "lg" }, name),
@@ -56,31 +63,7 @@ export const View: FC<Props> = ({ state, viewer, profile }) => {
             // Contacts see: full conversations
             // Network sees: conversations w/o notes, opps mentioned
             // both see: role/title updates
-            h(FullWidthList, [
-              events.map((event, idx, all) =>
-                match(event)
-                  .with(
-                    { __typename: "ConversationPublished" },
-                    ({ conversation }) =>
-                      h(
-                        LinkedListItem,
-                        {
-                          key: idx,
-                          // onClick: () => onClickConversation(conversation),
-                        },
-                        [
-                          h(ConversationPublishedView, {
-                            viewer,
-                            conversation,
-                          }),
-                          isNotLastItem(idx, all) && h(Divider, { padding: 4 }),
-                        ]
-                      )
-                  )
-                  .with({ __typename: "ContactProfileChanged" }, () => null)
-                  .run()
-              ),
-            ]),
+            h(TimelineEventList, { viewer, events, onClickConversation }),
           ]),
         ]),
       ])

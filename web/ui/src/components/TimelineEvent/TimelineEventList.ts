@@ -14,7 +14,11 @@ export interface Props {
   onClickConversation?: (conversation: Conversation) => void
 }
 
-export const View: FC<Props> = ({ events, viewer, onClickConversation }) =>
+export const TimelineEventList: FC<Props> = ({
+  events,
+  viewer,
+  onClickConversation,
+}) =>
   h(FullWidthList, [
     events.map((event, idx, all) =>
       match(event)
