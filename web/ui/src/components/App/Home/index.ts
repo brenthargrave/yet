@@ -258,7 +258,7 @@ export const Home = (sources: Sources) => {
   const track = merge(...pluck("track", [conversations]))
   const notice = merge(...pluck("notice", [conversations, opps, onboarding]))
   const graph = merge(...pluck("graph", [conversations]))
-  const action = merge(...pluck("action", [opps, conversations]))
+  const action = merge(...pluck("action", [opps, conversations, profiles]))
 
   return {
     react,

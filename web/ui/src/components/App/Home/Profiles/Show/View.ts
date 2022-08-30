@@ -44,7 +44,11 @@ export const View: FC<Props> = ({
           //
           h(Heading, { size: "md" }, "Your Profile"),
           h(Spacer),
-          h(EditButton, { onClick: onClickEdit }),
+          h(EditButton, {
+            onClick: () => {
+              if (onClickEdit) onClickEdit()
+            },
+          }),
         ]),
         h(FullWidthVStack, { gap: 4, pt: 4 }, [
           // Contact
@@ -53,7 +57,7 @@ export const View: FC<Props> = ({
             h(Text, { fontSize: "lg" }, bio),
           ]),
           // Activity
-          h(Divider),
+          false && h(Divider),
           // TODO: profile events preview by persona?
           // Activity visible to: Your Contacts | Extended Network
           // Contacts see: full conversations

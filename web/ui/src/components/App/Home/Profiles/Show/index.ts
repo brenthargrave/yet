@@ -6,14 +6,17 @@ import {
   EMPTY,
   filter,
   map,
+  merge,
   Observable,
   share,
   startWith,
   switchMap,
+  withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
+import { Action } from "rxjs/internal/scheduler/Action"
 import { filterResultOk } from "ts-results/rxjs-operators"
-import { Source as ActionSource } from "~/action"
+import { act, Actions, Source as ActionSource } from "~/action"
 import { getProfile$, Profile, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { routes, Source as RouterSource } from "~/router"
@@ -37,17 +40,21 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
   } = sources
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"))
 
-  const [onClickEdit, clickEdit$] = cb$(tag("clickEdit$"))
-  // const newConvo$ = clickEdit$.pipe(
-  //   map(() => push(routes.conversation({ id: NEWID })))
-  // )
-
   const id$ = combineLatest({ route: history$, me: me$ }).pipe(
     switchMap(({ route, me: { id } }) =>
       route.name === routes.me.name ? of(id) : EMPTY
     ),
     tag("id$"),
     shareLatest()
+  )
+
+  const [onClickEdit, onClickEdit$] = cb$(tag("clickEdit$"))
+  const edit$ = onClickEdit$.pipe(
+    // withLatestFrom(id$),
+    // map(([_, id]) => act(Actions.editOpp, { id })),
+    map(() => act(Actions.editOpp)),
+    tag("edit$"),
+    share()
   )
 
   const result$ = id$.pipe(
@@ -77,13 +84,12 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
     profile: profile$,
   }).pipe(tag("props$"), shareLatest())
 
-  const cbs = [onClickEdit]
-  const react = props$.pipe(map((props) => h(View, { ...props, ...cbs })))
+  const react = props$.pipe(map((props) => h(View, { ...props, onClickEdit })))
 
-  // const router = merge(newConvo$, showConvo$)
+  const action = merge(edit$)
 
   return {
     react,
-    // router,
+    action,
   }
 }

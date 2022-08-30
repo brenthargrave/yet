@@ -1,4 +1,4 @@
-import { Opp } from "~/graph"
+import { ID, Opp } from "~/graph"
 
 export * from "./driver"
 
@@ -7,6 +7,7 @@ export enum Actions {
   createOpp = "createOpp",
   showOpp = "showOpp",
   editOpp = "editOpp",
+  editProfile = "editProfile",
 }
 
 interface ListOpps {
@@ -27,7 +28,12 @@ interface EditOpp {
   opp: Opp
 }
 
-export type Action = ListOpps | CreateOpp | ShowOpp | EditOpp
+interface EditProfile {
+  type: Actions.editProfile
+  id?: ID
+}
+
+export type Action = ListOpps | CreateOpp | ShowOpp | EditOpp | EditProfile
 
 export const act = (type: Actions, args?: Omit<Action, "type">): Action =>
   ({

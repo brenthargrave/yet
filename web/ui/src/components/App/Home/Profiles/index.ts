@@ -1,27 +1,29 @@
-import { h, ReactSource } from "@cycle/react"
+import { ReactSource } from "@cycle/react"
+import { pluck } from "ramda"
 import {
-  combineLatest,
   distinctUntilChanged,
   EMPTY,
   filter,
   map,
-  Observable,
+  merge,
+  mergeWith,
+  of,
   share,
-  startWith,
   switchMap,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { match } from "ts-pattern"
-import { filterResultOk } from "ts-results/rxjs-operators"
-import { Source as ActionSource } from "~/action"
-import { getProfile$, Profile, Source as GraphSource } from "~/graph"
+import { Actions, Source as ActionSource } from "~/action"
+import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { routes, Source as RouterSource } from "~/router"
-import { shareLatest, cb$ } from "~/rx"
+import { shareLatest } from "~/rx"
+import { Edit } from "./Edit"
 import { Show } from "./Show"
 
 export enum State {
   show = "show",
+  edit = "edit",
   pending = "pending",
 }
 
@@ -39,8 +41,20 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
   const {
     router: { history$ },
     graph: { me$: _me$ },
+    action: { action$ },
   } = sources
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"))
+
+  const edit$ = action$.pipe(
+    tag("action"),
+    switchMap((action) =>
+      match(action)
+        .with({ type: Actions.editOpp }, () => of(State.edit))
+        .otherwise(() => EMPTY)
+    ),
+    tag("edit"),
+    share()
+  )
 
   const state$ = history$.pipe(
     map((route) =>
@@ -48,26 +62,31 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
         .with({ name: routes.me.name }, () => State.show)
         .otherwise(() => State.pending)
     ),
+    mergeWith(edit$),
     distinctUntilChanged(),
     tag("THIS state$"),
     shareLatest()
   )
 
   const show = Show(sources, tagScope)
+  const edit = Edit(sources, tagScope)
 
   const react = state$.pipe(
     switchMap((state) =>
       match(state)
         .with(State.show, () => show.react)
         .with(State.pending, () => EMPTY)
-        // .with(State.edit)
+        .with(State.edit, () => edit.react)
+        .with(State.edit, () => EMPTY)
         .exhaustive()
     ),
     tag("THIS react")
   )
 
+  const action = merge(...pluck("action", [show]))
+
   return {
     react,
-    // router,
+    action,
   }
 }
