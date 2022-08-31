@@ -24,3 +24,30 @@ query GetProfile($input: GetProfileInput) {
     }
   }
 }
+
+mutation PatchProfile($input: PatchProfileInput!) {
+  patchProfile(input: $input) {
+    me {
+      id
+      name
+      org
+      role
+    }
+    userError {
+      message
+    }
+  }
+}
+
+mutation UpdateProfile($input: UpdateProfileInput!) {
+  updateProfile(input: $input) {
+    userError {
+      ...UserErrorProps
+    }
+    profile {
+      contact {
+        ...ContactProps
+      }
+    }
+  }
+}

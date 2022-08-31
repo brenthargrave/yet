@@ -8,21 +8,21 @@ defmodule AppWeb.Graph.Onboarding do
     value(:role, as: "role")
   end
 
-  input_object :profile_input do
+  input_object :patch_profile_input do
     field(:id, non_null(:string))
     field(:prop, non_null(:profile_prop))
     field(:value, non_null(:string))
   end
 
-  object :update_profile_payload do
+  object :patch_profile_payload do
     field(:me, :customer)
     field(:user_error, :user_error)
   end
 
   object :onboarding_mutations do
-    field :update_profile, :update_profile_payload do
-      arg(:input, non_null(:profile_input))
-      resolve(&Onboarding.update_profile/3)
+    field :patch_profile, :patch_profile_payload do
+      arg(:input, non_null(:patch_profile_input))
+      resolve(&Onboarding.patch_profile/3)
     end
   end
 end

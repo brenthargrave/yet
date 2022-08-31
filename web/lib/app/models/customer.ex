@@ -51,4 +51,13 @@ defmodule App.Customer do
     record
     |> cast(attrs, [:e164])
   end
+
+  ## Profiles
+  def profile_changeset(customer, attrs) do
+    customer
+    |> cast(attrs, [:name])
+    |> update_change(:name, &String.trim/1)
+    |> validate_required(:name)
+    |> validate_length(:role, min: 2)
+  end
 end

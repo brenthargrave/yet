@@ -11,12 +11,12 @@ defmodule AppWeb.Resolvers.Onboarding do
     field :user_error, UserError.t()
   end
 
-  defun update_profile(
+  defun patch_profile(
           _parent,
           %{input: ~M{ id, prop, value }} = _args,
           _resolution
         ) :: resolver_result() do
-    case Onboarding.update_profile(id, prop, value) do
+    case Onboarding.patch_profile(id, prop, value) do
       {:ok, customer} ->
         {:ok,
          %UpdateProfilePayload{

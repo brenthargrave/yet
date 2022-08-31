@@ -9,7 +9,7 @@ defmodule App.Onboarding do
   @type value :: String.t()
   @type result() :: Brex.Result.s(Customer.t() | UserError.t())
 
-  defun update_profile(id :: ulid(), prop :: prop(), value :: value()) :: result() do
+  defun patch_profile(id :: ulid(), prop :: prop(), value :: value()) :: result() do
     key = String.to_atom(prop)
     attrs = %{:id => id, key => value}
 

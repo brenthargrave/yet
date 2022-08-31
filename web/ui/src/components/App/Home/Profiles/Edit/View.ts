@@ -13,6 +13,7 @@ import {
   Nav,
   Spacer,
   Stack,
+  containerProps,
 } from "~/system"
 import { CancelButton } from "~/system/CancelButton"
 import { InputControl } from "~/system/InputControl"
@@ -49,25 +50,27 @@ export const View: FC<Props> = ({
     e.preventDefault()
     if (_onSubmit) _onSubmit()
   }
-  return h(FullWidthVStack, {}, [
+  return h(FullWidthVStack, { ...containerProps }, [
     h(Nav, { onClickBack, backButtonText: "Opps" }),
     h(Header, [
       h(Heading, { size: "md" }, `Profile`),
       h(Spacer),
-      h(
-        Button,
-        {
-          leftIcon: h(Icon, { as: ViewIcon }),
-          size: "xs",
-          onClick: onClickShow,
-        },
-        `View`
-      ),
+      false &&
+        h(
+          Button,
+          {
+            leftIcon: h(Icon, { as: ViewIcon }),
+            size: "xs",
+            onClick: onClickShow,
+          },
+          `View`
+        ),
     ]),
     form({ id: "edit", onSubmit, style: { width: "100%" } }, [
       h(Stack, { direction: "column", width: "100%", gap: 2 }, [
         h(InputControl, { label: "Name", isRequired: true }, [
           h(Input, {
+            autoFocus: true,
             defaultValue: defaultValueName,
             onChange: makeOnChange(onChangeName),
             placeholder: "Cofounder, Engineer, Designer, etc.",
@@ -76,7 +79,6 @@ export const View: FC<Props> = ({
         h(Stack, { direction: "column", paddingTop: 2 }, [
           h(Divider),
           h(Stack, { direction: "row", alignItems: "center" }, [
-            //
             h(
               Button,
               {

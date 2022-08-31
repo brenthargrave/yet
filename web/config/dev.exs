@@ -34,5 +34,4 @@ config :phoenix, :plug_init_mode, :runtime
 config :absinthe,
   log: false
 
-# config :absinthe, Absinthe.Logger,
-#   pipeline: true
+config :absinthe, Absinthe.Logger, pipeline: true

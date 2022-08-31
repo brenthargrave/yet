@@ -38,4 +38,16 @@ defmodule App.Profiles do
     |> lift(nil, :not_found)
     |> fmap(&%Profile{contact: &1, events: []})
   end
+
+  defun update(
+          customer,
+          input
+        ) :: Brex.Result.s(Profile.t()) do
+    Repo.get(Customer, customer.id)
+    |> Repo.preload(@preloads)
+    |> lift(nil, :not_found)
+    |> fmap(&Customer.profile_changeset(&1, input))
+    |> bind(&Repo.insert_or_update(&1))
+    |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
+  end
 end

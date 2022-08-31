@@ -16,7 +16,7 @@ import {
 import { isNotNullish } from "rxjs-etc"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { find, isNil, prop, propSatisfies, toLower, trim } from "~/fp"
-import { ProfileProp, Source as GraphSource, updateProfile$ } from "~/graph"
+import { ProfileProp, Source as GraphSource, patchProfile$ } from "~/graph"
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
@@ -63,7 +63,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     withLatestFrom(collected$),
     tag("submit$ w/ inputValue$"),
     switchMap(([_, { me, value, attr }]) =>
-      updateProfile$({
+      patchProfile$({
         id: me.id,
         prop: attr,
         value,

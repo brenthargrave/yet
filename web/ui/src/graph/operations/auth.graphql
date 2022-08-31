@@ -47,17 +47,3 @@ mutation SubmitCode($input: SubmitCodeInput!) {
     }
   }
 }
-
-mutation UpdateProfile($input: ProfileInput!) {
-  updateProfile(input: $input) {
-    me {
-      id
-      name
-      org
-      role
-    }
-    userError {
-      message
-    }
-  }
-}

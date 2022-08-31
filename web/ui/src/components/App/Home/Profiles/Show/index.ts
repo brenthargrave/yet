@@ -48,48 +48,49 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const [onClickEdit, onClickEdit$] = cb$(tag("clickEdit$"))
-  const edit$ = onClickEdit$.pipe(
-    // withLatestFrom(id$),
-    // map(([_, id]) => act(Actions.editOpp, { id })),
-    map(() => act(Actions.editOpp)),
-    tag("edit$"),
-    share()
-  )
+  // const [onClickEdit, onClickEdit$] = cb$(tag("clickEdit$"))
+  // const edit$ = onClickEdit$.pipe(
+  //   // withLatestFrom(id$),
+  //   // map(([_, id]) => act(Actions.editOpp, { id })),
+  //   map(() => act(Actions.editOpp)),
+  //   tag("edit$"),
+  //   share()
+  // )
 
-  const result$ = id$.pipe(
-    switchMap((id) => getProfile$({ id })),
-    tag("result$"),
-    shareLatest()
-  )
+  // const result$ = id$.pipe(
+  //   switchMap((id) => getProfile$({ id })),
+  //   tag("result$"),
+  //   shareLatest()
+  // )
 
-  const profile$: Observable<Profile> = result$.pipe(
-    //
-    filterResultOk(),
-    tag("profile$"),
-    share()
-  )
+  // const profile$ = result$.pipe(
+  //   //
+  //   filterResultOk(),
+  //   tag("profile$"),
+  //   share()
+  // )
 
-  const state$ = profile$.pipe(
-    map(() => State.ready),
-    startWith(State.loading),
-    distinctUntilChanged(),
-    tag("THIS state$"),
-    shareLatest()
-  )
+  // const state$ = profile$.pipe(
+  //   map(() => State.ready),
+  //   startWith(State.loading),
+  //   distinctUntilChanged(),
+  //   tag("THIS state$"),
+  //   shareLatest()
+  // )
 
-  const props$ = combineLatest({
-    state: state$,
-    viewer: me$,
-    profile: profile$,
-  }).pipe(tag("props$"), shareLatest())
+  // const props$ = combineLatest({
+  //   state: state$,
+  //   viewer: me$,
+  //   profile: profile$,
+  // }).pipe(tag("props$"), shareLatest())
 
-  const react = props$.pipe(map((props) => h(View, { ...props, onClickEdit })))
+  // const react = props$.pipe(map((props) => h(View, { ...props, onClickEdit })))
+  // const action = merge(edit$)
 
-  const action = merge(edit$)
+  const react = of(null)
 
   return {
     react,
-    action,
+    // action,
   }
 }

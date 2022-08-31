@@ -7,11 +7,13 @@ defmodule AppWeb.Resolvers.Profiles do
 
   alias App.{
     Profiles,
-    Profile
+    Profile,
+    UserError
   }
 
   typedstruct module: ProfilePayload do
-    field(:profile, list(Profile.t()))
+    field(:profile, Profile.t())
+    field(:user_error, UserError.t())
   end
 
   defun get(
@@ -25,6 +27,15 @@ defmodule AppWeb.Resolvers.Profiles do
 
   def get(_parent, _args, _resolution) do
     {:ok, []}
+    |> fmap(&%ProfilePayload{profile: &1})
+  end
+
+  defun update(
+          _parent,
+          %{input: input} = _args,
+          %{context: %{customer: customer}} = _resolution
+        ) :: resolver_result(ProfilePayload.t()) do
+    Profiles.update(customer, input)
     |> fmap(&%ProfilePayload{profile: &1})
   end
 end

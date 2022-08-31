@@ -22,7 +22,7 @@ import { Edit } from "./Edit"
 import { Show } from "./Show"
 
 export enum State {
-  show = "show",
+  // show = "show",
   edit = "edit",
   pending = "pending",
 }
@@ -75,7 +75,7 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
   const react = state$.pipe(
     switchMap((state) =>
       match(state)
-        .with(State.show, () => show.react)
+        // .with(State.show, () => show.react)
         .with(State.pending, () => EMPTY)
         .with(State.edit, () => edit.react)
         .with(State.edit, () => EMPTY)
@@ -84,10 +84,12 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
     tag("THIS react")
   )
 
-  const action = merge(...pluck("action", [show]))
+  const action = merge(...pluck("action", []))
+  const notice = merge(...pluck("notice", [edit]))
 
   return {
     react,
     action,
+    notice,
   }
 }

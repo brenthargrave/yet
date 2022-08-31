@@ -45,7 +45,8 @@ import {
   GetTimelineDocument,
   MeDocument,
   OppInput,
-  ProfileInput,
+  PatchProfileDocument,
+  PatchProfileInput,
   ProposeConversationDocument,
   ProposeInput,
   ReviewConversationDocument,
@@ -64,6 +65,7 @@ import {
   TrackEventDocument,
   TrackEventInput,
   UpdateProfileDocument,
+  UpdateProfileInput,
   UpsertConversationDocument,
   UpsertOppDocument,
   UserError,
@@ -128,24 +130,6 @@ export const verifyCode$ = (input: SubmitCodeInput) =>
       return data?.submitCode
     }),
     filter(isNotNullish)
-  )
-
-type CustomerProfileOnly = Omit<Customer, "e164" | "token">
-export const updateProfile$ = (
-  input: ProfileInput
-): Observable<Result<CustomerProfileOnly, UserError>> =>
-  from(
-    client.mutate({
-      mutation: UpdateProfileDocument,
-      variables: { input },
-    })
-  ).pipe(
-    map(({ data, errors, extensions, context }) => {
-      if (errors) throw new GraphError(JSON.stringify(errors))
-      const { userError, me } = data!.updateProfile!
-      return userError ? new Err(userError) : new Ok(me!)
-    }),
-    tag("updateProfile$")
   )
 
 const token$$ = new BehaviorSubject<string | null>(
@@ -641,5 +625,41 @@ export const getProfile$ = (input: GetProfileInput) => {
       throw new GraphDefaultQueryError(error.message)
     }),
     tag("getProfile$")
+  )
+}
+
+type CustomerProfileOnly = Omit<Customer, "e164" | "token">
+
+export const patchProfile$ = (
+  input: PatchProfileInput
+): Observable<Result<CustomerProfileOnly, UserError>> =>
+  from(
+    client.mutate({
+      mutation: PatchProfileDocument,
+      variables: { input },
+    })
+  ).pipe(
+    map(({ data, errors, extensions, context }) => {
+      if (errors) throw new GraphError(JSON.stringify(errors))
+      const { userError, me } = data!.patchProfile!
+      return userError ? new Err(userError) : new Ok(me!)
+    }),
+    tag("updateProfile$")
+  )
+
+export const updateProfile$ = (input: UpdateProfileInput) => {
+  return from(
+    client.mutate({
+      mutation: UpdateProfileDocument,
+      variables: { input },
+      refetchQueries: [{ query: GetConversationsDocument }],
+    })
+  ).pipe(
+    map(({ data, errors, extensions, context }) => {
+      if (errors) throw new GraphError(JSON.stringify(errors))
+      const { userError, profile } = data!.updateProfile!
+      return userError ? new Err(userError) : new Ok(profile!)
+    }),
+    tag("upsertConversation$")
   )
 }
