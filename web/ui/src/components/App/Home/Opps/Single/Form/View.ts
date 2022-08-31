@@ -1,5 +1,5 @@
-import { CheckIcon, EditIcon, ViewIcon } from "@chakra-ui/icons"
-import { FormControl, FormLabel, Icon, VStack } from "@chakra-ui/react"
+import { CheckIcon, ViewIcon } from "@chakra-ui/icons"
+import { Icon, VStack } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { form } from "@cycle/react-dom"
 import { FC } from "react"
@@ -7,7 +7,6 @@ import { match } from "ts-pattern"
 import { Money } from "~/graph"
 import {
   AutosizeTextarea,
-  BackButton,
   Button,
   Divider,
   FullWidthVStack,
@@ -18,11 +17,11 @@ import {
   Spacer,
   Stack,
 } from "~/system"
-import { CancelButton } from "./CancelButton"
-import { InputControl } from "./InputControl"
+import { CancelButton } from "~/system/CancelButton"
+import { InputControl } from "~/system/InputControl"
+import { Location } from ".."
 import { MoneyInput } from "./MoneyInput"
 import { UrlInput } from "./UrlInput"
-import { Location } from ".."
 
 type Callback = (value: string) => void
 const makeOnChange =

@@ -59,7 +59,8 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
   const state$ = history$.pipe(
     map((route) =>
       match(route)
-        .with({ name: routes.me.name }, () => State.show)
+        // .with({ name: routes.me.name }, () => State.show)
+        .with({ name: routes.me.name }, () => State.edit)
         .otherwise(() => State.pending)
     ),
     mergeWith(edit$),

@@ -14,6 +14,7 @@ import {
   withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
+import { pluck } from "rxjs-etc/dist/esm/operators"
 import { Action } from "rxjs/internal/scheduler/Action"
 import { filterResultOk } from "ts-results/rxjs-operators"
 import { act, Actions, Source as ActionSource } from "~/action"
@@ -21,7 +22,7 @@ import { getProfile$, Profile, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { routes, Source as RouterSource } from "~/router"
 import { shareLatest, cb$ } from "~/rx"
-// import { View, State } from "./View"
+import { View } from "./View"
 
 export interface Sources {
   react: ReactSource
@@ -40,16 +41,10 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
   } = sources
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"))
 
-  // const id$ = combineLatest({ route: history$, me: me$ }).pipe(
-  //   switchMap(({ route, me: { id } }) =>
-  //     route.name === routes.me.name ? of(id) : EMPTY
-  //   ),
-  //   tag("id$"),
-  //   shareLatest()
-  // )
+  const id$ = me$.pipe(pluck("id"), tag("id$"), shareLatest())
 
-  // const [onClickEdit, onClickEdit$] = cb$(tag("clickEdit$"))
-  // const edit$ = onClickEdit$.pipe(
+  const [onChangeName, onChangeName$] = cb$(tag("onChangeName$"))
+  // const newName$ = onClickChangeName$.pipe(
   //   // withLatestFrom(id$),
   //   // map(([_, id]) => act(Actions.editOpp, { id })),
   //   map(() => act(Actions.editOpp)),
