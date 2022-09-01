@@ -2,13 +2,23 @@ defmodule AppWeb.Graph.Profiles do
   use Absinthe.Schema.Notation
   alias AppWeb.Resolvers.Profiles
 
+  object :profile do
+    field(:id, non_null(:id))
+    field(:name, non_null(:string))
+    field(:org, non_null(:string))
+    field(:role, non_null(:string))
+    field(:events, list_of(non_null(:timeline_event)))
+  end
+
+  ## GetProfile
+
   object :get_profile_payload do
-    field(:contact, non_null(:contact))
-    field(:events, non_null(:timeline_event))
+    field(:profile, non_null(:profile))
   end
 
   input_object :get_profile_input do
     field(:id, non_null(:id))
+    field(:timeline_filters, :timeline_filters)
   end
 
   object :profiles_queries do
@@ -19,11 +29,6 @@ defmodule AppWeb.Graph.Profiles do
   end
 
   ## UpdateProfile
-
-  object :profile do
-    field(:id, non_null(:id))
-    field(:name, non_null(:string))
-  end
 
   object :update_profile_payload do
     field(:profile, :profile)

@@ -8,34 +8,38 @@ defmodule AppWeb.Resolvers.Profiles do
   alias App.{
     Profiles,
     Profile,
-    UserError
+    UserError,
+    TimelineEvent
   }
 
-  typedstruct module: ProfilePayload do
+  typedstruct module: GetProfilePayload do
     field(:profile, Profile.t())
-    field(:user_error, UserError.t())
   end
 
   defun get(
           _parent,
-          %{input: %{id: id}} = _args,
+          %{input: input} = _args,
           %{context: %{customer: customer}} = _resolution
         ) :: resolver_result(ProfilePayload.t()) do
-    Profiles.get(id, customer)
-    |> fmap(&%ProfilePayload{profile: &1})
+    Profiles.get(customer, input)
+    |> fmap(&%GetProfilePayload{profile: &1})
   end
 
   def get(_parent, _args, _resolution) do
-    {:ok, []}
-    |> fmap(&%ProfilePayload{profile: &1})
+    error(:unauthorized)
+  end
+
+  typedstruct module: UpdateProfilePayload do
+    field(:profile, Profile.t())
+    field(:user_error, UserError.t())
   end
 
   defun update(
           _parent,
           %{input: input} = _args,
           %{context: %{customer: customer}} = _resolution
-        ) :: resolver_result(ProfilePayload.t()) do
+        ) :: resolver_result(UpdateProfilePayload.t()) do
     Profiles.update(customer, input)
-    |> fmap(&%ProfilePayload{profile: &1})
+    |> fmap(&%UpdateProfilePayload{profile: &1})
   end
 end

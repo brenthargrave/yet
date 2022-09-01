@@ -22,7 +22,7 @@ import { Edit } from "./Edit"
 import { Show } from "./Show"
 
 export enum State {
-  // show = "show",
+  show = "show",
   edit = "edit",
   pending = "pending",
 }
@@ -45,27 +45,26 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
   } = sources
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"))
 
-  const edit$ = action$.pipe(
-    tag("action"),
+  const localState$ = action$.pipe(
     switchMap((action) =>
       match(action)
-        .with({ type: Actions.editOpp }, () => of(State.edit))
+        .with({ type: Actions.showProfile }, () => of(State.show))
+        .with({ type: Actions.editProfile }, () => of(State.edit))
         .otherwise(() => EMPTY)
     ),
-    tag("edit"),
+    tag("localState$"),
     share()
   )
 
   const state$ = history$.pipe(
     map((route) =>
       match(route)
-        // .with({ name: routes.me.name }, () => State.show)
-        .with({ name: routes.me.name }, () => State.edit)
+        .with({ name: routes.me.name }, () => State.show)
         .otherwise(() => State.pending)
     ),
-    mergeWith(edit$),
+    mergeWith(localState$),
     distinctUntilChanged(),
-    tag("THIS state$"),
+    tag("state$"),
     shareLatest()
   )
 
@@ -75,16 +74,15 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
   const react = state$.pipe(
     switchMap((state) =>
       match(state)
-        // .with(State.show, () => show.react)
-        .with(State.pending, () => EMPTY)
+        .with(State.show, () => show.react)
         .with(State.edit, () => edit.react)
-        .with(State.edit, () => EMPTY)
+        .with(State.pending, () => EMPTY)
         .exhaustive()
     ),
-    tag("THIS react")
+    tag("react")
   )
 
-  const action = merge(...pluck("action", []))
+  const action = merge(...pluck("action", [edit, show]))
   const notice = merge(...pluck("notice", [edit]))
 
   return {

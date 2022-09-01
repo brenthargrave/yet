@@ -3,6 +3,13 @@ defmodule AppWeb.Graph.Timeline do
   alias AppWeb.Resolvers.Timeline
   alias App.{TimelineEvent}
 
+  enum :persona do
+    value(:participant)
+    value(:contact)
+    value(:opportunist)
+    value(:public)
+  end
+
   enum :timeline_event_type do
     value(:conversation_published)
     value(:contact_profile_changed)
@@ -12,6 +19,7 @@ defmodule AppWeb.Graph.Timeline do
     field(:type, non_null(:timeline_event_type))
     field(:occurred_at, non_null(:datetime))
     field(:conversation, non_null(:conversation))
+    field(:persona, non_null(:persona))
   end
 
   object :contact_profile_changed do
@@ -38,6 +46,7 @@ defmodule AppWeb.Graph.Timeline do
 
   input_object :timeline_filters do
     field(:opps, list_of(non_null(:id)))
+    field(:omit_own, :boolean)
   end
 
   input_object :timeline_input do

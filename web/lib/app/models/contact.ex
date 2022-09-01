@@ -4,10 +4,11 @@ defmodule App.Contact do
   alias App.{Signature, Conversation}
 
   typed_schema "customers" do
+    timestamps(type: :utc_datetime_usec)
     field(:name, :string, null: false)
     field(:org, :string)
     field(:role, :string)
-    timestamps(type: :utc_datetime_usec)
+    field(:contacts_ids, {:array, :string})
 
     has_many :signatures, Signature,
       foreign_key: :signer_id,

@@ -16,6 +16,7 @@ import {
   Nav,
   Spacer,
   Stack,
+  containerProps,
 } from "~/system"
 import { CancelButton } from "~/system/CancelButton"
 import { InputControl } from "~/system/InputControl"
@@ -88,7 +89,7 @@ export const View: FC<Props> = ({
     e.preventDefault()
     if (_onSubmit) _onSubmit()
   }
-  return h(FullWidthVStack, {}, [
+  return h(FullWidthVStack, { ...containerProps }, [
     h(Nav, { onClickBack, backButtonText: "Opps" }),
     h(Header, [
       h(Heading, { size: "md" }, headerCopy(target)),
@@ -104,63 +105,65 @@ export const View: FC<Props> = ({
           `View`
         ),
     ]),
-    form({ id: "edit", onSubmit, style: { width: "100%" } }, [
-      h(Stack, { direction: "column", width: "100%", gap: 2 }, [
-        h(InputControl, { label: "Organization", isRequired: true }, [
-          h(Input, {
-            defaultValue: defaultValueOrg,
-            onChange: makeOnChange(onChangeOrg),
-            placeholder: "Company, school, club, family, etc.",
-            autoFocus: true,
-          }),
-        ]),
-        h(InputControl, { label: "Role", isRequired: true }, [
-          h(Input, {
-            defaultValue: defaultValueRole,
-            onChange: makeOnChange(onChangeRole),
-            placeholder: "Cofounder, Engineer, Designer, etc.",
-          }),
-        ]),
-        h(InputControl, { label: "Description" }, [
-          // @ts-ignore
-          h(AutosizeTextarea, {
-            defaultValue: defaultValueDesc,
-            // @ts-ignore
-            onChange: makeOnChange(onChangeDesc),
-            minRows: 2,
-          }),
-        ]),
-        h(InputControl, { label: "Canonical URL" }, [
-          h(UrlInput, {
-            onChange: onChangeUrl,
-            defaultValue: defaultValueUrl,
-          }),
-        ]),
-        h(VStack, { width: "40%", alignItems: "start" }, [
-          h(InputControl, { label: "Finder's Fee" }, [
-            h(MoneyInput, {
-              onChange: onChangeFee,
-              money: defaultValueFee,
+    h(FullWidthVStack, { isBody: true }, [
+      form({ id: "edit", onSubmit, style: { width: "100%" } }, [
+        h(Stack, { direction: "column", width: "100%", gap: 2 }, [
+          h(InputControl, { label: "Organization", isRequired: true }, [
+            h(Input, {
+              defaultValue: defaultValueOrg,
+              onChange: makeOnChange(onChangeOrg),
+              placeholder: "Company, school, club, family, etc.",
+              autoFocus: true,
             }),
           ]),
-        ]),
-        h(Stack, { direction: "column", paddingTop: 2 }, [
-          h(Divider),
-          h(Stack, { direction: "row", alignItems: "center" }, [
-            //
-            h(
-              Button,
-              {
-                type: "submit",
-                // leftIcon: h(PlusSquareIcon),
-                leftIcon: h(CheckIcon),
-                size: "md",
-                isDisabled: isDisabledSubmit,
-              },
-              "Save"
-            ),
-            h(Spacer),
-            h(CancelButton, { onCancel }),
+          h(InputControl, { label: "Role", isRequired: true }, [
+            h(Input, {
+              defaultValue: defaultValueRole,
+              onChange: makeOnChange(onChangeRole),
+              placeholder: "Cofounder, Engineer, Designer, etc.",
+            }),
+          ]),
+          h(InputControl, { label: "Description" }, [
+            // @ts-ignore
+            h(AutosizeTextarea, {
+              defaultValue: defaultValueDesc,
+              // @ts-ignore
+              onChange: makeOnChange(onChangeDesc),
+              minRows: 2,
+            }),
+          ]),
+          h(InputControl, { label: "Canonical URL" }, [
+            h(UrlInput, {
+              onChange: onChangeUrl,
+              defaultValue: defaultValueUrl,
+            }),
+          ]),
+          h(VStack, { width: "40%", alignItems: "start" }, [
+            h(InputControl, { label: "Finder's Fee" }, [
+              h(MoneyInput, {
+                onChange: onChangeFee,
+                money: defaultValueFee,
+              }),
+            ]),
+          ]),
+          h(Stack, { direction: "column", paddingTop: 2 }, [
+            h(Divider),
+            h(Stack, { direction: "row", alignItems: "center" }, [
+              //
+              h(
+                Button,
+                {
+                  type: "submit",
+                  // leftIcon: h(PlusSquareIcon),
+                  leftIcon: h(CheckIcon),
+                  size: "md",
+                  isDisabled: isDisabledSubmit,
+                },
+                "Save"
+              ),
+              h(Spacer),
+              h(CancelButton, { onCancel }),
+            ]),
           ]),
         ]),
       ]),

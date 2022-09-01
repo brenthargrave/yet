@@ -38,7 +38,7 @@ export interface Sources {
 }
 
 export const Edit = (sources: Sources, tagPrefix?: string) => {
-  const tagScope = `${tagPrefix}/Show`
+  const tagScope = `${tagPrefix}/Edit`
   const tag = makeTagger(tagScope)
 
   const {
@@ -49,6 +49,7 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
 
   const [onChangeName, onChangeName$] = cb$<string>(tag("onChangeName$"))
   const [onSubmit, onSubmit$] = cb$(tag("onSubmit$"))
+  const [onCancel, onCancel$] = cb$(tag("onCancel$"))
 
   const id$ = me$.pipe(
     map(({ id }) => id),
@@ -66,26 +67,23 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
     //
     filterResultOk(),
     tag("savedProfile$"),
-    share()
+    shareLatest()
   )
 
-  const priorContact$ = priorProfile$.pipe(
-    map(({ contact }) => contact),
-    tag("contact$"),
-    share()
-  )
-
-  const priorName$ = priorContact$.pipe(
+  const priorName$ = priorProfile$.pipe(
     map(({ name }) => name),
     tag("savedName$"),
-    share()
+    shareLatest()
   )
 
-  const name$ = merge(priorName$, onChangeName$).pipe(tag("name$"))
+  const name$ = merge(priorName$, onChangeName$).pipe(
+    tag("name$"),
+    shareLatest()
+  )
 
   const input$ = combineLatest({
     name: name$,
-  }).pipe(tag("payload$"), shareLatest())
+  }).pipe(tag("input$"), shareLatest())
 
   const upsert$ = onSubmit$.pipe(
     withLatestFrom(input$),
@@ -95,6 +93,12 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
   )
 
   const ok$ = upsert$.pipe(filterResultOk(), tag("ok$"))
+  const show$ = merge(ok$, onCancel$).pipe(
+    map(() => act(Actions.showProfile)),
+    tag("show$"),
+    share()
+  )
+
   const error$ = upsert$.pipe(filterResultErr(), tag("userError$"))
   const userError$ = error$.pipe(
     map((e) => error({ description: e.message })),
@@ -108,15 +112,15 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
   }).pipe(tag("props$"), shareLatest())
 
   const react = props$.pipe(
-    map((props) => h(View, { ...props, onChangeName, onSubmit }))
+    map((props) => h(View, { ...props, onChangeName, onSubmit, onCancel }))
   )
 
-  // const action = merge(edit$)
+  const action = merge(show$)
   const notice = merge(userError$)
 
   return {
     react,
     notice,
-    // action,
+    action,
   }
 }

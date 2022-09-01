@@ -1,14 +1,21 @@
+fragment ProfileProps on Profile {
+  id
+  name
+  role
+  org
+}
+
 query GetProfile($input: GetProfileInput) {
   getProfile(input: $input) {
     profile {
-      contact {
-        ...ContactProps
-      }
-      # ! NOTE: codegen fails on an extracted TimelineEventProps
+      ...ProfileProps
+
+       # ! NOTE: codegen fails on an extracted TimelineEventProps
       events {
         ...on ConversationPublished {
           type
           occurredAt
+          persona
           conversation {
             ...ConversationProps
           }
@@ -20,6 +27,7 @@ query GetProfile($input: GetProfileInput) {
             ...ContactProps
           }
         }
+
       }
     }
   }
@@ -27,14 +35,15 @@ query GetProfile($input: GetProfileInput) {
 
 mutation PatchProfile($input: PatchProfileInput!) {
   patchProfile(input: $input) {
+    userError {
+      message
+    }
+    # TODO: return profile from patch, not Customer
     me {
       id
       name
       org
       role
-    }
-    userError {
-      message
     }
   }
 }
@@ -45,9 +54,7 @@ mutation UpdateProfile($input: UpdateProfileInput!) {
       ...UserErrorProps
     }
     profile {
-      contact {
-        ...ContactProps
-      }
+      ...ProfileProps
     }
   }
 }

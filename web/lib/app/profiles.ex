@@ -10,33 +10,32 @@ defmodule App.Profiles do
   alias App.{
     Repo,
     Customer,
-    Contact,
-    TimelineEvent
+    Profile,
+    Timeline
   }
 
-  typedstruct module: Profile, enforce: true do
-    field :contact, Contact.t()
-    field :events, list(TimelineEvent.t())
-  end
+  @type input :: %{id: String.t(), filters: Timeline.filters()}
 
-  @preloads [
-    #   :creator,
-    #   opps: [:creator, :owner],
-    #   signatures: [:signer, :conversation],
-    #   reviews: [:reviewer, :conversation]
-  ]
+  defun get(
+          viewer :: Customer.t(),
+          input :: input()
+        ) :: Brex.Result.s(Profile.t()) do
+    id = Map.get(input, :id)
+    filters = Map.get(input, :filters, %{})
 
-  def preloads() do
-    @preloads
-  end
+    events =
+      Timeline.get_events(viewer, filters)
+      |> case do
+        {:ok, results} ->
+          results
 
-  defun get(id :: id(), viewer :: Customer.t()) :: Brex.Result.s(Profile.t()) do
-    # TODO: events: this is the hard part - scoping exposed information
-    # TODO: expose email, phone (payment?) to contacts only
-    Repo.get(Contact, id)
-    # |> Repo.preload(@preloads)
+        {:error, _} ->
+          []
+      end
+
+    Repo.get(Profile, id)
     |> lift(nil, :not_found)
-    |> fmap(&%Profile{contact: &1, events: []})
+    |> fmap(&Map.put(&1, :events, events))
   end
 
   defun update(
@@ -46,8 +45,8 @@ defmodule App.Profiles do
     Repo.get(Customer, customer.id)
     |> Repo.preload(@preloads)
     |> lift(nil, :not_found)
-    |> fmap(&Customer.profile_changeset(&1, input))
-    |> bind(&Repo.insert_or_update(&1))
+    |> fmap(&Profile.changeset(&1, input))
+    |> bind(&Repo.update/1)
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 end

@@ -3,13 +3,14 @@ defmodule App.Repo.Migrations.CreateEvents do
 
   def change do
     create table(:customers) do
+      timestamps()
       add :e164, :string, null: false
       add :token, :string, null: false
       # profile
       add :name, :string
       add :org, :string
       add :role, :string
-      timestamps()
+      add :contacts_ids, {:array, :string}, default: []
     end
 
     create(unique_index(:customers, [:e164]))
@@ -17,6 +18,7 @@ defmodule App.Repo.Migrations.CreateEvents do
     create(index(:customers, [:name]))
     create(index(:customers, [:org]))
     create(index(:customers, [:role]))
+    create(index(:customers, [:contacts_ids]))
 
     create table(:events) do
       add :anon_id, :string, null: false
@@ -124,6 +126,7 @@ defmodule App.Repo.Migrations.CreateEvents do
       add :occurred_at, :utc_datetime_usec, null: false
       # NOTE: type: conversation_published
       add :conversation_id, references(:conversations, on_delete: :delete_all)
+      add :conversation_published_persona, :string
     end
 
     create(unique_index(:timeline_events, [:id]))
@@ -131,6 +134,7 @@ defmodule App.Repo.Migrations.CreateEvents do
     create(index(:timeline_events, [:viewer_id]))
     create(index(:timeline_events, [:occurred_at]))
     create(index(:timeline_events, [:conversation_id]))
+    create(index(:timeline_events, [:conversation_published_persona]))
 
     create table(:opp_versions) do
       add :signature_id, references(:signatures, on_delete: :delete_all), null: false

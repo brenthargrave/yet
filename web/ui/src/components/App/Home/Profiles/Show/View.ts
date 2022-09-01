@@ -32,8 +32,7 @@ export const View: FC<Props> = ({
   onClickEdit,
   onClickConversation,
 }) => {
-  const { contact, events } = profile
-  const { name, role, org } = contact
+  const { name, role, org, events = [] } = profile
   const bio = [role, org].join(" at ")
 
   return state === State.loading
@@ -50,24 +49,18 @@ export const View: FC<Props> = ({
             },
           }),
         ]),
-        h(FullWidthVStack, { gap: 4, pt: 4 }, [
+        h(FullWidthVStack, { gap: 4, isBody: true }, [
           // Contact
           h(FullWidthVStack, [
             h(Heading, { size: "lg" }, name),
             h(Text, { fontSize: "lg" }, bio),
           ]),
+          h(Divider),
           // Activity
-          false && h(Divider),
-          // TODO: profile events preview by persona?
-          // Activity visible to: Your Contacts | Extended Network
-          // Contacts see: full conversations
-          // Network sees: conversations w/o notes, opps mentioned
-          // both see: role/title updates
-          false &&
-            h(FullWidthVStack, [
-              h(Heading, { size: "sm" }, `Activity`),
-              h(TimelineEventList, { viewer, events, onClickConversation }),
-            ]),
+          h(FullWidthVStack, [
+            h(Heading, { size: "sm" }, `Activity`),
+            h(TimelineEventList, { viewer, events, onClickConversation }),
+          ]),
         ]),
       ])
 }

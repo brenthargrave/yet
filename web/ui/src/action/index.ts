@@ -8,6 +8,7 @@ export enum Actions {
   showOpp = "showOpp",
   editOpp = "editOpp",
   editProfile = "editProfile",
+  showProfile = "showProfile",
 }
 
 interface ListOpps {
@@ -33,7 +34,18 @@ interface EditProfile {
   id?: ID
 }
 
-export type Action = ListOpps | CreateOpp | ShowOpp | EditOpp | EditProfile
+interface ShowProfile {
+  type: Actions.showProfile
+  id?: ID
+}
+
+export type Action =
+  | ListOpps
+  | CreateOpp
+  | ShowOpp
+  | EditOpp
+  | EditProfile
+  | ShowProfile
 
 export const act = (type: Actions, args?: Omit<Action, "type">): Action =>
   ({

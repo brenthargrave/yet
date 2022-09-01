@@ -23,6 +23,15 @@ defmodule App.TimelineEvent do
 
     # conversations_published
     belongs_to :conversation, Conversation
+
+    field :conversation_published_persona, Ecto.Enum,
+      values: [
+        :participant,
+        :contact,
+        :opportunist,
+        :public
+      ],
+      default: :public
   end
 
   def conversation_published_changeset(attrs) do
@@ -36,7 +45,7 @@ defmodule App.TimelineEvent do
 
     %__MODULE__{}
     |> change(type: :conversation_published)
-    |> cast(attrs, [:id, :occurred_at])
+    |> cast(attrs, [:id, :occurred_at, :conversation_published_persona])
     |> put_assoc(:viewer, attrs[:viewer])
     |> put_assoc(:conversation, attrs[:conversation])
     |> validate_required([:conversation, :viewer])

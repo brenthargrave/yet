@@ -127,7 +127,7 @@ defmodule App.Conversations do
     Repo.get(Conversation, id)
     |> Repo.preload(@preloads)
     |> lift(nil, :not_found)
-    # TODO: multi
+    # TODO: multi?
     |> fmap(&Map.put(attrs, :conversation, &1))
     |> fmap(&Signature.changeset/1)
     |> bind(&Repo.insert/1)
@@ -135,6 +135,7 @@ defmodule App.Conversations do
     |> fmap(&tap_save_opp_versions/1)
     |> fmap(&Conversation.signed_changeset/1)
     |> bind(&Repo.insert_or_update/1)
+    |> fmap(&async_cache_contacts/1)
     |> fmap(&Repo.preload(&1, @preloads, force: true, in_parallel: true))
     |> fmap(&Conversation.update_subscriptions/1)
     |> fmap(&Timeline.async_handle_published(&1, true))
@@ -244,5 +245,27 @@ defmodule App.Conversations do
     end)
 
     signature
+  end
+
+  defun async_cache_contacts(conversation :: Conversation.t()) :: Conversation.t() do
+    Task.Supervisor.async_nolink(App.TaskSupervisor, fn ->
+      participants = Conversation.get_participants(conversation)
+      participants_ids = Enum.map(participants, &Map.get(&1, :id))
+      participant_id_set = MapSet.new(participants_ids)
+
+      Enum.reduce(participants, Multi.new(), fn c, multi ->
+        id = c.id
+        contacts_ids = MapSet.delete(participant_id_set, id)
+
+        Multi.update(
+          multi,
+          {:customer, id},
+          Customer.merged_contacts_changeset(c, contacts_ids)
+        )
+      end)
+      |> Repo.transaction()
+    end)
+
+    conversation
   end
 end

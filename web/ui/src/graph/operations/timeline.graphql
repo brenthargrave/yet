@@ -3,6 +3,7 @@ fragment TimelinePayloadProps on TimelinePayload {
     ...on ConversationPublished {
       type
       occurredAt
+      persona
       conversation {
         ...ConversationProps
       }

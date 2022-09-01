@@ -20,7 +20,6 @@ defmodule AppWeb.Resolvers.Timeline do
   end
 
   def get_timeline(_parent, _args, _resolution) do
-    {:ok, []}
-    |> fmap(&%TimelinePayload{events: &1})
+    error(:unauthorized)
   end
 end

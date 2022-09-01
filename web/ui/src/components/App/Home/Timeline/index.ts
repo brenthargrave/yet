@@ -48,7 +48,9 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
 
   const result$ = history$.pipe(
     switchMap((route) =>
-      route.name === routes.root.name ? getTimeline$() : EMPTY
+      route.name === routes.root.name
+        ? getTimeline$({ filters: { omitOwn: true } })
+        : EMPTY
     ),
     tag("result$"),
     shareLatest()
