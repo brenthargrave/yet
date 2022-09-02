@@ -69,13 +69,13 @@ export const Home = (sources: Sources) => {
   const profiles = Profiles(sources, tagScope)
 
   const oppsState$ = history$.pipe(
-    map((route) =>
+    switchMap((route) =>
       match(route)
-        .with({ name: routes.opps.name }, () => OppsState.list)
+        .with({ name: routes.opps.name }, () => of(OppsState.list))
         .with({ name: routes.opp.name }, ({ params: { oid } }) =>
-          oid === NEWID ? OppsState.create : OppsState.single
+          of(oid === NEWID ? OppsState.create : OppsState.single)
         )
-        .otherwise(() => OppsState.list)
+        .otherwise(() => EMPTY)
     ),
     distinctUntilChanged(),
     tag("oppsState$"),

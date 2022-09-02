@@ -72,7 +72,7 @@ export const View: FC<Props> = ({
           isEmpty(events)
             ? h(FullWidthVStack, { fontSize: "sm" }, [
                 h(MarkdownView, {
-                  md: `No mentions in anyone's conversations just yet!
+                  md: `No mentions in anyone's conversations just yet.
 
                   Be sure to bring it up in conversation, then add it to your notes for others to share.`,
                 }),
