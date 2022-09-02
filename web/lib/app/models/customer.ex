@@ -15,6 +15,7 @@ defmodule App.Customer do
     field(:org, :string)
     field(:role, :string)
     field(:contacts_ids, {:array, :string})
+    field(:email, :string)
   end
 
   def auth_changeset(customer, attrs) do
@@ -22,6 +23,14 @@ defmodule App.Customer do
     |> cast(attrs, [:e164, :token])
     |> validate_required([:e164, :token])
     |> unique_constraint(:e164)
+  end
+
+  def onboarding_changeset(customer, %{email: _email} = attrs) do
+    customer
+    |> cast(attrs, [:email])
+    |> update_change(:email, &String.trim/1)
+    |> validate_required(:email)
+    |> validate_length(:email, min: 2)
   end
 
   def onboarding_changeset(customer, %{name: _name} = attrs) do

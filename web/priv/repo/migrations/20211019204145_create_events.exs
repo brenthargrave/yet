@@ -11,6 +11,7 @@ defmodule App.Repo.Migrations.CreateEvents do
       add :org, :string
       add :role, :string
       add :contacts_ids, {:array, :string}, default: []
+      add :email, :string
     end
 
     create(unique_index(:customers, [:e164]))
@@ -19,6 +20,7 @@ defmodule App.Repo.Migrations.CreateEvents do
     create(index(:customers, [:org]))
     create(index(:customers, [:role]))
     create(index(:customers, [:contacts_ids]))
+    create(index(:customers, [:email]))
 
     create table(:events) do
       add :anon_id, :string, null: false

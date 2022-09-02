@@ -5,7 +5,9 @@ defmodule App.Profile do
 
   typed_schema "customers" do
     timestamps(type: :utc_datetime_usec)
+    field(:e164, :string, null: false)
     field(:name, :string, null: false)
+    field(:email, :string)
     field(:org, :string)
     field(:role, :string)
     field(:contacts_ids, {:array, :string})

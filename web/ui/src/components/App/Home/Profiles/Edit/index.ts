@@ -2,8 +2,6 @@ import { h, ReactSource } from "@cycle/react"
 import { of } from "ramda"
 import {
   combineLatest,
-  distinctUntilChanged,
-  EMPTY,
   filter,
   map,
   merge,
@@ -14,10 +12,7 @@ import {
   withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
-import { pluck } from "rxjs-etc/dist/esm/operators"
-import { Action } from "rxjs/internal/scheduler/Action"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
-import { error } from "~/notice"
 import { act, Actions, Source as ActionSource } from "~/action"
 import {
   getProfile$,
@@ -26,9 +21,10 @@ import {
   updateProfile$,
 } from "~/graph"
 import { makeTagger } from "~/log"
-import { routes, Source as RouterSource } from "~/router"
-import { shareLatest, cb$ } from "~/rx"
-import { View, Props as ViewProps } from "./View"
+import { error } from "~/notice"
+import { Source as RouterSource } from "~/router"
+import { cb$, shareLatest } from "~/rx"
+import { Props as ViewProps, View } from "./View"
 
 export interface Sources {
   react: ReactSource

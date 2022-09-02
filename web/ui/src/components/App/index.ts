@@ -29,10 +29,11 @@ import { Home } from "./Home"
 import { View as AppView } from "./View"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type CycleComponent<T> = (sources: T) => Record<string, Observable<any>>
+export type CycleComponent<T> = (
+  sources: T,
+  ...args: any[]
+) => Record<string, Observable<any>>
 export type CC<T> = CycleComponent<T>
-
-const tag = makeTagger("App")
 
 // @ts-ignore
 const { VITE_API_ENV } = import.meta.env
@@ -51,6 +52,9 @@ export interface Sources {
 }
 
 export const App = (sources: Sources) => {
+  const tagScope = `App`
+  const tag = makeTagger(tagScope)
+
   const { history$: _history$ } = sources.router
   const history$ = _history$.pipe(tag("history$"), shareLatest())
 
