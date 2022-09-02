@@ -34,6 +34,7 @@ export interface Props {
   onCancel?: () => void
   // onClickBack?: () => void
   onClickShow?: () => void
+  isSaving?: boolean
 }
 
 export const View: FC<Props> = ({
@@ -44,6 +45,7 @@ export const View: FC<Props> = ({
   onCancel,
   // onClickBack,
   onClickShow,
+  isSaving = false,
   ...props
 }) => {
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = (e) => {
@@ -90,11 +92,12 @@ export const View: FC<Props> = ({
                   leftIcon: h(CheckIcon),
                   size: "md",
                   isDisabled: isDisabledSubmit,
+                  isLoading: isSaving,
                 },
                 "Save"
               ),
               h(Spacer),
-              h(CancelButton, { onCancel }),
+              h(CancelButton, { onCancel, isDisabled: isSaving }),
             ]),
           ]),
         ]),

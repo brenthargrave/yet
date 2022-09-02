@@ -92,6 +92,11 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
+  const isSaving$ = merge(
+    onSubmit$.pipe(map(() => true)),
+    upsert$.pipe(map(() => false))
+  ).pipe(startWith(false), tag("isSaving"), shareLatest())
+
   const ok$ = upsert$.pipe(filterResultOk(), tag("ok$"))
   const show$ = merge(ok$, onCancel$).pipe(
     map(() => act(Actions.showProfile)),
@@ -107,6 +112,7 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
   )
 
   const props$: Observable<ViewProps> = combineLatest({
+    isSaving: isSaving$,
     isDisabledSubmit: of(false),
     defaultValueName: priorName$,
   }).pipe(tag("props$"), shareLatest())
