@@ -26,6 +26,7 @@ defmodule AppWeb.Router do
   end
 
   pipeline :graphql do
+    plug(AppWeb.DevPlug)
     plug(AppWeb.Graph.Context)
   end
 
