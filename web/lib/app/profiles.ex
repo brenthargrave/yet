@@ -42,8 +42,7 @@ defmodule App.Profiles do
           customer,
           input
         ) :: Brex.Result.s(Profile.t()) do
-    Repo.get(Customer, customer.id)
-    |> Repo.preload(@preloads)
+    Repo.get(Profile, customer.id)
     |> lift(nil, :not_found)
     |> fmap(&Profile.changeset(&1, input))
     |> bind(&Repo.update/1)
