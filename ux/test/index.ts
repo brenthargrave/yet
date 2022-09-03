@@ -5,11 +5,14 @@ const mocha = new Mocha()
 
 mocha.addFile(`./test/first.spec.ts`);
 
-mocha.run((failures) => {
+const run = mocha.run((failures) => {
   process.on('exit', () => {
     process.exit(failures)
   });
 });
+
+// TODO: make sure to clear files on reruns
+// mocha.unloadFiles()
 
 console.log("Hello, world!")
 
