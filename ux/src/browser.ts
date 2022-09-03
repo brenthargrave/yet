@@ -1,8 +1,8 @@
 import * as puppeteer from "puppeteer"
 import { startsWith } from "lodash"
-import { log } from "./log"
 
 export const makeBrowser = async () => {
+
   // TODO: share across invocations
   const browser = await puppeteer.launch({
     dumpio: true, //TODO: DEBUG only
@@ -17,7 +17,7 @@ export const makeBrowser = async () => {
     const { HOST, PORT_SSL } = process.env
     const host = `https://${HOST}:${PORT_SSL}`
     const url = startsWith(path, "http") ? path : `${host}${path}`
-    log.debug(url)
+    console.debug(url)
     await page.goto(url)
   }
 

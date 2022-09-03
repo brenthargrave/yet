@@ -1,17 +1,12 @@
 import assert from "assert";
 import { describe } from "mocha";
+import { makeBrowser } from "../src/browser";
 
-const wait = async (): Promise<boolean> =>
-  new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(true)
-    }, 1000)
-  })
+it("first touch", async () => {
+  const { close, visit, see, tap } = await makeBrowser()
 
+  await visit("/")
+  // await see("Lemon.")
+  // await tap("Sign in") // TODO: use pitch CTA instead
 
-describe("TEST", () => {
-  it("is true", async () => {
-    const result = await wait()
-    assert(result)
-  })
 })
