@@ -5,11 +5,16 @@
     // "transpileOnly": true,
     "files": true,
     "compilerOptions": {
-    }
+    },
+    // ESM-only https://typestrong.org/ts-node/docs/options#esm
+    "esm": true,
+    // https://typestrong.org/ts-node/docs/swc
+    "swc": true,
   },
   "compilerOptions": {
+    "module": "nodenext",
     "lib": ["dom", "esnext"],
     "target": "esnext",
     "strict": true,
-  }
+  },
 }

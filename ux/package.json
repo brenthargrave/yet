@@ -7,6 +7,9 @@
     "test:ux:watch": "WATCH=true yarn test"
   },
   "devDependencies": {
+    "@swc/core": "1.2.246",
+    "@swc/helpers": "0.4.11",
+    "regenerator-runtime": "0.13.9",
     "rxjs": "7.5.6",
     "rxjs-spy": "8.0.2",
     "ts-node": "10.9.1",
