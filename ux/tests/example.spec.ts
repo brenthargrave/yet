@@ -19,6 +19,15 @@ import { test, expect } from '@playwright/test';
 //   await expect(page).toHaveURL(/.*intro/);
 // });
 
-test('Sign up', async ({ browser }) => {
-  const alice = await browser.newPage()
-});
+test('Sign up', async ({ page, browser }) => {
+  // const a = await browser.newPage()
+  // a.goto("https://localhost:6443/")
+  // a.goto("/in")
+  page.goto("/")
+  const signUp = page.locator('text=Create Account');
+  await signUp.click()
+  const screenie = await  page.screenshot({fullPage: true, path: 'screenshot.png'})
+  // page.locator("text=phone")
+  // expect(a.locator("text=phone number")).toHaveText()
+  // expect(a.
+})
