@@ -1,7 +1,15 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable import/no-dynamic-require */
 // @ts-nocheck
+
 // https://vitejs.dev/guide/backend-integration.html
-// TODO: debug ui port interpolation
-import RefreshRuntime from "https://localhost:8080/@react-refresh"
+
+// eslint-disable
+import RefreshRuntime from `https://localhost:8080/@react-refresh`
+
+// @ts-ignore
+// const { VITE_PORT_UI } = import.meta.env
+// const RefreshRuntime = require(`https://localhost:${VITE_PORT_UI}/@react-refresh`)
 
 RefreshRuntime.injectIntoGlobalHook(window)
 window.$RefreshReg$ = () => {}

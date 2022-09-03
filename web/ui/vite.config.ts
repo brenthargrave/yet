@@ -7,7 +7,7 @@ import topLevelAwait from "vite-plugin-top-level-await"
 import fs from "fs"
 import path, { resolve } from "path"
 
-const { PORT_UI, MIX_ENV } = process.env
+const { VITE_PORT_UI, MIX_ENV } = process.env
 
 let key
 let cert
@@ -21,7 +21,7 @@ try {
   }
 }
 
-const port: number = parseInt(PORT_UI ?? "8080", 10)
+const port: number = parseInt(VITE_PORT_UI ?? "8080", 10)
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -41,8 +41,13 @@ export default defineConfig({
   ],
   server: {
     https: { key, cert },
-    strictPort: true,
     port,
+    strictPort: true,
+    // cors: false,
+    cors: {
+      origin: "*",
+      preflightContinue: true,
+    },
   },
   build: {
     outDir: "../priv/static",

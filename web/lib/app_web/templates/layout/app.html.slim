@@ -31,8 +31,10 @@ html lang="en" prefix="og: https://ogp.me/ns#"
   body
     div id="index" data-product=System.get_env("PRODUCT_NAME")
     = if Mix.env() !== :prod do
-      script type="module" src="https://localhost:#{System.get_env("PORT_UI")}/src/react-refresh-preamble.ts"
-      script type="module" src="https://localhost:#{System.get_env("PORT_UI")}/@vite/client"
-      script type="module" src="https://localhost:#{System.get_env("PORT_UI")}/src/index.tsx"
+      - port = System.get_env("VITE_PORT_UI")
+      - baseURL = "https://localhost:#{port}"
+      / script type="module" src="#{baseURL}/src/react-refresh-preamble.ts"
+      script type="module" src="#{baseURL}/@vite/client"
+      script type="module" src="#{baseURL}/src/index.tsx"
     - else
       = Vite.vite_snippet("src/index.tsx")
