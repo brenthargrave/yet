@@ -3,7 +3,7 @@
   "main": "index.ts",
   "scripts": {
     "test": "yarn test:ux",
-    "test:ux": "ts-node ./test/index.ts",
+    "test:ux": "ts-node ./index.ts",
     "test:ux:watch": "WATCH=true yarn test"
   },
   "devDependencies": {

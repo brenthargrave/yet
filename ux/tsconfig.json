@@ -12,7 +12,7 @@
     "swc": true,
   },
   "compilerOptions": {
-    "module": "nodenext",
+    "module": "NodeNext",
     "lib": ["dom", "esnext"],
     "target": "esnext",
     "strict": true,
