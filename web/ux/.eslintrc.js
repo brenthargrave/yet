@@ -7,14 +7,14 @@ module.exports = {
   plugins: ["prettier", "@typescript-eslint"],
   rules: {
     eqeqeq: "error",
-    "no-console": "warn",
+    "no-console": "off",
     "no-undef": "off",
-    "no-unused-vars": "off",
     "prettier/prettier": "error",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-explicit-any": "error",
-    "@typescript-eslint/no-unused-vars": "warn",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["off", { argsIgnorePattern: "^_" }],
   },
   parser: "@typescript-eslint/parser",
   parserOptions: {
@@ -30,4 +30,4 @@ module.exports = {
   settings: {
     "import/resolver": "node",
   },
-};
+}

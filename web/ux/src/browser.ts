@@ -1,15 +1,9 @@
 import * as puppeteer from "puppeteer"
-import { isEmpty, startsWith } from "ramda";
+import { startsWith } from "ramda"
 
-const {
-  UX_DEBUG_BROWSER,
-  HOST,
-  PORT_SSL
-} = process.env
-
+const { UX_DEBUG_BROWSER, HOST, PORT_SSL } = process.env
 
 export const makeBrowser = async () => {
-
   // TODO: share across invocations
   const browser = await puppeteer.launch({ dumpio: !!UX_DEBUG_BROWSER })
 
@@ -61,6 +55,6 @@ export const makeBrowser = async () => {
     visit,
     see,
     tap,
-    click
+    click,
   }
 }

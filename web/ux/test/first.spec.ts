@@ -1,4 +1,4 @@
-import { makeBrowser  } from "~/browser";
+import { makeBrowser } from "~/browser"
 
 it("first touch", async () => {
   const { close, visit, see, tap, page } = await makeBrowser()
