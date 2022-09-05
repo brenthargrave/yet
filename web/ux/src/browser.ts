@@ -4,19 +4,12 @@ import * as puppeteer from "puppeteer"
 import { isEmpty, startsWith } from "ramda";
 
 const { UX_DEBUG_BROWSER } = process.env
+const dumpio = !!process.env.UX_DEBUG_BROWSER
 
 export const makeBrowser = async () => {
 
-
-  const dumpio = !!process.env.UX_DEBUG_BROWSER
-
-  console.debug(dumpio)
-
   // TODO: share across invocations
-  const browser = await puppeteer.launch({
-    // dumpio: true, // TODO: DEBUG only
-    dumpio,
-  })
+  const browser = await puppeteer.launch({ dumpio })
 
   // NOTE: prefer incognito contexts for isolation across test runs
   // https://git.io/fjLt1
