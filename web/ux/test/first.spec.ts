@@ -6,5 +6,11 @@ it("first touch", async () => {
   await a.visit("/")
   await a.click("Create Account")
   await a.see("phone number")
-  return await a.close()
+
+  const b = await customer("bob")
+  await b.visit("/home")
+  await b.screenie()
+  await b.see("Yet")
+
+  return Promise.all([a.close(), b.close()])
 })

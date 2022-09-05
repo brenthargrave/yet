@@ -49,11 +49,16 @@ export const makeBrowser = async () => {
       await page.waitForSelector(sel, { visible: true })
     }
 
+    const screenie = async () => {
+      await page.screenshot({ path: `scratch/${name}.png` })
+    }
+
     return {
       close,
       visit,
       click,
       see,
+      screenie,
     }
   }
 

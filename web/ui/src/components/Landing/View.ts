@@ -12,7 +12,7 @@ const ariaLabel = "aria-label"
 export const View = ({ onClickJoin, onClickLogin }: Props) =>
   h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center", margin: "4" }, [
-      h(Heading, {}, productName),
+      h(Heading, { "aria-label": productName }, productName),
       h(
         Button,
         { onClick: onClickJoin, "aria-label": t(`landing.join`) },
