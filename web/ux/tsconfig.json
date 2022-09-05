@@ -19,7 +19,7 @@
     "lib": ["dom", "esnext"],
     "target": "esnext",
     "strict": true,
-    // NOTE: web/ui/tsconfig
+    // NOTE: mirrors web/ui/tsconfig
     "baseUrl": "./src",
     "paths": { "~/*": ["./*"] },
   }
