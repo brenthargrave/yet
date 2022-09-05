@@ -1,28 +1,33 @@
 import * as puppeteer from "puppeteer"
-
-
 import { isEmpty, startsWith } from "ramda";
 
-const { UX_DEBUG_BROWSER } = process.env
-const dumpio = !!process.env.UX_DEBUG_BROWSER
+const {
+  UX_DEBUG_BROWSER,
+  HOST,
+  PORT_SSL
+} = process.env
+
 
 export const makeBrowser = async () => {
 
   // TODO: share across invocations
-  const browser = await puppeteer.launch({ dumpio })
+  const browser = await puppeteer.launch({ dumpio: !!UX_DEBUG_BROWSER })
 
   // NOTE: prefer incognito contexts for isolation across test runs
   // https://git.io/fjLt1
   const context = await browser.createIncognitoBrowserContext()
   const page = await context.newPage()
-  page.setDefaultTimeout(1 * 1000)
+  page.setDefaultTimeout(10 * 1000)
+  page.setDefaultNavigationTimeout(10 * 1000)
 
   const visit = async (path: string): Promise<void> => {
-    const { HOST, PORT_SSL } = process.env
     const host = `https://${HOST}:${PORT_SSL}`
     const url = startsWith(path, "http") ? path : `${host}${path}`
-    console.debug(url)
-    await page.goto(url)
+    try {
+      await page.goto(url)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   const close = async () => {
@@ -31,21 +36,31 @@ export const makeBrowser = async () => {
     await browser.close()
   }
 
-  // TODO: extract page txt, substring match
   const see = async (ariaLabelValue: string) => {
+    console.debug(`see: "${ariaLabelValue}"`)
     const sel = `[aria-label="${ariaLabelValue}"]`
     await page.waitForSelector(sel, { visible: true })
   }
 
   const tap = async (ariaLabelValue: string) => {
+    console.debug(`tap "${ariaLabelValue}"`)
     const sel = `[aria-label="${ariaLabelValue}"]`
+    await page.waitForSelector(sel)
     await page.tap(sel)
   }
 
+  const click = async (ariaLabelValue: string) => {
+    const sel = `[aria-label="${ariaLabelValue}"]`
+    await page.waitForSelector(sel)
+    await page.click(sel)
+  }
+
   return {
+    page,
     close,
     visit,
     see,
     tap,
+    click
   }
 }

@@ -60,9 +60,8 @@ export const View = ({
           h(InputAddon, { children: "+1" }),
           h(Input, {
             id: "phone-number",
+            "aria-label": "phone number",
             autoFocus: true,
-            type: "tel",
-            placeholder: t("auth.tel.entry.placeholder"),
             isRequired: true,
             onChange: phoneInputHandler,
             isDisabled: isPhoneInputDisabled,

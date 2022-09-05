@@ -4,8 +4,14 @@ import Mocha from "mocha"
 export * from "./src/browser"
 
 const mocha = new Mocha()
+// mocha.unloadFiles()
+
+mocha.timeout(1000 * 30)
+
+
 
 mocha.addFile(`./test/first.spec.ts`);
+// mocha.fullTrace()
 
 const run = mocha.run((failures) => {
   process.on('exit', () => {

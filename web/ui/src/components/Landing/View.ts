@@ -7,11 +7,17 @@ export interface Props {
   onClickLogin: React.MouseEventHandler<HTMLButtonElement>
 }
 
+const ariaLabel = "aria-label"
+
 export const View = ({ onClickJoin, onClickLogin }: Props) =>
   h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center", margin: "4" }, [
       h(Heading, {}, productName),
-      h(Button, { onClick: onClickJoin }, t(`landing.join`)),
+      h(
+        Button,
+        { onClick: onClickJoin, "aria-label": t(`landing.join`) },
+        t(`landing.join`)
+      ),
       h(Button, { onClick: onClickLogin }, t(`landing.login`)),
     ]),
   ])
