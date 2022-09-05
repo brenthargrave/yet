@@ -33,7 +33,6 @@ html lang="en" prefix="og: https://ogp.me/ns#"
     = if Mix.env() !== :prod do
       - port = System.get_env("VITE_PORT_UI")
       - baseURL = "https://localhost:#{port}"
-      / script type="module" src="#{baseURL}/src/react-refresh-preamble.ts"
       script type="module" src="#{baseURL}/@vite/client"
       script type="module" src="#{baseURL}/src/index.tsx"
     - else

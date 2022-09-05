@@ -35,9 +35,6 @@ export type CycleComponent<T> = (
 ) => Record<string, Observable<any>>
 export type CC<T> = CycleComponent<T>
 
-// @ts-ignore
-const { VITE_API_ENV } = import.meta.env
-
 enum State {
   auth = "auth",
   landing = "landing",

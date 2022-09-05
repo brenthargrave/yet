@@ -81,9 +81,6 @@ export type ID = Scalars["ID"]
 
 const tag = makeTagger("graph")
 
-// @ts-ignore
-const { VITE_API_ENV: API_ENV } = import.meta.env
-
 export class GraphError extends Error {}
 export class GraphDefaultQueryError extends GraphError {}
 

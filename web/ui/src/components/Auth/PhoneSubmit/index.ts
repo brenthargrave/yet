@@ -25,7 +25,6 @@ import { View } from "./View"
 
 export { View }
 
-// @ts-ignore
 const { VITE_API_ENV } = import.meta.env
 const strictDetection = VITE_API_ENV === "prod"
 const validateMobilePrefix = strictDetection

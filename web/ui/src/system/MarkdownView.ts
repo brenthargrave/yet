@@ -14,7 +14,6 @@ export const i = (value: string) => `*${value}*`
 
 const className = style({ textDecoration: "underline" })
 
-// @ts-ignore
 const { VITE_HOST: HOST } = import.meta.env
 
 interface Props {
