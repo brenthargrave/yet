@@ -3,7 +3,8 @@
   "license": "MIT",
   "scripts": {
     "deploy": "bash ./scripts/deploy.sh",
-    "watch:graph": "./scripts/watch-graph.sh"
+    "watch:graph": "./scripts/watch-graph.sh",
+    "test": "(cd ./ux && yarn test)"
   },
   "dependencies": {},
   "devDependencies": {

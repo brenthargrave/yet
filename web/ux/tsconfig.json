@@ -4,12 +4,15 @@
     // Remove if you want ts-node to do typechecking.
     // "transpileOnly": true,
     "files": true,
-    "compilerOptions": {
-    },
     // ESM-only https://typestrong.org/ts-node/docs/options#esm
     "esm": true,
     // https://typestrong.org/ts-node/docs/swc
     "swc": true,
+    // https://typestrong.org/ts-node/docs/paths
+    "require": ["tsconfig-paths/register"],
+    "compilerOptions": {
+      "module": "CommonJS"
+    },
   },
   "compilerOptions": {
     "module": "ESNext",
@@ -19,5 +22,5 @@
     // NOTE: web/ui/tsconfig
     "baseUrl": "./src",
     "paths": { "~/*": ["./*"] },
-  },
+  }
 }
