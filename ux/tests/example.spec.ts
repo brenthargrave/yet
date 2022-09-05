@@ -1,7 +1,11 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
+import { routes, Route } from "../../web/ui/src/router"
+
+const visit = (page: Page, route: Route) =>
+  page.goto(route.href)
 
 test('Sign up', async ({ page, browser, context }) => {
-  await page.goto("/")
+  await visit(page, routes.root())
   const signUp = page.locator('button', { hasText: "Create Account"});
   await signUp.focus()
   await page.keyboard.press("Enter")

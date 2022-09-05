@@ -12,9 +12,12 @@
     "swc": true,
   },
   "compilerOptions": {
-    "module": "NodeNext",
+    "module": "ESNext",
     "lib": ["dom", "esnext"],
     "target": "esnext",
     "strict": true,
+    // NOTE: web/ui/tsconfig
+    "baseUrl": "./src",
+    "paths": { "~/*": ["./*"] },
   },
 }

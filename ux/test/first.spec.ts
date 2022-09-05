@@ -1,6 +1,4 @@
-import assert from "assert";
-import { describe } from "mocha";
-import { makeBrowser } from "../src/browser";
+import { makeBrowser  } from "~/browser";
 
 it("first touch", async () => {
   const { close, visit, see, tap } = await makeBrowser()

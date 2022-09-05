@@ -1,12 +1,13 @@
 import * as puppeteer from "puppeteer"
-import { startsWith } from "lodash"
+import { startsWith } from "ramda";
 
 export const makeBrowser = async () => {
 
   // TODO: share across invocations
   const browser = await puppeteer.launch({
-    dumpio: true, //TODO: DEBUG only
+    dumpio: true, // TODO: DEBUG only
   })
+
   // NOTE: prefer incognito contexts for isolation across test runs
   // https://git.io/fjLt1
   const context = await browser.createIncognitoBrowserContext()
