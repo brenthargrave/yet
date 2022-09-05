@@ -1,9 +1,10 @@
 import { makeBrowser } from "~/browser"
 
 it("first touch", async () => {
-  const { close, visit, see, tap, page } = await makeBrowser()
-  await visit("/")
-  await tap("Create Account")
-  await see("phone number")
-  return close()
+  const { customer } = await makeBrowser()
+  const a = await customer("alice")
+  await a.visit("/")
+  await a.click("Create Account")
+  await a.see("phone number")
+  return await a.close()
 })
