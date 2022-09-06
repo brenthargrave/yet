@@ -10,6 +10,7 @@ import {
   InputGroup,
   Stack,
 } from "~/system"
+import { toLower } from "~/fp"
 
 const size = "lg"
 
@@ -64,7 +65,7 @@ export const View = ({
               isRequired: true,
               onChange,
               isDisabled: isInputDisabled,
-              ...ariaLabel(attr),
+              ...ariaLabel(toLower(attr)),
             }),
           ]),
           h(
