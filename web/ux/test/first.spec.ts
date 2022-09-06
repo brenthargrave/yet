@@ -1,7 +1,7 @@
 import { makeBrowser } from "~/browser"
 
 it("first touch", async () => {
-  const { customer } = await makeBrowser()
+  const { customer, exit } = await makeBrowser()
   const a = await customer("alice")
   await a.visit("/")
   await a.click("Create Account")
@@ -11,5 +11,5 @@ it("first touch", async () => {
   await b.visit("/")
   await b.see("Yet")
 
-  return Promise.all([a.close(), b.close()])
+  await exit()
 })

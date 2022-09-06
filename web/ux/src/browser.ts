@@ -4,6 +4,8 @@ import { startsWith } from "ramda"
 const { UX_DEBUG_BROWSER, HOST, PORT_SSL } = process.env
 
 export const makeBrowser = async () => {
+  const exits: (() => Promise<void>)[] = []
+
   const customer = async (name?: string) => {
     const browser = await puppeteer.launch({ dumpio: !!UX_DEBUG_BROWSER })
     const context = await browser.createIncognitoBrowserContext()
@@ -17,6 +19,7 @@ export const makeBrowser = async () => {
       await context.close()
       await browser.close()
     }
+    exits.push(close)
 
     const visit = async (path: string): Promise<void> => {
       console.debug(`${name} visit: ${path}`)
@@ -51,7 +54,10 @@ export const makeBrowser = async () => {
     }
   }
 
+  const exit = async () => Promise.all(exits.map((fn) => fn()))
+
   return {
     customer,
+    exit,
   }
 }

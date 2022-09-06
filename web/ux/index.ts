@@ -15,6 +15,7 @@ mocha.addFile(`./test/first.spec.ts`)
 //     process.exit(failures)
 //   })
 // })
+
 mocha.run()
 
 // TODO: make sure to clear files on reruns
