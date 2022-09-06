@@ -10,11 +10,12 @@ mocha.timeout(1000 * 30)
 mocha.addFile(`./test/first.spec.ts`)
 // mocha.fullTrace()
 
-mocha.run((failures) => {
-  process.on("exit", () => {
-    process.exit(failures)
-  })
-})
+// mocha.run((failures) => {
+//   process.on("exit", () => {
+//     process.exit(failures)
+//   })
+// })
+mocha.run()
 
 // TODO: make sure to clear files on reruns
 // mocha.unloadFiles()

@@ -8,8 +8,7 @@ it("first touch", async () => {
   await a.see("phone number")
 
   const b = await customer("bob")
-  await b.visit("/home")
-  await b.screenie()
+  await b.visit("/")
   await b.see("Yet")
 
   return Promise.all([a.close(), b.close()])
