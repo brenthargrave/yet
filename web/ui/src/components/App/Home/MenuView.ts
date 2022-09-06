@@ -4,6 +4,7 @@ import { FC, Ref, useRef, RefObject } from "react"
 import { FiHome } from "react-icons/fi"
 import { TbArrowsSplit2, TbNotes } from "react-icons/tb"
 import { CgProfile } from "react-icons/cg"
+import { ariaLabel } from "~/system"
 
 const iconConversations = TbNotes
 const iconOpps = TbArrowsSplit2
@@ -64,6 +65,7 @@ export const MenuView: FC<Props> = ({
         variant: "outline",
         ref: buttonRefHome,
         onClick: onClickHome,
+        ...ariaLabel("Home"),
       }),
     ]),
     h(Tooltip, { shouldWrapChildren: true, label: "Conversations" }, [
@@ -73,6 +75,7 @@ export const MenuView: FC<Props> = ({
         variant: "outline",
         ref: buttonRefConvos,
         onClick: onClickConvos,
+        ...ariaLabel("Conversations"),
       }),
     ]),
     h(Tooltip, { shouldWrapChildren: true, label: "Opportunities" }, [
@@ -83,6 +86,7 @@ export const MenuView: FC<Props> = ({
         // color: "green.600",
         ref: buttonRefOpps,
         onClick: onClickOpps,
+        ...ariaLabel("Opportunities"),
       }),
     ]),
     h(Tooltip, { shouldWrapChildren: true, label: "Profile" }, [
@@ -92,6 +96,7 @@ export const MenuView: FC<Props> = ({
         variant: "outline",
         ref: buttonRefProfile,
         onClick: onClickProfile,
+        ...ariaLabel("Profile"),
       }),
     ]),
   ])

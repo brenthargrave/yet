@@ -11,6 +11,7 @@ import {
   InputAddon,
   InputGroup,
   Stack,
+  ariaLabel,
 } from "~/system"
 
 const size = "lg"
@@ -60,7 +61,7 @@ export const View = ({
           h(InputAddon, { children: "+1" }),
           h(Input, {
             id: "phone-number",
-            "aria-label": "phone number",
+            ...ariaLabel("phone number"),
             autoFocus: true,
             isRequired: true,
             onChange: phoneInputHandler,
@@ -75,6 +76,7 @@ export const View = ({
             width: "100%",
             isLoading,
             type: "submit",
+            ...ariaLabel(t(`auth.tel.entry.submit`)),
           },
           t(`auth.tel.entry.submit`)
         ),

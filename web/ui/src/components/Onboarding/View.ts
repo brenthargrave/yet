@@ -1,7 +1,15 @@
 import { h } from "@cycle/react"
 import { form } from "@cycle/react-dom"
 import { Ref } from "react"
-import { Button, Center, Heading, Input, InputGroup, Stack } from "~/system"
+import {
+  ariaLabel,
+  Button,
+  Center,
+  Heading,
+  Input,
+  InputGroup,
+  Stack,
+} from "~/system"
 
 const size = "lg"
 
@@ -56,6 +64,7 @@ export const View = ({
               isRequired: true,
               onChange,
               isDisabled: isInputDisabled,
+              ...ariaLabel(attr),
             }),
           ]),
           h(
@@ -67,6 +76,7 @@ export const View = ({
               width: "100%",
               isLoading,
               type: "submit",
+              ...ariaLabel(submitButtonCopy),
             },
             submitButtonCopy
           ),

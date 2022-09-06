@@ -23,3 +23,7 @@ export const lightGray = rgb(237, 242, 248).toString()
 const alpha = 0.5
 export const lightYellow = rgb(254, 252, 192, 0.5).toString()
 export const lightGreen = rgb(198, 246, 214, 0.3).toString()
+
+export const ariaLabel = (value: string) => {
+  return { "aria-label": value }
+}

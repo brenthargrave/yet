@@ -1,13 +1,11 @@
 import { h } from "@cycle/react"
 import { productName, t } from "~/i18n"
-import { Button, Center, Heading, Stack } from "~/system"
+import { Button, Center, Heading, Stack, ariaLabel } from "~/system"
 
 export interface Props {
   onClickJoin: React.MouseEventHandler<HTMLButtonElement>
   onClickLogin: React.MouseEventHandler<HTMLButtonElement>
 }
-
-const ariaLabel = "aria-label"
 
 export const View = ({ onClickJoin, onClickLogin }: Props) =>
   h(Center, { width: "100vw", height: "100vh" }, [
@@ -15,9 +13,13 @@ export const View = ({ onClickJoin, onClickLogin }: Props) =>
       h(Heading, { "aria-label": productName }, productName),
       h(
         Button,
-        { onClick: onClickJoin, "aria-label": t(`landing.join`) },
+        { onClick: onClickJoin, ...ariaLabel(t(`landing.join`)) },
         t(`landing.join`)
       ),
-      h(Button, { onClick: onClickLogin }, t(`landing.login`)),
+      h(
+        Button,
+        { onClick: onClickLogin, ...ariaLabel(t(`landing.login`)) },
+        t(`landing.login`)
+      ),
     ]),
   ])
