@@ -45,12 +45,19 @@ export const makeBrowser = async () => {
       await page.screenshot({ path: `scratch/${name}.png` })
     }
 
+    const signup = async () => {
+      await visit("/")
+      await click("Create Account")
+      // TODO:
+    }
+
     return {
       close,
       visit,
       click,
       see,
       screenie,
+      signup,
     }
   }
 
