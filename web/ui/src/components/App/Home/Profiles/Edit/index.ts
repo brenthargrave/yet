@@ -16,6 +16,7 @@ import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { act, Actions, Source as ActionSource } from "~/action"
 import {
   getProfile$,
+  isOnboard,
   Profile,
   Source as GraphSource,
   updateProfile$,
@@ -48,6 +49,7 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
   const [onCancel, onCancel$] = cb$(tag("onCancel$"))
 
   const id$ = me$.pipe(
+    filter((me) => isOnboard(me)),
     map(({ id }) => id),
     tag("id$"),
     shareLatest()

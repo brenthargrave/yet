@@ -17,7 +17,13 @@ import { isNotNullish } from "rxjs-etc"
 import { Action } from "rxjs/internal/scheduler/Action"
 import { filterResultOk } from "ts-results/rxjs-operators"
 import { act, Actions, Source as ActionSource } from "~/action"
-import { Customer, getProfile$, Profile, Source as GraphSource } from "~/graph"
+import {
+  Customer,
+  getProfile$,
+  isOnboard,
+  Profile,
+  Source as GraphSource,
+} from "~/graph"
 import { makeTagger } from "~/log"
 import { routes, Source as RouterSource } from "~/router"
 import { shareLatest, cb$ } from "~/rx"
@@ -41,6 +47,7 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"))
 
   const id$ = me$.pipe(
+    filter((me) => isOnboard(me)),
     map(({ id }) => id),
     tag("id$"),
     shareLatest()
