@@ -3,6 +3,16 @@ defmodule AppWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :app
   use Absinthe.Phoenix.Endpoint
 
+  # supports UX tests
+  if System.get_env("MIX_ENV") == "test" do
+    plug(Phoenix.Ecto.SQL.Sandbox,
+      at: "/sandbox",
+      repo: App.Repo,
+      timeout: 30_000
+      # header: "sandbox"
+    )
+  end
+
   plug Corsica, origins: "*"
 
   # The session will be stored in the cookie and signed,

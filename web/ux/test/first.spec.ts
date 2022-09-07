@@ -3,6 +3,7 @@ import { makeBrowser } from "~/browser"
 it("Sign up", async () => {
   const { customer, exit } = await makeBrowser()
   const a = await customer("Alice")
+  const b = await customer("Bob")
   try {
     await a.visit("/")
     await a.click("Create Account")
@@ -22,6 +23,10 @@ it("Sign up", async () => {
     await a.click("Continue")
 
     await a.see("Home")
+
+    // continue verifying mult-user
+    await b.visit("/")
+    await b.see("Create Account")
   } catch (error) {
     console.error(error)
     a.screenie()
