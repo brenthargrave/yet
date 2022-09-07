@@ -8,23 +8,25 @@ it("Sign up", async () => {
     await a.visit("/")
     await a.click("Create Account")
     await a.see("phone number")
-    await a.input("phone number", "9999999998")
+    await a.input("phone number", "9999999998") // faker
     await a.click("Continue")
 
     await a.type("PIN number", "2222")
     await a.see("name")
     await a.input("name", a.name)
     await a.click("Continue")
-    // TODO: drop title/org
-    await a.input("org", "Law")
-    await a.click("Continue")
 
-    await a.input("role", "Lawyer")
+    // TODO: replace title/org w/ email
+    // await a.input("org", "Law")
+    // await a.click("Continue")
+    // await a.input("role", "Lawyer")
+    // await a.click("Continue")
+    await a.input("email", "brent@brent.is") // faker
     await a.click("Continue")
 
     await a.see("Home")
 
-    // continue verifying mult-user
+    // NOTE: continue verifying mult-user until feature impl.
     await b.visit("/")
     await b.see("Create Account")
   } catch (error) {
@@ -32,6 +34,5 @@ it("Sign up", async () => {
     a.screenie()
     throw error
   }
-
   await exit()
 })
