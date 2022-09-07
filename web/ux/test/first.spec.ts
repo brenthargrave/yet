@@ -1,14 +1,14 @@
-import { makeBrowser } from "~/browser"
+import { makeBrowser, Alice, Bob } from "~/browser"
 
 it("Sign up", async () => {
   const { customer, exit } = await makeBrowser()
-  const a = await customer("Alice")
-  const b = await customer("Bob")
+  const a = await customer(Alice)
+  const b = await customer(Bob)
   try {
     await a.visit("/")
     await a.click("Create Account")
     await a.see("phone number")
-    await a.input("phone number", "9999999998") // faker
+    await a.input("phone number", a.phone)
     await a.click("Continue")
 
     await a.type("PIN number", "2222")
@@ -21,7 +21,7 @@ it("Sign up", async () => {
     // await a.click("Continue")
     // await a.input("role", "Lawyer")
     // await a.click("Continue")
-    await a.input("email", "brent@brent.is") // faker
+    await a.input("email", a.email)
     await a.click("Continue")
 
     await a.see("Home")

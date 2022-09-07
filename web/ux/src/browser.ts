@@ -1,6 +1,7 @@
 import * as puppeteer from "puppeteer"
 import { startsWith } from "ramda"
-import { faker } from "@faker-js/faker"
+import { Persona } from "./personas"
+export * from "./personas"
 
 const { UX_DEBUG_BROWSER, PORT_SSL } = process.env
 
@@ -24,7 +25,8 @@ export const makeBrowser = async () => {
 
   const exits: (() => Promise<void>)[] = []
 
-  const customer = async (_name?: string) => {
+  const customer = async (p: Persona) => {
+    const { name, phone, email } = p
     const browser = await puppeteer.launch({ dumpio: !!UX_DEBUG_BROWSER })
     const context = await browser.createIncognitoBrowserContext()
     const page = await context.newPage()
@@ -33,7 +35,7 @@ export const makeBrowser = async () => {
     page.setUserAgent(checkoutSandbox)
 
     const close = async () => {
-      console.debug(`${_name}: close`)
+      console.debug(`${p.name}: close`)
       await page.close()
       await context.close()
       await browser.close()
@@ -41,44 +43,42 @@ export const makeBrowser = async () => {
     exits.push(close)
 
     const visit = async (path: string): Promise<void> => {
-      console.debug(`${_name} visit: ${path}`)
+      console.debug(`${p.name} visit: ${path}`)
       const url = startsWith(path, "http") ? path : `${baseURL}/${path}`
       await page.goto(url)
     }
 
     const click = async (ariaLabelValue: string) => {
-      console.debug(`${_name} click: "${ariaLabelValue}"`)
+      console.debug(`${p.name} click: "${ariaLabelValue}"`)
       const sel = ariaLabelSel(ariaLabelValue)
       await page.waitForSelector(sel)
       await page.click(sel)
     }
 
     const see = async (ariaLabelValue: string) => {
-      console.debug(`${_name} see: "${ariaLabelValue}"`)
+      console.debug(`${p.name} see: "${ariaLabelValue}"`)
       const sel = ariaLabelSel(ariaLabelValue)
       await page.waitForSelector(sel, { visible: true })
     }
 
     const screenie = async () => {
       const ts = Date.now().toString()
-      await page.screenshot({ path: `scratch/${ts}-${_name}.png` })
+      await page.screenshot({ path: `scratch/${ts}-${p.name}.png` })
     }
 
     const type = async (ariaLabelValue: string, text: string) => {
-      console.debug(`${_name} type: "${text}" in "${ariaLabelValue}"`)
+      console.debug(`${p.name} type: "${text}" in "${ariaLabelValue}"`)
       const sel = ariaLabelSel(ariaLabelValue)
       await page.waitForSelector(sel, { visible: true })
       await page.keyboard.type(text)
     }
 
     const input = async (ariaLabelValue: string, text: string) => {
-      console.debug(`${_name} type: "${text}" in "${ariaLabelValue}"`)
+      console.debug(`${p.name} type: "${text}" in "${ariaLabelValue}"`)
       const sel = ariaLabelSel(ariaLabelValue)
       await page.waitForSelector(sel, { visible: true })
       await page.type(sel, text)
     }
-
-    const name = _name ?? faker.name.fullName()
 
     // NOTE: composite actions
 
@@ -90,6 +90,8 @@ export const makeBrowser = async () => {
 
     return {
       name,
+      phone,
+      email,
       close,
       visit,
       click,

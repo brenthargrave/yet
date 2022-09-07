@@ -1,7 +1,6 @@
 import { h, ReactSource } from "@cycle/react"
 import { createRef } from "react"
 import {
-  BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
   filter,
@@ -16,7 +15,7 @@ import {
 import { isNotNullish } from "rxjs-etc"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { find, isNil, prop, propSatisfies, toLower, trim } from "~/fp"
-import { ProfileProp, Source as GraphSource, patchProfile$ } from "~/graph"
+import { patchProfile$, ProfileProp, Source as GraphSource } from "~/graph"
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
@@ -72,7 +71,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     tag("result$"),
     share()
   )
-  const _$ = result$.pipe(filterResultOk())
+  const _ = result$.pipe(filterResultOk())
   const userError$ = result$.pipe(filterResultErr(), tag("userError$"))
 
   const isLoading = merge(
