@@ -4,6 +4,7 @@ defmodule AppWeb.Graph.Onboarding do
 
   enum :profile_prop do
     value(:name, as: "name")
+    value(:email, as: "email")
     value(:org, as: "org")
     value(:role, as: "role")
   end
@@ -15,7 +16,7 @@ defmodule AppWeb.Graph.Onboarding do
   end
 
   object :patch_profile_payload do
-    field(:me, :customer)
+    field(:profile, :profile)
     field(:user_error, :user_error)
   end
 

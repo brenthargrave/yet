@@ -625,11 +625,7 @@ export const getProfile$ = (input: GetProfileInput) => {
   )
 }
 
-type CustomerProfileOnly = Omit<Customer, "e164" | "token">
-
-export const patchProfile$ = (
-  input: PatchProfileInput
-): Observable<Result<CustomerProfileOnly, UserError>> =>
+export const patchProfile$ = (input: PatchProfileInput) =>
   from(
     client.mutate({
       mutation: PatchProfileDocument,
@@ -638,8 +634,8 @@ export const patchProfile$ = (
   ).pipe(
     map(({ data, errors, extensions, context }) => {
       if (errors) throw new GraphError(JSON.stringify(errors))
-      const { userError, me } = data!.patchProfile!
-      return userError ? new Err(userError) : new Ok(me!)
+      const { userError, profile } = data!.patchProfile!
+      return userError ? new Err(userError) : new Ok(profile!)
     }),
     tag("updateProfile$")
   )

@@ -2,12 +2,13 @@ defmodule AppWeb.Resolvers.Onboarding do
   use Croma
   use App.Types
   use TypedStruct
+  use Brex.Result
   import ShorterMaps
   alias App.{Onboarding}
-  alias App.{UserError, Customer}
+  alias App.{UserError, Profile}
 
   typedstruct module: UpdateProfilePayload do
-    field :me, Customer.t()
+    field :profile, Profile.t()
     field :user_error, UserError.t()
   end
 
@@ -16,17 +17,8 @@ defmodule AppWeb.Resolvers.Onboarding do
           %{input: ~M{ id, prop, value }} = _args,
           _resolution
         ) :: resolver_result() do
-    case Onboarding.patch_profile(id, prop, value) do
-      {:ok, customer} ->
-        {:ok,
-         %UpdateProfilePayload{
-           me: customer
-           # userError
-         }}
-
-      # TODO: changeset errors (ie, validations?) => {:ok, UserError}
-      {:error, _} = error ->
-        error
-    end
+    Onboarding.patch_profile(id, prop, value)
+    # TODO: validation error -> {:ok, UserError}
+    |> fmap(&%UpdateProfilePayload{profile: &1})
   end
 end

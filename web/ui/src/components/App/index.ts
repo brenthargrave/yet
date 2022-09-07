@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { h, ReactSource } from "@cycle/react"
 import { captureException } from "@sentry/react"
 import {
@@ -28,7 +29,6 @@ import { toast } from "~/toast"
 import { Home } from "./Home"
 import { View as AppView } from "./View"
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type CycleComponent<T> = (
   sources: T,
   ...args: any[]

@@ -3,7 +3,7 @@ defmodule App.Onboarding do
   use Brex.Result
   use Croma
   use TypedStruct
-  alias App.{UserError, Repo, Customer}
+  alias App.{UserError, Repo, Profile}
 
   @type prop :: String.t()
   @type value :: String.t()
@@ -13,9 +13,9 @@ defmodule App.Onboarding do
     key = String.to_atom(prop)
     attrs = %{:id => id, key => value}
 
-    Repo.get(Customer, id)
-    |> lift(nil, "MIA: Customer #{id}")
-    |> fmap(&Customer.onboarding_changeset(&1, attrs))
+    Repo.get(Profile, id)
+    |> lift(nil, :not_found)
+    |> fmap(&Profile.onboarding_changeset(&1, attrs))
     |> bind(&Repo.update/1)
   end
 end

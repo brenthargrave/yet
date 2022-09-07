@@ -1,6 +1,7 @@
 fragment ProfileProps on Profile {
   id
   name
+  email
   role
   org
 }
@@ -38,12 +39,8 @@ mutation PatchProfile($input: PatchProfileInput!) {
     userError {
       message
     }
-    # TODO: return profile from patch, not Customer
-    me {
-      id
-      name
-      org
-      role
+    profile {
+      ...ProfileProps
     }
   }
 }

@@ -5,8 +5,9 @@ defmodule AppWeb.Graph.Profiles do
   object :profile do
     field(:id, non_null(:id))
     field(:name, non_null(:string))
-    field(:org, non_null(:string))
-    field(:role, non_null(:string))
+    field(:email, non_null(:string))
+    field(:org, :string)
+    field(:role, :string)
     field(:events, list_of(non_null(:timeline_event)))
   end
 

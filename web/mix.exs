@@ -66,7 +66,8 @@ defmodule App.MixProject do
       {:html_sanitize_ex, "~> 1.4"},
       {:httpoison, "~> 1.8"},
       {:money, "~> 1.9"},
-      {:corsica, "~> 1.0"}
+      {:corsica, "~> 1.0"},
+      {:ecto_commons, "~> 0.3.3"}
     ]
   end
 
