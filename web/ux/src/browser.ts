@@ -25,9 +25,12 @@ export const makeBrowser = async () => {
 
   const exits: (() => Promise<void>)[] = []
 
-  const customer = async (p: Persona) => {
+  const customer = async (p: Persona, headless = true) => {
     const { name, phone, email } = p
-    const browser = await puppeteer.launch({ dumpio: !!UX_DEBUG_BROWSER })
+    const browser = await puppeteer.launch({
+      dumpio: !!UX_DEBUG_BROWSER,
+      headless,
+    })
     const context = await browser.createIncognitoBrowserContext()
     const page = await context.newPage()
     page.setDefaultTimeout(10 * 1000)

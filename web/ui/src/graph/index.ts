@@ -630,6 +630,7 @@ export const patchProfile$ = (input: PatchProfileInput) =>
     client.mutate({
       mutation: PatchProfileDocument,
       variables: { input },
+      refetchQueries: [{ query: MeDocument }],
     })
   ).pipe(
     map(({ data, errors, extensions, context }) => {

@@ -23,15 +23,23 @@ const messages: Record<string, string> = {
   "auth.tel.verify.cta": `Enter it below to verify $PHONE`,
   "default.error.title": "Oops, a bug!",
   "default.error.description": "We've been notified and will fix it ASAP.",
+
   "onboarding.name.headingCopy": "What's your name?",
   "onboarding.name.inputPlaceholer": shared.empty,
   "onboarding.name.submitButtonCopy": shared.continue,
+
+  "onboarding.email.headingCopy": "What's your email?",
+  "onboarding.email.inputPlaceholer": shared.empty,
+  "onboarding.email.submitButtonCopy": shared.continue,
+
   "onboarding.org.headingCopy": "Where do you work or study?",
   "onboarding.org.inputPlaceholer": shared.empty,
   "onboarding.org.submitButtonCopy": shared.continue,
+
   "onboarding.role.headingCopy": "What is your title or role there?",
   "onboarding.role.inputPlaceholer": shared.empty,
   "onboarding.role.submitButtonCopy": shared.continue,
+
   "note.draft.placeholder": "What did you learn?\nLinks, notes, etc.",
   "note.empty.buttonCopy": "Note a conversation",
   "note.empty.cta": `To get started, take some notes on a recent conversation you had with someone.`,

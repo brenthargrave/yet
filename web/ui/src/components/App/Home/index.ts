@@ -231,9 +231,11 @@ export const Home = (sources: Sources) => {
   )
 
   const state$ = combineLatest({ me: me$ }).pipe(
-    map(({ me }) =>
-      isAuthenticated(me) && isOnboarding(me) ? State.onboarding : State.root
-    ),
+    map(({ me }) => {
+      return isAuthenticated(me) && isOnboarding(me)
+        ? State.onboarding
+        : State.root
+    }),
     distinctUntilChanged(),
     tag("state$"),
     share()

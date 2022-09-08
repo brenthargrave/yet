@@ -11,6 +11,7 @@ import {
   Stack,
 } from "~/system"
 import { toLower } from "~/fp"
+import { ProfileProp } from "~/graph"
 
 const size = "lg"
 
@@ -28,6 +29,7 @@ export interface Props {
   inputRef?: Ref<HTMLInputElement>
   buttonRef?: Ref<HTMLButtonElement>
 }
+
 export const View = ({
   attr,
   onChangeInput,
@@ -59,7 +61,7 @@ export const View = ({
           h(InputGroup, { size, key: `group-${attr}` }, [
             h(Input, {
               ref: inputRef,
-              // key,
+              type: attr === ProfileProp.Email ? "email" : null,
               autoFocus: true,
               placeholder: inputPlaceholder,
               isRequired: true,

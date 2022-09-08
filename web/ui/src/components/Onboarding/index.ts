@@ -1,5 +1,6 @@
 import { h, ReactSource } from "@cycle/react"
 import { createRef } from "react"
+import { first } from "remeda"
 import {
   combineLatest,
   distinctUntilChanged,
@@ -14,8 +15,13 @@ import {
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
-import { find, isNil, prop, propSatisfies, toLower, trim } from "~/fp"
-import { patchProfile$, ProfileProp, Source as GraphSource } from "~/graph"
+import { find, isEmpty, isNil, prop, propSatisfies, toLower, trim } from "~/fp"
+import {
+  patchProfile$,
+  ProfileProp,
+  requiredProps,
+  Source as GraphSource,
+} from "~/graph"
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
@@ -31,17 +37,15 @@ interface Sources {
   graph: GraphSource
 }
 
-const attributes = [ProfileProp.Name, ProfileProp.Org, ProfileProp.Role]
-
 export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"), shareLatest())
 
   const attr$ = me$.pipe(
     map((me) =>
-      find((attr) => propSatisfies(isNil, toLower(attr), me), attributes)
+      find((attr) => propSatisfies(isNil, toLower(attr), me), requiredProps)
     ),
+    startWith(first(requiredProps)),
     filter(isNotNullish),
-    startWith(prop(0, attributes)),
     distinctUntilChanged(),
     tag("attr$"),
     shareLatest()
@@ -79,8 +83,14 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     result$.pipe(map((_) => false))
   ).pipe(startWith(false), tag("isLoading$"), shareLatest())
 
-  const isInputInvalid = inputValue$.pipe(
-    map((value) => trim(value).length < 2),
+  const isInputInvalid = combineLatest({
+    value: inputValue$,
+    attr: attr$,
+  }).pipe(
+    map(({ value, attr }) => {
+      if (attr === ProfileProp.Email) return isEmpty(value.match(/\S+@\S+/))
+      return trim(value).length < 2
+    }),
     startWith(true),
     tag("isInputInvalid"),
     shareLatest()
