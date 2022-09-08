@@ -3,7 +3,7 @@ import { startsWith } from "ramda"
 import { Persona } from "./personas"
 export * from "./personas"
 
-const { UX_DEBUG_BROWSER, PORT_SSL } = process.env
+const { UX_DEBUG_BROWSER, PORT_SSL, PRODUCT_NAME = "TBD" } = process.env
 
 // NOTE: node chokes on "localhost" https://github.com/node-fetch/node-fetch/issues/1624#issuecomment-1235826631
 const baseURL = `https://127.0.0.1:${PORT_SSL}`
@@ -84,11 +84,34 @@ export const makeBrowser = async () => {
     }
 
     // NOTE: composite actions
-
-    const signup = async () => {
+    //
+    const auth = async () => {
       await visit("/")
       await click("Create Account")
-      // TODO:
+      await see("phone number")
+      await input("phone number", phone)
+      await click("Continue")
+      await type("PIN number", "2222") // NOTE: auto-submits on last digit
+    }
+
+    const signout = async () => {
+      await visit("/out")
+      await see(PRODUCT_NAME)
+    }
+
+    const signup = async () => {
+      await auth()
+      await see("name")
+      await input("name", name)
+      await click("Continue")
+      await input("email", email)
+      await click("Continue")
+      await see("Home")
+    }
+
+    const signin = async () => {
+      await auth()
+      await see("Home")
     }
 
     return {
@@ -103,6 +126,8 @@ export const makeBrowser = async () => {
       input,
       type,
       signup,
+      signout,
+      signin,
     }
   }
 
