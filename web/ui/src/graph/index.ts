@@ -657,3 +657,42 @@ export const updateProfile$ = (input: UpdateProfileInput) => {
     tag("upsertConversation$")
   )
 }
+
+// TODO: dedupe w/ convos$/opps$
+export const profile$ = me$.pipe(
+  filter(isNotNullish),
+  switchMap(({ id }) => {
+    return from(
+      zenToRx(
+        client.watchQuery({
+          query: GetProfileDocument,
+          variables: { input: { id } },
+          fetchPolicy: "network-only",
+        })
+      ).pipe(
+        map(
+          ({
+            data,
+            error,
+            errors,
+            loading,
+            networkStatus,
+            partial,
+            ...result
+          }) => {
+            // NOTE: throw will create endless loop upon resubscription
+            if (error) captureException(error)
+            if (errors) captureException(JSON.stringify(errors))
+            return data.getProfile!.profile
+          }
+        ),
+        filter(isNotNullish)
+      )
+    )
+  }),
+  tag("profile$"),
+  catchError((error, _caught$) => {
+    throw new GraphDefaultQueryError(error.message)
+  }),
+  shareLatest()
+)

@@ -40,35 +40,16 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
 
   const {
     router: { history$ },
-    graph: { me$: _me$ },
+    graph: { me$: _me$, profile$: _profile$ },
   } = sources
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"))
+  const profile$ = _profile$.pipe(tag("profile$"))
 
   const [onChangeName, onChangeName$] = cb$<string>(tag("onChangeName$"))
   const [onSubmit, onSubmit$] = cb$(tag("onSubmit$"))
   const [onCancel, onCancel$] = cb$(tag("onCancel$"))
 
-  const id$ = me$.pipe(
-    filter((me) => isOnboard(me)),
-    map(({ id }) => id),
-    tag("id$"),
-    shareLatest()
-  )
-
-  const result$ = id$.pipe(
-    switchMap((id) => getProfile$({ id })),
-    tag("result$"),
-    shareLatest()
-  )
-
-  const priorProfile$: Observable<Profile> = result$.pipe(
-    //
-    filterResultOk(),
-    tag("savedProfile$"),
-    shareLatest()
-  )
-
-  const priorName$ = priorProfile$.pipe(
+  const priorName$ = profile$.pipe(
     map(({ name }) => name),
     tag("savedName$"),
     shareLatest()

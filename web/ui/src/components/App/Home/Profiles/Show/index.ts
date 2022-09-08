@@ -1,33 +1,20 @@
 import { h, ReactSource } from "@cycle/react"
-import { of } from "ramda"
 import {
   combineLatest,
   distinctUntilChanged,
-  EMPTY,
   filter,
   map,
   merge,
-  Observable,
   share,
   startWith,
-  switchMap,
-  withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
-import { Action } from "rxjs/internal/scheduler/Action"
-import { filterResultOk } from "ts-results/rxjs-operators"
 import { act, Actions, Source as ActionSource } from "~/action"
-import {
-  Customer,
-  getProfile$,
-  isOnboard,
-  Profile,
-  Source as GraphSource,
-} from "~/graph"
+import { Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { routes, Source as RouterSource } from "~/router"
-import { shareLatest, cb$ } from "~/rx"
-import { View, State } from "./View"
+import { Source as RouterSource } from "~/router"
+import { cb$, shareLatest } from "~/rx"
+import { State, View } from "./View"
 
 export interface Sources {
   react: ReactSource
@@ -41,30 +28,10 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
   const tag = makeTagger(tagScope)
 
   const {
-    router: { history$ },
-    graph: { me$: _me$ },
+    graph: { me$: _me$, profile$: _profile$ },
   } = sources
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"))
-
-  const id$ = me$.pipe(
-    filter((me) => isOnboard(me)),
-    map(({ id }) => id),
-    tag("id$"),
-    shareLatest()
-  )
-
-  const result$ = id$.pipe(
-    switchMap((id) => getProfile$({ id })),
-    tag("result$"),
-    shareLatest()
-  )
-
-  const profile$ = result$.pipe(
-    //
-    filterResultOk(),
-    tag("profile$"),
-    share()
-  )
+  const profile$ = _profile$.pipe(tag("profile$"))
 
   const state$ = profile$.pipe(
     map(() => State.ready),
