@@ -6,10 +6,7 @@ import { isEmpty } from "~/fp"
 import { Conversation, Customer, TimelineEvent } from "~/graph"
 import { containerProps, FullWidthVStack, Header, Nav } from "~/system"
 import { EmptyView, Props as EmptyViewProps } from "./EmptyView"
-// import {
-//   EmptyView,
-//   Props as EmptyViewProps,
-// } from "../Conversations/List/EmptyView"
+import { EmptyView as ConversationsEmptyView } from "../Conversations/List/EmptyView"
 
 export enum State {
   loading = "loading",
@@ -21,6 +18,7 @@ export interface Props extends EmptyViewProps {
   viewer: Customer
   events: TimelineEvent[]
   onClickConversation?: (c: Conversation) => void
+  conversations: Conversation[]
 }
 
 export const View: FC<Props> = ({
@@ -29,11 +27,14 @@ export const View: FC<Props> = ({
   events,
   onClickNew,
   onClickConversation,
+  conversations,
 }) =>
   state === State.loading
     ? null
     : isEmpty(events)
-    ? h(EmptyView, { onClickNew, ...containerProps })
+    ? isEmpty(conversations)
+      ? h(ConversationsEmptyView, { onClickNew, ...containerProps })
+      : h(EmptyView, { onClickNew, ...containerProps })
     : h(FullWidthVStack, { ...containerProps }, [
         h(Nav),
         h(Header, {}, [

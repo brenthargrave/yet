@@ -71,7 +71,7 @@ import {
   UserError,
   ViewConversationDocument,
 } from "./generated"
-import { isAuthenticated } from "./models"
+import { hasAllRequiredProfileProps, isAuthenticated } from "./models"
 import { client as urqlClient } from "./urql"
 
 export { loggedIn, loggedOut } from "./driver"
@@ -663,7 +663,7 @@ export const updateProfile$ = (input: UpdateProfileInput) => {
 export const profile$ = me$.pipe(
   filter(isAuthenticated),
   filter(isNotNullish),
-  filter(({ name }) => !!name), // don't bother until Name set
+  filter(hasAllRequiredProfileProps),
   switchMap(({ id }) => {
     return from(
       zenToRx(

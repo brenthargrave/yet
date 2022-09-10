@@ -32,7 +32,7 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
 
   const {
     router: { history$ },
-    graph: { me$: _me$ },
+    graph: { me$: _me$, conversations$ },
   } = sources
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"))
 
@@ -75,6 +75,7 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
     state: state$,
     viewer: me$,
     events: events$,
+    conversations: conversations$,
   }).pipe(tag("props$"), shareLatest())
 
   const react = props$.pipe(
