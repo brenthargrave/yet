@@ -3,6 +3,7 @@ import { h } from "@cycle/react"
 import { FC } from "react"
 import {} from "remeda"
 import { TimelineEventList } from "~/components/TimelineEvent"
+import { isEmpty } from "~/fp"
 import { Conversation, Customer, Profile } from "~/graph"
 import {
   containerProps,
@@ -11,6 +12,7 @@ import {
   Header,
   Nav,
 } from "~/system"
+import { EmptyView } from "../../Timeline/EmptyView"
 
 export enum State {
   loading = "loading",
@@ -23,6 +25,7 @@ export interface Props {
   profile: Profile
   onClickEdit?: () => void
   onClickConversation?: (c: Conversation) => void
+  onClickNewConversation?: () => void
 }
 
 export const View: FC<Props> = ({
@@ -31,9 +34,9 @@ export const View: FC<Props> = ({
   profile,
   onClickEdit,
   onClickConversation,
+  onClickNewConversation,
 }) => {
   const { name, role, org, events = [] } = profile
-  const bio = [role, org].join(" at ")
 
   return state === State.loading
     ? null
@@ -53,14 +56,17 @@ export const View: FC<Props> = ({
           // Contact
           h(FullWidthVStack, [
             h(Heading, { size: "lg" }, name),
-            h(Text, { fontSize: "lg" }, bio),
+            role && org && h(Text, { fontSize: "lg" }, `${role} at ${org}`),
           ]),
           h(Divider),
+          // TODO: TimelineEventList component?
           // Activity
-          h(FullWidthVStack, [
-            h(Heading, { size: "sm" }, `Activity`),
-            h(TimelineEventList, { viewer, events, onClickConversation }),
-          ]),
+          isEmpty(events)
+            ? h(EmptyView, { onClickNew: onClickNewConversation })
+            : h(FullWidthVStack, [
+                h(Heading, { size: "sm" }, `Activity`),
+                h(TimelineEventList, { viewer, events, onClickConversation }),
+              ]),
         ]),
       ])
 }

@@ -253,7 +253,7 @@ export const Home = (sources: Sources) => {
   )
 
   const router = merge(
-    ...pluck("router", [conversations, timeline]),
+    ...pluck("router", [conversations, timeline, profiles]),
     rootRouter$,
     oppsRouter$
   )
