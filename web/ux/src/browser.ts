@@ -10,18 +10,25 @@ const baseURL = `https://127.0.0.1:${PORT_SSL}`
 // NOTE: node chokes on SSL, https://stackoverflow.com/a/20100521
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0"
 
+const sandboxURL = `${baseURL}/sandbox`
+
+export const checkoutSandbox = async () =>
+  await fetch(sandboxURL, { method: "POST" }).then((response) => {
+    const value = response?.text()
+    if (!value) throw new Error("MIA: sandbox value for headers")
+    return value
+  })
+
+export const checkinSandbox = async () =>
+  await fetch(sandboxURL, { method: "DELETE" }).then((res) =>
+    console.debug(res.body)
+  )
+
 const ariaLabelSel = (ariaLabelValue: string) =>
   `[aria-label="${ariaLabelValue}"]`
 
 export const makeBrowser = async () => {
-  const sandboxURL = `${baseURL}/sandbox`
-  const checkoutSandbox = await fetch(sandboxURL, { method: "POST" }).then(
-    (response) => {
-      const value = response?.text()
-      if (!value) throw new Error("MIA: sandbox value for headers")
-      return value
-    }
-  )
+  const userAgent = await checkoutSandbox()
 
   const exits: (() => Promise<void>)[] = []
 
@@ -35,7 +42,7 @@ export const makeBrowser = async () => {
     const page = await context.newPage()
     page.setDefaultTimeout(2 * 1000)
     page.setDefaultNavigationTimeout(4 * 1000)
-    page.setUserAgent(checkoutSandbox)
+    page.setUserAgent(userAgent)
 
     const close = async () => {
       console.debug(`${p.name}: close`)

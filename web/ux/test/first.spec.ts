@@ -1,10 +1,7 @@
-import { makeBrowser } from "~/browser"
+import { checkinSandbox, checkoutSandbox, makeBrowser } from "~/browser"
 import { Alice, Bob } from "~/browser"
 
-// // TODO: checkout db
-// before("setup", async () => {})
-// after("teardown", async () => {})
-
+// TODO: can only run one test at a time for now.
 // it("Sign up", async () => {
 //   const { customer, exit } = await makeBrowser()
 //   const a = await customer(Alice, false)
