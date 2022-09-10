@@ -40,10 +40,9 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
 
   const {
     router: { history$ },
-    graph: { me$: _me$ },
+    graph: { me$ },
     action: { action$ },
   } = sources
-  const me$ = _me$.pipe(filter(isNotNullish), tag("me$"))
 
   const localState$ = action$.pipe(
     switchMap((action) =>

@@ -129,7 +129,7 @@ export const View = ({
             Tooltip,
             {
               shouldWrapChildren: true,
-              label: "Disabled once shared",
+              // label: "Disabled once shared",
               isDisabled: !isDeleteDisabled,
             },
             [
