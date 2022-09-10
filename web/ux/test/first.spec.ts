@@ -17,3 +17,18 @@ it("Sign up", async () => {
   }
   await exit()
 })
+
+it("Create conversation", async () => {
+  const { customer, exit } = await makeBrowser()
+  const a = await customer(Alice)
+  try {
+    await a.signup()
+    await a.click("Conversations")
+    // await a.
+  } catch (error) {
+    console.error(error)
+    a.screenie()
+    throw error
+  }
+  await exit()
+})
