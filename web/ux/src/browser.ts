@@ -2,6 +2,7 @@ import * as puppeteer from "puppeteer"
 import { startsWith } from "ramda"
 import { Persona } from "./personas"
 export * from "./personas"
+import fs from "fs"
 
 const { UX_DEBUG_BROWSER, PORT_SSL, PRODUCT_NAME = "TBD" } = process.env
 
@@ -72,8 +73,10 @@ export const makeBrowser = async () => {
     }
 
     const screenie = async () => {
+      const dir = "scratch/screenies"
+      fs.mkdirSync(dir, { recursive: true })
       const ts = Date.now().toString()
-      await page.screenshot({ path: `scratch/screenies/${ts}-${p.name}.png` })
+      await page.screenshot({ path: `${dir}/${ts}-${p.name}.png` })
     }
 
     const type = async (ariaLabelValue: string, text: string) => {

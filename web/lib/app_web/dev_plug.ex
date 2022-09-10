@@ -3,9 +3,10 @@ defmodule AppWeb.DevPlug do
 
   def init(_opts) do
     var = System.get_env("DEBUG_LATENCY")
+    isDev = var == "dev"
 
     cond do
-      !is_nil(var) -> %{duration: String.to_integer(var)}
+      isDev -> %{duration: String.to_integer(var)}
       true -> %{}
     end
   end

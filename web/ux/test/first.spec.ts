@@ -1,38 +1,36 @@
 import { checkinSandbox, checkoutSandbox, makeBrowser } from "~/browser"
 import { Alice, Bob } from "~/browser"
 
-// TODO: can only run one test at a time for now.
-// it("Sign up", async () => {
-//   const { customer, exit } = await makeBrowser()
-//   const a = await customer(Alice, false)
-//   const b = await customer(Bob, false)
-//   try {
-//     await a.signup()
-//     // NOTE: continue verifying mult-user until feature impl.
-//     await b.visit("/")
-//     await b.see("Create Account")
-//   } catch (error) {
-//     console.error(error)
-//     a.screenie()
-//     throw error
-//   }
-//   await exit()
-// })
-
 it("Opp reward payment", async () => {
   const { customer, exit } = await makeBrowser()
   const a = await customer(Alice, false)
   try {
     await a.signup()
     // Alice creates Opp with award
+
     await a.click("Opportunities")
     await a.click("Create Opp")
-    await a.input("Organization", "ACME Corporation")
-    await a.input("Role", "Demolition Expert")
-    await a.input("Description", "TBD")
-    await a.input("Canonical URL", "https://acme.com/jobs/1")
-    await a.input("Reward", "599")
+    // await opp = a.createOpp(attrs) // root vs. nested?
+    const opp = {
+      org: "ACME Corporation",
+      role: "Demolition Expert",
+      description: "TBD",
+      url: "https://acme.com/jobs/1",
+      reward: "599",
+    }
+    await a.input("Organization", opp.org)
+    await a.input("Role", opp.role)
+    await a.input("Description", opp.description)
+    await a.input("Canonical URL", opp.url)
+    await a.input("Reward", opp.reward)
     await a.click("Save")
+    // TODO: verify all attrs, not just reward
+    await a.see(`$${opp.reward}`)
+
+    await a.click("Conversations")
+    await a.see("Welcome!")
+    await a.click("Note a conversation")
+
     // TODO:
     // Alice creates conversation w/ Bob, mentoining Opp
     // Bob cosigns
@@ -58,3 +56,21 @@ it("Opp reward payment", async () => {
   }
   await exit()
 })
+
+// TODO: can only run one test at a time for now.
+// it("Sign up", async () => {
+//   const { customer, exit } = await makeBrowser()
+//   const a = await customer(Alice, false)
+//   const b = await customer(Bob, false)
+//   try {
+//     await a.signup()
+//     // NOTE: continue verifying mult-user until feature impl.
+//     await b.visit("/")
+//     await b.see("Create Account")
+//   } catch (error) {
+//     console.error(error)
+//     a.screenie()
+//     throw error
+//   }
+//   await exit()
+// })
