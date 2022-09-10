@@ -31,7 +31,11 @@ interface Props extends Omit<InputProps, "onChange" | "defaultValue"> {
   defaultValue?: string | null
 }
 
-export const UrlInput: FC<Props> = ({ onChange: _onChange, defaultValue }) => {
+export const UrlInput: FC<Props> = ({
+  onChange: _onChange,
+  defaultValue,
+  ...rest
+}) => {
   const [url, setUrl] = useState(defaultValue)
   const [isDisabled, setDisabled] = useState(true)
   const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -42,7 +46,7 @@ export const UrlInput: FC<Props> = ({ onChange: _onChange, defaultValue }) => {
   }
 
   return h(InputGroup, { size }, [
-    h(Input, { onChange, defaultValue, placeholder }),
+    h(Input, { onChange, defaultValue, placeholder, ...rest }),
     h(InputRightElement, {}, [
       h(IconButton, {
         size: "sm",

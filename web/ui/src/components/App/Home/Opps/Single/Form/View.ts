@@ -17,6 +17,8 @@ import {
   Spacer,
   Stack,
   containerProps,
+  ariaLabel,
+  AriaButton,
 } from "~/system"
 import { CancelButton } from "~/system/CancelButton"
 import { InputControl } from "~/system/InputControl"
@@ -114,6 +116,7 @@ export const View: FC<Props> = ({
               onChange: makeOnChange(onChangeOrg),
               placeholder: "Company, school, club, family, etc.",
               autoFocus: true,
+              ...ariaLabel("Organization"),
             }),
           ]),
           h(InputControl, { label: "Role", isRequired: true }, [
@@ -121,6 +124,7 @@ export const View: FC<Props> = ({
               defaultValue: defaultValueRole,
               onChange: makeOnChange(onChangeRole),
               placeholder: "Cofounder, Engineer, Designer, etc.",
+              ...ariaLabel("Role"),
             }),
           ]),
           h(InputControl, { label: "Description" }, [
@@ -130,12 +134,14 @@ export const View: FC<Props> = ({
               // @ts-ignore
               onChange: makeOnChange(onChangeDesc),
               minRows: 2,
+              ...ariaLabel("Description"),
             }),
           ]),
           h(InputControl, { label: "Canonical URL" }, [
             h(UrlInput, {
               onChange: onChangeUrl,
               defaultValue: defaultValueUrl,
+              ...ariaLabel("Canonical URL"),
             }),
           ]),
           h(VStack, { width: "40%", alignItems: "start" }, [
@@ -143,6 +149,7 @@ export const View: FC<Props> = ({
               h(MoneyInput, {
                 onChange: onChangeFee,
                 money: defaultValueFee,
+                ...ariaLabel("Reward"),
               }),
             ]),
           ]),
@@ -151,7 +158,7 @@ export const View: FC<Props> = ({
             h(Stack, { direction: "row", alignItems: "center" }, [
               //
               h(
-                Button,
+                AriaButton,
                 {
                   type: "submit",
                   // leftIcon: h(PlusSquareIcon),

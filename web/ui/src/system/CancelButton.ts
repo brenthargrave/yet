@@ -1,6 +1,6 @@
 import { SmallCloseIcon } from "@chakra-ui/icons"
 import { h } from "@cycle/react"
-import { Button } from "~/system"
+import { AriaButton } from "~/system"
 
 export interface Props {
   onCancel?: () => void
@@ -8,7 +8,7 @@ export interface Props {
 
 export const CancelButton = ({ onCancel, ...props }: Props) =>
   h(
-    Button,
+    AriaButton,
     {
       variant: "ghost",
       leftIcon: h(SmallCloseIcon),

@@ -33,8 +33,8 @@ export const makeBrowser = async () => {
     })
     const context = await browser.createIncognitoBrowserContext()
     const page = await context.newPage()
-    page.setDefaultTimeout(10 * 1000)
-    page.setDefaultNavigationTimeout(10 * 1000)
+    page.setDefaultTimeout(2 * 1000)
+    page.setDefaultNavigationTimeout(4 * 1000)
     page.setUserAgent(checkoutSandbox)
 
     const close = async () => {
@@ -47,7 +47,7 @@ export const makeBrowser = async () => {
 
     const visit = async (path: string): Promise<void> => {
       console.debug(`${p.name} visit: ${path}`)
-      const url = startsWith(path, "http") ? path : `${baseURL}/${path}`
+      const url = startsWith(path, "http") ? path : `${baseURL}${path}`
       await page.goto(url)
     }
 
@@ -66,7 +66,7 @@ export const makeBrowser = async () => {
 
     const screenie = async () => {
       const ts = Date.now().toString()
-      await page.screenshot({ path: `scratch/${ts}-${p.name}.png` })
+      await page.screenshot({ path: `scratch/screenies/${ts}-${p.name}.png` })
     }
 
     const type = async (ariaLabelValue: string, text: string) => {
@@ -131,12 +131,13 @@ export const makeBrowser = async () => {
     }
   }
 
-  const checkinSandbox = await fetch(sandboxURL, { method: "DELETE" })
+  const checkinSandbox = async () =>
+    await fetch(sandboxURL, { method: "DELETE" }).then((res) =>
+      console.debug(res.body)
+    )
+
   const exit = async () =>
     Promise.all([...exits.map((fn) => fn()), checkinSandbox])
-  // TODO: use single browser instance?
-  // const exit = async () =>
-  //   Promise.all([...exits.map((fn) => fn()), await browser.close()])
 
   return {
     customer,

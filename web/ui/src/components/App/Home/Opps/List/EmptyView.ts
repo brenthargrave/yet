@@ -1,7 +1,7 @@
-import { Button, Heading, Text } from "@chakra-ui/react"
+import { Heading, Text } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { EmptyViewBase } from "~/system"
+import { AriaButton, EmptyViewBase } from "~/system"
 
 export type OnClickNew = () => void
 
@@ -25,8 +25,7 @@ export const EmptyView: FC<Props> = ({ onClickNew, ...props }) =>
     text(
       `Create an opportunity ("opp") to include in your conversation notes.`
     ),
-    // text(`Opps that others discuss with you will appear here too.`),
-    h(Button, { onClick: onClickNew }, `Create opp`),
+    h(AriaButton, { onClick: onClickNew }, `Create Opp`),
   ])
 
 EmptyView.displayName = "EmptyView"

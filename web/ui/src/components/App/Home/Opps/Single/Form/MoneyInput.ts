@@ -16,6 +16,7 @@ interface Props extends Omit<InputProps, "onChange"> {
 export const MoneyInput: FC<Props> = ({
   money = { amount: 0, currency: Currency.Usd },
   onChange: _onChange,
+  ...rest
 }) => {
   const [value, setValue] = useState(format(money))
   const onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -37,6 +38,6 @@ export const MoneyInput: FC<Props> = ({
     //   padding: 0,
     // }),
     h(InputLeftAddon, "$"),
-    h(Input, { onChange, value }),
+    h(Input, { onChange, value, ...rest }),
   ])
 }

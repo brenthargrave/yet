@@ -44,6 +44,7 @@ import {
   forwardRef,
 } from "@chakra-ui/react"
 import { FC } from "react"
+import { ariaLabel } from "./styles"
 
 export const Alert = (props: AlertProps) => h(_Alert, props)
 export const AlertIcon = (props: AlertIconProps) => h(_AlertIcon, props)
@@ -53,6 +54,13 @@ export const AlertDescription = (props: AlertDescriptionProps) =>
 export const Box = (props: BoxProps) => h(_Box, props)
 export const Button = forwardRef(({ ...rest }: ButtonProps, ref) =>
   h(_Button, { ...rest, ref })
+)
+export const AriaButton = forwardRef(
+  ({ children, ...rest }: ButtonProps, ref) => {
+    return typeof children === "string"
+      ? h(_Button, { ...rest, ref, ...ariaLabel(children) }, children)
+      : h(_Button, { ...rest, ref })
+  }
 )
 export const Center = (props: CenterProps) => h(_Center, props)
 export const Divider = (props: DividerProps) => h(_Divider, props)
