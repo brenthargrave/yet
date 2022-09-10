@@ -5,7 +5,11 @@ import { TimelineEventList } from "~/components/TimelineEvent"
 import { isEmpty } from "~/fp"
 import { Conversation, Customer, TimelineEvent } from "~/graph"
 import { containerProps, FullWidthVStack, Header, Nav } from "~/system"
-import { EmptyView, Props as EmptyViewProps } from "./EmptyView"
+// import { EmptyView, Props as EmptyViewProps } from "./EmptyView"
+import {
+  EmptyView,
+  Props as EmptyViewProps,
+} from "../Conversations/List/EmptyView"
 
 export enum State {
   loading = "loading",
