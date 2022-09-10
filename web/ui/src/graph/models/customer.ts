@@ -1,17 +1,26 @@
+import { first } from "remeda"
 import { isNotNullish } from "rxjs-etc"
-import { isNil, none, not, propSatisfies, toLower } from "~/fp"
+import { find, isNil, none, not, propSatisfies, toLower } from "~/fp"
 import { Customer, Maybe, ProfileProp } from ".."
 
 export const isAuthenticated = (me: Maybe<Customer>) => isNotNullish(me)
 
 export const isLurking = (me: Maybe<Customer>) => not(isAuthenticated(me))
 
-export const requiredProps = [ProfileProp.Name, ProfileProp.Email]
+export const requiredProfileProps = [ProfileProp.Name, ProfileProp.Email]
 
-export const isOnboard = (me: Maybe<Customer>) =>
+export const hasAllRequiredProfileProps = (me: Customer) =>
   none(
     (prop) => propSatisfies(isNil, toLower(prop), me),
-    Object.values(requiredProps)
+    Object.values(requiredProfileProps)
   )
+
+export const firstRequiredProfileProp = first(requiredProfileProps)
+
+export const nextRequiredProfileProp = (me: Maybe<Customer>) =>
+  find((attr) => propSatisfies(isNil, toLower(attr), me), requiredProfileProps)
+
+export const isOnboard = (me: Maybe<Customer>) =>
+  !!me && hasAllRequiredProfileProps(me)
 
 export const isOnboarding = (me: Maybe<Customer>) => not(isOnboard(me))

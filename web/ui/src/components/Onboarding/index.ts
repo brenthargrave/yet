@@ -1,6 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
 import { createRef } from "react"
-import { first } from "remeda"
 import {
   combineLatest,
   distinctUntilChanged,
@@ -15,11 +14,12 @@ import {
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
-import { find, isEmpty, isNil, prop, propSatisfies, toLower, trim } from "~/fp"
+import { isEmpty, toLower, trim } from "~/fp"
 import {
+  firstRequiredProfileProp,
+  nextRequiredProfileProp,
   patchProfile$,
   ProfileProp,
-  requiredProps,
   Source as GraphSource,
 } from "~/graph"
 import { t } from "~/i18n"
@@ -41,10 +41,8 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"), shareLatest())
 
   const attr$ = me$.pipe(
-    map((me) =>
-      find((attr) => propSatisfies(isNil, toLower(attr), me), requiredProps)
-    ),
-    startWith(first(requiredProps)),
+    map((me) => nextRequiredProfileProp(me)),
+    startWith(firstRequiredProfileProp),
     filter(isNotNullish),
     distinctUntilChanged(),
     tag("attr$"),
@@ -60,7 +58,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     me: me$,
     value: inputValue$,
     attr: attr$,
-  }).pipe(tag("collected$"))
+  }).pipe(tag("collected$"), shareLatest())
 
   const result$ = submit$.pipe(
     withLatestFrom(collected$),
