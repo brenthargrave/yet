@@ -5,7 +5,14 @@ import { px } from "csx"
 import { FC, Ref, useEffect, useState } from "react"
 import { NoteView } from "~/components/Note"
 import { ConversationStatus } from "~/graph"
-import { AutosizeTextarea, Button, Spacer, Stack } from "~/system"
+import {
+  AriaButton,
+  ariaLabel,
+  AutosizeTextarea,
+  Button,
+  Spacer,
+  Stack,
+} from "~/system"
 import { MarkdownLink } from "./MarkdownLink"
 
 const noteInputsId = "notes"
@@ -66,6 +73,7 @@ export const View: FC<Props> = ({
             h(AutosizeTextarea, {
               autoFocus,
               id: noteInputsId,
+              ...ariaLabel("Note"),
               isDisabled,
               paddingTop: 4,
               minRows: 4,
@@ -91,6 +99,7 @@ export const View: FC<Props> = ({
                     size: "xs",
                     variant: "ghost",
                     onClick: onClickAddOpp,
+                    ...ariaLabel("Mention Opp"),
                   },
                   `Opportunity`
                 ),

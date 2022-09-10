@@ -21,7 +21,7 @@ interface Props {
   maxLines?: number
 }
 
-export const MarkdownView: FC<Props> = ({ md, maxLines }) => {
+export const MarkdownView: FC<Props> = ({ md, maxLines, ...props }) => {
   const mkd = md ?? ""
   let children = mkd
   if (maxLines) {
@@ -48,7 +48,7 @@ export const MarkdownView: FC<Props> = ({ md, maxLines }) => {
     }
   }
 
-  return h(Box, { onClick }, [
+  return h(Box, { onClick, ...props }, [
     h(ReactMarkdown, {
       children,
       remarkPlugins: [remarkBreaks, remarkGfm],

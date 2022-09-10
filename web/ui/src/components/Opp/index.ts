@@ -12,7 +12,7 @@ import {
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { TbArrowsSplit2 } from "react-icons/tb"
-import { Customer, Maybe, Opp } from "~/graph"
+import { Customer, Maybe, Opp, oppAriaLabel } from "~/graph"
 import { formatMoney } from "~/i18n"
 import {
   ariaLabel,
@@ -31,43 +31,55 @@ export interface Props extends StackProps {
 export const OppView: FC<Props> = ({ viewer, opp, ...props }) => {
   const { role, org, desc, fee } = opp
   return h(FullWidthVStack, { ...props }, [
-    h(HStack, { width: "100%", alignItems: "start" }, [
-      h(
-        VStack,
-        {
-          alignItems: "start",
-          gap: 0,
-          spacing: 1,
-        },
-        [
-          h(MarkdownView, { md: `${bold(role)}` }),
-          h(MarkdownView, { md: `${i(org)}` }),
-        ]
-      ),
-      h(Spacer),
-      // Fee section
-      fee.amount > 0 &&
-        h(VStack, { alignItems: "center", padding: 2 }, [
-          h(AriaTooltip, { label: "Reward" }, [
-            h(
-              Tag,
-              {
-                variant: "outline",
-                colorScheme: "green",
-              },
-              [
-                h(Icon, { as: TbArrowsSplit2 }),
-                h(
-                  TagLabel,
-                  { pl: 2, ...ariaLabel(formatMoney(fee)) },
-                  formatMoney(fee)
-                ),
-              ]
-            ),
+    h(
+      HStack,
+      {
+        width: "100%",
+        alignItems: "start",
+        ...ariaLabel(oppAriaLabel(opp)),
+      },
+      [
+        h(
+          VStack,
+          {
+            alignItems: "start",
+            gap: 0,
+            spacing: 1,
+          },
+          [
+            h(MarkdownView, {
+              md: `${bold(role)}`,
+              ...ariaLabel(`role:${role}`),
+            }),
+            h(MarkdownView, { md: `${i(org)}`, ...ariaLabel(`org:${org}`) }),
+          ]
+        ),
+        h(Spacer),
+        // Fee section
+        fee.amount > 0 &&
+          h(VStack, { alignItems: "center", padding: 2 }, [
+            h(AriaTooltip, { label: "Reward" }, [
+              h(
+                Tag,
+                {
+                  variant: "outline",
+                  colorScheme: "green",
+                },
+                [
+                  h(Icon, { as: TbArrowsSplit2 }),
+                  h(
+                    TagLabel,
+                    { pl: 2, ...ariaLabel(`reward:${formatMoney(fee)}`) },
+                    formatMoney(fee)
+                  ),
+                ]
+              ),
+            ]),
           ]),
-        ]),
-    ]),
-    desc && h(Text, { size: "md", noOfLines: 1 }, desc),
+      ]
+    ),
+    desc &&
+      h(Text, { ...ariaLabel(`desc:${desc}`), size: "md", noOfLines: 1 }, desc),
   ])
 }
 

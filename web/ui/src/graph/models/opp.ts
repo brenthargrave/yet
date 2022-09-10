@@ -27,3 +27,5 @@ export const newOpp = () => ({
 
 export const isOwnedBy = (opp: Opp, customer: Maybe<Customer>) =>
   opp.owner.id === customer?.id
+
+export const oppAriaLabel = (opp: Opp) => `${opp.role} @ ${opp.org}`

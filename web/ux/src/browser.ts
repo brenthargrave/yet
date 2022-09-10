@@ -3,6 +3,7 @@ import { startsWith } from "ramda"
 import { Persona } from "./personas"
 export * from "./personas"
 import fs from "fs"
+import { Opp, oppAriaLabel } from "./models"
 
 const { UX_DEBUG_BROWSER, PORT_SSL, PRODUCT_NAME = "TBD" } = process.env
 
@@ -66,8 +67,8 @@ export const makeBrowser = async () => {
       await page.click(sel)
     }
 
-    const see = async (ariaLabelValue: string) => {
-      console.debug(`${p.name} see: "${ariaLabelValue}"`)
+    const see = async (ariaLabelValue: string, debug = true) => {
+      if (debug) console.debug(`${p.name} see: "${ariaLabelValue}"`)
       const sel = ariaLabelSel(ariaLabelValue)
       await page.waitForSelector(sel, { visible: true })
     }
@@ -128,6 +129,14 @@ export const makeBrowser = async () => {
       await see("Home")
     }
 
+    const seeOpp = async (opp: Opp) => {
+      await see(oppAriaLabel(opp))
+      await see(`role:${opp.role}`, false)
+      await see(`org:${opp.org}`, false)
+      if (opp.reward) await see(`reward:$${opp.reward}`, false)
+      if (opp.desc) await see(`desc:${opp.desc}`, false)
+    }
+
     return {
       page,
       name,
@@ -144,6 +153,7 @@ export const makeBrowser = async () => {
       signup,
       signout,
       signin,
+      seeOpp,
     }
   }
 

@@ -1,9 +1,9 @@
-import { checkinSandbox, checkoutSandbox, makeBrowser } from "~/browser"
-import { Alice, Bob } from "~/browser"
+import { Alice, Bob, makeBrowser } from "~/browser"
 
 it("Opp reward payment", async () => {
   const { customer, exit } = await makeBrowser()
   const a = await customer(Alice, false)
+  const b = await customer(Bob, false)
   try {
     await a.signup()
     // Alice creates Opp with award
@@ -14,23 +14,26 @@ it("Opp reward payment", async () => {
     const opp = {
       org: "ACME Corporation",
       role: "Demolition Expert",
-      description: "TBD",
+      desc: "TBD",
       url: "https://acme.com/jobs/1",
       reward: "599",
     }
     await a.input("Organization", opp.org)
     await a.input("Role", opp.role)
-    await a.input("Description", opp.description)
+    await a.input("Description", opp.desc)
     await a.input("Canonical URL", opp.url)
     await a.input("Reward", opp.reward)
     await a.click("Save")
-    // TODO: verify all attrs, not just reward
-    await a.see(`$${opp.reward}`)
+    await a.seeOpp(opp)
 
     await a.click("Conversations")
     await a.see("Welcome!")
     await a.click("Note a conversation")
-    await a.see("Who")
+    await a.input("Who", b.name)
+    await a.press("Enter")
+    await a.input("Note", "WIP")
+    await a.click("Mention Opp")
+    await a.seeOpp(opp)
 
     // TODO:
     // Alice creates conversation w/ Bob, mentoining Opp

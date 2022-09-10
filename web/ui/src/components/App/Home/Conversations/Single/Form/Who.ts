@@ -1,7 +1,7 @@
 import { h } from "@cycle/react"
 import { CreatableSelect } from "chakra-react-select"
 import { FC } from "react"
-import { InputGroup, Stack, lightGray } from "~/system"
+import { InputGroup, Stack, lightGray, ariaLabel } from "~/system"
 
 export interface Option {
   value: string
@@ -31,6 +31,7 @@ export const View: FC<Props> = ({
       h(CreatableSelect, {
         isDisabled,
         placeholder: "With whom?",
+        ...ariaLabel("Who"),
         autoFocus,
         size: "md",
         chakraStyles: {

@@ -4,8 +4,9 @@ import { h } from "@cycle/react"
 import { FC } from "react"
 import { OppView } from "~/components/Opp"
 import { isEmpty } from "~/fp"
-import { Customer, Maybe, Opp } from "~/graph"
+import { Customer, Maybe, Opp, oppAriaLabel } from "~/graph"
 import {
+  ariaLabel,
   containerProps,
   CreateButton,
   Divider,
@@ -66,6 +67,7 @@ export const View: FC<Props> = ({
                         variant: "ghost",
                         size: "lg",
                         onClick: () => onClickAdd(opp),
+                        ...ariaLabel(`Add ${oppAriaLabel(opp)}`),
                       }),
                       h(Divider, {
                         //
