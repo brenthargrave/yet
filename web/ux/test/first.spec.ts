@@ -30,6 +30,7 @@ it("Opp reward payment", async () => {
     await a.click("Conversations")
     await a.see("Welcome!")
     await a.click("Note a conversation")
+    await a.see("Who")
 
     // TODO:
     // Alice creates conversation w/ Bob, mentoining Opp

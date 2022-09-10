@@ -14,7 +14,14 @@ import { FC } from "react"
 import { TbArrowsSplit2 } from "react-icons/tb"
 import { Customer, Maybe, Opp } from "~/graph"
 import { formatMoney } from "~/i18n"
-import { AriaTooltip, bold, FullWidthVStack, i, MarkdownView } from "~/system"
+import {
+  ariaLabel,
+  AriaTooltip,
+  bold,
+  FullWidthVStack,
+  i,
+  MarkdownView,
+} from "~/system"
 
 export interface Props extends StackProps {
   viewer: Maybe<Customer>
@@ -50,7 +57,11 @@ export const OppView: FC<Props> = ({ viewer, opp, ...props }) => {
               },
               [
                 h(Icon, { as: TbArrowsSplit2 }),
-                h(TagLabel, { pl: 2 }, formatMoney(fee)),
+                h(
+                  TagLabel,
+                  { pl: 2, ...ariaLabel(formatMoney(fee)) },
+                  formatMoney(fee)
+                ),
               ]
             ),
           ]),

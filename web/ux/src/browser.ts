@@ -61,7 +61,7 @@ export const makeBrowser = async () => {
 
     const click = async (ariaLabelValue: string) => {
       console.debug(`${p.name} click: "${ariaLabelValue}"`)
-      const sel = ariaLabelSel(ariaLabelValue)
+      const sel = ariaLabelSel(ariaLabelValue).concat(":not([disabled])")
       await page.waitForSelector(sel)
       await page.click(sel)
     }
@@ -77,6 +77,10 @@ export const makeBrowser = async () => {
       fs.mkdirSync(dir, { recursive: true })
       const ts = Date.now().toString()
       await page.screenshot({ path: `${dir}/${ts}-${p.name}.png` })
+    }
+
+    const press = async (key: puppeteer.KeyInput) => {
+      await page.keyboard.press(key)
     }
 
     const type = async (ariaLabelValue: string, text: string) => {
@@ -125,6 +129,7 @@ export const makeBrowser = async () => {
     }
 
     return {
+      page,
       name,
       phone,
       email,
@@ -134,6 +139,7 @@ export const makeBrowser = async () => {
       see,
       screenie,
       input,
+      press,
       type,
       signup,
       signout,
