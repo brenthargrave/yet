@@ -145,7 +145,7 @@ export const View: FC<Props> = ({
             }),
           ]),
           h(VStack, { width: "40%", alignItems: "start" }, [
-            h(InputControl, { label: "Finder's Fee" }, [
+            h(InputControl, { label: "Reward" }, [
               h(MoneyInput, {
                 onChange: onChangeFee,
                 money: defaultValueFee,

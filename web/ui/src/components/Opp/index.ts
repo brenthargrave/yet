@@ -14,7 +14,7 @@ import { FC } from "react"
 import { TbArrowsSplit2 } from "react-icons/tb"
 import { Customer, Maybe, Opp } from "~/graph"
 import { formatMoney } from "~/i18n"
-import { bold, FullWidthVStack, i, MarkdownView } from "~/system"
+import { AriaTooltip, bold, FullWidthVStack, i, MarkdownView } from "~/system"
 
 export interface Props extends StackProps {
   viewer: Maybe<Customer>
@@ -41,7 +41,7 @@ export const OppView: FC<Props> = ({ viewer, opp, ...props }) => {
       // Fee section
       fee.amount > 0 &&
         h(VStack, { alignItems: "center", padding: 2 }, [
-          h(Tooltip, { label: "Finder's Fee" }, [
+          h(AriaTooltip, { label: "Reward" }, [
             h(
               Tag,
               {

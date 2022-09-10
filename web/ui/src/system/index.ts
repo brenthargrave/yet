@@ -42,6 +42,8 @@ import {
   Text as _Text,
   TextProps,
   forwardRef,
+  TooltipProps,
+  Tooltip,
 } from "@chakra-ui/react"
 import { FC } from "react"
 import { ariaLabel } from "./styles"
@@ -80,6 +82,14 @@ export const Text = (props: TextProps) => h(_Text, props)
 export const PinInput = (props: PinInputProps) => h(_PinInput, props)
 export const PinInputField = (props: PinInputFieldProps) =>
   h(_PinInputField, props)
+
+export const AriaTooltip = forwardRef(
+  ({ label, ...rest }: TooltipProps, ref) => {
+    return typeof label === "string"
+      ? h(Tooltip, { ...rest, ref, ...ariaLabel(label), label })
+      : h(Tooltip, { ...rest, ref })
+  }
+)
 
 export * from "./styles"
 
