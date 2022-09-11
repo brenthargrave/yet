@@ -17,6 +17,7 @@ import {
   Text,
 } from "~/system"
 import { MarkdownView } from "./MarkdownView"
+import { ariaLabel } from "./styles"
 
 export interface Props extends ModalProps {
   shareURL?: string
@@ -46,6 +47,7 @@ export const ShareModal = ({
     canShare = navigator.canShare({ url, title: "Conversation" })
   }
 
+  const shareInputLabel = `Copy share link to clipboard`
   return h(Modal, { isOpen, onClose, showFooter: true }, [
     h(Stack, { direction: "column", gap: 4 }, [
       cta && h(MarkdownView, { md: cta }),
@@ -53,7 +55,7 @@ export const ShareModal = ({
       subheading && h(Text, subheading),
       (heading || subheading || cta) && h(Divider),
       h(Stack, { direction: "column", gap: 1 }, [
-        h(Heading, { size: "xs" }, `Copy share link to clipboard`),
+        h(Heading, { size: "xs" }, shareInputLabel),
         h(InputGroup, { size }, [
           h(Input, {
             value: shareURL,
@@ -62,9 +64,12 @@ export const ShareModal = ({
             // @ts-ignore
             onClick: (event) => event?.target?.select(),
             focusBorderColor: "none",
+            ...ariaLabel(shareInputLabel),
+            id: "shareURL",
           }),
           h(InputRightElement, { size }, [
             h(IconButton, {
+              ...ariaLabel("Copy"),
               icon: h(hasCopied ? CheckIcon : CopyIcon),
               onClick: () => {
                 onCopy()

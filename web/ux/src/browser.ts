@@ -42,8 +42,9 @@ export const makeBrowser = async () => {
     })
     const context = await browser.createIncognitoBrowserContext()
     const page = await context.newPage()
-    page.setDefaultTimeout(2 * 1000)
-    page.setDefaultNavigationTimeout(4 * 1000)
+    const timeout = 4
+    page.setDefaultTimeout(timeout * 1000)
+    page.setDefaultNavigationTimeout(timeout * 1000)
     page.setUserAgent(userAgent)
 
     const close = async () => {
@@ -137,6 +138,14 @@ export const makeBrowser = async () => {
       if (opp.desc) await see(`desc:${opp.desc}`, false)
     }
 
+    const addOpp = async (opp: Opp) => {
+      await click("Add " + oppAriaLabel(opp))
+    }
+
+    const notice = async (copy: string) => {
+      await see(ariaLabelSel(copy))
+    }
+
     return {
       page,
       name,
@@ -154,6 +163,8 @@ export const makeBrowser = async () => {
       signout,
       signin,
       seeOpp,
+      addOpp,
+      notice,
     }
   }
 

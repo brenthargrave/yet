@@ -10,6 +10,9 @@ import {
 import { h } from "@cycle/react"
 import { FC } from "react"
 
+const { VITE_API_ENV } = import.meta.env
+const isTest = VITE_API_ENV === "test"
+
 export interface Props {
   isOpen: boolean
   onClose: () => void
@@ -35,7 +38,7 @@ export const View: FC<Props> = ({
   h(Modal, {
     autoFocus,
     closeOnEsc: true,
-    closeOnOverlayClick: true,
+    closeOnOverlayClick: !isTest,
     isOpen,
     onClose,
     children: [

@@ -1,3 +1,4 @@
+import { b } from "@cycle/react-dom"
 import { Driver } from "@cycle/run"
 import { Stream } from "xstream"
 import { toast } from "~/toast"
@@ -30,6 +31,7 @@ interface NoticeConfig {
   title?: string
   description?: string
 }
+
 export const error = ({ title, description }: NoticeConfig): Notice => {
   return {
     status: "error",

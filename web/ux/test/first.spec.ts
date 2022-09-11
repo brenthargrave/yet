@@ -2,8 +2,8 @@ import { Alice, Bob, makeBrowser } from "~/browser"
 
 it("Opp reward payment", async () => {
   const { customer, exit } = await makeBrowser()
-  const a = await customer(Alice, false)
   const b = await customer(Bob, false)
+  const a = await customer(Alice, false)
   try {
     await a.signup()
     // Alice creates Opp with award
@@ -29,11 +29,25 @@ it("Opp reward payment", async () => {
     await a.click("Conversations")
     await a.see("Welcome!")
     await a.click("Note a conversation")
-    await a.input("Who", b.name)
+    await a.input("Who", Bob.name)
     await a.press("Enter")
     await a.input("Note", "WIP")
     await a.click("Mention Opp")
     await a.seeOpp(opp)
+    await a.addOpp(opp)
+    // TODO: verify note content includes opp
+    await a.click("Publish")
+    await a.see("Copy share link to clipboard")
+    const shareURL = await a.page.evaluate(() =>
+      document.getElementById("shareURL")?.getAttribute("value")
+    )
+    console.debug("shareURL", shareURL)
+
+    // await a.click("Copy")
+    // await a.notice("Copied!")
+
+    b.visit(shareURL!)
+    b.screenie()
 
     // TODO:
     // Alice creates conversation w/ Bob, mentoining Opp

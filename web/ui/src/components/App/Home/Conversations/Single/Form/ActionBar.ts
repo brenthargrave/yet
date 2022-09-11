@@ -4,7 +4,7 @@ import { FC } from "react"
 import { head, isEmpty } from "~/fp"
 import { ConversationStatus } from "~/graph"
 import { toSentence } from "~/i18n"
-import { Spacer, Stack } from "~/system"
+import { ariaLabel, Spacer, Stack } from "~/system"
 
 export type OnClickPublish = () => void
 
@@ -65,6 +65,7 @@ export const View: FC<Props> = ({
                     autoFocus,
                     isDisabled: isPublishDisabled,
                     onClick: onClickPublish,
+                    ...ariaLabel("Publish"),
                   },
                   isEmpty(participantNames)
                     ? `Publish`

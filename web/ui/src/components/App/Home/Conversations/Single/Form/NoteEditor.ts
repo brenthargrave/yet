@@ -15,7 +15,7 @@ import {
 } from "~/system"
 import { MarkdownLink } from "./MarkdownLink"
 
-const noteInputsId = "notes"
+const noteInputsId = "note"
 const previewId = "preview"
 
 export interface Props {
