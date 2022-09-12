@@ -1,14 +1,13 @@
 import { ReactSource } from "@cycle/react"
-import { map, pipe } from "remeda"
-import { merge, Observable, share, switchMap } from "rxjs"
+import { merge, Observable, switchMap } from "rxjs"
 import { match } from "ts-pattern"
 import { Source as ActionSource } from "~/action"
+import { pluck } from "~/fp"
 import { ID, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { Main as List } from "./List"
 import { Single } from "./Single"
 import { Create } from "./Single/Create"
-import { pluck } from "~/fp"
 
 export enum Location {
   home = "home",

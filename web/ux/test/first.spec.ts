@@ -5,9 +5,10 @@ it("Opp reward payment", async () => {
   const b = await customer(Bob, false)
   const a = await customer(Alice, false)
   try {
+    await a.visit("/")
+    await a.click("Create Account")
     await a.signup()
     // Alice creates Opp with award
-
     await a.click("Opportunities")
     await a.click("Create Opp")
     // await opp = a.createOpp(attrs) // root vs. nested?
@@ -35,23 +36,22 @@ it("Opp reward payment", async () => {
     await a.click("Mention Opp")
     await a.seeOpp(opp)
     await a.addOpp(opp)
-    // TODO: verify note content includes opp
+    // TODO: verify note content includes opp?
     await a.click("Publish")
     await a.see("Copy share link to clipboard")
-    const shareURL = await a.page.evaluate(() =>
-      document.getElementById("shareURL")?.getAttribute("value")
-    )
-    console.debug("shareURL", shareURL)
-
-    // await a.click("Copy")
-    // await a.notice("Copied!")
-
-    b.visit(shareURL!)
-    b.screenie()
-
+    await a.click("Copy")
+    await a.notice("Copied!")
+    const shareURL = await a.page.evaluate(() => {
+      const value = document.getElementById("shareURL")?.getAttribute("value")
+      if (!value) throw new Error("MIA: shareURL value")
+      return value
+    })
+    // assume A sends B url...
+    await b.visit(new URL(shareURL).pathname)
+    await b.see("Please sign in to review them.")
+    await b.click("Sign in / Sign up")
+    await b.signup()
     // TODO:
-    // Alice creates conversation w/ Bob, mentoining Opp
-    // Bob cosigns
     // ? verify timeline updates?
     //
     // Bob creates converastion w/ Charlie, mentions Opp
@@ -70,6 +70,7 @@ it("Opp reward payment", async () => {
   } catch (error) {
     console.error("ERROR!", error)
     await a.screenie()
+    await b.screenie()
     throw error
   }
   await exit()

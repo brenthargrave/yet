@@ -42,9 +42,9 @@ export const makeBrowser = async () => {
     })
     const context = await browser.createIncognitoBrowserContext()
     const page = await context.newPage()
-    const timeout = 4
-    page.setDefaultTimeout(timeout * 1000)
-    page.setDefaultNavigationTimeout(timeout * 1000)
+    const seconds = 5
+    page.setDefaultTimeout(seconds * 1000)
+    page.setDefaultNavigationTimeout(seconds * 1000)
     page.setUserAgent(userAgent)
 
     const close = async () => {
@@ -55,9 +55,11 @@ export const makeBrowser = async () => {
     }
     exits.push(close)
 
-    const visit = async (path: string): Promise<void> => {
-      console.debug(`${p.name} visit: ${path}`)
-      const url = startsWith(path, "http") ? path : `${baseURL}${path}`
+    const visit = async (urlOrPath: string): Promise<void> => {
+      console.debug(`${p.name} visit: ${urlOrPath}`)
+      const url = startsWith(urlOrPath, "https")
+        ? urlOrPath
+        : `${baseURL}${urlOrPath}`
       await page.goto(url)
     }
 
@@ -102,8 +104,6 @@ export const makeBrowser = async () => {
     // NOTE: composite actions
     //
     const auth = async () => {
-      await visit("/")
-      await click("Create Account")
       await see("phone number")
       await input("phone number", phone)
       await click("Continue")
@@ -143,7 +143,7 @@ export const makeBrowser = async () => {
     }
 
     const notice = async (copy: string) => {
-      await see(ariaLabelSel(copy))
+      await see(copy)
     }
 
     return {

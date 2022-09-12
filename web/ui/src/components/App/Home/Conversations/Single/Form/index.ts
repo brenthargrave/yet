@@ -157,7 +157,7 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
         curr.status === ConversationStatus.Signed
     ),
     map(([_prev, record]) =>
-      info({ title: justSignedNotice(record as Conversation) })
+      info({ description: justSignedNotice(record as Conversation) })
     ),
     tag("justSignedNotice$"),
     tap((_) => refetchContacts()),

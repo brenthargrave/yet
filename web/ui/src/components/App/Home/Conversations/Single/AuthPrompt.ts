@@ -9,7 +9,14 @@ import {
 } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { Center, MarkdownView, maxWidth, Stack } from "~/system"
+import {
+  AriaButton,
+  ariaLabel,
+  Center,
+  MarkdownView,
+  maxWidth,
+  Stack,
+} from "~/system"
 
 export interface Props {
   isOpen: boolean
@@ -43,13 +50,14 @@ export const View: FC<Props> = ({
                 md: `**${creatorName}** wants to share their notes from your conversation on **${occurredAtDesc}**.
 
                Please sign in to review them.`,
+                ...ariaLabel(`Please sign in to review them.`),
               }),
               h(
                 Stack,
                 { direction: "column", alignItems: "center", width: "100%" },
                 [
                   //
-                  h(Button, { onClick: onClickAuth }, `Sign in / Sign up`),
+                  h(AriaButton, { onClick: onClickAuth }, `Sign in / Sign up`),
                 ]
               ),
             ]),

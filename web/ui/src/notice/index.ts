@@ -1,4 +1,4 @@
-import { b } from "@cycle/react-dom"
+/* eslint-disable no-console */
 import { Driver } from "@cycle/run"
 import { Stream } from "xstream"
 import { toast } from "~/toast"
@@ -14,7 +14,7 @@ export interface Notice {
 type Sink = Stream<Notice>
 
 export function makeDriver(): Driver<Sink, Source> {
-  return function (sink: Sink): Source {
+  return (sink: Sink): Source => {
     sink.addListener({
       next: (notice) => {
         toast(notice)
