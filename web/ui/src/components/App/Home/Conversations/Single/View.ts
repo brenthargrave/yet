@@ -15,6 +15,7 @@ import {
   Stack,
   bold,
   containerProps,
+  AriaHeading,
 } from "~/system"
 import { View as AuthPrompt } from "./AuthPrompt"
 import { ShareButton } from "./ShareButton"
@@ -117,7 +118,7 @@ export const View: FC<Props> = ({
       [
         h(Header, [
           //
-          h(Heading, { size: "md" }, "Conversation"),
+          h(AriaHeading, { size: "md" }, "Conversation"),
           h(Spacer),
         ]),
         h(ConversationView, { viewer, conversation, isObscured }),

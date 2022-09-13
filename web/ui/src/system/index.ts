@@ -57,13 +57,6 @@ export const Box = (props: BoxProps) => h(_Box, props)
 export const Button = forwardRef(({ ...rest }: ButtonProps, ref) =>
   h(_Button, { ...rest, ref })
 )
-export const AriaButton = forwardRef(
-  ({ children, ...rest }: ButtonProps, ref) => {
-    return typeof children === "string"
-      ? h(_Button, { ...rest, ref, ...ariaLabel(children) }, children)
-      : h(_Button, { ...rest, ref })
-  }
-)
 export const Center = (props: CenterProps) => h(_Center, props)
 export const Divider = (props: DividerProps) => h(_Divider, props)
 export const Flex = (props: FlexProps) => h(_Flex, props)
@@ -82,14 +75,6 @@ export const Text = (props: TextProps) => h(_Text, props)
 export const PinInput = (props: PinInputProps) => h(_PinInput, props)
 export const PinInputField = (props: PinInputFieldProps) =>
   h(_PinInputField, props)
-
-export const AriaTooltip = forwardRef(
-  ({ label, ...rest }: TooltipProps, ref) => {
-    return typeof label === "string"
-      ? h(Tooltip, { ...rest, ref, ...ariaLabel(label), label })
-      : h(Tooltip, { ...rest, ref })
-  }
-)
 
 export * from "./styles"
 
@@ -113,3 +98,24 @@ export type { Props as ModalProps } from "./Modal"
 export { ShareModal } from "./ShareModal"
 export type { Props as ShareModalProps } from "./ShareModal"
 export { Status } from "./Status"
+
+export const AriaButton = forwardRef(
+  ({ children, ...rest }: ButtonProps, ref) => {
+    return typeof children === "string"
+      ? h(_Button, { ...rest, ref, ...ariaLabel(children) }, children)
+      : h(_Button, { ...rest, ref })
+  }
+)
+export const AriaTooltip = forwardRef(
+  ({ label, ...rest }: TooltipProps, ref) => {
+    return typeof label === "string"
+      ? h(Tooltip, { ...rest, ref, ...ariaLabel(label), label })
+      : h(Tooltip, { ...rest, ref })
+  }
+)
+
+export const AriaHeading = ({ children, ...props }: HeadingProps) => {
+  return typeof children === "string"
+    ? h(_Heading, { children, ...props, ...ariaLabel(children) })
+    : h(_Heading, { children, ...props })
+}

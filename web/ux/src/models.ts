@@ -13,7 +13,10 @@ export const specOpp = (opp: OppSpec): OppSpec => opp
 export const oppAriaLabel = (opp: OppSpec) => `${opp.role} @ ${opp.org}`
 
 export interface ConversationSpec {
+  id?: string
   invitees?: Persona[]
   note?: string
   mentions?: OppSpec[]
 }
+
+export const specConv = (c: ConversationSpec) => c

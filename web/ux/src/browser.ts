@@ -2,8 +2,9 @@ import * as puppeteer from "puppeteer"
 import { startsWith } from "ramda"
 import { Persona } from "./personas"
 export * from "./personas"
+import { ClickOptions } from "./puppeteer-extras"
 import fs from "fs"
-import { OppSpec, oppAriaLabel } from "./models"
+import { OppSpec, oppAriaLabel, ConversationSpec } from "./models"
 
 const { UX_DEBUG_BROWSER, PORT_SSL, PRODUCT_NAME = "TBD" } = process.env
 
@@ -63,11 +64,11 @@ export const makeBrowser = async () => {
       await page.goto(url)
     }
 
-    const click = async (ariaLabelValue: string) => {
+    const click = async (ariaLabelValue: string, opts?: ClickOptions) => {
       console.debug(`${p.name} click: "${ariaLabelValue}"`)
       const sel = ariaLabelSel(ariaLabelValue).concat(":not([disabled])")
       await page.waitForSelector(sel)
-      await page.click(sel)
+      await page.click(sel, opts)
     }
 
     const see = async (ariaLabelValue: string, debug = true) => {
@@ -94,7 +95,8 @@ export const makeBrowser = async () => {
       await page.keyboard.type(text)
     }
 
-    const input = async (ariaLabelValue: string, text: string) => {
+    const input = async (ariaLabelValue: string, text?: string) => {
+      if (!text) throw Error("MIA: input text")
       console.debug(`${p.name} type: "${text}" in "${ariaLabelValue}"`)
       const sel = ariaLabelSel(ariaLabelValue)
       await page.waitForSelector(sel, { visible: true })
@@ -146,6 +148,17 @@ export const makeBrowser = async () => {
       await see(copy)
     }
 
+    const seeConversation = async (c: ConversationSpec) => {
+      await see(`/c/${c.id}`)
+      // TODO: invitees, note, status
+    }
+
+    const seeConversationProfile = async (spec: ConversationSpec) => {
+      await see("Conversation")
+      await see("Share") // only on Show, not Edit
+      await seeConversation(spec)
+    }
+
     return {
       page,
       name,
@@ -165,6 +178,8 @@ export const makeBrowser = async () => {
       seeOpp,
       addOpp,
       notice,
+      seeConversation,
+      seeConversationProfile,
     }
   }
 

@@ -3,9 +3,9 @@ import { h } from "@cycle/react"
 import { FC } from "react"
 import { NoteView, Props as NoteViewProps } from "~/components/Note"
 import { isEmpty, map } from "~/fp"
-import { Conversation, Customer, Maybe } from "~/graph"
+import { ariaLabelValue, Conversation, Customer, Maybe } from "~/graph"
 import { localizeDate } from "~/i18n"
-import { Stack, Status, Text } from "~/system"
+import { ariaLabel, Stack, Status, Text } from "~/system"
 import { ParticipantsView } from "~/system/ParticipantsView"
 import { MentionsView } from "./MentionsView"
 
@@ -26,37 +26,41 @@ export const ConversationView: FC<Props> = ({
   showNote = true,
   showOpps = false,
 }) => {
-  const { creator, signatures, invitees, note, occurredAt, status, opps } =
+  const { creator, signatures, invitees, note, occurredAt, status, opps, id } =
     conversation
   const signers = map((sig) => sig.signer, signatures)
-  return h(Stack, { direction: "column" }, [
-    h(Stack, { direction: "row", alignItems: "start" }, [
-      h(Stack, { direction: "column", alignItems: "start" }, [
-        h(ParticipantsView, {
-          viewer,
-          status,
-          creator,
-          invitees,
-          signers,
-        }),
+  return h(
+    Stack,
+    { direction: "column", ...ariaLabel(ariaLabelValue(conversation)) },
+    [
+      h(Stack, { direction: "row", alignItems: "start" }, [
+        h(Stack, { direction: "column", alignItems: "start" }, [
+          h(ParticipantsView, {
+            viewer,
+            status,
+            creator,
+            invitees,
+            signers,
+          }),
+        ]),
+        h(Spacer),
+        h(
+          Stack,
+          {
+            direction: "column",
+            alignItems: "end",
+            minWidth: "99px", // NOTE: fixed to prevent date wrap
+          },
+          [
+            h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
+            showStatus && h(Status, { status }),
+          ]
+        ),
       ]),
-      h(Spacer),
-      h(
-        Stack,
-        {
-          direction: "column",
-          alignItems: "end",
-          minWidth: "99px", // NOTE: fixed to prevent date wrap
-        },
-        [
-          h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
-          showStatus && h(Status, { status }),
-        ]
-      ),
-    ]),
-    showOpps && !isEmpty(opps) && h(MentionsView, { opps }),
-    showNote && h(NoteView, { note, maxLines, isObscured }),
-  ])
+      showOpps && !isEmpty(opps) && h(MentionsView, { opps }),
+      showNote && h(NoteView, { note, maxLines, isObscured }),
+    ]
+  )
 }
 
 ConversationView.displayName = "ConversationView"

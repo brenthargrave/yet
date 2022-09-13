@@ -24,7 +24,9 @@
     "mocha": "10.0.0",
     "prettier": "2.7.1",
     "puppeteer": "17.1.1",
+    "ramda": "0.28.0",
     "regenerator-runtime": "0.13.9",
+    "remeda": "1.1.0",
     "rxjs": "7.5.6",
     "rxjs-spy": "8.0.2",
     "ts-node": "10.9.1",
@@ -33,7 +35,6 @@
   },
   "dependencies": {
     "@types/assert": "1.5.6",
-    "assert": "2.0.0",
-    "ramda": "0.28.0"
+    "assert": "2.0.0"
   }
 }

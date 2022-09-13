@@ -1,5 +1,8 @@
+import { ap, join, pipe, pipeK, split, take } from "ramda"
 import { Alice, Bob, makeBrowser } from "~/browser"
-import { specOpp } from "~/models"
+import { specConv, specOpp } from "~/models"
+import { extractULIDs } from "~/ulid"
+import { first } from "remeda"
 
 it("Opp reward payment", async () => {
   const { customer, exit } = await makeBrowser()
@@ -12,21 +15,13 @@ it("Opp reward payment", async () => {
     // Alice creates Opp with award
     await a.click("Opportunities")
     await a.click("Create Opp")
-    // await opp = a.createOpp(attrs) // root vs. nested?
-    const opp = {
+    const opp = specOpp({
       org: "ACME Corporation",
       role: "Demolition Expert",
       desc: "TBD",
       url: "https://acme.com/jobs/1",
       reward: "599",
-    }
-    // const opp = specOpp({
-    //   org: "ACME Corporation",
-    //   role: "Demolition Expert",
-    //   desc: "TBD",
-    //   url: "https://acme.com/jobs/1",
-    //   reward: "599",
-    // })
+    })
     await a.input("Organization", opp.org)
     await a.input("Role", opp.role)
     await a.input("Description", opp.desc)
@@ -38,14 +33,19 @@ it("Opp reward payment", async () => {
     await a.click("Conversations")
     await a.see("Welcome!")
     await a.click("Note a conversation")
-    // const aliceWithBob = {  note: , mentions: [opp] }
+    const aliceWithBob = specConv({
+      invitees: [Bob],
+      note: "WIP",
+      mentions: [opp],
+    })
+    // TODO: invitees.foreEach input, select if presnt or hit "enter"
     await a.input("Who", Bob.name)
     await a.press("Enter")
-    await a.input("Note", "WIP")
+    await a.input("Note", aliceWithBob.note)
     await a.click("Mention Opp")
+    // TODO: opps.each seeOpp, addOpp
     await a.seeOpp(opp)
     await a.addOpp(opp)
-    // TODO: verify note content includes opp?
     await a.click("Publish")
     await a.see("Copy share link to clipboard")
     await a.click("Copy")
@@ -55,18 +55,20 @@ it("Opp reward payment", async () => {
       if (!value) throw new Error("MIA: shareURL value")
       return value
     })
-    // assume A sends B url...
-    await b.visit(new URL(shareURL).pathname)
+    const path = new URL(shareURL).pathname
+    const ulids = extractULIDs(path)
+    const cid = first(ulids)
+    aliceWithBob.id = cid
+    // NOTE: assume A sends B url...
+    await b.visit(path)
     await b.see("Please sign in to review them.")
     await b.click("Sign in / Sign up")
     await b.signup()
     await b.click("Cosign")
-    // TODO: how verify see entire conversation?
-    await b.see() // status signed
-
+    await b.seeConversationProfile(aliceWithBob)
     await a.see(`${b.name} cosigned!`)
+    await a.seeConversationProfile(aliceWithBob)
 
-    // TODO:
     // ? verify timeline updates?
     //
     // Bob creates converastion w/ Charlie, mentions Opp

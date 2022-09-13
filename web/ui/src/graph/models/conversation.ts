@@ -15,6 +15,7 @@ import {
 } from "~/fp"
 import { Contact, Conversation, Customer, Invitee, MakeOptional } from ".."
 import { ConversationStatus, ConversationInput } from "../generated"
+import { routes } from "~/router"
 
 export type DraftConversation = MakeOptional<
   ConversationInput,
@@ -142,3 +143,6 @@ export const justSignedNotice = ({ signatures }: Conversation) => {
   const latest = head(signatures.sort(descend(prop("signedAt"))))
   return `${latest?.signer?.name} cosigned!`
 }
+
+export const ariaLabelValue = (c: Conversation) =>
+  routes.conversation({ id: c.id }).href
