@@ -3,7 +3,7 @@ import { startsWith } from "ramda"
 import { Persona } from "./personas"
 export * from "./personas"
 import fs from "fs"
-import { Opp, oppAriaLabel } from "./models"
+import { OppSpec, oppAriaLabel } from "./models"
 
 const { UX_DEBUG_BROWSER, PORT_SSL, PRODUCT_NAME = "TBD" } = process.env
 
@@ -130,7 +130,7 @@ export const makeBrowser = async () => {
       await see("Home")
     }
 
-    const seeOpp = async (opp: Opp) => {
+    const seeOpp = async (opp: OppSpec) => {
       await see(oppAriaLabel(opp))
       await see(`role:${opp.role}`, false)
       await see(`org:${opp.org}`, false)
@@ -138,7 +138,7 @@ export const makeBrowser = async () => {
       if (opp.desc) await see(`desc:${opp.desc}`, false)
     }
 
-    const addOpp = async (opp: Opp) => {
+    const addOpp = async (opp: OppSpec) => {
       await click("Add " + oppAriaLabel(opp))
     }
 

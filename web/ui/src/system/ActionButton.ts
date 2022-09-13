@@ -1,6 +1,7 @@
 import { Button } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC, ReactNode } from "react"
+import { AriaButton } from "."
 
 export interface Props {
   cta: string
@@ -20,7 +21,7 @@ export const ActionButton: FC<Props> = ({
   isLoading,
 }) =>
   h(
-    Button,
+    AriaButton,
     {
       leftIcon,
       rightIcon,

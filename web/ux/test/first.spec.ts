@@ -1,4 +1,5 @@
 import { Alice, Bob, makeBrowser } from "~/browser"
+import { specOpp } from "~/models"
 
 it("Opp reward payment", async () => {
   const { customer, exit } = await makeBrowser()
@@ -19,6 +20,13 @@ it("Opp reward payment", async () => {
       url: "https://acme.com/jobs/1",
       reward: "599",
     }
+    // const opp = specOpp({
+    //   org: "ACME Corporation",
+    //   role: "Demolition Expert",
+    //   desc: "TBD",
+    //   url: "https://acme.com/jobs/1",
+    //   reward: "599",
+    // })
     await a.input("Organization", opp.org)
     await a.input("Role", opp.role)
     await a.input("Description", opp.desc)
@@ -30,6 +38,7 @@ it("Opp reward payment", async () => {
     await a.click("Conversations")
     await a.see("Welcome!")
     await a.click("Note a conversation")
+    // const aliceWithBob = {  note: , mentions: [opp] }
     await a.input("Who", Bob.name)
     await a.press("Enter")
     await a.input("Note", "WIP")
@@ -51,6 +60,12 @@ it("Opp reward payment", async () => {
     await b.see("Please sign in to review them.")
     await b.click("Sign in / Sign up")
     await b.signup()
+    await b.click("Cosign")
+    // TODO: how verify see entire conversation?
+    await b.see() // status signed
+
+    await a.see(`${b.name} cosigned!`)
+
     // TODO:
     // ? verify timeline updates?
     //

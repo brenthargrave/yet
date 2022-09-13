@@ -38,12 +38,8 @@ export const View: FC<Props> = ({
   h(Modal, {
     autoFocus,
     // NOTE: puppeteer UX tests trigger outside clicks, workaround:
-    // closeOnEsc: !isTest,
-    // closeOnOverlayClick: !isTest,
-    // closeOnEsc: true,
-    // closeOnOverlayClick: true,
-    closeOnEsc: false,
-    closeOnOverlayClick: false,
+    closeOnEsc: !isTest,
+    closeOnOverlayClick: !isTest,
     isOpen,
     onClose,
     children: [
