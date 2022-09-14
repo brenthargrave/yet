@@ -43,7 +43,7 @@ export const makeBrowser = async (headless = true) => {
       headless,
     })
     const page = await browser.newPage()
-    const seconds = 5
+    const seconds = 10
     page.setDefaultTimeout(seconds * 1000)
     page.setDefaultNavigationTimeout(seconds * 1000)
     page.setUserAgent(userAgent)

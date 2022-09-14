@@ -46,7 +46,7 @@ it("Opp reward payment", async () => {
     // TODO: opps.each seeOpp, addOpp
     await a.seeOpp(opp)
     await a.addOpp(opp)
-    await a.click("Publish")
+    await a.click("Publish", { clickCount: 2, delay: 900 })
     await a.see("Copy share link to clipboard")
     await a.click("Copy")
     await a.notice("Copied!")
@@ -66,23 +66,8 @@ it("Opp reward payment", async () => {
     await b.signup()
     await b.click("Cosign")
 
-    // consolidate w/ promise.all
-    await b.seeConversationProfile(aliceWithBob)
-    await b.click("Opportunities")
-    await b.see("Your Opportunities")
-    await b.seeOpp(opp)
-
-    await b.click("Home")
-    await b.see(`No network activity just yet.`)
-    await b.notSeeConversation(aliceWithBob)
-    await b.click("Conversations")
-    await b.see("Your Conversations")
-    await b.seeConversation(aliceWithBob)
-    await b.click("Profile")
-    await b.see("Your Profile")
-    await b.seeConversation(aliceWithBob)
-
     await a.see(`${b.name} cosigned!`)
+
     await a.seeConversationProfile(aliceWithBob)
     await a.click("Opportunities")
     await a.see("Your Opportunities")
@@ -96,6 +81,22 @@ it("Opp reward payment", async () => {
     await a.click("Profile")
     await a.see("Your Profile")
     await a.seeConversation(aliceWithBob)
+
+    // consolidate w/ promise.all
+    await b.seeConversationProfile(aliceWithBob)
+    await b.click("Opportunities")
+    await b.see("Your Opportunities")
+    await b.seeOpp(opp)
+    await b.click("Home")
+    await b.see(`No network activity just yet.`)
+    await b.notSeeConversation(aliceWithBob)
+    await b.click("Conversations")
+    await b.see("Your Conversations")
+    await b.seeConversation(aliceWithBob)
+    await b.click("Profile")
+    await b.see("Your Profile")
+    // TODO: might I have a race-condition?
+    await b.seeConversation(aliceWithBob)
 
     // Bob creates converastion w/ Charlie, mentions Opp
     // Charlie cosigns
