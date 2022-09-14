@@ -3,7 +3,7 @@ import { startsWith } from "ramda"
 import { Persona } from "./personas"
 export * from "./personas"
 import { ClickOptions } from "./puppeteer-extras"
-import fs from "fs"
+import fs, { existsSync } from "fs"
 import { OppSpec, oppAriaLabel, ConversationSpec } from "./models"
 
 const { UX_DEBUG_BROWSER, PORT_SSL, PRODUCT_NAME = "TBD" } = process.env
@@ -30,19 +30,19 @@ export const checkinSandbox = async () =>
 const ariaLabelSel = (ariaLabelValue: string) =>
   `[aria-label="${ariaLabelValue}"]`
 
-export const makeBrowser = async () => {
+export const makeBrowser = async (headless = true) => {
   const userAgent = await checkoutSandbox()
 
   const exits: (() => Promise<void>)[] = []
 
-  const customer = async (p: Persona, headless = true) => {
+  const customer = async (p: Persona) => {
     const { name, phone, email } = p
+
     const browser = await puppeteer.launch({
       dumpio: !!UX_DEBUG_BROWSER,
       headless,
     })
-    const context = await browser.createIncognitoBrowserContext()
-    const page = await context.newPage()
+    const page = await browser.newPage()
     const seconds = 5
     page.setDefaultTimeout(seconds * 1000)
     page.setDefaultNavigationTimeout(seconds * 1000)
@@ -51,7 +51,7 @@ export const makeBrowser = async () => {
     const close = async () => {
       console.debug(`${p.name}: close`)
       await page.close()
-      await context.close()
+      // await context.close()
       await browser.close()
     }
     exits.push(close)
@@ -184,12 +184,15 @@ export const makeBrowser = async () => {
   }
 
   const checkinSandbox = async () =>
-    await fetch(sandboxURL, { method: "DELETE" }).then((res) =>
-      console.debug(res.body)
-    )
+    await fetch(sandboxURL, { method: "DELETE" })
+  //.then((res) => console.debug(res.body))
 
   const exit = async () =>
-    Promise.all([...exits.map((fn) => fn()), checkinSandbox])
+    Promise.all([
+      //
+      ...exits.map((fn) => fn()),
+      checkinSandbox(),
+    ])
 
   return {
     customer,

@@ -5,9 +5,9 @@ import { extractULIDs } from "~/ulid"
 import { first } from "remeda"
 
 it("Opp reward payment", async () => {
-  const { customer, exit } = await makeBrowser()
-  const b = await customer(Bob, false)
-  const a = await customer(Alice, false)
+  const { customer, exit } = await makeBrowser(false)
+  const b = await customer(Bob)
+  const a = await customer(Alice)
   try {
     await a.visit("/")
     await a.click("Create Account")
@@ -65,12 +65,14 @@ it("Opp reward payment", async () => {
     await b.click("Sign in / Sign up")
     await b.signup()
     await b.click("Cosign")
+    // consolidate w/ promsie.all
     await b.seeConversationProfile(aliceWithBob)
+    // TODO: verify timeline updates?
+
     await a.see(`${b.name} cosigned!`)
     await a.seeConversationProfile(aliceWithBob)
-
-    // ? verify timeline updates?
     //
+
     // Bob creates converastion w/ Charlie, mentions Opp
     // Charlie cosigns
     // ? timeline updates?
@@ -89,8 +91,9 @@ it("Opp reward payment", async () => {
     await a.screenie()
     await b.screenie()
     throw error
+  } finally {
+    await exit()
   }
-  await exit()
 })
 
 // TODO: can only run one test at a time for now.
