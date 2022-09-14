@@ -171,9 +171,7 @@ defmodule App.Timeline do
     filters = Map.get(input, :filters, %{})
     opp_ids = Map.get(filters, :opps, nil)
 
-    omit_own =
-      Map.get(filters, :omit_own, false)
-      |> IO.inspect(label: "THIS omit_own")
+    omit_own = Map.get(filters, :omit_own, false)
 
     query =
       from(e in TimelineEvent,

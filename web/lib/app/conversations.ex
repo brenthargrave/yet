@@ -240,7 +240,7 @@ defmodule App.Conversations do
         |> Map.put(:opp, opp)
         |> Map.put(:signature, signature)
         |> OppVersion.changeset()
-        |> Repo.insert!()
+        |> Repo.insert(on_conflict: :nothing)
       end)
     end)
 
