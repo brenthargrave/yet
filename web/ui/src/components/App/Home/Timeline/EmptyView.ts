@@ -2,7 +2,7 @@ import { Button, Heading, Text } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { t } from "~/i18n"
-import { EmptyViewBase } from "~/system"
+import { AriaHeading, EmptyViewBase } from "~/system"
 
 export type OnClickNew = () => void
 
@@ -12,7 +12,7 @@ export interface Props {
 
 export const EmptyView: FC<Props> = ({ onClickNew, ...props }) =>
   h(EmptyViewBase, { ...props }, [
-    h(Heading, { size: "md" }, `No network activity just yet.`),
+    h(AriaHeading, { size: "md" }, `No network activity just yet.`),
     h(
       Text,
       { align: "center" },

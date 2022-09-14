@@ -76,6 +76,11 @@ export const makeBrowser = async (headless = true) => {
       const sel = ariaLabelSel(ariaLabelValue)
       await page.waitForSelector(sel, { visible: true })
     }
+    const notSee = async (ariaLabelValue: string, debug = true) => {
+      if (debug) console.debug(`${p.name} NOT see: "${ariaLabelValue}"`)
+      const sel = `:not(${ariaLabelSel(ariaLabelValue)})`
+      await page.waitForSelector(sel, { visible: true })
+    }
 
     const screenie = async () => {
       const dir = "scratch/screenies"
@@ -152,7 +157,9 @@ export const makeBrowser = async (headless = true) => {
       await see(`/c/${c.id}`)
       // TODO: invitees, note, status
     }
-
+    const notSeeConversation = async (c: ConversationSpec) => {
+      await notSee(`/c/${c.id}`)
+    }
     const seeConversationProfile = async (spec: ConversationSpec) => {
       await see("Conversation")
       await see("Share") // only on Show, not Edit
@@ -168,6 +175,7 @@ export const makeBrowser = async (headless = true) => {
       visit,
       click,
       see,
+      notSee,
       screenie,
       input,
       press,
@@ -180,6 +188,7 @@ export const makeBrowser = async (headless = true) => {
       notice,
       seeConversation,
       seeConversationProfile,
+      notSeeConversation,
     }
   }
 

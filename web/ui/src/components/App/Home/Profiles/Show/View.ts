@@ -6,6 +6,7 @@ import { TimelineEventList } from "~/components/TimelineEvent"
 import { isEmpty } from "~/fp"
 import { Conversation, Customer, Profile } from "~/graph"
 import {
+  AriaHeading,
   containerProps,
   EditButton,
   FullWidthVStack,
@@ -44,7 +45,7 @@ export const View: FC<Props> = ({
         h(Nav),
         h(Header, {}, [
           //
-          h(Heading, { size: "md" }, "Your Profile"),
+          h(AriaHeading, { size: "md" }, "Your Profile"),
           h(Spacer),
           h(EditButton, {
             onClick: () => {

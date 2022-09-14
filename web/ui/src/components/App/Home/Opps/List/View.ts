@@ -6,6 +6,7 @@ import { OppView } from "~/components/Opp"
 import { isEmpty } from "~/fp"
 import { Customer, Maybe, Opp, oppAriaLabel } from "~/graph"
 import {
+  AriaHeading,
   ariaLabel,
   containerProps,
   CreateButton,
@@ -45,7 +46,7 @@ export const View: FC<Props> = ({
     : h(FullWidthVStack, { ...containerProps }, [
         h(Nav),
         h(Header, {}, [
-          h(Heading, { size: "md" }, "Your Opportunities"),
+          h(AriaHeading, { size: "md" }, "Your Opportunities"),
           h(Spacer),
           h(CreateButton, { onClick: onClickNew, cta: `New opp` }),
         ]),

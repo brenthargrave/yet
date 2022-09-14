@@ -65,13 +65,37 @@ it("Opp reward payment", async () => {
     await b.click("Sign in / Sign up")
     await b.signup()
     await b.click("Cosign")
-    // consolidate w/ promsie.all
+
+    // consolidate w/ promise.all
     await b.seeConversationProfile(aliceWithBob)
-    // TODO: verify timeline updates?
+    await b.click("Opportunities")
+    await b.see("Your Opportunities")
+    await b.seeOpp(opp)
+
+    await b.click("Home")
+    await b.see(`No network activity just yet.`)
+    await b.notSeeConversation(aliceWithBob)
+    await b.click("Conversations")
+    await b.see("Your Conversations")
+    await b.seeConversation(aliceWithBob)
+    await b.click("Profile")
+    await b.see("Your Profile")
+    await b.seeConversation(aliceWithBob)
 
     await a.see(`${b.name} cosigned!`)
     await a.seeConversationProfile(aliceWithBob)
-    //
+    await a.click("Opportunities")
+    await a.see("Your Opportunities")
+    await a.seeOpp(opp)
+    await a.click("Home")
+    await a.see(`No network activity just yet.`)
+    await a.notSeeConversation(aliceWithBob)
+    await a.click("Conversations")
+    await a.see("Your Conversations")
+    await a.seeConversation(aliceWithBob)
+    await a.click("Profile")
+    await a.see("Your Profile")
+    await a.seeConversation(aliceWithBob)
 
     // Bob creates converastion w/ Charlie, mentions Opp
     // Charlie cosigns

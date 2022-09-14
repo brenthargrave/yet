@@ -5,6 +5,7 @@ import { ConversationView } from "~/components/Conversation/View"
 import { isEmpty, isNotLastItem } from "~/fp"
 import { Conversation, Customer, Maybe } from "~/graph"
 import {
+  AriaHeading,
   containerProps,
   CreateButton,
   Divider,
@@ -36,7 +37,7 @@ export const View: FC<Props> = ({
     : h(FullWidthVStack, { ...containerProps }, [
         h(Nav, {}),
         h(Header, [
-          h(Heading, { size: "md" }, "Your Conversations"),
+          h(AriaHeading, { size: "md" }, "Your Conversations"),
           h(Spacer),
           h(CreateButton, { onClick: onClickNew }),
         ]),
