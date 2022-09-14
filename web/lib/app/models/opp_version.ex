@@ -21,10 +21,11 @@ defmodule App.OppVersion do
   def changeset(attrs) do
     %__MODULE__{}
     |> cast(attrs, [:role, :org, :fee, :desc, :url])
-    |> put_assoc(:owner, attrs[:owner])
-    |> put_assoc(:opp, attrs[:opp])
-    |> put_assoc(:signature, attrs[:signature])
-    |> validate_required([:role, :org, :fee, :opp, :signature])
+    |> put_change(:owner_id, attrs[:owner].id)
+    |> put_change(:opp_id, attrs[:opp].id)
+    |> put_change(:signature_id, attrs[:signature].id)
+    |> foreign_key_constraint(:signature_id)
     |> unique_constraint([:signature_id, :opp_id])
+    |> validate_required([:role, :org, :fee, :opp_id, :signature_id, :owner_id])
   end
 end
