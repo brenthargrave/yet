@@ -13,7 +13,6 @@ defmodule App.Timeline do
     Contacts,
     Contact,
     Customer,
-    Opp,
     TimelineEvent
   }
 
@@ -52,7 +51,7 @@ defmodule App.Timeline do
 
   defun handle_published(
           conversation :: Conversation.t(),
-          notify_subscriptions \\ false
+          _notify_subscriptions \\ false
         ) :: Conversation.t() do
     participants = Conversation.get_participants(conversation)
 

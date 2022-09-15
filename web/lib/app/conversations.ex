@@ -9,7 +9,6 @@ defmodule App.Conversations do
     Repo,
     Conversation,
     Signature,
-    Contact,
     Review,
     Customer,
     Notification,
