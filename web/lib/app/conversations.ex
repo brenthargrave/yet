@@ -259,9 +259,7 @@ defmodule App.Conversations do
     participants = Conversation.get_participants(conversation)
     participants_ids = Enum.map(participants, &Map.get(&1, :id))
 
-    participant_id_set =
-      MapSet.new(participants_ids)
-      |> IO.inspect(label: "THIS cache_contacts> participant_id_set")
+    participant_id_set = MapSet.new(participants_ids)
 
     Enum.reduce(participants, Multi.new(), fn c, multi ->
       id = c.id
@@ -274,7 +272,6 @@ defmodule App.Conversations do
       )
     end)
     |> Repo.transaction()
-    |> IO.inspect(label: "THIS contacts multi")
 
     conversation
   end

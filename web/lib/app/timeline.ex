@@ -56,20 +56,15 @@ defmodule App.Timeline do
         ) :: Conversation.t() do
     participants = Conversation.get_participants(conversation)
 
-    participants_ids =
-      Enum.map(participants, & &1.id)
-      |> IO.inspect(label: "THIS participants_ids")
+    participants_ids = Enum.map(participants, & &1.id)
 
     # all contacts of signers
     # all contacts of creator
-    participants_contacts =
-      Contacts.get_contacts_for_viewers(participants)
-      |> IO.inspect(label: "THIS participants_contacts")
+    participants_contacts = Contacts.get_contacts_for_viewers(participants)
 
     opps_ids =
       conversation.opps
       |> Enum.map(&Map.get(&1, :id))
-      |> IO.inspect(label: "THIS opps_ids")
 
     # all owners of conversations mentioning this convo's opps
     creators =
@@ -96,15 +91,12 @@ defmodule App.Timeline do
           distinct: contact.id
       )
 
-    all_opps_viewers_ids =
-      Enum.map(all_opps_viewers, &Map.get(&1, :id))
-      |> IO.inspect(label: "THIS all_opps_viewers_ids")
+    all_opps_viewers_ids = Enum.map(all_opps_viewers, &Map.get(&1, :id))
 
     all_viewers =
       participants_contacts
       |> Enum.concat(all_opps_viewers)
       |> Enum.uniq_by(&Map.get(&1, :id))
-      |> IO.inspect(label: "THIS all_viewers")
 
     # NOTE: exclude participants, any need to see own activity?
     # NOTE: preserve for "viewed as contact" in profile view
@@ -112,26 +104,19 @@ defmodule App.Timeline do
 
     Enum.map(all_viewers, fn viewer ->
       viewer_id = viewer.id
-      # |> IO.inspect(label: "viewer_id")
 
       contacts_id_set = MapSet.new(viewer.contacts_ids)
-      # |> IO.inspect(label: "contacts_id_set")
 
       participants_id_set = MapSet.new(participants_ids)
-      # |> IO.inspect(label: "participants_id_set")
 
       is_participant = Enum.member?(participants_ids, viewer_id)
-      # |> IO.inspect(label: "is_participant")
 
       is_contact =
         contacts_id_set
         |> MapSet.intersection(participants_id_set)
         |> Enum.empty?()
 
-      # |> IO.inspect(label: "is_contact")
-
       is_opportunist = Enum.member?(all_opps_viewers_ids, viewer_id)
-      # |> IO.inspect(label: "is_opportunist")
 
       persona =
         cond do
@@ -166,7 +151,6 @@ defmodule App.Timeline do
 
       payload
     end)
-    |> IO.inspect(label: "THIS events")
 
     conversation
   end

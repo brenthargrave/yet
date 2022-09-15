@@ -80,6 +80,7 @@ it("Opp reward payment", async () => {
     await a.seeConversation(aliceWithBob)
     await a.click("Profile")
     await a.see("Your Profile")
+    await a.page.reload()
     await a.seeConversation(aliceWithBob)
 
     // consolidate w/ promise.all
