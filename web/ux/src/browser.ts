@@ -46,7 +46,8 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       ...globalLaunchOptions,
       ...launchOptions,
     })
-    const page = await browser.newPage()
+    const context = await browser.createIncognitoBrowserContext()
+    const page = await context.newPage()
     const seconds = 4
     page.setDefaultTimeout(seconds * 1000)
     page.setDefaultNavigationTimeout(seconds * 1000)
@@ -73,6 +74,13 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       const sel = ariaLabelSel(ariaLabelValue).concat(":not([disabled])")
       await page.waitForSelector(sel)
       await page.click(sel, opts)
+    }
+    const focusAndPressEnter = async (ariaLabelValue: string) => {
+      console.debug(`${p.name} click: "${ariaLabelValue}"`)
+      const sel = ariaLabelSel(ariaLabelValue).concat(":not([disabled])")
+      await page.waitForSelector(sel)
+      await page.focus(sel)
+      await press("Enter")
     }
 
     const see = async (ariaLabelValue: string, debug = true) => {
@@ -205,10 +213,10 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       if (!opp) throw new Error(`MIA: opp`)
       await seeOpp(opp)
       await addOpp(opp)
-      await click("Publish", { clickCount: 2, delay: 900 })
+      await click("Publish", { delay: 2000 })
       await see("Copy share link to clipboard")
       await click("Copy")
-      await notice("Copied!")
+      // await notice("Copied!")
       const shareURL = await page.evaluate(() => {
         const value = document.getElementById("shareURL")?.getAttribute("value")
         if (!value) throw new Error("MIA: shareURL value")
@@ -237,6 +245,7 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       close,
       visit,
       click,
+      focusAndPressEnter,
       see,
       notSee,
       screenie,

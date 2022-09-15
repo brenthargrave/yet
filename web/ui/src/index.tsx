@@ -21,7 +21,8 @@ Sentry.init({
   transportOptions: {
     dsn: VITE_SENTRY_DSN,
   },
-  beforeSend: (event) => (environment === "prod" ? event : null),
+  beforeSend: (event) =>
+    ["prod", "test"].includes(environment) ? event : null,
 })
 
 run(App, {

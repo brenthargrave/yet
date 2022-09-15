@@ -7,7 +7,7 @@ import { first } from "remeda"
 it("Opp reward payment", async () => {
   const { customer, exit } = await makeBrowser({ headless: false })
   const c = await customer(Charlie)
-  const b = await customer(Bob, { slowMo: 100 })
+  const b = await customer(Bob)
   const a = await customer(Alice)
   try {
     await a.visit("/")
@@ -54,6 +54,7 @@ it("Opp reward payment", async () => {
     })
     const bobWithCharliePath = await b.createConversation(bobWithCharlie)
     await c.signupAndSignConversationAtPath(bobWithCharliePath)
+
     // TODO:
     // ? what's different timeline/profile
     // bob & charlie should see in their profiles, but not in their timliens
