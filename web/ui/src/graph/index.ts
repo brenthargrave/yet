@@ -7,6 +7,7 @@ import { filter as _filter, pipe, reverse, sort } from "remeda"
 import {
   BehaviorSubject,
   catchError,
+  debounceTime,
   EMPTY,
   filter,
   from,
@@ -18,8 +19,8 @@ import {
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { switchMap } from "rxjs/operators"
-import { Err, Ok, Result } from "ts-results"
-import { resultMap } from "ts-results/rxjs-operators"
+import { Err, Ok } from "ts-results"
+import { filterResultOk, resultMap } from "ts-results/rxjs-operators"
 import { makeTagger } from "~/log"
 import { shareLatest, zenToRx } from "~/rx"
 import { getId } from "./anon"
@@ -31,7 +32,6 @@ import {
   ConversationChangedInput,
   ConversationInput,
   ConversationStatus,
-  Customer,
   DeleteConversationDocument,
   DeleteConversationInput,
   Event,
@@ -68,7 +68,6 @@ import {
   UpdateProfileInput,
   UpsertConversationDocument,
   UpsertOppDocument,
-  UserError,
   ViewConversationDocument,
 } from "./generated"
 import { hasAllRequiredProfileProps, isAuthenticated } from "./models"
@@ -664,35 +663,16 @@ export const profile$ = me$.pipe(
   filter(isAuthenticated),
   filter(isNotNullish),
   filter(hasAllRequiredProfileProps),
-  switchMap(({ id }) => {
-    return from(
-      zenToRx(
-        client.watchQuery({
-          query: GetProfileDocument,
-          variables: { input: { id } },
-          fetchPolicy: "network-only",
-        })
-      ).pipe(
-        map(
-          ({
-            data,
-            error,
-            errors,
-            loading,
-            networkStatus,
-            partial,
-            ...result
-          }) => {
-            // NOTE: throw will create endless loop upon resubscription
-            if (error) captureException(error)
-            if (errors) captureException(JSON.stringify(errors))
-            return data.getProfile!.profile
-          }
-        ),
-        filter(isNotNullish)
+  switchMap(({ id }) =>
+    merge(
+      getProfile$({ id }),
+      subscribeTimeline$({ id }).pipe(
+        debounceTime(500),
+        switchMap((_) => getProfile$({ id }))
       )
     )
-  }),
+  ),
+  filterResultOk(),
   tag("profile$"),
   catchError((error, _caught$) => {
     throw new GraphDefaultQueryError(error.message)
