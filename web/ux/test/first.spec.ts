@@ -5,9 +5,9 @@ import { extractULIDs } from "~/ulid"
 import { first } from "remeda"
 
 it("Opp reward payment", async () => {
-  const { customer, exit } = await makeBrowser(false)
+  const { customer, exit } = await makeBrowser({ headless: false })
   const c = await customer(Charlie)
-  const b = await customer(Bob)
+  const b = await customer(Bob, { slowMo: 100 })
   const a = await customer(Alice)
   try {
     await a.visit("/")
@@ -40,11 +40,7 @@ it("Opp reward payment", async () => {
     const aliceWithBobPath = await a.createConversation(aliceWithBob, true)
     // NOTE: assume A sends B url...
     await b.signupAndSignConversationAtPath(aliceWithBobPath)
-    // await b.visit(aliceWithBobPath)
-    // await b.see("Please sign in to review them.")
-    // await b.click("Sign in / Sign up")
-    // await b.signup()
-    // await b.click("Cosign")
+    // TODO: verify signing if already onboard
     await a.see(`${b.name} cosigned!`)
     await Promise.all([
       a.verifyFirstConversation(aliceWithBob, opp),

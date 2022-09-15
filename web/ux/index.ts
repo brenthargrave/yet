@@ -5,7 +5,7 @@ export * from "./src/browser"
 const mocha = new Mocha()
 // mocha.unloadFiles()
 
-mocha.timeout(1000 * 30)
+mocha.timeout(120 * 1000)
 
 mocha.addFile(`./test/first.spec.ts`)
 // mocha.fullTrace()

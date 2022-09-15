@@ -2,7 +2,7 @@ import * as puppeteer from "puppeteer"
 import { startsWith } from "ramda"
 import { Persona } from "./personas"
 export * from "./personas"
-import { ClickOptions } from "./puppeteer-extras"
+import { ClickOptions, LaunchOptions } from "./puppeteer-extras"
 import fs, { existsSync } from "fs"
 import { OppSpec, oppAriaLabel, ConversationSpec } from "./models"
 import { first } from "remeda"
@@ -32,17 +32,19 @@ export const checkinSandbox = async () =>
 const ariaLabelSel = (ariaLabelValue: string) =>
   `[aria-label="${ariaLabelValue}"]`
 
-export const makeBrowser = async (headless = true) => {
+export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
   const userAgent = await checkoutSandbox()
 
   const exits: (() => Promise<void>)[] = []
 
-  const customer = async (p: Persona) => {
+  const customer = async (p: Persona, launchOptions: LaunchOptions = {}) => {
     const { name, phone, email } = p
 
     const browser = await puppeteer.launch({
       dumpio: !!UX_DEBUG_BROWSER,
-      headless,
+      headless: true,
+      ...globalLaunchOptions,
+      ...launchOptions,
     })
     const page = await browser.newPage()
     const seconds = 4
