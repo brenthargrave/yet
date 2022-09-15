@@ -166,6 +166,22 @@ export const makeBrowser = async (headless = true) => {
       await seeConversation(spec)
     }
 
+    const verifyFirstConversation = async (c: ConversationSpec, o: OppSpec) => {
+      await seeConversationProfile(c)
+      await click("Opportunities")
+      await see("Your Opportunities")
+      await seeOpp(o)
+      await click("Home")
+      await see(`No network activity just yet.`)
+      await notSeeConversation(c)
+      await click("Conversations")
+      await see("Your Conversations")
+      await seeConversation(c)
+      await click("Profile")
+      await see("Your Profile")
+      await seeConversation(c)
+    }
+
     return {
       page,
       name,
@@ -189,6 +205,7 @@ export const makeBrowser = async (headless = true) => {
       seeConversation,
       seeConversationProfile,
       notSeeConversation,
+      verifyFirstConversation,
     }
   }
 
