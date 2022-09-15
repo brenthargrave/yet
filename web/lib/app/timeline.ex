@@ -33,7 +33,7 @@ defmodule App.Timeline do
           notify_subscriptions \\ false
         ) ::
           Conversation.t() do
-    Task.Supervisor.async_nolink(App.TaskSupervisor, fn ->
+    App.Task.async_nolink(fn ->
       handle_published(conversation, notify_subscriptions)
       # ! TODO: scalable solution
       # NOTE: rerun for all prior records every time someone makes new contacts
@@ -55,15 +55,21 @@ defmodule App.Timeline do
           notify_subscriptions \\ false
         ) :: Conversation.t() do
     participants = Conversation.get_participants(conversation)
-    participants_ids = Enum.map(participants, & &1.id)
+
+    participants_ids =
+      Enum.map(participants, & &1.id)
+      |> IO.inspect(label: "THIS participants_ids")
 
     # all contacts of signers
     # all contacts of creator
-    participants_contacts = Contacts.get_contacts_for_viewers(participants)
+    participants_contacts =
+      Contacts.get_contacts_for_viewers(participants)
+      |> IO.inspect(label: "THIS participants_contacts")
 
     opps_ids =
       conversation.opps
       |> Enum.map(&Map.get(&1, :id))
+      |> IO.inspect(label: "THIS opps_ids")
 
     # all owners of conversations mentioning this convo's opps
     creators =
@@ -90,12 +96,15 @@ defmodule App.Timeline do
           distinct: contact.id
       )
 
-    all_opps_viewers_ids = Enum.map(all_opps_viewers, &Map.get(&1, :id))
+    all_opps_viewers_ids =
+      Enum.map(all_opps_viewers, &Map.get(&1, :id))
+      |> IO.inspect(label: "THIS all_opps_viewers_ids")
 
     all_viewers =
       participants_contacts
       |> Enum.concat(all_opps_viewers)
       |> Enum.uniq_by(&Map.get(&1, :id))
+      |> IO.inspect(label: "THIS all_viewers")
 
     # NOTE: exclude participants, any need to see own activity?
     # NOTE: preserve for "viewed as contact" in profile view
@@ -154,7 +163,10 @@ defmodule App.Timeline do
         payload,
         timeline_events_added: viewer.id
       )
+
+      payload
     end)
+    |> IO.inspect(label: "THIS events")
 
     conversation
   end

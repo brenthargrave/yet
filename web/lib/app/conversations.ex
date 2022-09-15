@@ -194,7 +194,7 @@ defmodule App.Conversations do
     to = signature.conversation.creator.e164
     body = Signature.signed_sms_message(signature, conversation_url)
 
-    Task.Supervisor.async_nolink(App.TaskSupervisor, fn ->
+    App.Task.async_nolink(fn ->
       App.Notifications.send(%{to: to, body: body})
     end)
 
@@ -213,7 +213,7 @@ defmodule App.Conversations do
 
     recipients = Repo.all(from c in Customer, where: c.id in ^contact_ids)
 
-    Task.Supervisor.async_nolink(App.TaskSupervisor, fn ->
+    App.Task.async_nolink(fn ->
       Enum.each(recipients, fn recipient ->
         Notification.changeset(%Notification{}, %{
           kind: :proposed,
@@ -232,7 +232,7 @@ defmodule App.Conversations do
   end
 
   defun tap_save_opp_versions(signature :: Signature.t()) :: Signature.t() do
-    Task.Supervisor.async_nolink(App.TaskSupervisor, fn ->
+    App.Task.async_nolink(fn ->
       signature.conversation.opps
       |> Enum.map(fn opp ->
         opp
@@ -248,23 +248,33 @@ defmodule App.Conversations do
   end
 
   defun async_cache_contacts(conversation :: Conversation.t()) :: Conversation.t() do
-    Task.Supervisor.async_nolink(App.TaskSupervisor, fn ->
-      participants = Conversation.get_participants(conversation)
-      participants_ids = Enum.map(participants, &Map.get(&1, :id))
-      participant_id_set = MapSet.new(participants_ids)
-
-      Enum.reduce(participants, Multi.new(), fn c, multi ->
-        id = c.id
-        contacts_ids = MapSet.delete(participant_id_set, id)
-
-        Multi.update(
-          multi,
-          {:customer, id},
-          Customer.merged_contacts_changeset(c, contacts_ids)
-        )
-      end)
-      |> Repo.transaction()
+    App.Task.async_nolink(fn ->
+      cache_contacts(conversation)
     end)
+
+    conversation
+  end
+
+  defun cache_contacts(conversation :: Conversation.t()) :: Conversation.t() do
+    participants = Conversation.get_participants(conversation)
+    participants_ids = Enum.map(participants, &Map.get(&1, :id))
+
+    participant_id_set =
+      MapSet.new(participants_ids)
+      |> IO.inspect(label: "THIS cache_contacts> participant_id_set")
+
+    Enum.reduce(participants, Multi.new(), fn c, multi ->
+      id = c.id
+      contacts_ids = MapSet.delete(participant_id_set, id)
+
+      Multi.update(
+        multi,
+        {:customer, id},
+        Customer.merged_contacts_changeset(c, contacts_ids)
+      )
+    end)
+    |> Repo.transaction()
+    |> IO.inspect(label: "THIS contacts multi")
 
     conversation
   end

@@ -17,7 +17,10 @@ defmodule App.Contacts do
   end
 
   def get_contacts_for_viewers(viewers) do
-    viewer_ids = viewers |> Enum.map(&Map.get(&1, :id))
+    viewer_ids =
+      viewers
+      |> Enum.map(&Map.get(&1, :id))
+      |> IO.inspect(label: "THIS get_contacts > viewer_ids")
 
     signers =
       from(contact in Contact,
