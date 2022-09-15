@@ -5,6 +5,8 @@ export * from "./personas"
 import { ClickOptions } from "./puppeteer-extras"
 import fs, { existsSync } from "fs"
 import { OppSpec, oppAriaLabel, ConversationSpec } from "./models"
+import { first } from "remeda"
+import { extractULIDs } from "./ulid"
 
 const { UX_DEBUG_BROWSER, PORT_SSL, PRODUCT_NAME = "TBD" } = process.env
 
@@ -182,6 +184,36 @@ export const makeBrowser = async (headless = true) => {
       await seeConversation(c)
     }
 
+    const createConversation = async (c: ConversationSpec) => {
+      await click("Conversations")
+      await click("Note a conversation")
+      // TODO: invitees.foreEach input, select if presnt or hit "enter"
+      const invitee = first(c.invitees ?? [])
+      await input("Who", invitee?.name)
+      await press("Enter")
+      await input("Note", c.note)
+      await click("Mention Opp")
+      // TODO: opps.each seeOpp, addOpp
+      const opp = first(c.mentions ?? [])
+      if (!opp) throw new Error(`MIA: opp`)
+      await seeOpp(opp)
+      await addOpp(opp)
+      await click("Publish", { clickCount: 2, delay: 900 })
+      await see("Copy share link to clipboard")
+      await click("Copy")
+      await notice("Copied!")
+      const shareURL = await page.evaluate(() => {
+        const value = document.getElementById("shareURL")?.getAttribute("value")
+        if (!value) throw new Error("MIA: shareURL value")
+        return value
+      })
+      const path = new URL(shareURL).pathname
+      const ulids = extractULIDs(path)
+      const cid = first(ulids)
+      c.id = cid
+      return path
+    }
+
     return {
       page,
       name,
@@ -206,6 +238,7 @@ export const makeBrowser = async (headless = true) => {
       seeConversationProfile,
       notSeeConversation,
       verifyFirstConversation,
+      createConversation,
     }
   }
 

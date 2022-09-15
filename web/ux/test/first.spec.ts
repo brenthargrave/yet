@@ -1,5 +1,5 @@
 import { ap, join, pipe, pipeK, split, take } from "ramda"
-import { Alice, Bob, makeBrowser } from "~/browser"
+import { Alice, Bob, Charlie, David, makeBrowser } from "~/browser"
 import { specConv, specOpp } from "~/models"
 import { extractULIDs } from "~/ulid"
 import { first } from "remeda"
@@ -30,37 +30,15 @@ it("Opp reward payment", async () => {
     await a.click("Save")
     await a.seeOpp(opp)
 
-    await a.click("Conversations")
-    await a.see("Welcome!")
-    await a.click("Note a conversation")
     const aliceWithBob = specConv({
       invitees: [Bob],
       note: "WIP",
       mentions: [opp],
     })
-    // TODO: invitees.foreEach input, select if presnt or hit "enter"
-    await a.input("Who", Bob.name)
-    await a.press("Enter")
-    await a.input("Note", aliceWithBob.note)
-    await a.click("Mention Opp")
-    // TODO: opps.each seeOpp, addOpp
-    await a.seeOpp(opp)
-    await a.addOpp(opp)
-    await a.click("Publish", { clickCount: 2, delay: 900 })
-    await a.see("Copy share link to clipboard")
-    await a.click("Copy")
-    await a.notice("Copied!")
-    const shareURL = await a.page.evaluate(() => {
-      const value = document.getElementById("shareURL")?.getAttribute("value")
-      if (!value) throw new Error("MIA: shareURL value")
-      return value
-    })
-    const path = new URL(shareURL).pathname
-    const ulids = extractULIDs(path)
-    const cid = first(ulids)
-    aliceWithBob.id = cid
+    // // TODO: invitees.foreEach input, select if presnt or hit "enter"
+    const aliceWithBobPath = await a.createConversation(aliceWithBob)
     // NOTE: assume A sends B url...
-    await b.visit(path)
+    await b.visit(aliceWithBobPath)
     await b.see("Please sign in to review them.")
     await b.click("Sign in / Sign up")
     await b.signup()
@@ -71,7 +49,12 @@ it("Opp reward payment", async () => {
       b.verifyFirstConversation(aliceWithBob, opp),
     ])
 
-    // Bob creates converastion w/ Charlie, mentions Opp
+    const bobWithCharlie = specConv({
+      invitees: [Charlie],
+      note: "WIP",
+      mentions: [opp],
+    })
+    // const url = await b.createConversation(bobWithCharlie)
     // Charlie cosigns
     // ? timeline updates?
 

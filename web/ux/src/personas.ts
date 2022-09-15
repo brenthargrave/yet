@@ -15,3 +15,15 @@ export const Bob: Persona = {
   phone: "9999999998",
   email: "bob@domain.com",
 }
+
+export const Charlie: Persona = {
+  name: "Charlie",
+  phone: "9999999997",
+  email: "charlie@domain.com",
+}
+
+export const David: Persona = {
+  name: "David",
+  phone: "9999999996",
+  email: "david@domain.com",
+}
