@@ -6,6 +6,7 @@ import { first } from "remeda"
 
 it("Opp reward payment", async () => {
   const { customer, exit } = await makeBrowser(false)
+  const c = await customer(Charlie)
   const b = await customer(Bob)
   const a = await customer(Alice)
   try {
@@ -36,13 +37,14 @@ it("Opp reward payment", async () => {
       mentions: [opp],
     })
     // // TODO: invitees.foreEach input, select if presnt or hit "enter"
-    const aliceWithBobPath = await a.createConversation(aliceWithBob)
+    const aliceWithBobPath = await a.createConversation(aliceWithBob, true)
     // NOTE: assume A sends B url...
-    await b.visit(aliceWithBobPath)
-    await b.see("Please sign in to review them.")
-    await b.click("Sign in / Sign up")
-    await b.signup()
-    await b.click("Cosign")
+    await b.signupAndSignConversationAtPath(aliceWithBobPath)
+    // await b.visit(aliceWithBobPath)
+    // await b.see("Please sign in to review them.")
+    // await b.click("Sign in / Sign up")
+    // await b.signup()
+    // await b.click("Cosign")
     await a.see(`${b.name} cosigned!`)
     await Promise.all([
       a.verifyFirstConversation(aliceWithBob, opp),
@@ -51,12 +53,16 @@ it("Opp reward payment", async () => {
 
     const bobWithCharlie = specConv({
       invitees: [Charlie],
-      note: "WIP",
+      note: "Bob w/ Charlie",
       mentions: [opp],
     })
-    // const url = await b.createConversation(bobWithCharlie)
-    // Charlie cosigns
-    // ? timeline updates?
+    const bobWithCharliePath = await b.createConversation(bobWithCharlie)
+    await c.signupAndSignConversationAtPath(bobWithCharliePath)
+    // TODO:
+    // ? what's different timeline/profile
+    // bob & charlie should see in their profiles, but not in their timliens
+    // alice should see in her timleine, but not in her profile
+    // all should see the opp
 
     // Charlie note w/ David, mentions Opp
     // David cosigns

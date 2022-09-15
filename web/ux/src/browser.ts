@@ -184,9 +184,14 @@ export const makeBrowser = async (headless = true) => {
       await seeConversation(c)
     }
 
-    const createConversation = async (c: ConversationSpec) => {
+    const createConversation = async (c: ConversationSpec, isFirst = false) => {
       await click("Conversations")
-      await click("Note a conversation")
+      if (isFirst) {
+        await see("Welcome!")
+        await click("Note a conversation")
+      } else {
+        await click("New conversation")
+      }
       // TODO: invitees.foreEach input, select if presnt or hit "enter"
       const invitee = first(c.invitees ?? [])
       await input("Who", invitee?.name)
@@ -214,6 +219,14 @@ export const makeBrowser = async (headless = true) => {
       return path
     }
 
+    const signupAndSignConversationAtPath = async (path: string) => {
+      await visit(path)
+      await see("Please sign in to review them.")
+      await click("Sign in / Sign up")
+      await signup()
+      await click("Cosign")
+    }
+
     return {
       page,
       name,
@@ -239,6 +252,7 @@ export const makeBrowser = async (headless = true) => {
       notSeeConversation,
       verifyFirstConversation,
       createConversation,
+      signupAndSignConversationAtPath,
     }
   }
 
