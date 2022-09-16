@@ -21,7 +21,7 @@ import {
   tap,
   withLatestFrom,
 } from "rxjs"
-import { isNotNullish } from "rxjs-etc"
+import { isNotNullish, toggle } from "rxjs-etc"
 import { equals } from "rxjs-etc/dist/esm/operators"
 import { match } from "ts-pattern"
 import { filterResultOk } from "ts-results/rxjs-operators"
@@ -70,6 +70,7 @@ import {
   Source as RouterSource,
 } from "~/router"
 import { cb$, shareLatest } from "~/rx"
+import { KeyCode, shortcut$ } from "~/system"
 import { State } from ".."
 import { NestedOpps } from "./NestedOpps"
 import { Mode, Option as ContactOption, SelectedOption, View } from "./View"
@@ -447,8 +448,10 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     share()
   )
 
+  const openShortcut$ = shortcut$([KeyCode.ControlLeft, KeyCode.KeyP])
+
   const isOpenPublish$ = merge(
-    onClickPublish$.pipe(map((_) => true)),
+    merge(openShortcut$, onClickPublish$).pipe(map((_) => true)),
     onClosePublish$.pipe(map((_) => false))
   ).pipe(startWith(false), tag("isOpenPublish$"), share())
 

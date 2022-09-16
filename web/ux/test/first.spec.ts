@@ -1,8 +1,5 @@
-import { ap, join, pipe, pipeK, split, take } from "ramda"
-import { Alice, Bob, Charlie, David, makeBrowser } from "~/browser"
+import { Alice, Bob, Charlie, makeBrowser } from "~/browser"
 import { specConv, specOpp } from "~/models"
-import { extractULIDs } from "~/ulid"
-import { first } from "remeda"
 
 it("Opp reward payment", async () => {
   const { customer, exit } = await makeBrowser({ headless: false })
@@ -13,6 +10,7 @@ it("Opp reward payment", async () => {
     await a.visit("/")
     await a.click("Create Account")
     await a.signup()
+
     // Alice creates Opp with award
     await a.click("Opportunities")
     await a.click("Create Opp")

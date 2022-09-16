@@ -213,7 +213,12 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       if (!opp) throw new Error(`MIA: opp`)
       await seeOpp(opp)
       await addOpp(opp)
-      await click("Publish", { delay: 2000 })
+      // await click("Publish", { delay: 2000 })
+
+      await page.keyboard.down("Control")
+      await page.keyboard.press("p")
+      await page.keyboard.up("Control")
+
       await see("Copy share link to clipboard")
       await click("Copy")
       // await notice("Copied!")

@@ -78,6 +78,8 @@ export const PinInputField = (props: PinInputFieldProps) =>
 
 export * from "./styles"
 
+export * from "./shortcut"
+
 export * from "./AutosizeTextarea"
 export * from "./MarkdownView"
 export * from "./Nav"
