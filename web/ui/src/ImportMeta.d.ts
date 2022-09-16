@@ -4,5 +4,6 @@ interface ImportMeta {
     VITE_HOST: string
     VITE_SENTRY_DSN: string
     VITE_SENTRY_DEBUG?: boolean
+    VITE_LOG?: boolean
   }
 }

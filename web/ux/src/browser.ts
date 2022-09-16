@@ -48,6 +48,10 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
     })
     const context = await browser.createIncognitoBrowserContext()
     const page = await context.newPage()
+    // NOTE: https://github.com/puppeteer/puppeteer/issues/1030#issuecomment-336495331
+    page.on("error", (err) => console.error(name, err))
+    page.on("pageerror", (err) => console.error(name, err))
+
     const seconds = 4
     page.setDefaultTimeout(seconds * 1000)
     page.setDefaultNavigationTimeout(seconds * 1000)
