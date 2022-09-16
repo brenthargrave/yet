@@ -16,6 +16,7 @@ import {
   MonoTypeOperatorFunction,
   Observable,
   of,
+  tap,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { switchMap } from "rxjs/operators"
@@ -82,7 +83,7 @@ export type ID = Scalars["ID"]
 const tag = makeTagger("graph")
 
 export class GraphError extends Error {}
-export class GraphDefaultQueryError extends GraphError {}
+export class UnrecoverableGraphError extends GraphError {}
 
 export function eatUnrecoverableError<T>(
   callback?: (error: Error, caught: Observable<T>) => void
@@ -92,9 +93,28 @@ export function eatUnrecoverableError<T>(
       catchError((error, caught$) => {
         if (callback) callback(error, caught$)
         // NOTE: graph watch errors are fatal, will loop indefinitely if resubscribed
-        return error instanceof GraphDefaultQueryError
+        return error instanceof UnrecoverableGraphError
           ? EMPTY
           : caught$.pipe(tag("caught$"))
+      })
+    )
+}
+
+export function handleGraphErrors<T>(): MonoTypeOperatorFunction<T> {
+  return (source) =>
+    source.pipe(
+      tap((res) => {
+        // @ts-ignore
+        if (res.errors) throw new GraphError(JSON.stringify(res.errors))
+      })
+    )
+}
+
+export function makeUnrecoverable<T>(): MonoTypeOperatorFunction<T> {
+  return (source) =>
+    source.pipe(
+      catchError((error, _caught$) => {
+        throw new UnrecoverableGraphError(error.message, { cause: error })
       })
     )
 }
@@ -108,9 +128,9 @@ export const submitPhone$ = (
       variables: { input },
     })
   ).pipe(
-    map(({ data, errors, extensions, context }) => {
-      if (errors) throw new GraphError(JSON.stringify(errors))
-      return data?.submitPhone
+    handleGraphErrors(),
+    map((response) => {
+      return response.data?.submitPhone
     }),
     filter(isNotNullish)
   )
@@ -122,8 +142,8 @@ export const verifyCode$ = (input: SubmitCodeInput) =>
       variables: { input },
     })
   ).pipe(
+    handleGraphErrors(),
     map(({ data, errors, extensions, context }) => {
-      if (errors) throw new GraphError(JSON.stringify(errors))
       return data?.submitCode
     }),
     filter(isNotNullish)
@@ -151,9 +171,9 @@ export const checkToken$ = () => {
   return from(
     client.query({ query: CheckTokenDocument, fetchPolicy: "network-only" })
   ).pipe(
+    handleGraphErrors(),
     map(({ data, errors }) => {
-      if (errors) throw new GraphError(JSON.stringify(errors))
-      return data!.checkToken?.token
+      return data.checkToken?.token
     }),
     tag("checkToken$")
   )
@@ -164,6 +184,7 @@ export const me$ = token$.pipe(
   switchMap((token) => {
     if (!token) return of(null)
     return zenToRx(client.watchQuery({ query: MeDocument })).pipe(
+      handleGraphErrors(),
       map(
         ({
           data,
@@ -175,8 +196,7 @@ export const me$ = token$.pipe(
           ...result
         }) => {
           // NOTE: throw will create endless loop upon resubscription
-          if (error) captureException(error)
-          if (errors) captureException(JSON.stringify(errors))
+          if (error) throw error
           return data.me
         }
       ),
@@ -184,9 +204,7 @@ export const me$ = token$.pipe(
       tag("watchQuery(me)")
     )
   }),
-  catchError((error, _caught$) => {
-    throw new GraphDefaultQueryError(error.message)
-  }),
+  makeUnrecoverable(),
   tag("me$"),
   shareLatest()
 )
@@ -220,8 +238,8 @@ export const track$ = (_input: Omit<TrackEventInput, "anonId">) => {
       variables: { input },
     })
   ).pipe(
+    handleGraphErrors(),
     map(({ data, errors, extensions, context }) => {
-      if (errors) throw new GraphError(JSON.stringify(errors))
       return data!.trackEvent!
     }),
     tag("track$")
@@ -237,6 +255,7 @@ export const contacts$ = token$.pipe(
         fetchPolicy: "network-only",
       })
     ).pipe(
+      handleGraphErrors(),
       map(
         ({
           data,
@@ -249,7 +268,6 @@ export const contacts$ = token$.pipe(
         }) => {
           // NOTE: throw will create endless loop upon resubscription
           if (error) captureException(error)
-          if (errors) captureException(JSON.stringify(errors))
           return data.contacts
         }
       ),
@@ -257,9 +275,7 @@ export const contacts$ = token$.pipe(
       tag("watchQuery(contacts)")
     )
   }),
-  catchError((error, _caught$) => {
-    throw new GraphDefaultQueryError(error.message)
-  }),
+  makeUnrecoverable(),
   tag("contacts$"),
   filter(isNotNullish),
   shareLatest()
@@ -278,8 +294,8 @@ export const upsertConversation$ = (input: ConversationInput) => {
       refetchQueries: [{ query: GetConversationsDocument }],
     })
   ).pipe(
+    handleGraphErrors(),
     map(({ data, errors, extensions, context }) => {
-      if (errors) throw new GraphError(JSON.stringify(errors))
       const { userError, conversation } = data!.upsertConversation!
       return userError ? new Err(userError) : new Ok(conversation!)
     }),
@@ -295,8 +311,8 @@ export const deleteConversation$ = (input: DeleteConversationInput) => {
       refetchQueries: [{ query: GetConversationsDocument }],
     })
   ).pipe(
+    handleGraphErrors(),
     map(({ data, errors, extensions, context }) => {
-      if (errors) throw new GraphError(JSON.stringify(errors))
       const { userError, conversation } = data!.deleteConversation!
       return userError ? new Err(userError) : new Ok(conversation!)
     }),
@@ -316,8 +332,8 @@ export const signConversation$ = (input: SignInput) => {
       ],
     })
   ).pipe(
+    handleGraphErrors(),
     map(({ data, errors, extensions, context }) => {
-      if (errors) throw new GraphError(JSON.stringify(errors))
       const { userError, conversation } = data!.sign!
       return userError ? new Err(userError) : new Ok(conversation!)
     }),
@@ -333,8 +349,8 @@ export const proposeConversation$ = (input: ProposeInput) => {
       refetchQueries: [{ query: GetConversationsDocument }],
     })
   ).pipe(
+    handleGraphErrors(),
     map(({ data, errors, extensions, context }) => {
-      if (errors) throw new GraphError(JSON.stringify(errors))
       const { userError, conversation } = data!.propose!
       return userError ? new Err(userError) : new Ok(conversation!)
     }),
@@ -353,8 +369,8 @@ export const reviewConversation$ = (input: ReviewInput) => {
       ],
     })
   ).pipe(
+    handleGraphErrors(),
     map(({ data, errors, extensions, context }) => {
-      if (errors) throw new GraphError(JSON.stringify(errors))
       const { userError, conversation } = data!.review!
       return userError ? new Err(userError) : new Ok(conversation!)
     }),
@@ -363,28 +379,19 @@ export const reviewConversation$ = (input: ReviewInput) => {
 }
 
 export const getConversation$ = (id: string) => {
-  return merge(
-    from(
-      client.query({
-        query: ViewConversationDocument,
-        variables: { id },
-        fetchPolicy: "network-only",
-      })
-    ).pipe(
-      map(({ data, errors }) => {
-        if (errors) throw new GraphError(JSON.stringify(errors))
-        return data
-      })
-    )
+  return from(
+    client.query({
+      query: ViewConversationDocument,
+      variables: { id },
+      fetchPolicy: "network-only",
+    })
   ).pipe(
-    map((data) => {
+    handleGraphErrors(),
+    map(({ data }) => {
       const { userError, conversation } = data!.getConversation!
       return userError ? new Err(userError) : new Ok(conversation!)
     }),
-    catchError((error, _caught$) => {
-      console.error(error)
-      throw new GraphDefaultQueryError(error.message)
-    }),
+    makeUnrecoverable(),
     tag("getConversation$")
   )
 }
@@ -397,20 +404,12 @@ export const subscribeConversation$ = (input: ConversationChangedInput) =>
         variables: { input },
         fetchPolicy: "no-cache",
       })
-    ).pipe(
-      map((result) => {
-        const { context, data, errors, extensions } = result
-        if (errors) throw new GraphError(JSON.stringify(errors))
-        return data
-      })
     )
   ).pipe(
-    map((data) => data?.conversationChanged),
+    handleGraphErrors(),
+    map(({ data }) => data?.conversationChanged),
     filter(isNotNullish),
-    catchError((error, _caught$) => {
-      console.error(error)
-      throw new GraphDefaultQueryError(error.message)
-    }),
+    makeUnrecoverable(),
     tag("subscribeConversation$")
   )
 
@@ -423,7 +422,7 @@ export const conversations$ = token$.pipe(
         fetchPolicy: "network-only",
       })
     ).pipe(
-      tag("watchQuery(conversations)"),
+      handleGraphErrors(),
       map(
         ({
           data,
@@ -435,8 +434,7 @@ export const conversations$ = token$.pipe(
           ...result
         }) => {
           // NOTE: throw will create endless loop upon resubscription
-          if (error) captureException(error)
-          if (errors) captureException(JSON.stringify(errors))
+          if (error) throw error
           return data.getConversations?.conversations
         }
       ),
@@ -452,9 +450,7 @@ export const conversations$ = token$.pipe(
       reverse()
     )
   ),
-  catchError((error, _caught$) => {
-    throw new GraphDefaultQueryError(error.message)
-  }),
+  makeUnrecoverable(),
   tag("conversations$"),
   shareLatest()
 )
@@ -469,6 +465,7 @@ export const opps$ = token$.pipe(
         fetchPolicy: "network-only",
       })
     ).pipe(
+      handleGraphErrors(),
       map(
         ({
           data,
@@ -480,8 +477,7 @@ export const opps$ = token$.pipe(
           ...result
         }) => {
           // NOTE: throw will create endless loop upon resubscription
-          if (error) captureException(error)
-          if (errors) captureException(JSON.stringify(errors))
+          if (error) throw error
           return data.getOpps!.opps
         }
       ),
@@ -489,9 +485,7 @@ export const opps$ = token$.pipe(
     )
   }),
   tag("opps$"),
-  catchError((error, _caught$) => {
-    throw new GraphDefaultQueryError(error.message)
-  }),
+  makeUnrecoverable(),
   shareLatest()
 )
 
@@ -503,8 +497,8 @@ export const upsertOpp$ = (input: OppInput) => {
       refetchQueries: [{ query: GetOppsDocument }],
     })
   ).pipe(
+    handleGraphErrors(),
     map(({ data, errors, extensions, context }) => {
-      if (errors) throw new GraphError(JSON.stringify(errors))
       const { userError, opp } = data!.upsertOpp!
       return userError ? new Err(userError) : new Ok(opp)
     }),
@@ -513,48 +507,33 @@ export const upsertOpp$ = (input: OppInput) => {
 }
 
 export const getOpp$ = (id: string) => {
-  return merge(
-    from(
-      client.query({
-        query: GetOppDocument,
-        variables: { id },
-        fetchPolicy: "network-only",
-      })
-    ).pipe(
-      map(({ data, errors }) => {
-        if (errors) throw new GraphError(JSON.stringify(errors))
-        return data
-      })
-    )
+  return from(
+    client.query({
+      query: GetOppDocument,
+      variables: { id },
+      fetchPolicy: "network-only",
+    })
   ).pipe(
-    map((data) => {
+    handleGraphErrors(),
+    map(({ data }) => {
       const { userError, opp } = data!.getOpp!
       return userError ? new Err(userError) : new Ok(opp!)
     }),
-    catchError((error, _caught$) => {
-      console.error(error)
-      throw new GraphDefaultQueryError(error.message)
-    }),
+    makeUnrecoverable(),
     tag("getOpp$")
   )
 }
 
-export const getTimeline$ = (input: TimelineInput = {}) => {
-  return merge(
-    from(
-      client.query({
-        query: GetTimelineDocument,
-        fetchPolicy: "network-only",
-        variables: { input },
-      })
-    ).pipe(
-      map(({ data, errors }) => {
-        if (errors) throw new GraphError(JSON.stringify(errors))
-        return data
-      })
-    )
+export const getTimeline$ = (input: TimelineInput = {}) =>
+  from(
+    client.query({
+      query: GetTimelineDocument,
+      fetchPolicy: "network-only",
+      variables: { input },
+    })
   ).pipe(
-    map((data) => {
+    handleGraphErrors(),
+    map(({ data }) => {
       const { events } = data.getTimeline!
       return new Ok(events)
     }),
@@ -565,13 +544,8 @@ export const getTimeline$ = (input: TimelineInput = {}) => {
         reverse()
       )
     ),
-    catchError((error, _caught$) => {
-      console.error(error)
-      throw new GraphDefaultQueryError(error.message)
-    }),
     tag("getTimeline$")
   )
-}
 
 export const subscribeTimeline$ = (input: TimelineEventsAddedInput) =>
   from(
@@ -581,49 +555,31 @@ export const subscribeTimeline$ = (input: TimelineEventsAddedInput) =>
         variables: { input },
         fetchPolicy: "no-cache",
       })
-    ).pipe(
-      map((result) => {
-        const { context, data, errors, extensions } = result
-        if (errors) throw new GraphError(JSON.stringify(errors))
-        return data
-      })
     )
   ).pipe(
-    map((data) => data?.timelineEventsAdded),
+    handleGraphErrors(),
+    map(({ data }) => data?.timelineEventsAdded),
     filter(isNotNullish),
-    catchError((error, _caught$) => {
-      console.error(error)
-      throw new GraphDefaultQueryError(error.message)
-    }),
+    makeUnrecoverable(),
     tag("subscribeTimeline$")
   )
 
-export const getProfile$ = (input: GetProfileInput) => {
-  return merge(
-    from(
-      client.query({
-        query: GetProfileDocument,
-        variables: { input },
-        fetchPolicy: "network-only",
-      })
-    ).pipe(
-      map(({ data, errors }) => {
-        if (errors) throw new GraphError(JSON.stringify(errors))
-        return data
-      })
-    )
+export const getProfile$ = (input: GetProfileInput) =>
+  from(
+    client.query({
+      query: GetProfileDocument,
+      variables: { input },
+      fetchPolicy: "network-only",
+    })
   ).pipe(
-    map((data) => {
-      const profile = data!.getProfile!.profile!
+    handleGraphErrors(),
+    map(({ data }) => {
+      const profile = data.getProfile!.profile!
       return Ok(profile)
     }),
-    catchError((error, _caught$) => {
-      console.error(error)
-      throw new GraphDefaultQueryError(error.message)
-    }),
+    makeUnrecoverable(),
     tag("getProfile$")
   )
-}
 
 export const patchProfile$ = (input: PatchProfileInput) =>
   from(
@@ -633,8 +589,8 @@ export const patchProfile$ = (input: PatchProfileInput) =>
       refetchQueries: [{ query: MeDocument }],
     })
   ).pipe(
+    handleGraphErrors(),
     map(({ data, errors, extensions, context }) => {
-      if (errors) throw new GraphError(JSON.stringify(errors))
       const { userError, profile } = data!.patchProfile!
       return userError ? new Err(userError) : new Ok(profile!)
     }),
@@ -649,8 +605,8 @@ export const updateProfile$ = (input: UpdateProfileInput) => {
       refetchQueries: [{ query: GetConversationsDocument }],
     })
   ).pipe(
+    handleGraphErrors(),
     map(({ data, errors, extensions, context }) => {
-      if (errors) throw new GraphError(JSON.stringify(errors))
       const { userError, profile } = data!.updateProfile!
       return userError ? new Err(userError) : new Ok(profile!)
     }),
@@ -673,9 +629,7 @@ export const profile$ = me$.pipe(
     )
   ),
   filterResultOk(),
+  makeUnrecoverable(),
   tag("profile$"),
-  catchError((error, _caught$) => {
-    throw new GraphDefaultQueryError(error.message)
-  }),
   shareLatest()
 )

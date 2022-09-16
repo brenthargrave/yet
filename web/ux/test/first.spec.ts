@@ -73,6 +73,7 @@ it("Opp reward payment", async () => {
     console.error("ERROR!", error)
     await a.screenie()
     await b.screenie()
+    await c.screenie()
     throw error
   } finally {
     await exit()
