@@ -14,13 +14,7 @@ import {
 import { isNotNullish } from "rxjs-etc"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { act, Actions, Source as ActionSource } from "~/action"
-import {
-  getProfile$,
-  isOnboard,
-  Profile,
-  Source as GraphSource,
-  updateProfile$,
-} from "~/graph"
+import { Source as GraphSource, updateProfile$ } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { Source as RouterSource } from "~/router"

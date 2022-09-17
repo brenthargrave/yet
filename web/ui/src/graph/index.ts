@@ -624,18 +624,19 @@ export const updateProfile$ = (input: UpdateProfileInput) => {
 
 // TODO: dedupe w/ convos$/opps$
 export const profile$ = me$.pipe(
-  filter(isAuthenticated),
-  filter(isNotNullish),
-  filter(hasAllRequiredProfileProps),
-  switchMap(({ id }) =>
-    merge(
+  switchMap((me) => {
+    if (!me) return EMPTY
+    if (!isAuthenticated(me)) return EMPTY
+    if (!hasAllRequiredProfileProps(me)) return EMPTY
+    const { id } = me
+    return merge(
       getProfile$({ id }),
       subscribeTimeline$({ id }).pipe(
         debounceTime(500),
         switchMap((_) => getProfile$({ id }))
       )
     )
-  ),
+  }),
   filterResultOk(),
   makeUnrecoverable(),
   tag("profile$"),
