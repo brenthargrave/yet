@@ -3,6 +3,7 @@ import {
   InMemoryCache,
   createHttpLink,
   split,
+  ApolloLink,
 } from "@apollo/client"
 import { setContext } from "@apollo/client/link/context"
 import { persistCache, LocalStorageWrapper } from "apollo3-cache-persist"
@@ -13,6 +14,8 @@ import { Socket as PhoenixSocket } from "phoenix"
 import * as AbsintheSocket from "@absinthe/socket"
 // @ts-ignore
 import { createAbsintheSocketLink } from "@absinthe/socket-apollo-link"
+import { sentryLink } from "./sentry"
+import { errorLink } from "./error"
 
 const httpLink = createHttpLink({
   uri: "/graphql",
@@ -55,11 +58,18 @@ const phoenixSocket = new PhoenixSocket(`wss://${host}/socket`, {
 })
 const absintheSocket = AbsintheSocket.create(phoenixSocket)
 const websocketLink = createAbsintheSocketLink(absintheSocket)
-const link = split(
+const splitLink = split(
   (operation) => hasSubscription(operation.query),
   websocketLink,
   authedHttpLink
 )
+
+const link = ApolloLink.from([
+  //
+  sentryLink,
+  errorLink,
+  splitLink,
+])
 
 export const client = new ApolloClient({
   link,

@@ -4,6 +4,9 @@ import { tag } from "rxjs-spy/operators/tag"
 
 const { VITE_API_ENV: env, VITE_LOG } = import.meta.env
 
+console.debug("THIS log", VITE_LOG)
+console.debug("THIS env", env)
+
 const spy = create({ defaultLogger: console, sourceMaps: true })
 if (VITE_LOG) spy.log()
 

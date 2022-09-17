@@ -3,7 +3,8 @@
 /* eslint max-classes-per-file: 0 */
 
 import { captureException } from "@sentry/react"
-import { filter as _filter, pipe, reverse, sort } from "remeda"
+import { GraphQLError } from "graphql"
+import { filter as _filter, first, pipe, reverse, sort } from "remeda"
 import {
   BehaviorSubject,
   catchError,
@@ -22,6 +23,7 @@ import { isNotNullish } from "rxjs-etc"
 import { switchMap } from "rxjs/operators"
 import { Err, Ok } from "ts-results"
 import { filterResultOk, resultMap } from "ts-results/rxjs-operators"
+import { isNotEmpty } from "~/fp"
 import { makeTagger } from "~/log"
 import { shareLatest, zenToRx } from "~/rx"
 import { getId } from "./anon"
@@ -104,8 +106,12 @@ export function handleGraphErrors<T>(): MonoTypeOperatorFunction<T> {
   return (source) =>
     source.pipe(
       tap((res) => {
+        let errors: GraphQLError[] = []
         // @ts-ignore
-        if (res.errors) throw new GraphError(JSON.stringify(res.errors))
+        if (res.errors) errors = res.errors
+        if (isNotEmpty(errors)) {
+          throw first(errors)
+        }
       })
     )
 }
@@ -544,6 +550,7 @@ export const getTimeline$ = (input: TimelineInput = {}) =>
         reverse()
       )
     ),
+    makeUnrecoverable(),
     tag("getTimeline$")
   )
 
@@ -557,6 +564,7 @@ export const subscribeTimeline$ = (input: TimelineEventsAddedInput) =>
       })
     )
   ).pipe(
+    tag("THIS"),
     handleGraphErrors(),
     map(({ data }) => data?.timelineEventsAdded),
     filter(isNotNullish),

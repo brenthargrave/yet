@@ -140,6 +140,11 @@ defmodule App.Timeline do
         })
         |> Repo.insert!(on_conflict: :nothing)
 
+      events =
+        [event]
+        |> personalize()
+        |> IO.inspect(label: "THIS events")
+
       payload = %TimelinePayload{events: [event]}
 
       Absinthe.Subscription.publish(
@@ -209,7 +214,7 @@ defmodule App.Timeline do
         %TimelineEvent{type: :conversation_published} = event ->
           # rename key to persona
           {persona, event} = Map.pop(event, :conversation_published_persona)
-          event = Map.put(event, :persona, persona)
+          event = Map.put(event, :persona, Atom.to_string(persona))
           # NOTE: personas
           # participant | contact => include notes
           # opportunist | public => w/o notes

@@ -11,4 +11,5 @@ config :app, App.Repo,
   pool: Ecto.Adapters.SQL.Sandbox,
   sql_sandbox: true
 
-config :logger, :console, level: :warn
+# config :logger, :console, level: :warn
+config :logger, :console, level: :debug

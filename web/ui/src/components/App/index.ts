@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { h, ReactSource } from "@cycle/react"
-import { captureException } from "@sentry/react"
+import { captureException, withScope } from "@sentry/react"
 import {
-  distinctUntilChanged,
   combineLatest,
   debounceTime,
+  distinctUntilChanged,
   EMPTY,
   merge,
   Observable,
@@ -108,7 +108,14 @@ export const App = (sources: Sources) => {
   const react = combineLatest({ body: bodyView$ }).pipe(
     map(({ body }) => h(AppView, { body })),
     eatUnrecoverableError((error, caught$) => {
-      captureException(error)
+      withScope((scope) => {
+        const { cause } = error
+        if (cause) {
+          const json = JSON.stringify(cause, null, 2)
+          scope.setExtra("cause-as-json", json)
+        }
+        captureException(error)
+      })
       toast({
         title: t("default.error.title"),
         description: t("default.error.description"),

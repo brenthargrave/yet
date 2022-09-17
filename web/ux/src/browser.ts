@@ -56,7 +56,7 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       console.error("pageerror", name, error, error.cause)
     })
 
-    const seconds = 4
+    const seconds = 6
     page.setDefaultTimeout(seconds * 1000)
     page.setDefaultNavigationTimeout(seconds * 1000)
     page.setUserAgent(userAgent)

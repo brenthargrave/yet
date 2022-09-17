@@ -2,7 +2,7 @@ import { Alice, Bob, Charlie, makeBrowser } from "~/browser"
 import { specConv, specOpp } from "~/models"
 
 it("Opp reward payment", async () => {
-  const { customer, exit } = await makeBrowser({ headless: true })
+  const { customer, exit } = await makeBrowser({ headless: false })
 
   const c = await customer(Charlie)
   const b = await customer(Bob)
@@ -39,8 +39,10 @@ it("Opp reward payment", async () => {
     const aliceWithBobPath = await a.createConversation(aliceWithBob, true)
     // NOTE: assume A sends B url...
     await b.signupAndSignConversationAtPath(aliceWithBobPath)
-    // TODO: verify signing if already onboard
+    // TODO: sign if already auth'd/onboard
     await a.see(`${b.name} cosigned!`)
+    await a.page.waitForTimeout(60000)
+
     await Promise.all([
       a.verifyFirstConversation(aliceWithBob, opp),
       b.verifyFirstConversation(aliceWithBob, opp),

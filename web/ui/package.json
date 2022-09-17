@@ -73,6 +73,7 @@
     "@urql/core": "2.6.0",
     "@urql/devtools": "2.0.3",
     "@urql/exchange-auth": "0.1.7",
+    "apollo-link-sentry": "3.2.0",
     "apollo3-cache-persist": "0.14.0",
     "chakra-react-select": "4.0.0",
     "change-case": "4.1.2",
