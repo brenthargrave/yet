@@ -117,7 +117,7 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       console.debug(`${p.name} type: "${text}" in "${ariaLabelValue}"`)
       const sel = ariaLabelSel(ariaLabelValue)
       await page.waitForSelector(sel, { visible: true })
-      await page.keyboard.type(text)
+      await page.keyboard.type(text, { delay: 50 })
     }
 
     const input = async (ariaLabelValue: string, text?: string) => {
