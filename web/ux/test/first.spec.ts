@@ -41,7 +41,6 @@ it("Opp reward payment", async () => {
     await b.signupAndSignConversationAtPath(aliceWithBobPath)
     // TODO: sign if already auth'd/onboard
     await a.see(`${b.name} cosigned!`)
-    await a.page.waitForTimeout(60000)
 
     await Promise.all([
       a.verifyFirstConversation(aliceWithBob, opp),
