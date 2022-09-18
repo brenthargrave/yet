@@ -1,4 +1,4 @@
-import { Alice, Bob, Charlie, makeBrowser } from "~/browser"
+import { Alice, Bob, Charlie, makeBrowser, Nav } from "~/browser"
 import { specConv, specOpp } from "~/models"
 
 it("Opp reward payment", async () => {
@@ -55,11 +55,27 @@ it("Opp reward payment", async () => {
     const bobWithCharliePath = await b.createConversation(bobWithCharlie)
     await c.signupAndSignConversationAtPath(bobWithCharliePath)
 
-    // TODO:
-    // ? what's different timeline/profile
-    // bob & charlie should see in their profiles, but not in their timliens
-    // alice should see in her timleine, but not in her profile
+    await Promise.all([
+      // alice: in tl, but not pf
+      a.accessConversation({
+        c: bobWithCharlie,
+        show: [Nav.Home],
+        hide: [Nav.Profile],
+      }),
+      // bob & charlie: in their pf, but not in their tls
+      b.accessConversation({
+        c: bobWithCharlie,
+        show: [Nav.Profile],
+        hide: [Nav.Home],
+      }),
+      c.accessConversation({
+        c: bobWithCharlie,
+        show: [Nav.Profile],
+        hide: [Nav.Home],
+      }),
+    ])
     // all should see the opp
+    await Promise.all([...[a, b, c].map((p) => p.accessOpp(opp))])
 
     // Charlie note w/ David, mentions Opp
     // David cosigns

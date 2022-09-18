@@ -8,6 +8,12 @@ import { OppSpec, oppAriaLabel, ConversationSpec } from "./models"
 import { first } from "remeda"
 import { extractULIDs } from "./ulid"
 
+export enum Nav {
+  Home = "Home",
+  Conversations = "Conversations",
+  Profile = "Profile",
+}
+
 const { UX_DEBUG_BROWSER, PORT_SSL, PRODUCT_NAME = "TBD" } = process.env
 
 // NOTE: node chokes on "localhost" https://github.com/node-fetch/node-fetch/issues/1624#issuecomment-1235826631
@@ -98,8 +104,8 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
     }
     const notSee = async (ariaLabelValue: string, debug = true) => {
       if (debug) console.debug(`${p.name} NOT see: "${ariaLabelValue}"`)
-      const sel = `:not(${ariaLabelSel(ariaLabelValue)})`
-      await page.waitForSelector(sel, { visible: true })
+      const sel = ariaLabelSel(ariaLabelValue)
+      await page.waitForSelector(sel, { hidden: true })
     }
 
     const screenie = async () => {
@@ -186,11 +192,15 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       await seeConversation(spec)
     }
 
-    const verifyFirstConversation = async (c: ConversationSpec, o: OppSpec) => {
-      await seeConversationProfile(c)
+    const accessOpp = async (o: OppSpec) => {
       await click("Opportunities")
       await see("Your Opportunities")
       await seeOpp(o)
+    }
+
+    const verifyFirstConversation = async (c: ConversationSpec, o: OppSpec) => {
+      await seeConversationProfile(c)
+      await accessOpp(o)
       await click("Home")
       await see(`No network activity just yet.`)
       await notSeeConversation(c)
@@ -250,6 +260,25 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       await click("Cosign")
     }
 
+    const accessConversation = async ({
+      c,
+      show,
+      hide,
+    }: {
+      c: ConversationSpec
+      show: Nav[]
+      hide: Nav[]
+    }) => {
+      for (const view of show) {
+        await click(view)
+        await seeConversation(c)
+      }
+      for (const view of hide) {
+        await click(view)
+        await notSeeConversation(c)
+      }
+    }
+
     return {
       page,
       name,
@@ -277,6 +306,8 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       verifyFirstConversation,
       createConversation,
       signupAndSignConversationAtPath,
+      accessConversation,
+      accessOpp,
     }
   }
 
