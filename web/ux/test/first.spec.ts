@@ -1,9 +1,10 @@
-import { Alice, Bob, Charlie, makeBrowser, Nav } from "~/browser"
+import { Alice, Bob, Charlie, David, makeBrowser, Nav } from "~/browser"
 import { specConv, specOpp } from "~/models"
 
 it("Opp reward payment", async () => {
   const { customer, exit } = await makeBrowser({ headless: true })
 
+  const d = await customer(David)
   const c = await customer(Charlie)
   const b = await customer(Bob)
   const a = await customer(Alice)
@@ -77,8 +78,18 @@ it("Opp reward payment", async () => {
     // all should see the opp
     await Promise.all([...[a, b, c].map((p) => p.accessOpp(opp))])
 
-    // Charlie note w/ David, mentions Opp
-    // David cosigns
+    const cWd = specConv({
+      invitees: [Charlie],
+      note: "Bob w/ Charlie",
+      mentions: [opp],
+    })
+    const cWdPath = await b.createConversation(cWd)
+    await d.signupAndSignConversationAtPath(cWdPath)
+    // ? timeline access
+    // c & d: profiles, not in timelines
+    // a & c: timelines, not profiles
+    // all: see opp
+
     // (Alice hires David...)
     // Alice clicks Opp
     // Alice clicks Pay Reward
@@ -91,6 +102,7 @@ it("Opp reward payment", async () => {
     await a.screenie()
     await b.screenie()
     await c.screenie()
+    await d.screenie()
     throw error
   } finally {
     await exit()
