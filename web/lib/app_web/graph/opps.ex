@@ -13,6 +13,7 @@ defmodule AppWeb.Graph.Opps do
     field(:creator, non_null(:contact))
     field(:owner, non_null(:contact))
     field(:inserted_at, non_null(:datetime))
+    field(:events, list_of(non_null(:timeline_event)))
   end
 
   object :opps_payload do
@@ -22,6 +23,7 @@ defmodule AppWeb.Graph.Opps do
   object :opp_payload do
     field(:user_error, :user_error)
     field(:opp, :opp)
+    field(:events, non_null(list_of(non_null(:timeline_event))))
   end
 
   input_object :opp_input do
@@ -31,6 +33,10 @@ defmodule AppWeb.Graph.Opps do
     field(:desc, :string)
     field(:url, :string)
     field(:fee, non_null(:money_input))
+  end
+
+  input_object :get_opp_input do
+    field(:id, non_null(:id))
   end
 
   object :opps_mutations do
@@ -46,7 +52,7 @@ defmodule AppWeb.Graph.Opps do
     end
 
     field :get_opp, :opp_payload do
-      arg(:id, non_null(:id))
+      arg(:input, non_null(:get_opp_input))
       resolve(&Opps.get_opp/3)
     end
   end

@@ -3,13 +3,23 @@ defmodule AppWeb.Resolvers.Opps do
   use App.Types
   use TypedStruct
   use Brex.Result
-  alias App.Opps
-  alias App.Opp
-  alias App.UserError
   require Logger
+
+  alias App.{
+    Opp,
+    Opps,
+    TimelineEvent,
+    UserError
+  }
 
   typedstruct module: OppsPayload do
     field(:opps, list(Opp.t()))
+  end
+
+  typedstruct module: OppPayload do
+    field(:opp, Opp.t())
+    field(:events, list(TimelineEvent.t()))
+    field(:user_error, UserError.t())
   end
 
   defun get_opps(
@@ -20,13 +30,9 @@ defmodule AppWeb.Resolvers.Opps do
     Opps.opps(customer)
     |> fmap(&%OppsPayload{opps: &1})
   end
+
   def get_opps(_parent, _args, _resolution) do
     ok([])
-  end
-
-  typedstruct module: OppPayload do
-    field(:opp, Opp.t())
-    field(:user_error, UserError.t())
   end
 
   defun upsert_opp(
@@ -40,10 +46,10 @@ defmodule AppWeb.Resolvers.Opps do
 
   defun get_opp(
           _parent,
-          %{id: id} = _args,
-          _resolution
+          %{input: input} = _args,
+          %{context: %{customer: customer}} = _resolution
         ) :: resolver_result(OppPayload.t()) do
-    Opps.get_opp(id)
+    Opps.get_opp(customer, input)
     |> fmap(&%OppPayload{opp: &1})
     |> convert_error(:not_found, %OppPayload{user_error: UserError.not_found()})
   end

@@ -67,9 +67,17 @@ defmodule App.Opps do
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 
-  defun get_opp(id :: id()) :: Brex.Result.s(Opp.t()) do
+  defun get_opp(
+          viewer,
+          input
+        ) :: Brex.Result.s(Opp.t()) do
+    id = Map.get(input, :id)
+    filters = %{filters: %{opp_ids: [id]}}
+    events = App.Timeline.get_events(viewer, filters)
+
     Repo.get(Opp, id)
     |> Repo.preload(@preloads)
     |> lift(nil, :not_found)
+    |> fmap(&Map.put(&1, :events, events))
   end
 end
