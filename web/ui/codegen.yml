@@ -1,5 +1,10 @@
 overwrite: true
-schema: "http://localhost:${PORT:5000}/graphql"
+# NOTE: bug: node 18 node-fetch requires '127.0.0.1' instead of 'localhost'
+# https://github.com/node-fetch/node-fetch/issues/1624#issuecomment-1235826631
+# schema: "http://localhost:${PORT:5000}/graphql"
+schema:
+  - http://127.0.0.1:${PORT:5000}/graphql:
+      customFetch: 'node-fetch'
 documents: "src/**/*.graphql"
 generates:
   src/graph/generated/index.ts:
