@@ -61,35 +61,46 @@ it("Opp reward payment", async () => {
       a.accessConversation({
         c: bobWithCharlie,
         show: [Nav.Home],
-        hide: [Nav.Profile],
+        hide: [Nav.Profile, Nav.Conversations],
       }),
       // bob & charlie: in their pf, but not in their tls
-      b.accessConversation({
-        c: bobWithCharlie,
-        show: [Nav.Profile],
-        hide: [Nav.Home],
-      }),
-      c.accessConversation({
-        c: bobWithCharlie,
-        show: [Nav.Profile],
-        hide: [Nav.Home],
-      }),
+      ...[b, c].map((p) =>
+        p.accessConversation({
+          c: bobWithCharlie,
+          show: [Nav.Profile, Nav.Conversations],
+          hide: [Nav.Home],
+        })
+      ),
     ])
     // all should see the opp
     await Promise.all([...[a, b, c].map((p) => p.accessOpp(opp))])
 
-    const cWd = specConv({
-      invitees: [Charlie],
-      note: "Bob w/ Charlie",
+    const charlieWithDavid = specConv({
+      invitees: [David],
+      note: "Charlie / David",
       mentions: [opp],
     })
-    const cWdPath = await b.createConversation(cWd)
-    await d.signupAndSignConversationAtPath(cWdPath)
-    // ? timeline access
-    // c & d: profiles, not in timelines
-    // a & c: timelines, not profiles
-    // all: see opp
+    const charlieWithDavidPath = await c.createConversation(charlieWithDavid)
+    await d.signupAndSignConversationAtPath(charlieWithDavidPath)
+    await Promise.all([
+      ...[c, d].map((p) =>
+        p.accessConversation({
+          c: charlieWithDavid,
+          show: [Nav.Profile, Nav.Conversations],
+          hide: [Nav.Home],
+        })
+      ),
+      ...[b, a].map((p) =>
+        p.accessConversation({
+          c: charlieWithDavid,
+          show: [Nav.Home],
+          hide: [Nav.Profile, Nav.Conversations],
+        })
+      ),
+    ])
+    await Promise.all([a, b, c, d].map((p) => p.accessOpp(opp)))
 
+    // TODO:
     // (Alice hires David...)
     // Alice clicks Opp
     // Alice clicks Pay Reward
@@ -97,6 +108,9 @@ it("Opp reward payment", async () => {
     // Alice clicks Charlie > pay
     // Alice (pays with Stripe?)
     // ? timeline updates?
+    // A, C: profiles, not tls
+    // B, D: tls, not profiles
+    // all: inspect grapevine between them and recipient
   } catch (error) {
     console.error("ERROR!", error)
     await a.screenie()
@@ -108,21 +122,3 @@ it("Opp reward payment", async () => {
     await exit()
   }
 })
-
-// TODO: can only run one test at a time for now.
-// it("Sign up", async () => {
-//   const { customer, exit } = await makeBrowser()
-//   const a = await customer(Alice, false)
-//   const b = await customer(Bob, false)
-//   try {
-//     await a.signup()
-//     // NOTE: continue verifying mult-user until feature impl.
-//     await b.visit("/")
-//     await b.see("Create Account")
-//   } catch (error) {
-//     console.error(error)
-//     a.screenie()
-//     throw error
-//   }
-//   await exit()
-// })
