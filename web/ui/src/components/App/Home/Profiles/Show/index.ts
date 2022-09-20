@@ -10,7 +10,7 @@ import {
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { act, Actions, Source as ActionSource } from "~/action"
-import { Source as GraphSource } from "~/graph"
+import { Conversation, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { NEWID, push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
@@ -55,6 +55,15 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
+  const [onClickConversation, onClickConv$] = cb$<Conversation>(
+    tag("clickNew$")
+  )
+  const showConv$ = onClickConv$.pipe(
+    map((c) => push(routes.conversation({ id: c.id }))),
+    tag("clickConversation$"),
+    share()
+  )
+
   const props$ = combineLatest({
     state: state$,
     viewer: me$,
@@ -62,10 +71,17 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
   }).pipe(tag("props$"), shareLatest())
 
   const react = props$.pipe(
-    map((props) => h(View, { ...props, onClickEdit, onClickNewConversation }))
+    map((props) =>
+      h(View, {
+        ...props,
+        onClickEdit,
+        onClickNewConversation,
+        onClickConversation,
+      })
+    )
   )
   const action = merge(edit$)
-  const router = merge(newConversation$)
+  const router = merge(newConversation$, showConv$)
 
   return {
     react,
