@@ -41,7 +41,8 @@ import {
   EventName,
   EventProperties,
   GetConversationsDocument,
-  GetOppDocument,
+  GetOppProfileDocument,
+  GetOppProfileInput,
   GetOppsDocument,
   GetProfileDocument,
   GetProfileInput,
@@ -512,18 +513,18 @@ export const upsertOpp$ = (input: OppInput) => {
   )
 }
 
-export const getOpp$ = (id: string) => {
+export const getOppProfile$ = (input: GetOppProfileInput) => {
   return from(
     client.query({
-      query: GetOppDocument,
-      variables: { id },
+      query: GetOppProfileDocument,
+      variables: { input },
       fetchPolicy: "network-only",
     })
   ).pipe(
     handleGraphErrors(),
     map(({ data }) => {
-      const { userError, opp } = data!.getOpp!
-      return userError ? new Err(userError) : new Ok(opp!)
+      const { userError, oppProfile } = data!.getOppProfile!
+      return userError ? new Err(userError) : new Ok(oppProfile!)
     }),
     makeUnrecoverable(),
     tag("getOpp$")

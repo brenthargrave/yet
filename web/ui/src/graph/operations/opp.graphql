@@ -40,8 +40,19 @@ mutation UpsertOpp($input: OppInput!) {
   }
 }
 
-query GetOpp($id: ID!) {
-  getOpp(id: $id) {
-    ...OppPayloadProps
+query GetOppProfile($input: GetOppProfileInput!) {
+  getOppProfile(input: $input) {
+    userError {
+      ...UserErrorProps
+    }
+    oppProfile {
+      opp {
+        ...OppProps
+      }
+      events {
+        ...TimelineEventProps
+      }
+    }
+
   }
 }

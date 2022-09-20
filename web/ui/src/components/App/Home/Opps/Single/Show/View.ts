@@ -1,38 +1,25 @@
-import { EditIcon } from "@chakra-ui/icons"
-import { GoGear } from "react-icons/go"
-import {
-  Box,
-  Divider,
-  Heading,
-  Icon,
-  ListItem,
-  Spacer,
-  Text,
-} from "@chakra-ui/react"
+import { Divider, Heading, ListItem, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { match } from "ts-pattern"
 import { ConversationPublishedView } from "~/components/Conversation/View"
 import { OppView } from "~/components/Opp"
 import { isEmpty, isNotLastItem } from "~/fp"
-import { Customer, Maybe, Opp, TimelineEvent } from "~/graph"
+import { Customer, Maybe, OppProfile } from "~/graph"
 import {
+  EditButton,
   FullWidthList,
   FullWidthVStack,
   Header,
   MarkdownView,
   Nav,
-  CreateButton,
-  Button,
-  EditButton,
 } from "~/system"
 import { Location } from ".."
 
 export interface Props {
   viewer: Maybe<Customer>
   location: Location
-  opp: Opp
-  events: TimelineEvent[]
+  oppProfile: OppProfile
   onClickBack?: () => void
   onClickNewConv?: () => void
   onClickEdit?: () => void
@@ -41,12 +28,12 @@ export interface Props {
 export const View: FC<Props> = ({
   location,
   viewer,
-  opp,
-  events = [],
+  oppProfile,
   onClickBack,
   onClickNewConv,
   onClickEdit,
 }) => {
+  const { events, opp } = oppProfile
   return h(FullWidthVStack, {}, [
     h(Nav, { onClickBack, backButtonText: "Opps" }),
     h(Header, {}, [

@@ -5,15 +5,13 @@ import { makeTagger } from "~/log"
 import { Form, Target } from "../Form"
 import { Location } from ".."
 
-interface Props {
-  record$: Observable<Opp>
-  location: Location
-}
-
 interface Sources {
   react: ReactSource
   graph: GraphSource
-  props: Props
+  props: {
+    record$: Observable<Opp>
+    location: Location
+  }
 }
 
 export const Edit = (sources: Sources, tagPrefix?: string) => {

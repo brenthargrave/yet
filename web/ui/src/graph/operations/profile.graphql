@@ -10,25 +10,8 @@ query GetProfile($input: GetProfileInput) {
   getProfile(input: $input) {
     profile {
       ...ProfileProps
-
-       # ! NOTE: codegen fails on an extracted TimelineEventProps
       events {
-        ...on ConversationPublished {
-          type
-          occurredAt
-          persona
-          conversation {
-            ...ConversationProps
-          }
-        }
-        ...on ContactProfileChanged {
-          type
-          occurredAt
-          contact {
-            ...ContactProps
-          }
-        }
-
+        ...TimelineEventProps
       }
     }
   }

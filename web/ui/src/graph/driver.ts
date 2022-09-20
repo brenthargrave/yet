@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Driver } from "@cycle/run"
 import { Observable } from "rxjs"
 import { match } from "ts-pattern"
@@ -40,7 +41,7 @@ export const loggedOut = (): OutCommand => [CommandType.out]
 type Sink = Stream<Commands>
 
 export function makeDriver(): Driver<Sink, Source> {
-  return function (sink: Sink): Source {
+  return (sink: Sink): Source => {
     sink.addListener({
       next: (command) => {
         match(command[0])

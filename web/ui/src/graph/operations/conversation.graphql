@@ -1,6 +1,7 @@
 fragment ContactProps on Contact {
   id
   name
+  email
   org
   role
 }

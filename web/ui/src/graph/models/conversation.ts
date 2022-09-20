@@ -51,6 +51,7 @@ const makeDate = () => faker.date.past()
 const makeOrg = () => faker.company.companyName()
 const makeRole = () => faker.name.jobTitle()
 const makeBool = () => faker.datatype.boolean()
+const makeEmail = () => faker.internet.email()
 
 export const makeParticipant = (): Omit<Contact, "__typename"> => {
   return {
@@ -58,6 +59,7 @@ export const makeParticipant = (): Omit<Contact, "__typename"> => {
     name: makeName(),
     org: makeOrg(),
     role: makeRole(),
+    email: makeEmail(),
   }
 }
 

@@ -11,10 +11,17 @@ import {
   startWith,
   switchMap,
 } from "rxjs"
+import { pluck } from "rxjs-etc/dist/esm/operators"
 import { match } from "ts-pattern"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { Actions, Source as ActionSource } from "~/action"
-import { getOpp$, ID, isOwnedBy, me$, Source as GraphSource } from "~/graph"
+import {
+  getOppProfile$,
+  ID,
+  isOwnedBy,
+  me$,
+  Source as GraphSource,
+} from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { shareLatest } from "~/rx"
@@ -53,16 +60,21 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
   } = sources
 
   const result$ = id$.pipe(
-    switchMap((id) => getOpp$(id)),
+    switchMap((id) => getOppProfile$({ id })),
     share()
   )
 
-  const record$ = result$.pipe(filterResultOk(), tag("record$"), shareLatest())
+  const oppProfile$ = result$.pipe(
+    filterResultOk(),
+    tag("record$"),
+    shareLatest()
+  )
+  const opp$ = oppProfile$.pipe(pluck("opp"), tag("opp$"), shareLatest())
 
   const userError$ = result$.pipe(filterResultErr(), tag("userError$"), share())
 
-  const isLoading$ = combineLatest({ id: id$, opp: record$ }).pipe(
-    map(({ id, opp }) => opp.id !== id),
+  const isLoading$ = combineLatest({ id: id$, oppProfile: oppProfile$ }).pipe(
+    map(({ id, oppProfile }) => oppProfile.opp.id !== id),
     startWith(true),
     tag("isLoading$"),
     shareLatest()
@@ -74,8 +86,11 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const edit = Edit({ ...sources, props: { record$, location } }, tagScope)
-  const show = Show({ ...sources, props: { record$, location } }, tagScope)
+  const edit = Edit(
+    { ...sources, props: { record$: opp$, location } },
+    tagScope
+  )
+  const show = Show({ ...sources, props: { oppProfile$, location } }, tagScope)
 
   const internalRouter$ = action$.pipe(
     map((action) =>
@@ -90,7 +105,7 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
   const state$ = combineLatest({
     isLoading: isLoading$,
     oppsState: oppsState$,
-    opp: record$,
+    opp: oppProfile$,
     me: me$,
   }).pipe(
     map(({ isLoading, oppsState, opp, me }) => {
