@@ -101,7 +101,17 @@ it("Opp reward payment", async () => {
     await Promise.all([a, b, c, d].map((p) => p.accessOpp(opp)))
 
     // TODO:
-    // (Alice hires David...)
+    // (Alice hires David, rewards Charlie for referral)
+    // ! veirfy others  can't see reward button
+    // await Promise.all([
+    //   ...[b,c,d].map(p => p.?)
+    // ])
+
+    await a.click("Opportunities")
+    await a.see("Your Opportunities")
+    await a.seeOpp(opp)
+    await a.click("Pay Reward")
+
     // Alice clicks Opp
     // Alice clicks Pay Reward
     // Alice sees modal w/ David, Charlie, Bob in list, nested list of their convs

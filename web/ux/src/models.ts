@@ -1,6 +1,7 @@
 import { Persona } from "./personas"
 
 export interface OppSpec {
+  id?: string
   org: string
   role: string
   desc?: string

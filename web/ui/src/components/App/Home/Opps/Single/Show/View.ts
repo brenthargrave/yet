@@ -21,7 +21,6 @@ export interface Props {
   location: Location
   oppProfile: OppProfile
   onClickBack?: () => void
-  onClickNewConv?: () => void
   onClickEdit?: () => void
 }
 
@@ -30,7 +29,6 @@ export const View: FC<Props> = ({
   viewer,
   oppProfile,
   onClickBack,
-  onClickNewConv,
   onClickEdit,
 }) => {
   const { events, opp } = oppProfile
@@ -55,7 +53,6 @@ export const View: FC<Props> = ({
           h(Header, { padding: 0 }, [
             h(Heading, { size: "xs" }, "Recent Mentions"),
           ]),
-          // TODO: empty mentions view
           isEmpty(events)
             ? h(FullWidthVStack, { fontSize: "sm" }, [
                 h(MarkdownView, {

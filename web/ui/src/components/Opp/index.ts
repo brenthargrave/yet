@@ -2,12 +2,11 @@ import {
   HStack,
   Icon,
   Spacer,
+  StackProps,
   Tag,
   TagLabel,
   Text,
   VStack,
-  StackProps,
-  Tooltip,
 } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
@@ -18,6 +17,7 @@ import {
   ariaLabel,
   AriaTooltip,
   bold,
+  Button,
   FullWidthVStack,
   i,
   MarkdownView,
@@ -30,6 +30,8 @@ export interface Props extends StackProps {
 
 export const OppView: FC<Props> = ({ viewer, opp, ...props }) => {
   const { role, org, desc, fee } = opp
+  const isOwner = opp.owner.id === viewer?.id
+  const feeFormatted = formatMoney(fee)
   return h(FullWidthVStack, { ...props }, [
     h(
       HStack,
@@ -69,12 +71,22 @@ export const OppView: FC<Props> = ({ viewer, opp, ...props }) => {
                   h(Icon, { as: TbArrowsSplit2 }),
                   h(
                     TagLabel,
-                    { pl: 2, ...ariaLabel(`reward:${formatMoney(fee)}`) },
-                    formatMoney(fee)
+                    { pl: 2, ...ariaLabel(`reward:${feeFormatted}`) },
+                    feeFormatted
                   ),
                 ]
               ),
             ]),
+            isOwner &&
+              h(
+                Button,
+                {
+                  ...ariaLabel("Pay Reward"),
+                  size: "sm",
+                  colorScheme: "green",
+                },
+                `Reward referrer`
+              ),
           ]),
       ]
     ),
