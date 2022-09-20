@@ -1,6 +1,8 @@
 import { ReactSource } from "@cycle/react"
+import { subscribe } from "graphql"
 import {
   combineLatest,
+  debounceTime,
   distinctUntilChanged,
   EMPTY,
   map,
@@ -10,6 +12,7 @@ import {
   share,
   startWith,
   switchMap,
+  zip,
 } from "rxjs"
 import { pluck } from "rxjs-etc/dist/esm/operators"
 import { match } from "ts-pattern"
@@ -61,24 +64,19 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
 
   const result$ = id$.pipe(
     switchMap((id) => getOppProfile$({ id })),
-    share()
+    shareLatest()
   )
 
   const oppProfile$ = result$.pipe(
+    //
     filterResultOk(),
     tag("record$"),
     shareLatest()
   )
+
   const opp$ = oppProfile$.pipe(pluck("opp"), tag("opp$"), shareLatest())
 
   const userError$ = result$.pipe(filterResultErr(), tag("userError$"), share())
-
-  const isLoading$ = combineLatest({ id: id$, oppProfile: oppProfile$ }).pipe(
-    map(({ id, oppProfile }) => oppProfile.opp.id !== id),
-    startWith(true),
-    tag("isLoading$"),
-    shareLatest()
-  )
 
   const userErrorNotice$ = userError$.pipe(
     map(({ message }) => error({ description: message })),
@@ -100,18 +98,20 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
   )
 
   const state$ = combineLatest({
-    isLoading: isLoading$,
     oppsState: oppsState$,
-    opp: oppProfile$,
-    me: me$,
+    id: id$,
+    oppProfile: oppProfile$,
   }).pipe(
-    map(({ isLoading, oppsState, opp, me }) => {
-      if (oppsState !== OppsState.single || isLoading) return State.pending
-      return State.show
-    }),
+    map(({ oppsState, id, oppProfile }) =>
+      oppsState !== OppsState.single || id !== oppProfile.opp.id
+        ? State.pending
+        : State.show
+    ),
     mergeWith(internalRouter$),
     startWith(State.pending),
+    mergeWith(id$.pipe(map(() => State.pending))),
     distinctUntilChanged(),
+    debounceTime(200),
     tag("state$"),
     shareLatest()
   )

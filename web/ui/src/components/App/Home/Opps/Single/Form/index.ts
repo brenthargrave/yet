@@ -154,7 +154,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const userError$ = submit$.pipe(filterResultErr(), tag("userError$"), share())
 
   const showList$ = merge(onCancel$, opp$).pipe(
-    mapTo(act(Actions.listOpps)),
+    mapTo(act(Actions.showOpp)),
     tag("showList$"),
     share()
   )
