@@ -9,7 +9,7 @@ interface Sources {
   react: ReactSource
   graph: GraphSource
   props: {
-    record$: Observable<Opp>
+    opp$: Observable<Opp>
     location: Location
   }
 }
@@ -19,7 +19,7 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
   const tag = makeTagger(tagScope)
 
   const {
-    props: { record$, location },
+    props: { opp$: record$, location },
   } = sources
 
   const form = Form(

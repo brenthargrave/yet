@@ -77,7 +77,7 @@ defmodule App.Opps do
           input
         ) :: Brex.Result.s(OppProfile.t()) do
     id = Map.get(input, :id)
-    filters = %{filters: %{opp_ids: [id]}}
+    filters = %{filters: %{opps: [id]}}
 
     events =
       App.Timeline.get_events(viewer, filters)

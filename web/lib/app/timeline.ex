@@ -164,6 +164,7 @@ defmodule App.Timeline do
           input :: input()
         ) :: Brex.Result.s(list(TimelineEvent.t())) do
     filters = Map.get(input, :filters, %{})
+
     opp_ids = Map.get(filters, :opps, nil)
 
     omit_own = Map.get(filters, :omit_own, false)

@@ -86,10 +86,7 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const edit = Edit(
-    { ...sources, props: { record$: opp$, location } },
-    tagScope
-  )
+  const edit = Edit({ ...sources, props: { opp$, location } }, tagScope)
   const show = Show({ ...sources, props: { oppProfile$, location } }, tagScope)
 
   const internalRouter$ = action$.pipe(
