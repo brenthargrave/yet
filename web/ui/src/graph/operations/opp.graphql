@@ -49,9 +49,31 @@ query GetOppProfile($input: GetOppProfileInput!) {
       opp {
         ...OppProps
       }
+
+      # ! TODO: codegen fails here - use graphql interface?
+      # events {
+      #   ...TimelineEventProps
+      # }
       events {
-        ...TimelineEventProps
+
+        ...on ConversationPublished {
+          type
+          occurredAt
+          persona
+          conversation {
+            ...ConversationProps
+          }
+        }
+        ...on ContactProfileChanged {
+          type
+          occurredAt
+          contact {
+            ...ContactProps
+          }
+        }
+
       }
+
     }
 
   }

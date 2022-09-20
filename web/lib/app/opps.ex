@@ -78,7 +78,16 @@ defmodule App.Opps do
         ) :: Brex.Result.s(OppProfile.t()) do
     id = Map.get(input, :id)
     filters = %{filters: %{opp_ids: [id]}}
-    events = App.Timeline.get_events(viewer, filters)
+
+    events =
+      App.Timeline.get_events(viewer, filters)
+      |> case do
+        {:ok, results} ->
+          results
+
+        {:error, _} ->
+          []
+      end
 
     Repo.get(Opp, id)
     |> Repo.preload(@preloads)

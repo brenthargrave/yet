@@ -10,9 +10,31 @@ query GetProfile($input: GetProfileInput) {
   getProfile(input: $input) {
     profile {
       ...ProfileProps
+
+      # ! TODO: codegen fails here - use graphql interface?
+      # events {
+      #   ...TimelineEventProps
+      # }
       events {
-        ...TimelineEventProps
+
+        ...on ConversationPublished {
+          type
+          occurredAt
+          persona
+          conversation {
+            ...ConversationProps
+          }
+        }
+        ...on ContactProfileChanged {
+          type
+          occurredAt
+          contact {
+            ...ContactProps
+          }
+        }
+
       }
+
     }
   }
 }
