@@ -200,6 +200,7 @@ defmodule App.Timeline do
 
     Repo.all(query)
     |> personalize()
+    |> IO.inspect(label: "THIS events")
     |> ok()
   end
 

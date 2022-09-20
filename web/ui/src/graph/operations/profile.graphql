@@ -11,12 +11,7 @@ query GetProfile($input: GetProfileInput) {
     profile {
       ...ProfileProps
 
-      # ! TODO: codegen fails here - use graphql interface?
-      # events {
-      #   ...TimelineEventProps
-      # }
       events {
-
         ...on ConversationPublished {
           type
           occurredAt
@@ -32,7 +27,6 @@ query GetProfile($input: GetProfileInput) {
             ...ContactProps
           }
         }
-
       }
 
     }

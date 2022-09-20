@@ -50,10 +50,6 @@ query GetOppProfile($input: GetOppProfileInput!) {
         ...OppProps
       }
 
-      # ! TODO: codegen fails here - use graphql interface?
-      # events {
-      #   ...TimelineEventProps
-      # }
       events {
 
         ...on ConversationPublished {
