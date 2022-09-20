@@ -78,6 +78,7 @@
     "chakra-react-select": "4.0.0",
     "change-case": "4.1.2",
     "csx": "10.0.2",
+    "date-fns": "2.29.3",
     "framer-motion": "6.3.2",
     "graphql": "16.5.0",
     "phoenix": "1.6.11",
