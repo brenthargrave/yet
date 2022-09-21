@@ -128,16 +128,17 @@ export const View: FC<Props> = ({
               ...ariaLabel("Role"),
             }),
           ]),
-          h(InputControl, { label: "Description" }, [
-            // @ts-ignore
-            h(AutosizeTextarea, {
-              defaultValue: defaultValueDesc,
+          false &&
+            h(InputControl, { label: "Description" }, [
               // @ts-ignore
-              onChange: makeOnChange(onChangeDesc),
-              minRows: 2,
-              ...ariaLabel("Description"),
-            }),
-          ]),
+              h(AutosizeTextarea, {
+                defaultValue: defaultValueDesc,
+                // @ts-ignore
+                onChange: makeOnChange(onChangeDesc),
+                minRows: 2,
+                ...ariaLabel("Description"),
+              }),
+            ]),
           h(InputControl, { label: "Canonical URL" }, [
             h(UrlInput, {
               onChange: onChangeUrl,
