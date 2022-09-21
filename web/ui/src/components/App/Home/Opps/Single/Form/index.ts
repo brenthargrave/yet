@@ -34,16 +34,14 @@ export { Target }
 
 type EditableOpp = Omit<Opp, "creator" | "owner" | "insertedAt">
 
-interface Props {
-  record$: Observable<EditableOpp>
-  target: Target
-  location: Location
-}
-
 interface Sources {
   react: ReactSource
   graph: GraphSource
-  props: Props
+  props: {
+    record$: Observable<EditableOpp>
+    target: Target
+    location: Location
+  }
 }
 
 export const Form = (sources: Sources, tagPrefix?: string) => {

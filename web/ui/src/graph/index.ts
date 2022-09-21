@@ -639,9 +639,9 @@ export const profile$ = me$.pipe(
       )
     )
   }),
-  tag("THIS profile$ switchMap"),
+  tag("profile$ switchMap"),
   filterResultOk(),
   makeUnrecoverable(),
-  tag("THIS profile$"),
+  tag("profile$"),
   shareLatest()
 )

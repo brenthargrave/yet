@@ -40,17 +40,15 @@ export enum State {
   show = "show",
 }
 
-interface Props {
-  state$: Observable<OppsState>
-  id$: Observable<ID>
-  location: Location
-}
-
 interface Sources {
   react: ReactSource
   graph: GraphSource
   action: ActionSource
-  props: Props
+  props: {
+    state$: Observable<OppsState>
+    id$: Observable<ID>
+    location: Location
+  }
 }
 
 export const Single = (sources: Sources, tagPrefix?: string) => {

@@ -9,7 +9,7 @@ if (VITE_LOG) spy.log()
 
 const makeTagger =
   <T>(scope: string) =>
-  <T>(label: string) =>
-    tag<T>(`${scope} > ${label}`)
+  <T>(label: string, focus = false) =>
+    focus ? tag<T>(`${scope} > THIS ${label}`) : tag<T>(`${scope} > ${label}`)
 
 export { tag, makeTagger }

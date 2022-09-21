@@ -20,17 +20,15 @@ export enum State {
   single = "single",
 }
 
-export interface Props {
-  location: Location
-  state$: Observable<State>
-  id$: Observable<ID>
-}
-
 export interface Sources {
   react: ReactSource
   graph: GraphSource
   action: ActionSource
-  props: Props
+  props: {
+    location: Location
+    state$: Observable<State>
+    id$: Observable<ID>
+  }
 }
 
 export const Opps = (sources: Sources, tagPrefix?: string) => {
