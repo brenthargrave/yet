@@ -119,11 +119,12 @@ export const View: FC<Props> = ({
               ...ariaLabel("Organization"),
             }),
           ]),
-          h(InputControl, { label: "Role or task", isRequired: true }, [
+          h(InputControl, { label: "Role", isRequired: true }, [
             h(Input, {
               defaultValue: defaultValueRole,
               onChange: makeOnChange(onChangeRole),
-              placeholder: `"Cofounder", "Engineer", "warm intro to Thiel", etc.`,
+              // placeholder: `"Cofounder", "Engineer", "warm intro to Thiel", etc.`,
+              placeholder: `"Cofounder", "Engineer", etc.`,
               ...ariaLabel("Role"),
             }),
           ]),

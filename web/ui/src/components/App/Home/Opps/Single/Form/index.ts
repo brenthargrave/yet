@@ -151,8 +151,19 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
   const opp$ = submit$.pipe(filterResultOk(), tag("opp$"), share())
   const userError$ = submit$.pipe(filterResultErr(), tag("userError$"), share())
 
-  const showList$ = merge(onCancel$, opp$).pipe(
-    mapTo(act(Actions.showOpp)),
+  const showSubmitted$ = opp$.pipe(
+    map((opp) => act(Actions.showOpp, { opp })),
+    tag("showSubmitted$"),
+    share()
+  )
+
+  const cancel$ = onCancel$.pipe(
+    withLatestFrom(record$),
+    map((opp) =>
+      target === Target.create
+        ? act(Actions.listOpps)
+        : act(Actions.showOpp, { opp })
+    ),
     tag("showList$"),
     share()
   )
@@ -191,7 +202,7 @@ export const Form = (sources: Sources, tagPrefix?: string) => {
     )
   )
 
-  const action = merge(showList$, goToList$, clickShow$)
+  const action = merge(goToList$, clickShow$, showSubmitted$, cancel$)
   const notice = merge(userErrorNotice$)
   return {
     react,
