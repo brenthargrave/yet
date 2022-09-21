@@ -77,7 +77,8 @@ export const OppView: FC<Props> = ({ viewer, opp, ...props }) => {
                 ]
               ),
             ]),
-            isOwner &&
+            false &&
+              isOwner &&
               h(
                 Button,
                 {
