@@ -60,8 +60,6 @@ export const View: FC<Props> = ({
             role && org && h(Text, { fontSize: "lg" }, `${role} at ${org}`),
           ]),
           h(Divider),
-          // TODO: TimelineEventList component?
-          // Activity
           isEmpty(events)
             ? h(EmptyView, { onClickNew: onClickNewConversation })
             : h(FullWidthVStack, [

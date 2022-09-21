@@ -574,18 +574,19 @@ export const subscribeTimeline$ = (input: TimelineEventsAddedInput) =>
   )
 
 export const getProfile$ = (input: GetProfileInput) =>
-  from(
-    client.query({
+  zenToRx(
+    client.watchQuery({
       query: GetProfileDocument,
       variables: { input },
-      fetchPolicy: "network-only",
     })
   ).pipe(
     handleGraphErrors(),
-    map(({ data }) => {
-      const profile = data.getProfile!.profile!
-      return Ok(profile)
-    }),
+    map(
+      ({ data, error, errors, loading, networkStatus, partial, ...result }) => {
+        const profile = data.getProfile!.profile!
+        return Ok(profile)
+      }
+    ),
     makeUnrecoverable(),
     tag("getProfile$")
   )
@@ -638,8 +639,9 @@ export const profile$ = me$.pipe(
       )
     )
   }),
+  tag("THIS profile$ switchMap"),
   filterResultOk(),
   makeUnrecoverable(),
-  tag("profile$"),
+  tag("THIS profile$"),
   shareLatest()
 )
