@@ -4,7 +4,7 @@ defmodule AppWeb.Graph.Profiles do
 
   object :profile do
     field(:id, non_null(:id))
-    field(:name, :string)
+    field(:name, non_null(:string))
     field(:email, :string)
     field(:org, :string)
     field(:role, :string)
