@@ -33,8 +33,17 @@ const conversationOpp = conversationOpps.extend(
 )
 const opps = root.extend("/o")
 const opp = opps.extend({ oid: param.path.string }, (p) => `/${p.oid}`)
+
+const oppPayments = opp.extend("/p")
+const oppPayment = oppPayments.extend(
+  { pid: param.path.string },
+  ({ pid }) => `/${pid}`
+)
+const newOppPayment = oppPayment.extend("/new")
+
 // const profiles = root.extend("/p")
 // const profile = profiles.extend({ pid: param.path.string }, (p) => `/${p.pid}`)
+
 const me = root.extend("/me")
 
 export const { routes, useRoute, RouteProvider, session } = createRouter({
@@ -46,6 +55,10 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
   signConversation,
   conversationOpps,
   conversationOpp,
+  // NOTE: must precede opps routes
+  oppPayments,
+  oppPayment,
+  newOppPayment,
   opps,
   opp,
   // profiles,
@@ -64,6 +77,13 @@ export const routesOppsList = [routes.conversationOpps, routes.opps]
 export const routeGroupOppsList = createGroup(routesOppsList)
 export const routesOpp = [routes.conversationOpp, routes.opp]
 export const routeGroupOpp = createGroup(routesOpp)
+
+export const routesPayments = [
+  routes.oppPayment,
+  routes.oppPayments,
+  routes.newOppPayment,
+]
+export const routeGroupPayments = createGroup(routesPayments)
 
 export const singleConversationRoutesGroup = createGroup([
   routes.conversation,

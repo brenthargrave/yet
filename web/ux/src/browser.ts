@@ -16,6 +16,8 @@ export enum Nav {
 
 const { UX_DEBUG_BROWSER, PORT_SSL, PRODUCT_NAME = "TBD" } = process.env
 
+const screenieDir = "scratch/screenies"
+
 // NOTE: node chokes on "localhost" https://github.com/node-fetch/node-fetch/issues/1624#issuecomment-1235826631
 const baseURL = `https://127.0.0.1:${PORT_SSL}`
 // NOTE: node chokes on SSL, https://stackoverflow.com/a/20100521
@@ -66,6 +68,9 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
     page.setDefaultTimeout(seconds * 1000)
     page.setDefaultNavigationTimeout(seconds * 1000)
     page.setUserAgent(userAgent)
+    // clear out screenies
+    if (fs.existsSync(screenieDir))
+      fs.rmdirSync(screenieDir, { recursive: true })
 
     const close = async () => {
       console.debug(`${p.name}: close`)
@@ -109,10 +114,9 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
     }
 
     const screenie = async () => {
-      const dir = "scratch/screenies"
-      fs.mkdirSync(dir, { recursive: true })
+      fs.mkdirSync(screenieDir, { recursive: true })
       const ts = Date.now().toString()
-      await page.screenshot({ path: `${dir}/${ts}-${p.name}.png` })
+      await page.screenshot({ path: `${screenieDir}/${ts}-${p.name}.png` })
     }
 
     const press = async (key: puppeteer.KeyInput) => {

@@ -42,6 +42,13 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     tag("show$")
   )
 
+  const [onClickPay, onClickPay$] = cb$<Opp>(tag("onClickPay$"))
+  const createPayment$ = onClickPay$.pipe(
+    map((opp) => act(Actions.createPayment, { opp })),
+    tag("pay$"),
+    share()
+  )
+
   const props$ = combineLatest({
     viewer: me$,
     opps: opps$,
@@ -55,12 +62,13 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
         onClickNew,
         onClickAdd,
         onClickOpp,
+        onClickPay,
       })
     ),
     tag("react")
   )
 
-  const action = merge(create$, show$)
+  const action = merge(create$, show$, createPayment$)
   const value = { embedOpp$ }
 
   return {

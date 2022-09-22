@@ -12,7 +12,7 @@ fragment TimelinePayloadProps on TimelinePayload {
       type
       occurredAt
       contact {
-        ...ContactProps
+        ...ProfileProps
       }
     }
   }

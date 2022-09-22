@@ -1,5 +1,6 @@
 import { ulid } from "ulid"
 import { routes, routeURL } from "~/router"
+import { toSentence } from "~/i18n"
 import { Currency, Customer, Maybe, Opp } from "../generated"
 
 export const isValidName = (value: string) => value.length > 2
@@ -29,3 +30,9 @@ export const isOwnedBy = (opp: Opp, customer: Maybe<Customer>) =>
   opp.owner.id === customer?.id
 
 export const oppAriaLabel = (opp: Opp) => `${opp.role} @ ${opp.org}`
+
+export const oppSummary = ({ org, role }: Opp) => `${role} (${org})`
+
+export const oppLink = (opp: Opp) => `[${oppSummary(opp)}](${oppUrl(opp)})`
+
+export const oppsLinkList = (opps: Opp[]) => toSentence(opps.map(oppLink))

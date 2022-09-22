@@ -41,13 +41,17 @@ import {
   EventName,
   EventProperties,
   GetConversationsDocument,
+  GetMentionsDocument,
   GetOppProfileDocument,
   GetOppProfileInput,
   GetOppsDocument,
+  GetPaymentDocument,
+  GetPaymentInput,
   GetProfileDocument,
   GetProfileInput,
   GetTimelineDocument,
   MeDocument,
+  MentionsInput,
   OppInput,
   PatchProfileDocument,
   PatchProfileInput,
@@ -72,6 +76,8 @@ import {
   UpdateProfileInput,
   UpsertConversationDocument,
   UpsertOppDocument,
+  UpsertPaymentDocument,
+  UpsertPaymentInput,
   ViewConversationDocument,
 } from "./generated"
 import { hasAllRequiredProfileProps, isAuthenticated } from "./models"
@@ -565,7 +571,6 @@ export const subscribeTimeline$ = (input: TimelineEventsAddedInput) =>
       })
     )
   ).pipe(
-    tag("THIS"),
     handleGraphErrors(),
     map(({ data }) => data?.timelineEventsAdded),
     filter(isNotNullish),
@@ -645,3 +650,62 @@ export const profile$ = me$.pipe(
   tag("profile$"),
   shareLatest()
 )
+
+export const getMentions$ = (input: MentionsInput) =>
+  from(
+    client.query({
+      query: GetMentionsDocument,
+      variables: { input },
+    })
+  ).pipe(
+    handleGraphErrors(),
+    map(({ data, errors }) => {
+      const { mentions } = data!.mentions!
+      return Ok(mentions)
+    }),
+    tag("upsertConversation$")
+  )
+
+export const getPayment$ = (input: GetPaymentInput, ignoreError = false) =>
+  // from(
+  //   client.query({
+  //     query: GetPaymentDocument,
+  //     variables: { input },
+  //   })
+  // )
+  zenToRx(
+    client.watchQuery({
+      query: GetPaymentDocument,
+      variables: { input },
+    })
+  ).pipe(
+    handleGraphErrors(),
+    map(({ data, errors }) => {
+      const { payment } = data!.getPayment!
+      return payment
+    }),
+    catchError((error, caught$) => {
+      if (!ignoreError) throw error
+      return of(null)
+    }),
+    makeUnrecoverable(),
+    tag("getPayment$")
+  )
+
+export const upsertPayment$ = (input: UpsertPaymentInput) =>
+  from(
+    client.mutate({
+      mutation: UpsertPaymentDocument,
+      variables: { input },
+      refetchQueries: [
+        { query: GetPaymentDocument, variables: { input: { id: input.id } } },
+      ],
+    })
+  ).pipe(
+    handleGraphErrors(),
+    map(({ data, errors }) => {
+      const { userError, payment } = data!.upsertPayment!
+      return userError ? new Err(userError) : new Ok(payment!)
+    }),
+    tag("getPayment$")
+  )

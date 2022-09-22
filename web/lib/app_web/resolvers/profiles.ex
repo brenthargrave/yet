@@ -6,6 +6,7 @@ defmodule AppWeb.Resolvers.Profiles do
   require Logger
 
   alias App.{
+    Contacts,
     Profiles,
     Profile,
     UserError,
@@ -41,5 +42,18 @@ defmodule AppWeb.Resolvers.Profiles do
         ) :: resolver_result(UpdateProfilePayload.t()) do
     Profiles.update(customer, input)
     |> fmap(&%UpdateProfilePayload{profile: &1})
+  end
+
+  defun get_contacts(
+          _parent,
+          _args,
+          %{context: %{customer: customer}} = _resolution
+        ) :: resolver_result(term()) do
+    Contacts.get_contacts(customer)
+    |> ok()
+  end
+
+  def get_contacts(_parent, _args, _resolution) do
+    ok([])
   end
 end

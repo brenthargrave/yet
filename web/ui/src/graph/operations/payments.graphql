@@ -1,0 +1,56 @@
+query GetMentions($input: MentionsInput!) {
+  mentions(input: $input) {
+    mentions {
+      id
+      insertedAt
+      conversation {
+        id
+        note
+        occurredAt
+        creator {
+          ...ProfileProps
+        }
+        signatures {
+          signer {
+            ...ProfileProps
+          }
+        }
+      }
+    }
+  }
+}
+
+fragment PaymentProps on Payment {
+  status
+  amount {
+  ...MoneyProps
+  }
+  opp {
+    ...OppProps
+  }
+  payer {
+    ...ProfileProps
+  }
+  payee {
+  ...ProfileProps
+  }
+}
+
+query GetPayment($input: GetPaymentInput!) {
+  getPayment(input: $input) {
+    payment {
+      ...PaymentProps
+    }
+  }
+}
+
+mutation UpsertPayment($input: UpsertPaymentInput!) {
+  upsertPayment(input: $input) {
+    userError {
+      ...UserErrorProps
+    }
+    payment {
+      ...PaymentProps
+    }
+  }
+}

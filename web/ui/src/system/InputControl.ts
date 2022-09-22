@@ -23,9 +23,13 @@ export const InputControl: FC<Props> = ({
   children,
   ...props
 }) =>
-  h(FormControl, { isRequired, isDisabled, ...props }, [
-    h(FormLabel, label),
-    children,
-    errorMessage && h(FormHelperText, helperMessage),
-    errorMessage && h(FormErrorMessage, errorMessage),
-  ])
+  h(
+    FormControl,
+    { isRequired, isDisabled, isInvalid: !!errorMessage, ...props },
+    [
+      h(FormLabel, label),
+      children,
+      helperMessage && h(FormHelperText, helperMessage),
+      errorMessage && h(FormErrorMessage, errorMessage),
+    ]
+  )

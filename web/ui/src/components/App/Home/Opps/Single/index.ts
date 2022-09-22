@@ -1,5 +1,4 @@
 import { ReactSource } from "@cycle/react"
-import { subscribe } from "graphql"
 import {
   combineLatest,
   debounceTime,
@@ -12,19 +11,12 @@ import {
   share,
   startWith,
   switchMap,
-  zip,
 } from "rxjs"
 import { pluck } from "rxjs-etc/dist/esm/operators"
 import { match } from "ts-pattern"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { Actions, Source as ActionSource } from "~/action"
-import {
-  getOppProfile$,
-  ID,
-  isOwnedBy,
-  me$,
-  Source as GraphSource,
-} from "~/graph"
+import { getOppProfile$, ID, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { shareLatest } from "~/rx"

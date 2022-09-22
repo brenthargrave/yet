@@ -5,14 +5,13 @@ fragment OppProps on Opp {
   desc
   url
   fee {
-    amount
-    currency
+    ...MoneyProps
   }
   creator {
-    ...ContactProps
+    ...ProfileProps
   }
   owner {
-    ...ContactProps
+    ...ProfileProps
   }
   insertedAt
 }
@@ -64,7 +63,7 @@ query GetOppProfile($input: GetOppProfileInput!) {
           type
           occurredAt
           contact {
-            ...ContactProps
+            ...ProfileProps
           }
         }
 

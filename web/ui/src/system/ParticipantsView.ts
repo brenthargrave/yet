@@ -2,27 +2,27 @@ import { h } from "@cycle/react"
 import { FC } from "react"
 import { isEmpty, isNotEmpty, map, prop } from "~/fp"
 import {
-  Contact,
   ConversationStatus,
   Customer,
   Invitee,
   isStatusClosed,
   Maybe,
+  Profile,
 } from "~/graph"
 import { toSentence } from "~/i18n"
 import { MarkdownView, bold } from "~/system"
 
 type Participant = Omit<Invitee, "__typename" | "isContact">
 
-const personalizedName = (me: Maybe<Customer>, subject: Contact | Invitee) =>
+const personalizedName = (me: Maybe<Customer>, subject: Profile | Invitee) =>
   !!me && me.id === subject.id ? "You" : subject.name
 
 export interface Props {
   viewer: Maybe<Customer>
   status: ConversationStatus
-  creator: Contact
+  creator: Profile
   invitees: Invitee[]
-  signers: Contact[]
+  signers: Profile[]
 }
 
 export const ParticipantsView: FC<Props> = ({

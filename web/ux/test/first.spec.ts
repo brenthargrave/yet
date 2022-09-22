@@ -19,13 +19,13 @@ it("Opp reward payment", async () => {
     const opp = specOpp({
       org: "ACME Corporation",
       role: "Demolition Expert",
-      desc: "TBD",
       url: "https://acme.com/jobs/1",
       reward: "599",
+      // desc: "TBD",
     })
     await a.input("Organization", opp.org)
     await a.input("Role", opp.role)
-    await a.input("Description", opp.desc)
+    // await a.input("Description", opp.desc)
     await a.input("Canonical URL", opp.url)
     await a.input("Reward", opp.reward)
     await a.click("Save")
@@ -100,17 +100,17 @@ it("Opp reward payment", async () => {
     ])
     await Promise.all([a, b, c, d].map((p) => p.accessOpp(opp)))
 
-    // TODO:
-    // (Alice hires David, rewards Charlie for referral)
-    // ! veirfy others  can't see reward button
-    // await Promise.all([
-    //   ...[b,c,d].map(p => p.?)
-    // ])
-
+    // Payments
     await a.click("Opportunities")
     await a.see("Your Opportunities")
     await a.seeOpp(opp)
-    await a.click("Pay Reward")
+    // await a.click("Pay Reward")
+    // TODO:
+    // (Alice hires David, rewards Charlie for referral)
+    // ! others shouldn't see reward button
+    // await Promise.all([
+    //   ...[b,c,d].map(p => p.?)
+    // ])
 
     // Alice clicks Opp
     // Alice clicks Pay Reward

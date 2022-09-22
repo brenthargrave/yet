@@ -1,7 +1,7 @@
 import { h, ReactSource } from "@cycle/react"
 import { combineLatest, map, merge, Observable, of, share } from "rxjs"
 import { act, Actions } from "~/action"
-import { OppProfile, Source as GraphSource } from "~/graph"
+import { Opp, OppProfile, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { cb$, mapTo } from "~/rx"
 import { Location } from ".."
@@ -39,6 +39,13 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
+  const [onClickPay, onClickPay$] = cb$<Opp>(tag("onClickPay$"))
+  const createPayment$ = onClickPay$.pipe(
+    map((opp) => act(Actions.createPayment, { opp })),
+    tag("pay$"),
+    share()
+  )
+
   const props$: Observable<ViewProps> = combineLatest({
     location: of(location),
     viewer: me$,
@@ -46,14 +53,15 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
   }).pipe(tag("props$"))
 
   const react = props$.pipe(
-    map((props) => h(View, { ...props, onClickBack, onClickEdit })),
+    map((props) => h(View, { ...props, onClickBack, onClickEdit, onClickPay })),
     tag("react")
   )
 
   const action = merge(
     //
     goToList$,
-    clickEdit$
+    clickEdit$,
+    createPayment$
   )
 
   return {

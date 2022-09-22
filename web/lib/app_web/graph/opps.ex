@@ -10,8 +10,8 @@ defmodule AppWeb.Graph.Opps do
     field(:desc, :string)
     field(:fee, non_null(:money))
     field(:url, :string)
-    field(:creator, non_null(:contact))
-    field(:owner, non_null(:contact))
+    field(:creator, non_null(:profile))
+    field(:owner, non_null(:profile))
     field(:inserted_at, non_null(:datetime))
   end
 

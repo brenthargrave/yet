@@ -74,6 +74,14 @@ const link = ApolloLink.from([
 export const client = new ApolloClient({
   link,
   cache,
+  defaultOptions: {
+    query: {
+      fetchPolicy: "network-only",
+    },
+    watchQuery: {
+      fetchPolicy: "network-only",
+    },
+  },
 })
 
 // TODO: when signout added, ensure socket reconnects w/ new token on signin:

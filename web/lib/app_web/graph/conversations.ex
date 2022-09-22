@@ -4,16 +4,8 @@ defmodule AppWeb.Graph.Conversations do
 
   alias AppWeb.Resolvers.{
     Conversations,
-    Contacts
+    Profiles
   }
-
-  object :contact do
-    field(:id, non_null(:id))
-    field(:name, non_null(:string))
-    field(:email, non_null(:string))
-    field(:org, :string)
-    field(:role, :string)
-  end
 
   object :invitee do
     field(:id, non_null(:id))
@@ -32,26 +24,19 @@ defmodule AppWeb.Graph.Conversations do
     field(:id, non_null(:id))
     field(:conversation_id, non_null(:id))
     field(:signed_at, non_null(:datetime))
-    field(:signer, non_null(:contact))
+    field(:signer, non_null(:profile))
   end
 
   object :review do
     field(:id, non_null(:id))
     field(:conversation_id, non_null(:id))
-    field(:reviewer, non_null(:contact))
+    field(:reviewer, non_null(:profile))
     field(:inserted_at, non_null(:datetime))
-  end
-
-  object :mention do
-    field(:id, non_null(:id))
-    field(:inserted_at, non_null(:datetime))
-    field(:conversation_id, non_null(:id))
-    field(:opp_id, non_null(:id))
   end
 
   object :conversation do
     field(:id, non_null(:id))
-    field(:creator, non_null(:contact))
+    field(:creator, non_null(:profile))
     field(:invitees, non_null(list_of(non_null(:invitee))))
     field(:note, :string)
     field(:status, non_null(:conversation_status))
@@ -153,8 +138,8 @@ defmodule AppWeb.Graph.Conversations do
       resolve(&Conversations.get_conversations/3)
     end
 
-    field :contacts, non_null(list_of(non_null(:contact))) do
-      resolve(&Contacts.get_contacts/3)
+    field :contacts, non_null(list_of(non_null(:profile))) do
+      resolve(&Profiles.get_contacts/3)
     end
   end
 

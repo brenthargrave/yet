@@ -12,6 +12,7 @@ import {
   switchMap,
 } from "rxjs"
 import { match } from "ts-pattern"
+import { ulid } from "ulid"
 import { Actions, Source as ActionSource } from "~/action"
 import { Onboarding } from "~/components/Onboarding"
 import { isEmpty, pluck } from "~/fp"
@@ -23,6 +24,7 @@ import {
   anyRootOppsRouteGroup,
   NEWID,
   push,
+  routeGroupPayments,
   routeGroupProfiles,
   routes,
   Source as RouterSource,
@@ -30,6 +32,7 @@ import {
 import { cb$, mapTo, shareLatest } from "~/rx"
 import { Conversations } from "./Conversations"
 import { Location, Opps, State as OppsState } from "./Opps"
+import { Payments } from "./Payments"
 import { Profiles } from "./Profiles"
 import { Timeline } from "./Timeline"
 import { View } from "./View"
@@ -44,6 +47,7 @@ enum RootState {
   opps = "opps",
   timeline = "timeline",
   profiles = "profile",
+  payments = "payments",
 }
 
 interface Sources {
@@ -67,6 +71,7 @@ export const Home = (sources: Sources) => {
   const conversations = Conversations(sources, tagScope)
   const timeline = Timeline(sources, tagScope)
   const profiles = Profiles(sources, tagScope)
+  const payments = Payments(sources, tagScope)
 
   const oppsState$ = history$.pipe(
     switchMap((route) =>
@@ -116,6 +121,9 @@ export const Home = (sources: Sources) => {
         .with({ type: Actions.showOpp }, ({ opp }) =>
           of(push(routes.opp({ oid: opp.id })))
         )
+        .with({ type: Actions.createPayment }, ({ opp }) =>
+          of(push(routes.newOppPayment({ oid: opp.id, pid: ulid() })))
+        )
         .otherwise(() => EMPTY)
     ),
     tag("oppsRouter$")
@@ -152,6 +160,10 @@ export const Home = (sources: Sources) => {
           .when(
             (route) => routeGroupProfiles.has(route),
             () => RootState.profiles
+          )
+          .when(
+            (route) => routeGroupPayments.has(route),
+            () => RootState.payments
           )
           .otherwise(() => RootState.timeline)
       )
@@ -208,6 +220,7 @@ export const Home = (sources: Sources) => {
         .with(RootState.conversations, () => conversations.react)
         .with(RootState.opps, () => opps.react)
         .with(RootState.profiles, () => profiles.react)
+        .with(RootState.payments, () => payments.react)
         .exhaustive()
     ),
     tag("subview$")
@@ -253,13 +266,13 @@ export const Home = (sources: Sources) => {
   )
 
   const router = merge(
-    ...pluck("router", [conversations, timeline, profiles]),
+    ...pluck("router", [conversations, timeline, profiles, payments]),
     rootRouter$,
     oppsRouter$
   )
   const track = merge(...pluck("track", [conversations]))
   const notice = merge(
-    ...pluck("notice", [conversations, opps, onboarding, profiles])
+    ...pluck("notice", [conversations, opps, onboarding, profiles, payments])
   )
   const graph = merge(...pluck("graph", [conversations]))
   const action = merge(...pluck("action", [opps, conversations, profiles]))

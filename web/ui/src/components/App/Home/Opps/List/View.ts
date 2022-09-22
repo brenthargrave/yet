@@ -2,7 +2,7 @@ import { SmallAddIcon } from "@chakra-ui/icons"
 import { Heading, HStack, IconButton, ListItem, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { OppView } from "~/components/Opp"
+import { OnClickPay, OppView } from "~/components/Opp"
 import { isEmpty } from "~/fp"
 import { Customer, Maybe, Opp, oppAriaLabel } from "~/graph"
 import {
@@ -31,6 +31,7 @@ export interface Props {
   opps: Opp[]
   onClickAdd?: (opp: Opp) => void
   onClickOpp?: (opp: Opp) => void
+  onClickPay?: OnClickPay
 }
 
 export const View: FC<Props> = ({
@@ -40,6 +41,7 @@ export const View: FC<Props> = ({
   opps = [],
   onClickAdd = () => null,
   onClickOpp = () => null,
+  onClickPay: _onClickPay,
 }) =>
   isEmpty(opps)
     ? h(EmptyView, { ...containerProps, onClickNew })
@@ -52,6 +54,9 @@ export const View: FC<Props> = ({
         ]),
         h(FullWidthList, [
           ...opps.map((opp, idx, all) => {
+            const onClickPay = (opp: Opp) => {
+              if (_onClickPay) _onClickPay(opp)
+            }
             return h(ListItem, {}, [
               h(
                 Stack,
@@ -83,11 +88,19 @@ export const View: FC<Props> = ({
                       alignItems: "start",
                       width: "100%",
                       style: { cursor: "pointer" },
-                      onClick: () => onClickOpp(opp),
+                      onClick: (e: React.MouseEvent<HTMLElement>) => {
+                        e.stopPropagation()
+                        onClickOpp(opp)
+                      },
                     },
                     [
                       //
-                      h(OppView, { opp, viewer }),
+                      h(OppView, {
+                        location,
+                        opp,
+                        viewer,
+                        onClickPay,
+                      }),
                     ]
                   ),
                 ]

@@ -25,7 +25,7 @@ defmodule AppWeb.Graph.Timeline do
   object :contact_profile_changed do
     field(:type, non_null(:timeline_event_type))
     field(:occurred_at, non_null(:datetime))
-    field(:contact, non_null(:contact))
+    field(:contact, non_null(:profile))
   end
 
   union :timeline_event do

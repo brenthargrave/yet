@@ -13,7 +13,7 @@ import {
   prop,
   symmetricDifferenceWith,
 } from "~/fp"
-import { Contact, Conversation, Customer, Invitee, MakeOptional } from ".."
+import { Profile, Conversation, Customer, Invitee, MakeOptional } from ".."
 import { ConversationStatus, ConversationInput } from "../generated"
 import { routes } from "~/router"
 
@@ -53,7 +53,7 @@ const makeRole = () => faker.name.jobTitle()
 const makeBool = () => faker.datatype.boolean()
 const makeEmail = () => faker.internet.email()
 
-export const makeParticipant = (): Omit<Contact, "__typename"> => {
+export const makeParticipant = (): Omit<Profile, "__typename"> => {
   return {
     id: makeId(),
     name: makeName(),

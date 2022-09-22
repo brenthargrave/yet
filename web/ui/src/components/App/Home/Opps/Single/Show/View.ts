@@ -3,7 +3,7 @@ import { h } from "@cycle/react"
 import { FC } from "react"
 import { match } from "ts-pattern"
 import { ConversationPublishedView } from "~/components/Conversation/View"
-import { OppView } from "~/components/Opp"
+import { OnClickPay, OppView } from "~/components/Opp"
 import { isEmpty, isNotLastItem } from "~/fp"
 import { Customer, Maybe, OppProfile } from "~/graph"
 import {
@@ -22,6 +22,7 @@ export interface Props {
   oppProfile: OppProfile
   onClickBack?: () => void
   onClickEdit?: () => void
+  onClickPay?: OnClickPay
 }
 
 export const View: FC<Props> = ({
@@ -30,6 +31,7 @@ export const View: FC<Props> = ({
   oppProfile,
   onClickBack,
   onClickEdit,
+  onClickPay,
 }) => {
   const { events, opp } = oppProfile
   return h(FullWidthVStack, {}, [
@@ -47,7 +49,7 @@ export const View: FC<Props> = ({
         gap: 6,
       },
       [
-        h(OppView, { opp, viewer, pb: 2 }),
+        h(OppView, { location, opp, viewer, onClickPay, pb: 2 }),
         h(Divider, { orientation: "horizontal" }),
         h(FullWidthVStack, { isBody: true, pt: 0, mt: 0 }, [
           h(Header, { padding: 0 }, [

@@ -38,7 +38,6 @@ import {
   uniqBy,
 } from "~/fp"
 import {
-  Contact,
   Conversation,
   ConversationStatus,
   deleteConversation$,
@@ -58,6 +57,7 @@ import {
   Source as GraphSource,
   track$,
   upsertConversation$,
+  Profile,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { info } from "~/notice"
@@ -79,7 +79,7 @@ export { Mode }
 
 const noteInputRef = createRef<HTMLTextAreaElement>()
 
-const contactsToOptions = (contacts: Contact[]): SelectedOption[] =>
+const contactsToOptions = (contacts: Profile[]): SelectedOption[] =>
   contacts.map(({ id, name }, idx, _) => {
     return { label: name, value: id }
   })
@@ -90,7 +90,7 @@ const inviteesToOptions = (invitees: Invitee[]): SelectedOption[] =>
 
 const optionsToInvitees = (
   options: ContactOption[],
-  contacts: Contact[]
+  contacts: Profile[]
 ): Invitee[] => {
   const contactIds = _pluck("id", contacts)
   return options.map(({ label: name, value: id }) => {

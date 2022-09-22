@@ -13,14 +13,14 @@ import {
   opps$,
   profile$,
 } from "~/graph"
-import { Contact, Conversation, Opp, Profile } from "./generated"
+import { Conversation, Opp, Profile } from "./generated"
 
 type Token = string
 
 export interface Source {
   token$: Observable<Token | null>
   me$: Observable<Customer | null>
-  contacts$: Observable<Contact[]>
+  contacts$: Observable<Profile[]>
   conversations$: Observable<Conversation[]>
   opps$: Observable<Opp[]>
   profile$: Observable<Profile>

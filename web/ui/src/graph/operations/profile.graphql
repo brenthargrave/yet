@@ -24,7 +24,7 @@ query GetProfile($input: GetProfileInput) {
           type
           occurredAt
           contact {
-            ...ContactProps
+            ...ProfileProps
           }
         }
       }

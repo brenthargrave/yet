@@ -1,0 +1,4 @@
+fragment MoneyProps on Money {
+  amount
+  currency
+}
