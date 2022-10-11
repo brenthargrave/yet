@@ -23,7 +23,9 @@ defmodule App.Application do
       {Absinthe.Subscription, AppWeb.Endpoint},
 
       # https://dockyard.com/blog/2016/05/02/phoenix-tips-and-tricks
-      {Task.Supervisor, name: App.TaskSupervisor}
+      {Task.Supervisor, name: App.TaskSupervisor},
+
+      App.Scheduler
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

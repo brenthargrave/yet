@@ -1,7 +1,7 @@
 import { Alice, Bob, Charlie, David, makeBrowser, Nav } from "~/browser"
 import { specConv } from "~/models"
 
-it.only("Conversation shared and cosigned", async () => {
+it("Conversation shared and cosigned", async () => {
   const { customer, exit } = await makeBrowser({ headless: true })
 
   const d = await customer(David)
@@ -15,10 +15,23 @@ it.only("Conversation shared and cosigned", async () => {
 
     const aliceWithBob = specConv({
       invitees: [Bob],
-      note: "WIP",
+      note: "Alice w/ Bob",
     })
-
     const aliceWithBobPath = await a.createConversation(aliceWithBob, true)
+
+    // TODO: verify draft visiblity
+    // console.log("\nVerify draft-only visibility")
+    // // await a.visit("/c")
+    // // await a.reload()
+    // await a.click("Back")
+    // await a.seeConversation(aliceWithBob)
+    // await a.accessConversation({
+    //   c: aliceWithBob,
+    //   show: [Nav.Conversations],
+    //   hide: [Nav.Home, Nav.Profile],
+    // })
+
+    console.log("\nVerify signed visibility")
     // NOTE: assume A sends B url...
     await b.signupAndSignConversationAtPath(aliceWithBobPath)
     await a.see(`${b.name} cosigned!`)
@@ -34,23 +47,6 @@ it.only("Conversation shared and cosigned", async () => {
     })
     const bobWithCharliePath = await b.createConversation(bobWithCharlie)
     await c.signupAndSignConversationAtPath(bobWithCharliePath)
-
-    // await Promise.all([
-    //   // alice: in tl, but not pf
-    //   a.accessConversation({
-    //     c: bobWithCharlie,
-    //     show: [Nav.Home],
-    //     hide: [Nav.Profile, Nav.Conversations],
-    //   }),
-    //   // bob & charlie: in their pf, but not in their tls
-    //   ...[b, c].map((p) =>
-    //     p.accessConversation({
-    //       c: bobWithCharlie,
-    //       show: [Nav.Profile, Nav.Conversations],
-    //       hide: [Nav.Home],
-    //     })
-    //   ),
-    // ])
 
     for (const p of [b, c]) {
       await p.accessConversation({
@@ -77,23 +73,6 @@ it.only("Conversation shared and cosigned", async () => {
     })
     const charlieWithDavidPath = await c.createConversation(charlieWithDavid)
     await d.signupAndSignConversationAtPath(charlieWithDavidPath)
-
-    // await Promise.all([
-    //   ...[c, d].map((p) =>
-    //     p.accessConversation({
-    //       c: charlieWithDavid,
-    //       show: [Nav.Profile, Nav.Conversations],
-    //       hide: [Nav.Home],
-    //     })
-    //   ),
-    //   ...[b, a].map((p) =>
-    //     p.accessConversation({
-    //       c: charlieWithDavid,
-    //       show: [Nav.Home],
-    //       hide: [Nav.Profile, Nav.Conversations],
-    //     })
-    //   ),
-    // ])
 
     for (const p of [c, d]) {
       await p.accessConversation({
@@ -125,6 +104,39 @@ it.only("Conversation shared and cosigned", async () => {
       show: [Nav.Home],
       hide: [Nav.Conversations, Nav.Profile],
     })
+
+    console.log(`\nVerify drafts unexposed to network`)
+
+    const aliceWithCharlie = specConv({
+      invitees: [Charlie],
+      note: "Alice w/ Charlie",
+    })
+    const _path = await a.createConversation(aliceWithCharlie)
+
+    // TODO: verify draft visiblity
+    // console.log("\nVerify draft-only visibility")
+    // await a.visit("/c")
+    // await a.reload()
+    // await a.accessConversation({
+    //   c: aliceWithCharlie,
+    //   show: [Nav.Conversations],
+    //   hide: [Nav.Home, Nav.Profile],
+    // })
+    // await c.accessConversation({
+    //   c: aliceWithCharlie,
+    //   show: [Nav.Conversations],
+    //   hide: [Nav.Home, Nav.Profile],
+    // })
+    // await b.accessConversation({
+    //   c: aliceWithCharlie,
+    //   show: [],
+    //   hide: [Nav.Home, Nav.Profile, Nav.Conversations],
+    // })
+    // await d.accessConversation({
+    //   c: aliceWithCharlie,
+    //   show: [],
+    //   hide: [Nav.Home, Nav.Profile, Nav.Conversations],
+    // })
 
     //
   } catch (error) {

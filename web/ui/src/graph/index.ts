@@ -61,6 +61,7 @@ import {
   ReviewConversationDocument,
   ReviewInput,
   Scalars,
+  SettingsEventKind,
   SignConversationDocument,
   SignInput,
   SubmitCodeDocument,
@@ -74,6 +75,8 @@ import {
   TimelineInput,
   TrackEventDocument,
   TrackEventInput,
+  UnsubscribeDocument,
+  UnsubscribeInput,
   UpdateProfileDocument,
   UpdateProfileInput,
   UpsertConversationDocument,
@@ -505,7 +508,7 @@ export const upsertOpp$ = (input: OppInput) => {
       const { userError, opp } = data!.upsertOpp!
       return userError ? new Err(userError) : new Ok(opp)
     }),
-    tag("upsertConversation$")
+    tag("upsertOpp$")
   )
 }
 
@@ -648,7 +651,7 @@ export const getMentions$ = (input: MentionsInput) =>
       const { mentions } = data!.mentions!
       return Ok(mentions)
     }),
-    tag("upsertConversation$")
+    tag("upsertMentions$")
   )
 
 export const oppsEnabled = false
@@ -696,3 +699,28 @@ export const upsertPayment$ = (input: UpsertPaymentInput) =>
     }),
     tag("getPayment$")
   )
+
+export const unsubscribe$ = (
+  _input: Omit<UnsubscribeInput, "occurredAt" | "kind">
+) => {
+  const occurredAt = new Date().toISOString()
+  const kind: SettingsEventKind = SettingsEventKind.UnsubscribeDigest
+  const input = {
+    ..._input,
+    occurredAt,
+    kind,
+  }
+  return from(
+    client.mutate({
+      mutation: UnsubscribeDocument,
+      variables: { input },
+    })
+  ).pipe(
+    handleGraphErrors(),
+    map(({ data, errors, extensions, context }) => {
+      return data!.unsubscribe!
+    }),
+    makeUnrecoverable(),
+    tag("unsubscribe$")
+  )
+}

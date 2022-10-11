@@ -69,7 +69,15 @@ defmodule App.MixProject do
       {:corsica, "~> 1.0"},
       {:ecto_commons, "~> 0.3.3"},
       {:segment, "~> 0.2.6"},
-      {:earmark, "~> 1.4"}
+      {:earmark, "~> 1.4"},
+      {:quantum, "~> 3.0"},
+      {:swoosh, "~> 1.11"},
+      {:mjml, "~> 1.5.0"},
+      {:exsync, "~> 0.2", only: [:dev, :test]},
+      {:file_system, "~> 0.2", only: [:dev, :test]},
+      {:mjml_eex, "~> 0.9.1"},
+      {:xml_builder, "~> 2.1"},
+      {:premailex, "~> 0.3.18"}
     ]
   end
 

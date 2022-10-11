@@ -13,7 +13,9 @@ mocha.timeout(120 * 1000)
 const files = globSync("./test/*.spec.ts")
 files.forEach((file) => mocha.addFile(file))
 
-// mocha.fullTrace()
+mocha.fullTrace()
+
+mocha.slow(0)
 
 // mocha.run()
 mocha.run((failures) => {

@@ -9,6 +9,10 @@ defmodule AppWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
+  pipeline :authenticate do
+    plug(AppWeb.Plug.Authenticate)
+  end
+
   # Enables LiveDashboard only for development
   #
   # If you want to use the LiveDashboard in production, you should put
@@ -49,9 +53,18 @@ defmodule AppWeb.Router do
     interface: :advanced
   )
 
+  # https://github.com/swoosh/swoosh#mailbox-preview-in-the-browser
+  if Mix.env() in [:dev, :test] do
+    scope "/dev" do
+      pipe_through([:browser, :authenticate])
+      forward("/mailbox", Plug.Swoosh.MailboxPreview)
+      # email previews
+      get("/digest", AppWeb.EmailController, :digest)
+    end
+  end
+
   scope "/", AppWeb do
     pipe_through(:browser)
-
     get("/*path", PageController, :index, as: :root)
   end
 end

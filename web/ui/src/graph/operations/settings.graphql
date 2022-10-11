@@ -1,0 +1,11 @@
+fragment SettingsEventProps on SettingsEvent {
+  customerId
+  occurredAt
+  kind
+}
+
+mutation Unsubscribe($input: UnsubscribeInput!) {
+  unsubscribe(input: $input) {
+    ...SettingsEventProps
+  }
+}

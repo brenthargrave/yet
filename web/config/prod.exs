@@ -9,3 +9,5 @@ config :app, AppWeb.Endpoint,
 config :logger, level: :info
 
 config :app, App.Repo, ssl: true
+
+config :swoosh, local: false

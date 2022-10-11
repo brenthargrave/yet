@@ -1,12 +1,12 @@
+import fs from "fs"
 import * as puppeteer from "puppeteer"
 import { startsWith } from "ramda"
-import { Persona } from "./personas"
-export * from "./personas"
-import { ClickOptions, LaunchOptions } from "./puppeteer-extras"
-import fs, { existsSync } from "fs"
-import { OppSpec, oppAriaLabel, ConversationSpec } from "./models"
 import { first } from "remeda"
+import { ConversationSpec, oppAriaLabel, OppSpec } from "./models"
+import { Persona } from "./personas"
+import { ClickOptions, LaunchOptions } from "./puppeteer-extras"
 import { extractULIDs } from "./ulid"
+export * from "./personas"
 
 export enum Nav {
   Home = "Home",
@@ -15,12 +15,17 @@ export enum Nav {
   Opps = "Opportunities",
 }
 
-const { UX_DEBUG_BROWSER, PORT_SSL, PRODUCT_NAME = "TBD" } = process.env
+interface SeeOptions {
+  mjml?: boolean
+}
+
+const { UX_DEBUG_BROWSER, PORT_SSL, PRODUCT_NAME = "TBD", HOST } = process.env
 
 const screenieDir = "scratch/screenies"
 
 // NOTE: node chokes on "localhost" https://github.com/node-fetch/node-fetch/issues/1624#issuecomment-1235826631
-const baseURL = `https://127.0.0.1:${PORT_SSL}`
+// const baseURL = `https://127.0.0.1:${PORT_SSL}`
+const baseURL = `https://${HOST}`
 // NOTE: node chokes on SSL, https://stackoverflow.com/a/20100521
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0"
 
@@ -46,6 +51,8 @@ export const checkinSandbox = async () =>
 const ariaLabelSel = (ariaLabelValue: string) =>
   `[aria-label="${ariaLabelValue}"]`
 
+const classSel = (value: string) => `[class="${value}"]`
+
 export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
   const userAgent = await checkoutSandbox()
 
@@ -70,7 +77,7 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       console.error("pageerror", name, error, error.cause)
     })
 
-    const seconds = 10
+    const seconds = 5
     page.setDefaultTimeout(seconds * 1000)
     page.setDefaultNavigationTimeout(seconds * 1000)
     page.setUserAgent(userAgent)
@@ -97,7 +104,15 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
     const click = async (ariaLabelValue: string, opts?: ClickOptions) => {
       console.debug(`${p.name} click: "${ariaLabelValue}"`)
       const sel = ariaLabelSel(ariaLabelValue).concat(":not([disabled])")
-      await page.waitForSelector(sel)
+      // NOTE: puppeteer behaves strangely when new tabs spawned by "_blank";
+      // for tests only, alter links to always open in current tab.
+      // https://github.com/puppeteer/puppeteer/issues/386#issuecomment-354574199
+      const link = await page.waitForSelector(sel)
+      await page.evaluateHandle((el) => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        if (el) el.target = "_self"
+      }, link)
       await page.click(sel, opts)
     }
     const focusAndPressEnter = async (ariaLabelValue: string) => {
@@ -108,14 +123,18 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       await press("Enter")
     }
 
-    const see = async (ariaLabelValue: string, debug = true) => {
-      if (debug) console.debug(`${p.name} see: "${ariaLabelValue}"`)
-      const sel = ariaLabelSel(ariaLabelValue)
+    const see = async (ariaLabelValue: string, opts: SeeOptions = {}) => {
+      console.debug(`${p.name} see: "${ariaLabelValue}"`)
+      const sel = opts.mjml
+        ? classSel(ariaLabelValue)
+        : ariaLabelSel(ariaLabelValue)
       await page.waitForSelector(sel, { visible: true })
     }
-    const notSee = async (ariaLabelValue: string, debug = true) => {
-      if (debug) console.debug(`${p.name} NOT see: "${ariaLabelValue}"`)
-      const sel = ariaLabelSel(ariaLabelValue)
+    const notSee = async (ariaLabelValue: string, opts: SeeOptions = {}) => {
+      console.debug(`${p.name} NOT see: "${ariaLabelValue}"`)
+      const sel = opts.mjml
+        ? classSel(ariaLabelValue)
+        : ariaLabelSel(ariaLabelValue)
       await page.waitForSelector(sel, { hidden: true })
     }
 
@@ -159,6 +178,9 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
     const signout = async () => {
       await visit("/out")
       await see(PRODUCT_NAME)
+
+      // NOTE: clear Auth header
+      await page.setExtraHTTPHeaders({})
     }
 
     const signup = async () => {
@@ -169,6 +191,17 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       await input("email", email)
       await click("Continue")
       await see("Home")
+
+      // NOTE: set auth header for non-api HTTP requests (UX tests only ATM)
+      const token = await page.evaluate(async () => {
+        // TODO: dedupe; import from ui/graph
+        const token = localStorage.getItem("token")
+        return token
+      })
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      }
+      await page.setExtraHTTPHeaders(headers)
     }
 
     const signin = async () => {
@@ -178,10 +211,10 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
 
     const seeOpp = async (opp: OppSpec) => {
       await see(oppAriaLabel(opp))
-      await see(`role:${opp.role}`, false)
-      await see(`org:${opp.org}`, false)
-      if (opp.reward) await see(`reward:$${opp.reward}`, false)
-      if (opp.desc) await see(`desc:${opp.desc}`, false)
+      await see(`role:${opp.role}`)
+      await see(`org:${opp.org}`)
+      if (opp.reward) await see(`reward:$${opp.reward}`)
+      if (opp.desc) await see(`desc:${opp.desc}`)
     }
 
     const addOpp = async (opp: OppSpec) => {
@@ -192,12 +225,18 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       await see(copy)
     }
 
-    const seeConversation = async (c: ConversationSpec) => {
-      await see(`/c/${c.id}`)
+    const seeConversation = async (
+      c: ConversationSpec,
+      opts: SeeOptions = {}
+    ) => {
+      await see(`/c/${c.id}`, opts)
       // TODO: invitees, note, status
     }
-    const notSeeConversation = async (c: ConversationSpec) => {
-      await notSee(`/c/${c.id}`)
+    const notSeeConversation = async (
+      c: ConversationSpec,
+      opts: SeeOptions = {}
+    ) => {
+      await notSee(`/c/${c.id}`, opts)
     }
     const seeConversationProfile = async (spec: ConversationSpec) => {
       await see("Conversation")
@@ -215,6 +254,7 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       c: ConversationSpec,
       o?: OppSpec
     ) => {
+      console.log(`${p.name} verify first convo`)
       await seeConversationProfile(c)
       if (o) {
         await accessOpp(o)
@@ -251,6 +291,7 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
           await addOpp(opp)
         }
       }
+      // TODO: pressing Publish button fails?
       // await click("Publish", { delay: 2000 })
       await page.keyboard.down("Control")
       await page.keyboard.press("p")
@@ -269,6 +310,7 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       const ulids = extractULIDs(cosignPath)
       const cid = first(ulids)
       c.id = cid
+      console.log(`${p.name} created: ${c.id}`)
       return cosignPath
     }
 
@@ -352,16 +394,20 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
     }
   }
 
-  const checkinSandbox = async () =>
-    await fetch(sandboxURL, { method: "DELETE" })
-  //.then((res) => console.debug(res.body))
+  const checkinSandbox = async () => {
+    console.log("CHECKIN SANDBOX")
+    return await fetch(sandboxURL, { method: "DELETE" })
+    //.then((res) => console.debug(res.body))
+  }
 
-  const exit = async () =>
-    Promise.all([
+  const exit = async () => {
+    console.log("EXIT")
+    return Promise.all([
       //
       ...exits.map((fn) => fn()),
       checkinSandbox(),
     ])
+  }
 
   return {
     customer,

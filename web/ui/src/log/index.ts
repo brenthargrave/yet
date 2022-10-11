@@ -5,7 +5,11 @@ import { tag } from "rxjs-spy/operators"
 const { VITE_API_ENV: env, VITE_LOG } = import.meta.env
 
 const spy = create({ defaultLogger: console, sourceMaps: true })
-if (VITE_LOG) spy.log()
+if (env === "prod") {
+  console.log("skip logging")
+} else {
+  spy.log()
+}
 
 const makeTagger =
   <T>(scope: string) =>

@@ -8,6 +8,7 @@ defmodule AppWeb.Graph.Schema do
   import_types(AppWeb.Graph.Timeline)
   import_types(AppWeb.Graph.Profiles)
   import_types(AppWeb.Graph.Payments)
+  import_types(AppWeb.Graph.Settings)
 
   query do
     import_fields(:analytics_queries)
@@ -27,6 +28,7 @@ defmodule AppWeb.Graph.Schema do
     import_fields(:opps_mutations)
     import_fields(:profiles_mutations)
     import_fields(:payments_mutations)
+    import_fields(:settings_mutations)
   end
 
   subscription do

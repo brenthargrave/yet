@@ -13,7 +13,7 @@ query GetProfile($input: GetProfileInput) {
 
       events {
         ...on ConversationPublished {
-          type
+          kind
           occurredAt
           persona
           conversation {
@@ -21,7 +21,7 @@ query GetProfile($input: GetProfileInput) {
           }
         }
         ...on ContactProfileChanged {
-          type
+          kind
           occurredAt
           contact {
             ...ProfileProps

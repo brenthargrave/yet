@@ -58,8 +58,6 @@ defmodule App.Payments do
           customer,
           %{id: id, opp_id: opp_id} = input
         ) :: Brex.Result.s(Payment.t()) do
-    input
-
     opp = Repo.get(Opp, opp_id)
     payee_id = Map.get(input, :payee_id, nil)
     payee = if is_nil(payee_id), do: nil, else: Repo.get(Customer, payee_id)

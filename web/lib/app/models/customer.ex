@@ -30,6 +30,7 @@ defmodule App.Customer do
     field(:org, :string)
     field(:role, :string)
     embeds_one(:stats, Stats, on_replace: :update)
+    field(:digest, :boolean, null: false, default: true)
   end
 
   def auth_changeset(customer, attrs) do
@@ -47,5 +48,10 @@ defmodule App.Customer do
   def stats_changeset(customer, stats) do
     customer
     |> change(stats: stats)
+  end
+
+  def settings_changeset(customer, settings) do
+    customer
+    |> cast(settings, [:digest])
   end
 end

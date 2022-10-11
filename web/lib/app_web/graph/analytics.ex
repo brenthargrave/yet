@@ -9,6 +9,8 @@ defmodule AppWeb.Graph.Analytics do
     value(:tap_propose, as: "tap_propose")
     value(:review_conversation, as: "review_conversation")
     value(:view_conversation, as: "view_conversation")
+    value(:unsubscribe_notification, as: "unsubscribe_notification")
+    value(:subscribe_notification, as: "subscribe_notification")
   end
 
   enum :intent do
@@ -21,12 +23,26 @@ defmodule AppWeb.Graph.Analytics do
     value(:web, as: "web")
   end
 
+  ## Notifications
+  #
+  enum :notification_channel do
+    value(:email, as: "email")
+    value(:sms, as: "sms")
+  end
+
+  enum :notification_kind do
+    value(:digest, as: "digest")
+  end
+
   # TODO: macro to dedupe input_object/object
   input_object :event_properties_input do
     field(:conversation_id, :id)
     field(:intent, :intent)
     field(:platform, :platform)
     field(:signature_count, :integer)
+    # notifications
+    field(:notification_channel, :notification_channel)
+    field(:notification_kind, :notification_kind)
   end
 
   object :event_properties do
@@ -34,6 +50,9 @@ defmodule AppWeb.Graph.Analytics do
     field(:intent, :intent)
     field(:platform, :platform)
     field(:signature_count, :integer)
+    # notifications
+    field(:notification_channel, :notification_channel)
+    field(:notification_kind, :notification_kind)
   end
 
   input_object :track_event_input do

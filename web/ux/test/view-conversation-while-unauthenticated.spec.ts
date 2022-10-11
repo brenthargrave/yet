@@ -15,11 +15,12 @@ it.skip("View conversation when signed out", async () => {
     // Alice creates a conversation with Bob
     const aliceWithBob = specConv({
       invitees: [Bob],
-      note: "WIP",
+      note: "Alice <> Bob",
     })
     const cosignPath = await a.createConversation(aliceWithBob, true)
+
     // NOTE: verify conversation isn't publicly visible before signed, so skip
-    // Bob reciving, signing up and cosigning.
+    // Bob receiving, signing up and cosigning.
 
     // Charlie tries to view the conversation
     const conversationPath = cosignPath.replace(/\/sign/, "")
@@ -30,6 +31,8 @@ it.skip("View conversation when signed out", async () => {
       hide: [Nav.Conversations, Nav.Profile, Nav.Opps],
     })
     // TODO: await c.see(`Not found`)
+
+    //
   } catch (error) {
     console.error("ERROR!", error)
     await a.screenie()

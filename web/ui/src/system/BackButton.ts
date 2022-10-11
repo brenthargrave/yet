@@ -2,7 +2,7 @@ import { Icon } from "@chakra-ui/icons"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { FaChevronLeft } from "react-icons/fa"
-import { Button } from "~/system"
+import { Button, ariaLabel } from "~/system"
 
 interface Props {
   onClick?: () => void
@@ -20,6 +20,7 @@ export const BackButton: FC<Props> = ({ onClick, cta = "Back" }) =>
       variant: "ghost",
       size: "xs",
       onClick,
+      ...ariaLabel("Back"),
     },
     cta
   )

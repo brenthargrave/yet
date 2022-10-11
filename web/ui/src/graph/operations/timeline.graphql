@@ -1,7 +1,7 @@
 fragment TimelinePayloadProps on TimelinePayload {
   events {
     ...on ConversationPublished {
-      type
+      kind
       occurredAt
       persona
       conversation {
@@ -9,7 +9,7 @@ fragment TimelinePayloadProps on TimelinePayload {
       }
     }
     ...on ContactProfileChanged {
-      type
+      kind
       occurredAt
       contact {
         ...ProfileProps

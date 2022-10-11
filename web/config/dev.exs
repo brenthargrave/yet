@@ -19,7 +19,18 @@ config :app, AppWeb.Endpoint,
     cipher_suite: :strong,
     keyfile: "priv/cert/localhost-key.pem",
     certfile: "priv/cert/localhost-cert.pem"
+  ],
+  # NOTE: see https://github.com/slime-lang/phoenix_slime_example/blob/8841c7a24c8a7ef1a06103472638c1515aa74d04/config/dev.exs
+  live_reload: [
+    patterns: [
+      ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
+      ~r{lib/app_web/views/.*(ex)$},
+      ~r{lib/app_web/templates/.*(eex|slim)$},
+      ~r{lib/app/email/.*(ex|slim)$}
+    ]
   ]
+
+config :slime, :keep_lines, true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n", level: :debug
@@ -35,3 +46,9 @@ config :absinthe,
   log: true
 
 config :absinthe, Absinthe.Logger, pipeline: true
+
+# config :app, App.Email.Mailer, adapter: Swoosh.Adapters.Local
+
+# NOTE: code reload on mjml
+# https://github.com/falood/exsync#config
+config :exsync, extensions: [".mjml.slim"]

@@ -45,4 +45,23 @@ config :sentry,
   enable_source_code_context: true,
   root_source_code_path: File.cwd!()
 
+config :app, App.Scheduler,
+  jobs: [
+    daily_update: [
+      schedule: "@hourly",
+      # schedule: {:extended, "*/30"},
+      task: {App.Scheduler, :daily_update, []}
+    ]
+  ]
+
+config :app, App.Email.Mailer,
+  adapter: Swoosh.Adapters.Postmark,
+  api_key: {:system, "POSTMARK_API_KEY"}
+
+# adapter: Swoosh.Adapters.Mailgun,
+# api_key: {:system, "MAILGUN_API_KEY"},
+# domain: {:system, "MAILGUN_DOMAIN"}
+# adapter: Swoosh.Adapters.Sendgrid,
+# api_key: {:system, "SENDGRID_API_KEY"}
+
 import_config "#{Mix.env()}.exs"

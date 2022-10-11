@@ -52,7 +52,7 @@ query GetOppProfile($input: GetOppProfileInput!) {
       events {
 
         ...on ConversationPublished {
-          type
+          kind
           occurredAt
           persona
           conversation {
@@ -60,7 +60,7 @@ query GetOppProfile($input: GetOppProfileInput!) {
           }
         }
         ...on ContactProfileChanged {
-          type
+          kind
           occurredAt
           contact {
             ...ProfileProps

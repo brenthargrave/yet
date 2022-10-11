@@ -46,6 +46,12 @@ const newOppPayment = oppPayment.extend("/new")
 
 const me = root.extend("/me")
 
+const unsubscribe = root.extend("/unsubscribe")
+const unsubscribeDigest = unsubscribe.extend(
+  { id: param.path.string },
+  (p) => `/digest/${p.id}`
+)
+
 export const { routes, useRoute, RouteProvider, session } = createRouter({
   in: defineRoute("/in"),
   out: defineRoute("/out"),
@@ -64,6 +70,7 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
   // profiles,
   // profile,
   me,
+  unsubscribeDigest,
 })
 
 export const routesProfilesList = [

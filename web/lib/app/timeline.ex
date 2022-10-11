@@ -26,6 +26,20 @@ defmodule App.Timeline do
     ]
   ]
 
+  def backfill_all do
+    from(c in Conversation,
+      where: c.status == :signed,
+      preload: ^Conversations.preloads()
+    )
+    |> Repo.all()
+    |> Enum.each(&handle_published(&1, false))
+  end
+
+  def rebuild_all do
+    Repo.delete_all(TimelineEvent)
+    __MODULE__.backfill_all()
+  end
+
   defun async_handle_published(
           conversation :: Conversation.t(),
           notify_subscriptions \\ false
@@ -36,12 +50,7 @@ defmodule App.Timeline do
       # ! TODO: scalable solution
       # NOTE: rerun for all prior records every time someone makes new contacts
       if notify_subscriptions do
-        from(c in Conversation,
-          where: c.status != :deleted,
-          preload: ^Conversations.preloads()
-        )
-        |> Repo.all()
-        |> Enum.each(&handle_published(&1, false))
+        __MODULE__.backfill_all()
       end
     end)
 
@@ -161,17 +170,17 @@ defmodule App.Timeline do
   end
 
   @type ids :: list(String.t())
-  @type filters :: %{opp_ids: ids(), omit_own: boolean(), only_own: boolean()}
-  @type input :: %{filters: filters()} | %{}
+  @type filters :: %{
+          opp_ids: ids(),
+          omit_own: boolean(),
+          only_own: boolean(),
+          occurred_after: DateTime.t()
+        }
 
   defun get_events(
           viewer :: Customer.t(),
           filters :: filters()
         ) :: Brex.Result.s(list(TimelineEvent.t())) do
-    opp_ids = Map.get(filters, :opps, nil)
-    omit_own = Map.get(filters, :omit_own, false)
-    only_own = Map.get(filters, :only_own, false)
-
     query =
       from(e in TimelineEvent,
         preload: ^@preloads,
@@ -180,19 +189,17 @@ defmodule App.Timeline do
         distinct: e.id
       )
 
-    query =
-      if is_nil(opp_ids),
-        do: query,
-        else:
-          from(e in query,
-            join: c in assoc(e, :conversation),
-            join: o in assoc(c, :opps),
-            where: e.type == :conversation_published,
-            where: o.id in ^opp_ids
-          )
+    since = Map.get(filters, :occurred_after, nil)
 
-    # TODO: Alice should not see convos two hops away (Charlie <> David)
-    # only Bob <> Charlie at most
+    query =
+      if is_nil(since),
+        do: query,
+        else: from(e in query, where: e.occurred_at > ^since)
+
+    omit_own =
+      Map.get(filters, :omit_own)
+      |> IO.inspect()
+
     query =
       if omit_own,
         do:
@@ -202,6 +209,8 @@ defmodule App.Timeline do
             where: c.creator_id != ^viewer.id and s.signer_id != ^viewer.id
           ),
         else: query
+
+    only_own = Map.get(filters, :only_own, false)
 
     query =
       if only_own,
@@ -224,7 +233,7 @@ defmodule App.Timeline do
     events
     |> Enum.map(
       &case &1 do
-        %TimelineEvent{type: :conversation_published} = event ->
+        %TimelineEvent{kind: :conversation_published} = event ->
           # rename key to persona
           {persona, event} = Map.pop(event, :conversation_published_persona)
           event = Map.put(event, :persona, persona)

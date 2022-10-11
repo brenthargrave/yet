@@ -19,7 +19,8 @@ defmodule AppWeb.Graph.Context do
   """
   def build_context(conn) do
     with ["Bearer " <> token] <- get_req_header(conn, "authorization"),
-         {:ok, customer} <- authorize(token) do
+         {:ok, customer} <-
+           authorize(token) do
       %{customer: customer}
     else
       _ -> %{}

@@ -15,6 +15,7 @@ import { match } from "ts-pattern"
 import { Source as ActionSource } from "~/action"
 import { Auth } from "~/components/Auth"
 import { Landing } from "~/components/Landing"
+import { Unsubscribe } from "./Unsubscribe"
 import {
   Customer,
   eatUnrecoverableError,
@@ -39,6 +40,7 @@ enum State {
   auth = "auth",
   landing = "landing",
   home = "home",
+  unsubscribe = "unsubscribe",
 }
 
 export interface Sources {
@@ -65,6 +67,8 @@ export const App = (sources: Sources) => {
     ...auth
   } = Auth(sources)
 
+  const unsubscribe = Unsubscribe(sources, "App")
+
   const me$: Observable<null | Customer> = merge(authMe$, cachedMe$).pipe(
     tag("me$")
   )
@@ -84,6 +88,7 @@ export const App = (sources: Sources) => {
     debounceTime(100),
     map(({ route, me }) => {
       return match(route.name)
+        .with(routes.unsubscribeDigest.name, () => State.unsubscribe)
         .with(routes.in.name, () => State.auth)
         .with(routes.root.name, () =>
           isLurking(me) ? State.landing : State.home
@@ -100,6 +105,7 @@ export const App = (sources: Sources) => {
         .with(State.landing, () => landingView$)
         .with(State.auth, () => auth.react)
         .with(State.home, () => home.react)
+        .with(State.unsubscribe, () => unsubscribe.react)
         .exhaustive()
     ),
     tag("bodyView$")
@@ -125,12 +131,17 @@ export const App = (sources: Sources) => {
     tag("react$")
   )
 
-  const router = merge(guardHistory$, auth.router, home.router).pipe(
-    eatUnrecoverableError()
-  )
+  const router = merge(
+    guardHistory$,
+    auth.router,
+    home.router,
+    unsubscribe.router
+  ).pipe(eatUnrecoverableError())
   const notice = merge(auth.notice, home.notice).pipe(eatUnrecoverableError())
   const graph = merge(auth.graph, home.graph).pipe(eatUnrecoverableError())
-  const track = merge(home.track).pipe(eatUnrecoverableError())
+  const track = merge(home.track, unsubscribe.track).pipe(
+    eatUnrecoverableError()
+  )
   const action = merge(home.action)
 
   return {

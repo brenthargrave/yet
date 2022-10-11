@@ -16,14 +16,14 @@ defmodule AppWeb.Graph.Timeline do
   end
 
   object :conversation_published do
-    field(:type, non_null(:timeline_event_type))
+    field(:kind, non_null(:timeline_event_type))
     field(:occurred_at, non_null(:datetime))
     field(:conversation, non_null(:conversation))
     field(:persona, non_null(:persona))
   end
 
   object :contact_profile_changed do
-    field(:type, non_null(:timeline_event_type))
+    field(:kind, non_null(:timeline_event_type))
     field(:occurred_at, non_null(:datetime))
     field(:contact, non_null(:profile))
   end
@@ -32,10 +32,10 @@ defmodule AppWeb.Graph.Timeline do
     types([:conversation_published, :contact_profile_changed])
 
     resolve_type(fn
-      %TimelineEvent{type: :conversation_published}, _ ->
+      %TimelineEvent{kind: :conversation_published}, _ ->
         :conversation_published
 
-      %TimelineEvent{type: :contact_profile_changed}, _ ->
+      %TimelineEvent{kind: :contact_profile_changed}, _ ->
         :contact_profile_changed
     end)
   end
@@ -48,6 +48,7 @@ defmodule AppWeb.Graph.Timeline do
     field(:opps, list_of(non_null(:id)))
     field(:omit_own, :boolean)
     field(:only_own, :boolean)
+    field(:kind, :timeline_event_type)
   end
 
   input_object :timeline_input do

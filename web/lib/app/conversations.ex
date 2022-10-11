@@ -54,7 +54,7 @@ defmodule App.Conversations do
         do: error(:unauthorized),
         else: ok(&1)
     )
-    # NOTE: disable edititing once proposed
+    # NOTE: UI disables edititing once proposed
     |> bind(
       &if Enum.member?([:draft, :proposed], &1.status),
         do: ok(&1),
