@@ -3,11 +3,14 @@ import Mocha from "mocha"
 export * from "./src/browser"
 
 const mocha = new Mocha()
+
 // mocha.unloadFiles()
 
 mocha.timeout(120 * 1000)
 
+// mocha.addFile(`./test/view-conversation-while-unauthenticated.spec.ts`)
 mocha.addFile(`./test/first.spec.ts`)
+
 // mocha.fullTrace()
 
 // mocha.run()

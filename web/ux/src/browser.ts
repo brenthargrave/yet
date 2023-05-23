@@ -12,6 +12,7 @@ export enum Nav {
   Home = "Home",
   Conversations = "Conversations",
   Profile = "Profile",
+  Opps = "Opportunities",
 }
 
 const { UX_DEBUG_BROWSER, PORT_SSL, PRODUCT_NAME = "TBD" } = process.env
@@ -26,11 +27,16 @@ process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0"
 const sandboxURL = `${baseURL}/sandbox`
 
 export const checkoutSandbox = async () =>
-  await fetch(sandboxURL, { method: "POST" }).then((response) => {
-    const value = response?.text()
-    if (!value) throw new Error("MIA: sandbox value for headers")
-    return value
-  })
+  await fetch(sandboxURL, { method: "POST" })
+    .then((response) => {
+      const value = response?.text()
+      if (!value) throw new Error("MIA: sandbox value for headers")
+      return value
+    })
+    .catch((err) => {
+      console.error(err)
+      throw err
+    })
 
 export const checkinSandbox = async () =>
   await fetch(sandboxURL, { method: "DELETE" }).then((res) =>
@@ -230,13 +236,12 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       await press("Enter")
       await input("Note", c.note)
       await click("Mention Opp")
-      // TODO: opps.each seeOpp, addOpp
-      const opp = first(c.mentions ?? [])
-      if (!opp) throw new Error(`MIA: opp`)
-      await seeOpp(opp)
-      await addOpp(opp)
+      const opps = c.mentions
+      opps?.forEach(async (opp) => {
+        await seeOpp(opp)
+        await addOpp(opp)
+      })
       // await click("Publish", { delay: 2000 })
-
       await page.keyboard.down("Control")
       await page.keyboard.press("p")
       await page.keyboard.up("Control")
@@ -249,11 +254,12 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
         if (!value) throw new Error("MIA: shareURL value")
         return value
       })
-      const path = new URL(shareURL).pathname
-      const ulids = extractULIDs(path)
+      const cosignPath = new URL(shareURL).pathname
+      // update conversation object w/ ids UUID
+      const ulids = extractULIDs(cosignPath)
       const cid = first(ulids)
       c.id = cid
-      return path
+      return cosignPath
     }
 
     const signupAndSignConversationAtPath = async (path: string) => {
@@ -280,6 +286,21 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       for (const view of hide) {
         await click(view)
         await notSeeConversation(c)
+      }
+    }
+
+    const seeNavOptions = async ({
+      show,
+      hide,
+    }: {
+      show: Nav[]
+      hide: Nav[]
+    }) => {
+      for (const view of show) {
+        await see(view)
+      }
+      for (const view of hide) {
+        await notSee(view)
       }
     }
 
@@ -312,6 +333,7 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       signupAndSignConversationAtPath,
       accessConversation,
       accessOpp,
+      seeNavOptions,
     }
   }
 

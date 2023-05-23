@@ -18,6 +18,7 @@ export enum Orientation {
 
 export interface Props {
   orientation: Orientation
+  showHomeOnly: boolean
   onClickConversations: () => void
   onClickOpps: () => void
   onClickHome: () => void
@@ -36,6 +37,7 @@ const onClickBlur = (
 
 export const MenuView: FC<Props> = ({
   orientation,
+  showHomeOnly = true,
   onClickConversations: _onClickConvos,
   onClickOpps: _onClickOpps,
   onClickHome: _onClickHome,
@@ -68,36 +70,39 @@ export const MenuView: FC<Props> = ({
         ...ariaLabel("Home"),
       }),
     ]),
-    h(Tooltip, { shouldWrapChildren: true, label: "Conversations" }, [
-      h(IconButton, {
-        icon: h(Icon, { as: iconConversations }),
-        size: "lg",
-        variant: "outline",
-        ref: buttonRefConvos,
-        onClick: onClickConvos,
-        ...ariaLabel("Conversations"),
-      }),
-    ]),
-    h(Tooltip, { shouldWrapChildren: true, label: "Opportunities" }, [
-      h(IconButton, {
-        icon: h(Icon, { as: iconOpps }),
-        size: "lg",
-        variant: "outline",
-        // color: "green.600",
-        ref: buttonRefOpps,
-        onClick: onClickOpps,
-        ...ariaLabel("Opportunities"),
-      }),
-    ]),
-    h(Tooltip, { shouldWrapChildren: true, label: "Profile" }, [
-      h(IconButton, {
-        icon: h(Icon, { as: iconProfile }),
-        size: "lg",
-        variant: "outline",
-        ref: buttonRefProfile,
-        onClick: onClickProfile,
-        ...ariaLabel("Profile"),
-      }),
-    ]),
+    !showHomeOnly &&
+      h(Tooltip, { shouldWrapChildren: true, label: "Conversations" }, [
+        h(IconButton, {
+          icon: h(Icon, { as: iconConversations }),
+          size: "lg",
+          variant: "outline",
+          ref: buttonRefConvos,
+          onClick: onClickConvos,
+          ...ariaLabel("Conversations"),
+        }),
+      ]),
+    !showHomeOnly &&
+      h(Tooltip, { shouldWrapChildren: true, label: "Opportunities" }, [
+        h(IconButton, {
+          icon: h(Icon, { as: iconOpps }),
+          size: "lg",
+          variant: "outline",
+          // color: "green.600",
+          ref: buttonRefOpps,
+          onClick: onClickOpps,
+          ...ariaLabel("Opportunities"),
+        }),
+      ]),
+    !showHomeOnly &&
+      h(Tooltip, { shouldWrapChildren: true, label: "Profile" }, [
+        h(IconButton, {
+          icon: h(Icon, { as: iconProfile }),
+          size: "lg",
+          variant: "outline",
+          ref: buttonRefProfile,
+          onClick: onClickProfile,
+          ...ariaLabel("Profile"),
+        }),
+      ]),
   ])
 }

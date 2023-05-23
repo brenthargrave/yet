@@ -33,7 +33,7 @@ export const ConversationView: FC<Props> = ({
     Stack,
     { direction: "column", ...ariaLabel(ariaLabelValue(conversation)) },
     [
-      h(Stack, { direction: "row", alignItems: "start" }, [
+      h(Stack, { direction: "row", alignItems: "end" }, [
         h(Stack, { direction: "column", alignItems: "start" }, [
           h(ParticipantsView, {
             viewer,
@@ -42,17 +42,18 @@ export const ConversationView: FC<Props> = ({
             invitees,
             signers,
           }),
+          h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
         ]),
         h(Spacer),
         h(
           Stack,
           {
-            direction: "column",
-            alignItems: "end",
+            direction: "row",
+            justifyContent: "flex-end",
             minWidth: "99px", // NOTE: fixed to prevent date wrap
           },
           [
-            h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
+            // h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
             showStatus && h(Status, { status }),
           ]
         ),

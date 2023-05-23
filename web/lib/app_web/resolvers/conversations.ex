@@ -25,9 +25,11 @@ defmodule AppWeb.Resolvers.Conversations do
   defun get_conversation(
           _parent,
           %{id: id} = _args,
-          _resolution
+          # NOTE: customer is optional, not available when lurking (unauth'd)
+          %{context: context} = _resolution
         ) :: resolver_result(ConversationPayload.t()) do
-    Conversations.get_conversation(id)
+    customer = Map.get(context, :customer, nil)
+    Conversations.get_conversation(id, customer)
     |> fmap(&%ConversationPayload{conversation: &1})
     |> convert_error(:not_found, %ConversationPayload{user_error: UserError.not_found()})
   end

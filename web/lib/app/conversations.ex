@@ -68,7 +68,10 @@ defmodule App.Conversations do
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 
-  defun get_conversation(id :: id()) :: Brex.Result.s(Conversation.t()) do
+  defun get_conversation(
+          id :: id(),
+          viewer :: Customer.t()
+        ) :: Brex.Result.s(Conversation.t()) do
     Repo.get(Conversation, id)
     |> Repo.preload(@preloads)
     |> lift(nil, :not_found)
@@ -202,7 +205,7 @@ defmodule App.Conversations do
 
   defun notify_registered_invitees(conversation :: Conversation.t()) :: Conversation.t() do
     creator_name = conversation.creator.name
-    url = Conversation.show_url(conversation)
+    url = Conversation.sign_url(conversation)
     body = ~s<#{creator_name} has notes for you to cosign #{url}>
 
     contact_ids =

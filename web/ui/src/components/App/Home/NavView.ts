@@ -25,12 +25,12 @@ export const isFrom = (event: React.MouseEvent<HTMLElement>) => {
 }
 
 export interface Props extends Omit<MenuProps, "orientation"> {
-  showMenu?: boolean
+  showHomeOnly: boolean
 }
 
 export const View: FC<Props> = ({
   children,
-  showMenu = false,
+  showHomeOnly,
   onClickConversations,
   onClickOpps,
   onClickHome,
@@ -59,29 +59,35 @@ export const View: FC<Props> = ({
   return h(Stack, { direction: "column", width: "100%", height: "100%" }, [
     h(Stack, { width: "100%", direction: "row" }, [
       h(VStack, { minWidth: gutterWidth }, [
-        showMenu &&
-          h(Show, { above: "sm" }, [
-            h(
-              HStack,
-              {
-                minWidth: gutterWidth,
-                sx: { position: "sticky", top: "60px" },
-                justify: "end",
-                paddingRight: 4,
-              },
-              [
-                h(MenuView, {
-                  orientation: Orientation.vertical,
-                  onClickConversations,
-                  onClickOpps,
-                  onClickHome,
-                  onClickProfile,
-                }),
-                h(Divider, { orientation: "vertical" }),
-              ]
-            ),
-          ]),
+        h(Show, { above: "sm" }, [
+          h(
+            HStack,
+            {
+              minWidth: gutterWidth,
+              sx: { position: "sticky", top: "60px" },
+              justify: "end",
+              paddingRight: 4,
+            },
+            [
+              h(MenuView, {
+                orientation: Orientation.vertical,
+                showHomeOnly,
+                onClickConversations,
+                onClickOpps,
+                onClickHome,
+                onClickProfile,
+              }),
+              h(Divider, { orientation: "vertical" }),
+            ]
+          ),
+        ]),
       ]),
+      // TODO: prefer once rxjs/xstream compat fixed
+      // h(FullWidthVStack, { height: "100%" }, [
+      //   //
+      //   headerNav,
+      //   children,
+      // ]),
       children,
       h(VStack, { minWidth: gutterWidth }, [
         //
@@ -93,37 +99,37 @@ export const View: FC<Props> = ({
       //
       h(Spacer),
     ]),
-    showMenu &&
-      h(Hide, { above: "sm" }, [
-        h(
-          Stack,
-          {
-            ref,
-            sx: {
-              position: "fixed",
-              left,
-              bottom: 0,
-              zIndex: 2,
-            },
-            direction: "row",
-            alignItems: "center",
-            padding: 4,
-            marginBottom: 4,
-            backgroundColor: "white",
-            borderRadius: "lg",
-            onClick: onClickOutside,
+    h(Hide, { above: "sm" }, [
+      h(
+        Stack,
+        {
+          ref,
+          sx: {
+            position: "fixed",
+            left,
+            bottom: 0,
+            zIndex: 2,
           },
-          [
-            h(MenuView, {
-              orientation: Orientation.horizontal,
-              onClickConversations,
-              onClickOpps,
-              onClickHome,
-              onClickProfile,
-            }),
-          ]
-        ),
-      ]),
+          direction: "row",
+          alignItems: "center",
+          padding: 4,
+          marginBottom: 4,
+          backgroundColor: "white",
+          borderRadius: "lg",
+          onClick: onClickOutside,
+        },
+        [
+          h(MenuView, {
+            orientation: Orientation.horizontal,
+            showHomeOnly,
+            onClickConversations,
+            onClickOpps,
+            onClickHome,
+            onClickProfile,
+          }),
+        ]
+      ),
+    ]),
   ])
 }
 

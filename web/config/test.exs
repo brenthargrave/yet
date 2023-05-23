@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 # NOTE: default generated config
 # config :app, AppWeb.Endpoint, server: false

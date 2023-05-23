@@ -30,7 +30,9 @@ import {
   Source as RouterSource,
 } from "~/router"
 import { cb$, mapTo, shareLatest } from "~/rx"
+import { redirectToAuth$ } from "~/system"
 import { Conversations } from "./Conversations"
+import { HeaderNav } from "./HeaderNav"
 import { Location, Opps, State as OppsState } from "./Opps"
 import { Payments } from "./Payments"
 import { Profiles } from "./Profiles"
@@ -198,19 +200,15 @@ export const Home = (sources: Sources) => {
     shareLatest()
   )
 
-  const showMenu$ = combineLatest({
-    hasOpps: hasOpps$,
-    isEditing: isEditing$,
-  }).pipe(
-    map(({ hasOpps, isEditing }) => true),
-    startWith(false),
-    distinctUntilChanged(),
-    tag("showMenu$"),
+  const showHomeOnly$ = me$.pipe(
+    map((me) => !isAuthenticated(me)),
+    startWith(true),
+    tag("showHomeOnly$"),
     shareLatest()
   )
 
   const props$ = combineLatest({
-    showMenu: showMenu$,
+    showHomeOnly: showHomeOnly$,
   }).pipe(tag("props$"))
 
   const subview$ = rootState$.pipe(
@@ -268,7 +266,8 @@ export const Home = (sources: Sources) => {
   const router = merge(
     ...pluck("router", [conversations, timeline, profiles, payments]),
     rootRouter$,
-    oppsRouter$
+    oppsRouter$,
+    redirectToAuth$
   )
   const track = merge(...pluck("track", [conversations]))
   const notice = merge(

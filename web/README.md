@@ -11,7 +11,7 @@ mkcert -install
   mkcert \
   --cert-file localhost-cert.pem \
   --key-file localhost-key.pem \
-  trawler.wip localhost 127.0.0.1 ::1 $ipaddr.xip.io \
+  yet.wip localhost 127.0.0.1 ::1 $ipaddr.xip.io \
   )
 
 ### on iOS Simulator
@@ -29,12 +29,12 @@ heroku local:run -e .env.dev mix ecto.create
 heroku local:run -e .env.dev mix ecto.migrate
 heroku local -e .env.dev
 
-# optional: `https://trawler.wip` using `puma-dev`
+# optional: `https://yet.wip` using `puma-dev`
 sudo puma-dev -uninstall && puma-dev -setup
 echo 5000 > .port
-wd=$(pwd) && (cd ~/.puma-dev/ && ln -s $wd/.port trawler)
+wd=$(pwd) && (cd ~/.puma-dev/ && ln -s $wd/.port yet)
 puma-dev -install -debug -d test:wip:localhost -launchd
-open https://trawler.wip
+open https://yet.wip
 ```
 
 ## Deployment
@@ -42,4 +42,11 @@ open https://trawler.wip
 ```
 heroku git:remote -r prod -a yet-prod
 (cd .. && git push prod --force `git subtree split --prefix web HEAD`:refs/heads/master)
+```
+
+## Replace local db w/ copy of remote database
+
+```
+DISABLE_DATABASE_ENVIRONMENT_CHECK=1 heroku local:run -e .env.dev mix ecto.drop && \
+  heroku pg:pull DATABASE_URL yet_dev -r prod
 ```

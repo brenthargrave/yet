@@ -1,11 +1,11 @@
-import type { PlaywrightTestConfig } from '@playwright/test';
-import { devices } from '@playwright/test';
+import type { PlaywrightTestConfig } from "@playwright/test"
+import { devices } from "@playwright/test"
 
 const config: PlaywrightTestConfig = {
-  testDir: './tests',
+  testDir: "./tests",
   timeout: 30 * 1000,
   expect: {
-    timeout: 5000
+    timeout: 5000,
   },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -15,8 +15,8 @@ const config: PlaywrightTestConfig = {
   use: {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
     actionTimeout: 0,
-    baseURL: 'https://localhost:6443/',
-    trace: 'on-first-retry',
+    baseURL: "https://localhost:6443/",
+    trace: "on-first-retry",
   },
 
   projects: [
@@ -27,9 +27,9 @@ const config: PlaywrightTestConfig = {
     //   },
     // },
     {
-      name: 'Mobile Safari',
+      name: "Mobile Safari",
       use: {
-        ...devices['iPhone 12'],
+        ...devices["iPhone 12"],
       },
     },
   ],
@@ -41,6 +41,6 @@ const config: PlaywrightTestConfig = {
     port: 6443,
     reuseExistingServer: !process.env.CI,
   },
-};
+}
 
-export default config;
+export default config

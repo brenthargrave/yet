@@ -3,18 +3,17 @@ defmodule AppWeb.Resolvers.Onboarding do
   use App.Types
   use TypedStruct
   use Brex.Result
-  import ShorterMaps
   alias App.{Onboarding}
   alias App.{UserError, Profile}
 
   typedstruct module: UpdateProfilePayload do
-    field :profile, Profile.t()
-    field :user_error, UserError.t()
+    field(:profile, Profile.t())
+    field(:user_error, UserError.t())
   end
 
   defun patch_profile(
           _parent,
-          %{input: ~M{ id, prop, value }} = _args,
+          %{input: %{id: id, prop: prop, value: value}} = _args,
           _resolution
         ) :: resolver_result() do
     Onboarding.patch_profile(id, prop, value)

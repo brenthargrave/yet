@@ -7,7 +7,6 @@ defmodule App.MixProject do
       version: "0.1.0",
       elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix] ++ Mix.compilers(),
       # NOTE: https://git.io/JuC3H
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
@@ -37,11 +36,13 @@ defmodule App.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.6"},
+      {:phoenix, "~> 1.7.0"},
+      {:phoenix_view, "~> 2.0"},
       {:phoenix_ecto, "~> 4.4"},
-      {:ecto_sql, "~> 3.4"},
+      {:ecto, "~> 3.10"},
+      {:ecto_sql, "~> 3.10"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_live_dashboard, "~> 0.4"},
+      {:phoenix_live_dashboard, "~> 0.8.0"},
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.0"},
@@ -58,13 +59,13 @@ defmodule App.MixProject do
       {:ecto_ulid, "~> 0.3.0"},
       {:typed_ecto_schema, "~> 0.4.1"},
       {:brex_result, github: "brexhq/result"},
-      {:shorter_maps, "~> 2.2"},
+      {:shorter_maps, "~> 2.2"}, # TODO: drop
       {:scribe, "~> 0.10"},
-      {:tabula, "~> 2.1.1"},
+      {:tabula, "~> 2.1"},
       {:timex, "~> 3.0"},
       {:r_enum, "~> 0.6"},
       {:html_sanitize_ex, "~> 1.4"},
-      {:httpoison, "~> 1.8"},
+      {:httpoison, "~> 2.1"},
       {:money, "~> 1.9"},
       {:corsica, "~> 1.0"},
       {:ecto_commons, "~> 0.3.3"}

@@ -14,6 +14,7 @@ export const productName = entryElement?.dataset.product || "TBD"
 
 const messages: Record<string, string> = {
   "app.footer.copyright": "© 2022 Hargrave & Co.",
+  "app.auth": "Sign in / Sign up",
   "landing.join": `Create Account`,
   "landing.login": `Sign in`,
   "auth.tel.entry.cta": `My phone number is`,

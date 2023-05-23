@@ -13,25 +13,26 @@ defmodule App.Conversation do
 
   typed_schema "conversations" do
     embeds_many :invitees, Invitee, on_replace: :delete do
-      field :name, :string, enforce: true
-      field :is_contact, :boolean, enforce: true
+      field(:name, :string, enforce: true)
+      field(:is_contact, :boolean, enforce: true)
     end
 
-    field :note, :string
-    belongs_to :creator, Customer
+    field(:note, :string)
+    belongs_to(:creator, Customer)
 
-    field :status, Ecto.Enum, values: [:draft, :proposed, :signed, :deleted], default: :draft
-    field :deleted_at, :utc_datetime_usec
-    field :occurred_at, :utc_datetime_usec
-    field :proposed_at, :utc_datetime_usec
+    field(:status, Ecto.Enum, values: [:draft, :proposed, :signed, :deleted], default: :draft)
+    field(:deleted_at, :utc_datetime_usec)
+    field(:occurred_at, :utc_datetime_usec)
+    field(:proposed_at, :utc_datetime_usec)
 
-    has_many :signatures, Signature, on_delete: :delete_all
-    has_many :reviews, Review, on_delete: :delete_all
-    has_many :mentions, Mention, on_delete: :delete_all, on_replace: :delete_if_exists
+    has_many(:signatures, Signature, on_delete: :delete_all)
+    has_many(:reviews, Review, on_delete: :delete_all)
+    has_many(:mentions, Mention, on_delete: :delete_all, on_replace: :delete_if_exists)
 
-    has_many :opps,
+    has_many(:opps,
       through: [:mentions, :opp],
       preload_order: [desc: :inserted_at]
+    )
 
     timestamps(type: :utc_datetime_usec)
   end
@@ -85,6 +86,11 @@ defmodule App.Conversation do
 
   defun show_url(conversation :: __MODULE__.t()) :: String.t() do
     ~s<https://#{System.get_env("HOST")}/c/#{conversation.id}>
+  end
+
+  defun sign_url(conversation :: __MODULE__.t()) :: String.t() do
+    base_url = show_url(conversation)
+    ~s<#{base_url}/sign>
   end
 
   defun get_participants(conversation :: __MODULE__.t()) :: list(Contact.t()) do

@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :app, AppWeb.Endpoint,
   # TODO: restore
