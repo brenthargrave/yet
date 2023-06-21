@@ -33,8 +33,7 @@ defmodule App.Conversations do
 
   defun upsert_conversation(
           customer,
-          %{id: id, invitees: invitees, note: note, occurred_at: occurred_at, mentions: mentions} =
-            _input
+          %{id: id, invitees: invitees, note: note, occurred_at: occurred_at, mentions: mentions} = _input
         ) :: Brex.Result.s(Conversation.t()) do
     attrs = %{
       creator: customer,
@@ -133,6 +132,7 @@ defmodule App.Conversations do
     |> fmap(&Map.put(attrs, :conversation, &1))
     |> fmap(&Signature.changeset/1)
     |> bind(&Repo.insert/1)
+    |> fmap(&Signature.update_stats/1)
     |> fmap(&tap_notify_creator_of_signature(&1, conversation_url))
     |> fmap(&tap_save_opp_versions/1)
     |> fmap(&Conversation.signed_changeset/1)
@@ -213,7 +213,7 @@ defmodule App.Conversations do
       |> Enum.filter(&(&1.is_contact == true))
       |> Enum.map(& &1.id)
 
-    recipients = Repo.all(from c in Customer, where: c.id in ^contact_ids)
+    recipients = Repo.all(from(c in Customer, where: c.id in ^contact_ids))
 
     App.Task.async_nolink(fn ->
       Enum.each(recipients, fn recipient ->

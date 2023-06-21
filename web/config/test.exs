@@ -13,3 +13,5 @@ config :app, App.Repo,
 
 # config :logger, :console, level: :warn
 config :logger, :console, level: :debug
+
+config :segment, send_to_http: false

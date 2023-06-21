@@ -56,8 +56,10 @@ export const List = (sources: Sources, tagPrefix?: string) => {
     mergeMap(([_, me]) =>
       track$({
         name: EventName.TapNewConversation,
-        properties: {},
-        userId: me?.id,
+        properties: {
+          signatureCount: me?.stats?.signatureCount,
+        },
+        customerId: me?.id,
       })
     )
   )

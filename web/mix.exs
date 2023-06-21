@@ -59,7 +59,6 @@ defmodule App.MixProject do
       {:ecto_ulid, "~> 0.3.0"},
       {:typed_ecto_schema, "~> 0.4.1"},
       {:brex_result, github: "brexhq/result"},
-      {:shorter_maps, "~> 2.2"}, # TODO: drop
       {:scribe, "~> 0.10"},
       {:tabula, "~> 2.1"},
       {:timex, "~> 3.0"},
@@ -68,7 +67,8 @@ defmodule App.MixProject do
       {:httpoison, "~> 2.1"},
       {:money, "~> 1.9"},
       {:corsica, "~> 1.0"},
-      {:ecto_commons, "~> 0.3.3"}
+      {:ecto_commons, "~> 0.3.3"},
+      {:segment, "~> 0.2.6"}
     ]
   end
 

@@ -116,7 +116,7 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
   const tag = makeTagger(tagPrefix)
 
   const {
-    graph: { contacts$ },
+    graph: { contacts$, me$ },
     props: { id$, record$: _record$, liveRecord$ },
     router: { history$ },
   } = sources
@@ -437,11 +437,15 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     tag("propose$")
   )
   const trackPropose$ = onClickPublish$.pipe(
-    withLatestFrom(id$),
-    switchMap(([_, id]) =>
+    withLatestFrom(id$, me$),
+    switchMap(([_, id, me]) =>
       track$({
         name: EventName.TapPropose,
-        properties: { conversation: id },
+        properties: {
+          conversationId: id,
+          signatureCount: me?.stats?.signatureCount,
+        },
+        customerId: me?.id,
       })
     ),
     tag("trackPropose$"),

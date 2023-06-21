@@ -1,11 +1,10 @@
 import { h } from "@cycle/react"
 import { of } from "rxjs"
 import { CC, Sources } from "~/components/App"
-import { EventName, track } from "~/graph"
+import { makeTagger } from "~/log"
 import { routes } from "~/router"
 import { cb$ } from "~/rx"
 import { View } from "./View"
-import { makeTagger } from "~/log"
 
 export const Landing: CC<Sources> = (sources, _tagScope) => {
   const tagScope = `${_tagScope}/Landing`
@@ -15,7 +14,8 @@ export const Landing: CC<Sources> = (sources, _tagScope) => {
 
   const onClickJoin = async () => {
     routes.in().push()
-    const _event = await track(EventName.TapSignup)
+    // TODO: restore
+    // const _event = await track(EventName.TapSignup)
   }
 
   const onClickLogin = () => routes.in().push()

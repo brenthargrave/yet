@@ -55,6 +55,7 @@ import {
   OppInput,
   PatchProfileDocument,
   PatchProfileInput,
+  Platform,
   ProposeConversationDocument,
   ProposeInput,
   ReviewConversationDocument,
@@ -227,24 +228,20 @@ export const me$ = token$.pipe(
 
 const anonId = getId()
 
-export const track = async (
-  name: EventName,
-  properties: EventProperties = {}
-): Promise<Event> => {
+export const track$ = (
+  _input: Omit<TrackEventInput, "anonId" | "occurredAt">
+) => {
+  const occurredAt = new Date().toISOString()
+  const { properties } = _input
   const input = {
+    ..._input,
     anonId,
-    name,
-    properties,
+    occurredAt,
+    properties: {
+      ...properties,
+      platform: Platform.Web,
+    },
   }
-  const result = await urqlClient
-    .mutation(TrackEventDocument, { input })
-    .toPromise()
-  return result.data?.trackEvent as Event
-}
-
-// TODO: add event.occurred_at timestamp, set client-side (don't rely on network timing)
-export const track$ = (_input: Omit<TrackEventInput, "anonId">) => {
-  const input = { ..._input, anonId }
   return from(
     client.mutate({
       mutation: TrackEventDocument,

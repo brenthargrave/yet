@@ -1,13 +1,24 @@
-mutation TrackEvent($input: TrackEventInput!) {
-  trackEvent(input: $input) {
+fragment EventsProps on Event {
+    occurredAt
     name
     anonId
+    properties {
+      conversationId
+      intent
+      platform
+      signatureCount
+    }
+    customerId
+}
+
+mutation TrackEvent($input: TrackEventInput!) {
+  trackEvent(input: $input) {
+    ...EventsProps
   }
 }
 
 query GetEvents {
   events {
-    name
-    anonId
+    ...EventsProps
   }
 }

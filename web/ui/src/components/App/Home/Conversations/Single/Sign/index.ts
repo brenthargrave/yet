@@ -81,9 +81,9 @@ export const Sign = (sources: Sources, tagPrefix?: string) => {
     filterResultOk(),
     mergeMap((record) =>
       track$({
-        name: EventName.ReviewedConversation,
+        name: EventName.ReviewConversation,
         properties: {
-          conversation: record.id,
+          conversationId: record.id,
         },
       })
     ),

@@ -1,18 +1,12 @@
 defmodule AppWeb.Resolvers.Analytics do
+  require Logger
   alias App.Analytics
+  use Brex.Result
 
   def track_event(_parent, %{input: input}, _resolution) do
-    %{name: name, anon_id: anon_id} = input
-    name = Recase.to_snake(name)
-
-    # TODO: Analytics.track_event
-    case Analytics.create_event(%{name: name, anon_id: anon_id}) do
-      {:ok, event} ->
-        {:ok, event}
-
-      {:error, changeset} ->
-        {:error, changeset}
-    end
+    input
+    |> Recase.Enumerable.convert_keys(&Recase.to_snake/1)
+    |> Analytics.track_event()
   end
 
   def events(_parent, _args, _resolution) do

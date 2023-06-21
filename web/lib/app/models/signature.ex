@@ -4,15 +4,17 @@ defmodule App.Signature do
   use Brex.Result
   import Ecto.Changeset
   import App.Types
-  alias App.{Customer, Conversation, OppVersion}
+  alias App.{Customer, Conversation, OppVersion, Signature}
   alias Ecto.Changeset
+  import Ecto.Query
+  alias App.Repo
 
   typed_schema "signatures" do
     timestamps(type: :utc_datetime_usec)
     belongs_to(:conversation, Conversation)
     belongs_to(:signer, Customer)
     field(:signed_at, :utc_datetime_usec)
-    has_many :opp_versions, OppVersion, on_delete: :delete_all
+    has_many(:opp_versions, OppVersion, on_delete: :delete_all)
   end
 
   def changeset(attrs) do
@@ -64,5 +66,21 @@ defmodule App.Signature do
     # dateFormatted = Timex.format!(datetime, "%B %d", :strftime)
 
     "(#{brand}) #{signature.signer.name} cosigned your notes #{conversation_url}"
+  end
+
+  defun update_stats(signature :: __MODULE__.t()) :: __MODULE__.t() do
+    App.Task.async_nolink(fn ->
+      signer = signature.signer
+
+      count =
+        from(signature in Signature, where: signature.signer_id == ^signer.id, select: count())
+        |> Repo.one()
+
+      signer
+      |> Customer.stats_changeset(%{signature_count: count})
+      |> Repo.update()
+    end)
+
+    signature
   end
 end

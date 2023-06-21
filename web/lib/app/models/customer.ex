@@ -7,6 +7,20 @@ defmodule App.Customer do
 
   @type changeset :: Ecto.Changeset.t()
 
+  defmodule Stats do
+    use Ecto.Schema
+    @primary_key false
+
+    embedded_schema do
+      field(:signature_count, :integer, default: 0)
+    end
+
+    def changeset(struct, params \\ %{}) do
+      struct
+      |> cast(params, [:signatures_count])
+    end
+  end
+
   typed_schema "customers" do
     timestamps(type: :utc_datetime_usec)
     field(:e164, :string, null: false)
@@ -16,6 +30,7 @@ defmodule App.Customer do
     field(:org, :string)
     field(:role, :string)
     field(:contacts_ids, {:array, :string})
+    embeds_one(:stats, Stats, on_replace: :update)
   end
 
   def auth_changeset(customer, attrs) do
@@ -40,5 +55,10 @@ defmodule App.Customer do
 
     record
     |> change(contacts_ids: merged_ids)
+  end
+
+  def stats_changeset(customer, stats) do
+    customer
+    |> change(stats: stats)
   end
 end

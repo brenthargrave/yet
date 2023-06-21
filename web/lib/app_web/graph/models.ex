@@ -16,6 +16,10 @@ defmodule AppWeb.Graph.Models do
     field(:code, :error_code)
   end
 
+  object :stats do
+    field(:signature_count, :integer)
+  end
+
   object :customer do
     # auth
     field(:e164, non_null(:string))
@@ -26,5 +30,7 @@ defmodule AppWeb.Graph.Models do
     field(:email, :string)
     field(:org, :string)
     field(:role, :string)
+    # stats
+    field(:stats, :stats)
   end
 end

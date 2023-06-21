@@ -19,7 +19,7 @@ defmodule App.Application do
       AppWeb.Endpoint,
       # Start a worker by calling: App.Worker.start_link(arg)
       # {App.Worker, arg}
-
+      {Segment, System.get_env("SEGMENT_WRITE_KEY")},
       {Absinthe.Subscription, AppWeb.Endpoint},
 
       # https://dockyard.com/blog/2016/05/02/phoenix-tips-and-tricks

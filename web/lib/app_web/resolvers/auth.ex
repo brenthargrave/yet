@@ -1,6 +1,7 @@
 defmodule AppWeb.Resolvers.Auth do
   use Croma
   use App.Types
+  use Brex.Result
   alias App.{Auth}
 
   defun submit_phone(
@@ -24,7 +25,9 @@ defmodule AppWeb.Resolvers.Auth do
           _args,
           %{context: %{customer: customer}} = _resolution
         ) :: resolver_result() do
-    {:ok, customer}
+    customer
+    |> IO.inspect(label: "ME")
+    |> ok()
   end
 
   def token(

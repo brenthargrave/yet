@@ -2,15 +2,18 @@ import { h, ReactSource } from "@cycle/react"
 import {
   combineLatest,
   distinctUntilChanged,
+  distinctUntilKeyChanged,
   EMPTY,
   filter,
   map,
   merge,
+  mergeMap,
   Observable,
   of,
   share,
   startWith,
   switchMap,
+  withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { match } from "ts-pattern"
@@ -21,11 +24,14 @@ import { and, pluck } from "~/fp"
 import {
   Conversation,
   ErrorCode,
+  EventName,
   getConversation$,
+  Intent,
   isCreatedBy,
   isStatusEditable,
   Source as GraphSource,
   subscribeConversation$,
+  track$,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
@@ -176,6 +182,34 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     tagScope
   )
 
+  const mapStateToIntent = (state: State): Intent =>
+    match(state)
+      .with(State.edit, () => Intent.Edit)
+      .with(State.show, () => Intent.View)
+      .with(State.sign, () => Intent.Sign)
+      .otherwise((state) => {
+        throw new Error(`No intent for state: ${state}`)
+      })
+
+  const trackView$ = record$.pipe(
+    distinctUntilKeyChanged("id"),
+    withLatestFrom(state$, me$),
+    filter(([_record, state, _me]) => state !== State.pending),
+    mergeMap(([record, state, me]) =>
+      track$({
+        name: EventName.ViewConversation,
+        customerId: me?.id,
+        properties: {
+          conversationId: record.id,
+          intent: mapStateToIntent(state),
+          signatureCount: me?.stats?.signatureCount,
+        },
+      })
+    ),
+    tag("trackView$"),
+    share()
+  )
+
   const react = merge(
     userError$.pipe(map((error) => h(ErrorView, { error }))),
     state$.pipe(
@@ -200,7 +234,7 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     ...pluck("router", [edit, sign, show]),
     redirectNotFound$
   )
-  const track = merge(...pluck("track", [edit, sign]))
+  const track = merge(...pluck("track", [edit, sign]), trackView$)
   const graph = merge(...pluck("graph", [edit]))
   const action = merge(...pluck("action", [edit]))
 

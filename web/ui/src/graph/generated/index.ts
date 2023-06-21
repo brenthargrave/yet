@@ -87,6 +87,7 @@ export type Customer = {
   name?: Maybe<Scalars['String']>;
   org?: Maybe<Scalars['String']>;
   role?: Maybe<Scalars['String']>;
+  stats?: Maybe<Stats>;
   token: Scalars['String'];
 };
 
@@ -103,19 +104,34 @@ export enum ErrorCode {
 export type Event = {
   __typename?: 'Event';
   anonId: Scalars['String'];
+  customerId?: Maybe<Scalars['String']>;
   name: EventName;
+  occurredAt: Scalars['DateTime'];
+  properties: EventProperties;
 };
 
 export enum EventName {
-  ReviewedConversation = 'REVIEWED_CONVERSATION',
+  ReviewConversation = 'REVIEW_CONVERSATION',
   TapNewConversation = 'TAP_NEW_CONVERSATION',
   TapPropose = 'TAP_PROPOSE',
   TapSignin = 'TAP_SIGNIN',
-  TapSignup = 'TAP_SIGNUP'
+  TapSignup = 'TAP_SIGNUP',
+  ViewConversation = 'VIEW_CONVERSATION'
 }
 
 export type EventProperties = {
-  conversation?: InputMaybe<Scalars['ID']>;
+  __typename?: 'EventProperties';
+  conversationId?: Maybe<Scalars['ID']>;
+  intent?: Maybe<Intent>;
+  platform?: Maybe<Platform>;
+  signatureCount?: Maybe<Scalars['Int']>;
+};
+
+export type EventPropertiesInput = {
+  conversationId?: InputMaybe<Scalars['ID']>;
+  intent?: InputMaybe<Intent>;
+  platform?: InputMaybe<Platform>;
+  signatureCount?: InputMaybe<Scalars['Int']>;
 };
 
 export type GetOppProfileInput = {
@@ -140,6 +156,12 @@ export type GetProfilePayload = {
   __typename?: 'GetProfilePayload';
   profile: Profile;
 };
+
+export enum Intent {
+  Edit = 'EDIT',
+  Sign = 'SIGN',
+  View = 'VIEW'
+}
 
 export type Invitee = {
   __typename?: 'Invitee';
@@ -261,6 +283,10 @@ export enum Persona {
   Opportunist = 'OPPORTUNIST',
   Participant = 'PARTICIPANT',
   Public = 'PUBLIC'
+}
+
+export enum Platform {
+  Web = 'WEB'
 }
 
 export type Profile = {
@@ -449,6 +475,11 @@ export type Signature = {
   signer: Profile;
 };
 
+export type Stats = {
+  __typename?: 'Stats';
+  signatureCount?: Maybe<Scalars['Int']>;
+};
+
 export type SubmitCodeInput = {
   code: Scalars['String'];
   e164: Scalars['String'];
@@ -505,9 +536,10 @@ export type TokenPayload = {
 
 export type TrackEventInput = {
   anonId: Scalars['String'];
+  customerId?: InputMaybe<Scalars['String']>;
   name: EventName;
-  properties: EventProperties;
-  userId?: InputMaybe<Scalars['String']>;
+  occurredAt: Scalars['DateTime'];
+  properties: EventPropertiesInput;
 };
 
 export type UpdateProfileInput = {
@@ -550,29 +582,31 @@ export enum VerificationStatus {
   Pending = 'PENDING'
 }
 
+export type EventsPropsFragment = { __typename?: 'Event', occurredAt: any, name: EventName, anonId: string, customerId?: string | null, properties: { __typename?: 'EventProperties', conversationId?: string | null, intent?: Intent | null, platform?: Platform | null, signatureCount?: number | null } };
+
 export type TrackEventMutationVariables = Exact<{
   input: TrackEventInput;
 }>;
 
 
-export type TrackEventMutation = { __typename?: 'RootMutationType', trackEvent?: { __typename?: 'Event', name: EventName, anonId: string } | null };
+export type TrackEventMutation = { __typename?: 'RootMutationType', trackEvent?: { __typename?: 'Event', occurredAt: any, name: EventName, anonId: string, customerId?: string | null, properties: { __typename?: 'EventProperties', conversationId?: string | null, intent?: Intent | null, platform?: Platform | null, signatureCount?: number | null } } | null };
 
 export type GetEventsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetEventsQuery = { __typename?: 'RootQueryType', events: Array<{ __typename?: 'Event', name: EventName, anonId: string }> };
+export type GetEventsQuery = { __typename?: 'RootQueryType', events: Array<{ __typename?: 'Event', occurredAt: any, name: EventName, anonId: string, customerId?: string | null, properties: { __typename?: 'EventProperties', conversationId?: string | null, intent?: Intent | null, platform?: Platform | null, signatureCount?: number | null } }> };
 
 export type CheckTokenQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type CheckTokenQuery = { __typename?: 'RootQueryType', checkToken?: { __typename?: 'TokenPayload', token?: { __typename?: 'Token', value?: string | null } | null } | null };
 
-export type AuthenticatedCustomerPropsFragment = { __typename?: 'Customer', id: string, token: string, e164: string, name?: string | null, email?: string | null, org?: string | null, role?: string | null };
+export type AuthenticatedCustomerPropsFragment = { __typename?: 'Customer', id: string, token: string, e164: string, name?: string | null, email?: string | null, org?: string | null, role?: string | null, stats?: { __typename?: 'Stats', signatureCount?: number | null } | null };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'RootQueryType', me?: { __typename?: 'Customer', id: string, token: string, e164: string, name?: string | null, email?: string | null, org?: string | null, role?: string | null } | null };
+export type MeQuery = { __typename?: 'RootQueryType', me?: { __typename?: 'Customer', id: string, token: string, e164: string, name?: string | null, email?: string | null, org?: string | null, role?: string | null, stats?: { __typename?: 'Stats', signatureCount?: number | null } | null } | null };
 
 export type SubmitPhoneMutationVariables = Exact<{
   input: SubmitPhoneInput;
@@ -586,7 +620,7 @@ export type SubmitCodeMutationVariables = Exact<{
 }>;
 
 
-export type SubmitCodeMutation = { __typename?: 'RootMutationType', submitCode?: { __typename?: 'SubmitCodePayload', me: { __typename?: 'Customer', id: string, token: string, e164: string, name?: string | null, email?: string | null, org?: string | null, role?: string | null }, verification: { __typename?: 'Verification', status: VerificationStatus } } | { __typename?: 'UserError', message: string } | null };
+export type SubmitCodeMutation = { __typename?: 'RootMutationType', submitCode?: { __typename?: 'SubmitCodePayload', me: { __typename?: 'Customer', id: string, token: string, e164: string, name?: string | null, email?: string | null, org?: string | null, role?: string | null, stats?: { __typename?: 'Stats', signatureCount?: number | null } | null }, verification: { __typename?: 'Verification', status: VerificationStatus } } | { __typename?: 'UserError', message: string } | null };
 
 export type BaseConversationPropsFragment = { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, creator: { __typename?: 'Profile', id: string, name: string, email?: string | null, role?: string | null, org?: string | null }, invitees: Array<{ __typename?: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename?: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename?: 'Profile', id: string, name: string, email?: string | null, role?: string | null, org?: string | null } }> };
 
@@ -742,7 +776,8 @@ export type TimelineEventsAddedSubscriptionVariables = Exact<{
 
 export type TimelineEventsAddedSubscription = { __typename?: 'RootSubscriptionType', timelineEventsAdded?: { __typename?: 'TimelinePayload', events: Array<{ __typename?: 'ContactProfileChanged', type: TimelineEventType, occurredAt: any, contact: { __typename?: 'Profile', id: string, name: string, email?: string | null, role?: string | null, org?: string | null } } | { __typename?: 'ConversationPublished', type: TimelineEventType, occurredAt: any, persona: Persona, conversation: { __typename?: 'Conversation', id: string, note?: string | null, status: ConversationStatus, insertedAt?: any | null, occurredAt: any, deletedAt?: any | null, reviews: Array<{ __typename?: 'Review', id: string, conversationId: string, insertedAt: any, reviewer: { __typename?: 'Profile', id: string, name: string, email?: string | null, role?: string | null, org?: string | null } }>, opps: Array<{ __typename?: 'Opp', id: string, org: string, role: string, desc?: string | null, url?: string | null, insertedAt: any, fee: { __typename?: 'Money', amount: number, currency: Currency }, creator: { __typename?: 'Profile', id: string, name: string, email?: string | null, role?: string | null, org?: string | null }, owner: { __typename?: 'Profile', id: string, name: string, email?: string | null, role?: string | null, org?: string | null } }>, creator: { __typename?: 'Profile', id: string, name: string, email?: string | null, role?: string | null, org?: string | null }, invitees: Array<{ __typename?: 'Invitee', id: string, name: string, isContact: boolean }>, signatures: Array<{ __typename?: 'Signature', id: string, signedAt: any, conversationId: string, signer: { __typename?: 'Profile', id: string, name: string, email?: string | null, role?: string | null, org?: string | null } }> } }> } | null };
 
-export const AuthenticatedCustomerPropsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuthenticatedCustomerProps"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Customer"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"e164"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"org"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]} as unknown as DocumentNode<AuthenticatedCustomerPropsFragment, unknown>;
+export const EventsPropsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventsProps"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Event"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"occurredAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"anonId"}},{"kind":"Field","name":{"kind":"Name","value":"properties"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"conversationId"}},{"kind":"Field","name":{"kind":"Name","value":"intent"}},{"kind":"Field","name":{"kind":"Name","value":"platform"}},{"kind":"Field","name":{"kind":"Name","value":"signatureCount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"customerId"}}]}}]} as unknown as DocumentNode<EventsPropsFragment, unknown>;
+export const AuthenticatedCustomerPropsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuthenticatedCustomerProps"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Customer"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"e164"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"org"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"stats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"signatureCount"}}]}}]}}]} as unknown as DocumentNode<AuthenticatedCustomerPropsFragment, unknown>;
 export const ProfilePropsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProfileProps"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Profile"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"org"}}]}}]} as unknown as DocumentNode<ProfilePropsFragment, unknown>;
 export const BaseConversationPropsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BaseConversationProps"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Conversation"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"creator"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProfileProps"}}]}},{"kind":"Field","name":{"kind":"Name","value":"invitees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"isContact"}}]}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"insertedAt"}},{"kind":"Field","name":{"kind":"Name","value":"occurredAt"}},{"kind":"Field","name":{"kind":"Name","value":"deletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"signatures"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"signedAt"}},{"kind":"Field","name":{"kind":"Name","value":"conversationId"}},{"kind":"Field","name":{"kind":"Name","value":"signer"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProfileProps"}}]}}]}}]}},...ProfilePropsFragmentDoc.definitions]} as unknown as DocumentNode<BaseConversationPropsFragment, unknown>;
 export const MoneyPropsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MoneyProps"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Money"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}}]}}]} as unknown as DocumentNode<MoneyPropsFragment, unknown>;
@@ -753,8 +788,8 @@ export const ConversationPayloadPropsFragmentDoc = {"kind":"Document","definitio
 export const OppPayloadPropsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"OppPayloadProps"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"OppPayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"opp"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"OppProps"}}]}},{"kind":"Field","name":{"kind":"Name","value":"userError"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserErrorProps"}}]}}]}},...OppPropsFragmentDoc.definitions,...UserErrorPropsFragmentDoc.definitions]} as unknown as DocumentNode<OppPayloadPropsFragment, unknown>;
 export const PaymentPropsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PaymentProps"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Payment"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"amount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MoneyProps"}}]}},{"kind":"Field","name":{"kind":"Name","value":"opp"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"OppProps"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payer"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProfileProps"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payee"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProfileProps"}}]}}]}},...MoneyPropsFragmentDoc.definitions,...OppPropsFragmentDoc.definitions,...ProfilePropsFragmentDoc.definitions]} as unknown as DocumentNode<PaymentPropsFragment, unknown>;
 export const TimelinePayloadPropsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TimelinePayloadProps"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TimelinePayload"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"events"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ConversationPublished"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"occurredAt"}},{"kind":"Field","name":{"kind":"Name","value":"persona"}},{"kind":"Field","name":{"kind":"Name","value":"conversation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ConversationProps"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ContactProfileChanged"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"occurredAt"}},{"kind":"Field","name":{"kind":"Name","value":"contact"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProfileProps"}}]}}]}}]}}]}},...ConversationPropsFragmentDoc.definitions,...ProfilePropsFragmentDoc.definitions]} as unknown as DocumentNode<TimelinePayloadPropsFragment, unknown>;
-export const TrackEventDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TrackEvent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TrackEventInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"trackEvent"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"anonId"}}]}}]}}]} as unknown as DocumentNode<TrackEventMutation, TrackEventMutationVariables>;
-export const GetEventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetEvents"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"events"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"anonId"}}]}}]}}]} as unknown as DocumentNode<GetEventsQuery, GetEventsQueryVariables>;
+export const TrackEventDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TrackEvent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TrackEventInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"trackEvent"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventsProps"}}]}}]}},...EventsPropsFragmentDoc.definitions]} as unknown as DocumentNode<TrackEventMutation, TrackEventMutationVariables>;
+export const GetEventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetEvents"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"events"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventsProps"}}]}}]}},...EventsPropsFragmentDoc.definitions]} as unknown as DocumentNode<GetEventsQuery, GetEventsQueryVariables>;
 export const CheckTokenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CheckToken"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"checkToken"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]}}]} as unknown as DocumentNode<CheckTokenQuery, CheckTokenQueryVariables>;
 export const MeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AuthenticatedCustomerProps"}}]}}]}},...AuthenticatedCustomerPropsFragmentDoc.definitions]} as unknown as DocumentNode<MeQuery, MeQueryVariables>;
 export const SubmitPhoneDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SubmitPhone"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SubmitPhoneInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"submitPhone"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Verification"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<SubmitPhoneMutation, SubmitPhoneMutationVariables>;
