@@ -29,7 +29,6 @@ defmodule App.Customer do
     field(:email, :string)
     field(:org, :string)
     field(:role, :string)
-    field(:contacts_ids, {:array, :string})
     embeds_one(:stats, Stats, on_replace: :update)
   end
 
@@ -43,18 +42,6 @@ defmodule App.Customer do
   def changeset(record, attrs) do
     record
     |> cast(attrs, [:e164])
-  end
-
-  def merged_contacts_changeset(record, ids) do
-    merged_ids =
-      MapSet.union(
-        MapSet.new(record.contacts_ids),
-        MapSet.new(ids)
-      )
-      |> MapSet.to_list()
-
-    record
-    |> change(contacts_ids: merged_ids)
   end
 
   def stats_changeset(customer, stats) do

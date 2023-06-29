@@ -11,7 +11,6 @@ defmodule App.Timeline do
     Conversation,
     Conversations,
     Contacts,
-    Contact,
     Customer,
     TimelineEvent
   }
@@ -61,40 +60,42 @@ defmodule App.Timeline do
     # all contacts of creator
     participants_contacts = Contacts.get_contacts_for_viewers(participants)
 
-    opps_ids =
-      conversation.opps
-      |> Enum.map(&Map.get(&1, :id))
+    # opps_ids =
+    #   conversation.opps
+    #   |> Enum.map(&Map.get(&1, :id))
 
-    # all owners of conversations mentioning this convo's opps
-    creators =
-      from(contact in Contact,
-        join: conversation in assoc(contact, :conversations),
-        left_join: opp in assoc(conversation, :opps),
-        where: opp.id in ^opps_ids
-      )
+    # # all owners of conversations mentioning this convo's opps
+    # creators =
+    #   from(contact in Contact,
+    #     join: conversation in assoc(contact, :conversations),
+    #     left_join: opp in assoc(conversation, :opps),
+    #     where: opp.id in ^opps_ids
+    #   )
 
-    # ditto, but all signers
-    signers =
-      from(contact in Contact,
-        join: signature in assoc(contact, :signatures),
-        join: conversation in assoc(signature, :conversation),
-        left_join: opp in assoc(conversation, :opps),
-        where: opp.id in ^opps_ids
-      )
+    # # ditto, but all signers
+    # signers =
+    #   from(contact in Contact,
+    #     join: signature in assoc(contact, :signatures),
+    #     join: conversation in assoc(signature, :conversation),
+    #     left_join: opp in assoc(conversation, :opps),
+    #     where: opp.id in ^opps_ids
+    #   )
 
-    all_opps_viewers =
-      Repo.all(
-        from contact in Contact,
-          union: ^creators,
-          union: ^signers,
-          distinct: contact.id
-      )
+    # all_opps_viewers =
+    #   Repo.all(
+    #     from(contact in Contact,
+    #       union: ^creators,
+    #       union: ^signers,
+    #       distinct: contact.id
+    #     )
+    #   )
 
-    all_opps_viewers_ids = Enum.map(all_opps_viewers, &Map.get(&1, :id))
+    # all_opps_viewers_ids = Enum.map(all_opps_viewers, &Map.get(&1, :id))
 
     all_viewers =
       participants_contacts
-      |> Enum.concat(all_opps_viewers)
+      # TODO: opps_ids ignored below, bug: query returns false viewers: restore?
+      # |> Enum.concat(all_opps_viewers)
       |> Enum.uniq_by(&Map.get(&1, :id))
 
     # NOTE: exclude participants, any need to see own activity?
@@ -104,7 +105,10 @@ defmodule App.Timeline do
     Enum.map(all_viewers, fn viewer ->
       viewer_id = viewer.id
 
-      contacts_id_set = MapSet.new(viewer.contacts_ids)
+      contacts_id_set =
+        Contacts.get_contacts_for_viewers([viewer])
+        |> Enum.map(& &1.id)
+        |> MapSet.new()
 
       participants_id_set = MapSet.new(participants_ids)
 
@@ -113,9 +117,11 @@ defmodule App.Timeline do
       is_contact =
         contacts_id_set
         |> MapSet.intersection(participants_id_set)
-        |> Enum.empty?()
+        |> Enum.any?()
 
-      is_opportunist = Enum.member?(all_opps_viewers_ids, viewer_id)
+      # TODO: restore opps? (see above todo)
+      # is_opportunist = Enum.member?(all_opps_viewers_ids, viewer_id)
+      # is_opportunist = false
 
       persona =
         cond do
@@ -125,8 +131,8 @@ defmodule App.Timeline do
           is_contact ->
             :contact
 
-          is_opportunist ->
-            :opportunist
+          # is_opportunist ->
+          #   :opportunist
 
           true ->
             :public
@@ -155,19 +161,16 @@ defmodule App.Timeline do
   end
 
   @type ids :: list(String.t())
-  @type omit_own :: boolean()
-  @type filters :: %{opp_ids: ids()}
+  @type filters :: %{opp_ids: ids(), omit_own: boolean(), only_own: boolean()}
   @type input :: %{filters: filters()} | %{}
 
   defun get_events(
           viewer :: Customer.t(),
-          input :: input()
+          filters :: filters()
         ) :: Brex.Result.s(list(TimelineEvent.t())) do
-    filters = Map.get(input, :filters, %{})
-
     opp_ids = Map.get(filters, :opps, nil)
-
     omit_own = Map.get(filters, :omit_own, false)
+    only_own = Map.get(filters, :only_own, false)
 
     query =
       from(e in TimelineEvent,
@@ -188,6 +191,8 @@ defmodule App.Timeline do
             where: o.id in ^opp_ids
           )
 
+    # TODO: Alice should not see convos two hops away (Charlie <> David)
+    # only Bob <> Charlie at most
     query =
       if omit_own,
         do:
@@ -198,7 +203,19 @@ defmodule App.Timeline do
           ),
         else: query
 
+    query =
+      if only_own,
+        do:
+          from(e in query,
+            join: c in assoc(e, :conversation),
+            join: s in assoc(c, :signatures),
+            where: c.creator_id == ^viewer.id or s.signer_id == ^viewer.id
+          ),
+        else: query
+
     Repo.all(query)
+    # TODO: hack. debug db query
+    |> Enum.sort_by(& &1.occurred_at, {:desc, DateTime})
     |> personalize()
     |> ok()
   end
@@ -215,7 +232,7 @@ defmodule App.Timeline do
           # participant | contact => include notes
           # opportunist | public => w/o notes
           if Enum.member?([:opportunist, :public], persona),
-            do: put_in(event, [:conversation, :note], nil),
+            do: put_in(event, [Access.key!(:conversation), Access.key!(:note)], nil),
             else: event
 
         any ->

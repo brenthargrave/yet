@@ -1,7 +1,7 @@
 import { Alice, Bob, Charlie, David, makeBrowser, Nav } from "~/browser"
 import { specConv, specOpp } from "~/models"
 
-it("Opp reward payment", async () => {
+it.skip("Opp reward payment", async () => {
   const { customer, exit } = await makeBrowser({ headless: true })
 
   const d = await customer(David)

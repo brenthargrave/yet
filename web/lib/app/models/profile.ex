@@ -11,7 +11,6 @@ defmodule App.Profile do
     field(:email, :string)
     field(:org, :string)
     field(:role, :string)
-    field(:contacts_ids, {:array, :string})
   end
 
   def changeset(record, attrs) do

@@ -70,6 +70,7 @@ import {
   SubmitPhoneResult,
   TimelineEventsAddedDocument,
   TimelineEventsAddedInput,
+  TimelineFilters,
   TimelineInput,
   TrackEventDocument,
   TrackEventInput,
@@ -452,14 +453,6 @@ export const conversations$ = token$.pipe(
       tag("watchQuery(conversations) > filter(isNotNullish)")
     )
   }),
-  map((conversations) =>
-    pipe(
-      conversations,
-      _filter((c) => c.status !== ConversationStatus.Deleted),
-      sort((c) => c.occurredAt),
-      reverse()
-    )
-  ),
   makeUnrecoverable(),
   tag("conversations$"),
   shareLatest()
@@ -547,13 +540,6 @@ export const getTimeline$ = (input: TimelineInput = {}) =>
       const { events } = data.getTimeline!
       return new Ok(events)
     }),
-    resultMap((events) =>
-      pipe(
-        events,
-        sort((e) => e.occurredAt),
-        reverse()
-      )
-    ),
     makeUnrecoverable(),
     tag("getTimeline$")
   )
@@ -633,11 +619,13 @@ export const profile$ = me$.pipe(
     if (!isAuthenticated(me)) return EMPTY
     if (!hasAllRequiredProfileProps(me)) return EMPTY
     const { id } = me
+    const timelineFilters: TimelineFilters = { onlyOwn: true }
+    const profileInput: GetProfileInput = { id, timelineFilters }
     return merge(
-      getProfile$({ id }),
+      getProfile$(profileInput),
       subscribeTimeline$({ id }).pipe(
         debounceTime(500),
-        switchMap((_) => getProfile$({ id }))
+        switchMap((_) => getProfile$(profileInput))
       )
     )
   }),

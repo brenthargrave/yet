@@ -12,6 +12,6 @@ config :app, App.Repo,
   sql_sandbox: true
 
 # config :logger, :console, level: :warn
-config :logger, :console, level: :debug
+config :logger, :console, level: :error
 
 config :segment, send_to_http: false

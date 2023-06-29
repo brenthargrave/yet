@@ -1,3 +1,5 @@
+import { ConversationSpec } from "./models"
+
 export interface Persona {
   name: string
   phone: string

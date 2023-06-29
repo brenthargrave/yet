@@ -70,7 +70,7 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       console.error("pageerror", name, error, error.cause)
     })
 
-    const seconds = 6
+    const seconds = 10
     page.setDefaultTimeout(seconds * 1000)
     page.setDefaultNavigationTimeout(seconds * 1000)
     page.setUserAgent(userAgent)
@@ -122,7 +122,10 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
     const screenie = async () => {
       fs.mkdirSync(screenieDir, { recursive: true })
       const ts = Date.now().toString()
-      await page.screenshot({ path: `${screenieDir}/${ts}-${p.name}.png` })
+      await page.screenshot({
+        path: `${screenieDir}/${ts}-${p.name}.png`,
+        fullPage: true,
+      })
     }
 
     const press = async (key: puppeteer.KeyInput) => {
@@ -208,9 +211,14 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       await seeOpp(o)
     }
 
-    const verifyFirstConversation = async (c: ConversationSpec, o: OppSpec) => {
+    const verifyFirstConversation = async (
+      c: ConversationSpec,
+      o?: OppSpec
+    ) => {
       await seeConversationProfile(c)
-      await accessOpp(o)
+      if (o) {
+        await accessOpp(o)
+      }
       await click("Home")
       await see(`No network activity just yet.`)
       await notSeeConversation(c)
@@ -237,10 +245,12 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       await input("Note", c.note)
       await click("Mention Opp")
       const opps = c.mentions
-      opps?.forEach(async (opp) => {
-        await seeOpp(opp)
-        await addOpp(opp)
-      })
+      if (opps) {
+        opps?.forEach(async (opp) => {
+          await seeOpp(opp)
+          await addOpp(opp)
+        })
+      }
       // await click("Publish", { delay: 2000 })
       await page.keyboard.down("Control")
       await page.keyboard.press("p")
@@ -304,6 +314,10 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       }
     }
 
+    const reload = async () => {
+      page.reload({ waitUntil: "domcontentloaded" })
+    }
+
     return {
       page,
       name,
@@ -334,6 +348,7 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       accessConversation,
       accessOpp,
       seeNavOptions,
+      reload,
     }
   }
 

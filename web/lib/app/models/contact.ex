@@ -9,7 +9,6 @@ defmodule App.Contact do
     field(:email, :string)
     field(:org, :string)
     field(:role, :string)
-    field(:contacts_ids, {:array, :string})
 
     has_many :signatures, Signature,
       foreign_key: :signer_id,

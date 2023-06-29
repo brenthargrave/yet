@@ -59,7 +59,6 @@ defmodule App.Payments do
           %{id: id, opp_id: opp_id} = input
         ) :: Brex.Result.s(Payment.t()) do
     input
-    |> IO.inspect(label: "THIS input")
 
     opp = Repo.get(Opp, opp_id)
     payee_id = Map.get(input, :payee_id, nil)
@@ -92,7 +91,6 @@ defmodule App.Payments do
     # )
     |> fmap(&Payment.changeset(&1, attrs))
     |> bind(&Repo.insert_or_update(&1))
-    |> IO.inspect(label: "THIS")
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
     |> fmap(&Repo.preload(&1, @payment_preloads))
   end

@@ -512,6 +512,7 @@ export type TimelineEventsAddedInput = {
 
 export type TimelineFilters = {
   omitOwn?: InputMaybe<Scalars['Boolean']>;
+  onlyOwn?: InputMaybe<Scalars['Boolean']>;
   opps?: InputMaybe<Array<Scalars['ID']>>;
 };
 

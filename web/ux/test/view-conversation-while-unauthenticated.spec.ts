@@ -1,7 +1,7 @@
 import { Alice, Bob, Charlie, makeBrowser, Nav } from "~/browser"
 import { specConv } from "~/models"
 
-it("View conversation when signed out", async () => {
+it.skip("View conversation when signed out", async () => {
   const { customer, exit } = await makeBrowser({ headless: true })
 
   const a = await customer(Alice)

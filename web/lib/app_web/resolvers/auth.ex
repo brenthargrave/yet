@@ -26,7 +26,6 @@ defmodule AppWeb.Resolvers.Auth do
           %{context: %{customer: customer}} = _resolution
         ) :: resolver_result() do
     customer
-    |> IO.inspect(label: "ME")
     |> ok()
   end
 

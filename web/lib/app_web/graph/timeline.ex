@@ -47,6 +47,7 @@ defmodule AppWeb.Graph.Timeline do
   input_object :timeline_filters do
     field(:opps, list_of(non_null(:id)))
     field(:omit_own, :boolean)
+    field(:only_own, :boolean)
   end
 
   input_object :timeline_input do

@@ -1,3 +1,4 @@
+import { globSync } from "glob"
 import Mocha from "mocha"
 
 export * from "./src/browser"
@@ -9,7 +10,8 @@ const mocha = new Mocha()
 mocha.timeout(120 * 1000)
 
 // mocha.addFile(`./test/view-conversation-while-unauthenticated.spec.ts`)
-mocha.addFile(`./test/first.spec.ts`)
+const files = globSync("./test/*.spec.ts")
+files.forEach((file) => mocha.addFile(file))
 
 // mocha.fullTrace()
 

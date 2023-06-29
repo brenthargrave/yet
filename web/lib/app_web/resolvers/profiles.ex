@@ -9,8 +9,7 @@ defmodule AppWeb.Resolvers.Profiles do
     Contacts,
     Profiles,
     Profile,
-    UserError,
-    TimelineEvent
+    UserError
   }
 
   typedstruct module: GetProfilePayload do

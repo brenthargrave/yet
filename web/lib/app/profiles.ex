@@ -4,7 +4,6 @@ defmodule App.Profiles do
   use TypedStruct
   use Brex.Result
   use Timex
-  import Ecto.Query
   import App.Helpers, only: [format_ecto_errors: 1]
 
   alias App.{
@@ -21,7 +20,7 @@ defmodule App.Profiles do
           input :: input()
         ) :: Brex.Result.s(Profile.t()) do
     id = Map.get(input, :id)
-    filters = Map.get(input, :filters, %{})
+    filters = Map.get(input, :timeline_filters, %{})
 
     events =
       Timeline.get_events(viewer, filters)

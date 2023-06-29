@@ -15,7 +15,9 @@ defmodule AppWeb.Resolvers.Timeline do
           %{input: input} = _args,
           %{context: %{customer: customer}} = _resolution
         ) :: resolver_result(TimelinePayload.t()) do
-    Timeline.get_events(customer, input)
+    filters = Map.get(input, :filters, %{})
+
+    Timeline.get_events(customer, filters)
     |> fmap(&%TimelinePayload{events: &1})
   end
 

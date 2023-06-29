@@ -16,7 +16,6 @@ defmodule App.Conversations do
     OppVersion
   }
 
-  alias Ecto.Multi
   import Ecto.Query
   import App.Helpers, only: [format_ecto_errors: 1]
 
@@ -33,7 +32,8 @@ defmodule App.Conversations do
 
   defun upsert_conversation(
           customer,
-          %{id: id, invitees: invitees, note: note, occurred_at: occurred_at, mentions: mentions} = _input
+          %{id: id, invitees: invitees, note: note, occurred_at: occurred_at, mentions: mentions} =
+            _input
         ) :: Brex.Result.s(Conversation.t()) do
     attrs = %{
       creator: customer,
@@ -69,7 +69,7 @@ defmodule App.Conversations do
 
   defun get_conversation(
           id :: id(),
-          viewer :: Customer.t()
+          _viewer :: Customer.t()
         ) :: Brex.Result.s(Conversation.t()) do
     Repo.get(Conversation, id)
     |> Repo.preload(@preloads)
@@ -113,6 +113,8 @@ defmodule App.Conversations do
       )
 
     Repo.all(from(c in created, union: ^signed, union: ^reviewed))
+    # TODO: hack. debug db query
+    |> Enum.sort_by(& &1.occurred_at, {:desc, DateTime})
     |> ok()
   end
 
@@ -137,7 +139,6 @@ defmodule App.Conversations do
     |> fmap(&tap_save_opp_versions/1)
     |> fmap(&Conversation.signed_changeset/1)
     |> bind(&Repo.insert_or_update/1)
-    |> fmap(&async_cache_contacts/1)
     |> fmap(&Repo.preload(&1, @preloads, force: true, in_parallel: true))
     |> fmap(&Conversation.update_subscriptions/1)
     |> fmap(&Timeline.async_handle_published(&1, true))
@@ -247,34 +248,5 @@ defmodule App.Conversations do
     end)
 
     signature
-  end
-
-  defun async_cache_contacts(conversation :: Conversation.t()) :: Conversation.t() do
-    App.Task.async_nolink(fn ->
-      cache_contacts(conversation)
-    end)
-
-    conversation
-  end
-
-  defun cache_contacts(conversation :: Conversation.t()) :: Conversation.t() do
-    participants = Conversation.get_participants(conversation)
-    participants_ids = Enum.map(participants, &Map.get(&1, :id))
-
-    participant_id_set = MapSet.new(participants_ids)
-
-    Enum.reduce(participants, Multi.new(), fn c, multi ->
-      id = c.id
-      contacts_ids = MapSet.delete(participant_id_set, id)
-
-      Multi.update(
-        multi,
-        {:customer, id},
-        Customer.merged_contacts_changeset(c, contacts_ids)
-      )
-    end)
-    |> Repo.transaction()
-
-    conversation
   end
 end

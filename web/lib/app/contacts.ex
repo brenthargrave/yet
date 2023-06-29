@@ -39,6 +39,6 @@ defmodule App.Contacts do
         distinct: contact.id
       )
 
-    Repo.all(from c in signers, union: ^creators)
+    Repo.all(from(c in signers, union: ^creators))
   end
 end
