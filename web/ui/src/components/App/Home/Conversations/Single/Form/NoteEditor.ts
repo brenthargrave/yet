@@ -4,15 +4,8 @@ import { h } from "@cycle/react"
 import { px } from "csx"
 import { FC, Ref, useEffect, useState } from "react"
 import { NoteView } from "~/components/Note"
-import { ConversationStatus } from "~/graph"
-import {
-  AriaButton,
-  ariaLabel,
-  AutosizeTextarea,
-  Button,
-  Spacer,
-  Stack,
-} from "~/system"
+import { ConversationStatus, oppsEnabled } from "~/graph"
+import { ariaLabel, AutosizeTextarea, Button, Spacer, Stack } from "~/system"
 import { MarkdownLink } from "./MarkdownLink"
 
 const noteInputsId = "note"
@@ -90,19 +83,20 @@ export const View: FC<Props> = ({
                 paddingTop: "4px",
               },
               [
-                h(
-                  Button,
-                  {
-                    leftIcon: h(AddIcon),
-                    // leftIcon: h(CgInsertBefore),
-                    // leftIcon: h(ImEmbed),
-                    size: "xs",
-                    variant: "ghost",
-                    onClick: onClickAddOpp,
-                    ...ariaLabel("Mention Opp"),
-                  },
-                  `Opportunity`
-                ),
+                oppsEnabled &&
+                  h(
+                    Button,
+                    {
+                      leftIcon: h(AddIcon),
+                      // leftIcon: h(CgInsertBefore),
+                      // leftIcon: h(ImEmbed),
+                      size: "xs",
+                      variant: "ghost",
+                      onClick: onClickAddOpp,
+                      ...ariaLabel("Mention Opp"),
+                    },
+                    `Opportunity`
+                  ),
                 h(Spacer),
                 h(MarkdownLink),
               ]

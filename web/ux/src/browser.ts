@@ -243,13 +243,13 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       await input("Who", invitee?.name)
       await press("Enter")
       await input("Note", c.note)
-      await click("Mention Opp")
       const opps = c.mentions
       if (opps) {
-        opps?.forEach(async (opp) => {
+        await click("Mention Opp")
+        for (const opp of opps) {
           await seeOpp(opp)
           await addOpp(opp)
-        })
+        }
       }
       // await click("Publish", { delay: 2000 })
       await page.keyboard.down("Control")

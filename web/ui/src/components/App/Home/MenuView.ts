@@ -4,7 +4,9 @@ import { FC, Ref, useRef, RefObject } from "react"
 import { FiHome } from "react-icons/fi"
 import { TbArrowsSplit2, TbNotes } from "react-icons/tb"
 import { CgProfile } from "react-icons/cg"
-import { ariaLabel } from "~/system"
+import { ariaLabel, Button } from "~/system"
+import { oppsEnabled } from "~/graph"
+import { MenuButton } from "./MenuButton"
 
 const iconConversations = TbNotes
 const iconOpps = TbArrowsSplit2
@@ -59,50 +61,40 @@ export const MenuView: FC<Props> = ({
   const onClickProfile = onClickBlur(buttonRefProfile, _onClickProfile)
 
   const stack = orientation === Orientation.horizontal ? HStack : VStack
+  const iconOnly = true
   return h(stack, { gap: 1 }, [
-    h(Tooltip, { shouldWrapChildren: true, label: "Home" }, [
-      h(IconButton, {
-        icon: h(Icon, { as: iconHome }),
-        size: "lg",
-        variant: "outline",
-        ref: buttonRefHome,
-        onClick: onClickHome,
-        ...ariaLabel("Home"),
+    h(MenuButton, {
+      isVisible: true,
+      label: "Home",
+      onClick: onClickHome,
+      ref: buttonRefHome,
+      icon: iconHome,
+      iconOnly,
+    }),
+    h(MenuButton, {
+      isVisible: !showHomeOnly,
+      label: "Conversations",
+      onClick: onClickConvos,
+      ref: buttonRefConvos,
+      icon: iconConversations,
+      iconOnly,
+    }),
+    oppsEnabled &&
+      h(MenuButton, {
+        isVisible: !showHomeOnly,
+        label: "Opportunities",
+        onClick: onClickOpps,
+        ref: buttonRefOpps,
+        icon: iconOpps,
+        iconOnly,
       }),
-    ]),
-    !showHomeOnly &&
-      h(Tooltip, { shouldWrapChildren: true, label: "Conversations" }, [
-        h(IconButton, {
-          icon: h(Icon, { as: iconConversations }),
-          size: "lg",
-          variant: "outline",
-          ref: buttonRefConvos,
-          onClick: onClickConvos,
-          ...ariaLabel("Conversations"),
-        }),
-      ]),
-    !showHomeOnly &&
-      h(Tooltip, { shouldWrapChildren: true, label: "Opportunities" }, [
-        h(IconButton, {
-          icon: h(Icon, { as: iconOpps }),
-          size: "lg",
-          variant: "outline",
-          // color: "green.600",
-          ref: buttonRefOpps,
-          onClick: onClickOpps,
-          ...ariaLabel("Opportunities"),
-        }),
-      ]),
-    !showHomeOnly &&
-      h(Tooltip, { shouldWrapChildren: true, label: "Profile" }, [
-        h(IconButton, {
-          icon: h(Icon, { as: iconProfile }),
-          size: "lg",
-          variant: "outline",
-          ref: buttonRefProfile,
-          onClick: onClickProfile,
-          ...ariaLabel("Profile"),
-        }),
-      ]),
+    h(MenuButton, {
+      isVisible: !showHomeOnly,
+      label: "Profile",
+      onClick: onClickProfile,
+      ref: buttonRefProfile,
+      icon: iconProfile,
+      iconOnly,
+    }),
   ])
 }

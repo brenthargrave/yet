@@ -651,6 +651,8 @@ export const getMentions$ = (input: MentionsInput) =>
     tag("upsertConversation$")
   )
 
+export const oppsEnabled = false
+
 export const getPayment$ = (input: GetPaymentInput, ignoreError = false) =>
   // from(
   //   client.query({
