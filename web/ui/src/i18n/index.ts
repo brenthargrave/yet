@@ -41,7 +41,14 @@ const messages: Record<string, string> = {
   "onboarding.role.inputPlaceholer": shared.empty,
   "onboarding.role.submitButtonCopy": shared.continue,
 
-  "note.draft.placeholder": "What did you learn?\nLinks, notes, etc.",
+  "note.draft.placeholder": [
+    `To share a useful note, consider:`,
+    `What are they working on, and how can others help?`,
+    `Who should they meet?`,
+    `What did you learn?`,
+    `Include links to people, orgs and opps.`,
+  ].join("\n\n"),
+
   "note.empty.buttonCopy": "Note a conversation",
   "note.empty.cta": `To get started, take some notes on a recent conversation you had with someone.`,
   "conversations.sign.once-signed": `Once cosigned they become visible to your combined networks, and you'll get attribution for any mentioned opportunities, leads, etc.`,

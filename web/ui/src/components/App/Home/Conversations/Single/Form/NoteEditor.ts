@@ -5,6 +5,7 @@ import { px } from "csx"
 import { FC, Ref, useEffect, useState } from "react"
 import { NoteView } from "~/components/Note"
 import { ConversationStatus, oppsEnabled } from "~/graph"
+import { t } from "~/i18n"
 import { ariaLabel, AutosizeTextarea, Button, Spacer, Stack } from "~/system"
 import { MarkdownLink } from "./MarkdownLink"
 
@@ -69,11 +70,12 @@ export const View: FC<Props> = ({
               ...ariaLabel("Note"),
               isDisabled,
               paddingTop: 4,
-              minRows: 4,
+              minRows: 10,
               defaultValue: note ?? "",
               size: "sm",
               onChange: (event) => onChangeNote(event.target.value),
               ref: noteInputRef,
+              placeholder: t("note.draft.placeholder"),
             }),
             h(
               Stack,
