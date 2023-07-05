@@ -38,9 +38,11 @@ defmodule AppWeb.PageController do
 
           on = Calendar.strftime(occurred_at, "%B %-d, %Y")
 
-          # html = Md.generate(note)
-          text = HtmlSanitizeEx.markdown_html(note)
-          truncated = Util.StringFormatter.truncate(text, max_length: 100)
+          truncated =
+            note
+            |> Earmark.as_html!(compact_output: true, gfm: true)
+            |> HtmlSanitizeEx.strip_tags()
+            |> Util.StringFormatter.truncate(max_length: 100)
 
           description = ~s<#{on} - #{truncated}>
 

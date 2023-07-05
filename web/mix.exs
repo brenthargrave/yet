@@ -68,7 +68,8 @@ defmodule App.MixProject do
       {:money, "~> 1.9"},
       {:corsica, "~> 1.0"},
       {:ecto_commons, "~> 0.3.3"},
-      {:segment, "~> 0.2.6"}
+      {:segment, "~> 0.2.6"},
+      {:earmark, "~> 1.4"}
     ]
   end
 
