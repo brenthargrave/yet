@@ -82,11 +82,13 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
   const action = merge(...pluck("action", [edit, show]))
   const notice = merge(...pluck("notice", [edit]))
   const router = merge(...pluck("router", [show]))
+  const track = merge(...pluck("track", [show]))
 
   return {
     react,
     action,
     notice,
     router,
+    track,
   }
 }

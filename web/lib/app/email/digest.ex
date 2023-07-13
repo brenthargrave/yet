@@ -27,18 +27,16 @@ defmodule App.Email.Digest do
   def build_and_deliver_email(customer, opts \\ %{}) do
     build_email(customer, opts)
     |> fmap(&App.Email.Mailer.deliver(&1))
-    |> IO.inspect(label: "delivery")
   end
 
   def build_email(customer, opts \\ %{}) do
     admin_address = System.get_env("ADMIN_EMAIL")
 
-    debug =
-      Map.get(opts, :debug, true)
-      |> IO.inspect(label: "DEBUG?")
+    debug = Map.get(opts, :debug, true)
 
     now = DateTime.utc_now()
 
+    # default_since = Timex.shift(now, hours: -24)
     default_since =
       if debug,
         do: Timex.shift(now, years: -10),
@@ -56,7 +54,7 @@ defmodule App.Email.Digest do
       |> extract!()
 
     app_name = System.get_env("PRODUCT_NAME")
-    from_address = System.get_env("EMAIL_FROM_ADDRESS", admin_address)
+    from_address = System.get_env("EMAIL_FROM_ADDRESS") || admin_address
     todayFormatted = Timex.format!(Timex.now(), "{Mfull} {D}, {YYYY}")
 
     # TODO: require authentication?
@@ -112,7 +110,6 @@ defmodule App.Email.Digest do
     email
     |> ok()
     |> bind(&if Enum.empty?(events), do: error("no-op; no events"), else: ok(&1))
-    |> IO.inspect(label: "build_email")
   end
 
   Slime.function_from_file(

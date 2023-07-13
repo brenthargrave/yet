@@ -196,9 +196,7 @@ defmodule App.Timeline do
         do: query,
         else: from(e in query, where: e.occurred_at > ^since)
 
-    omit_own =
-      Map.get(filters, :omit_own)
-      |> IO.inspect()
+    omit_own = Map.get(filters, :omit_own)
 
     query =
       if omit_own,

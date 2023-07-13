@@ -1,4 +1,5 @@
-import { Button, Heading, Text } from "@chakra-ui/react"
+import { AddIcon } from "@chakra-ui/icons"
+import { Button, Text } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { t } from "~/i18n"
@@ -18,7 +19,14 @@ export const EmptyView: FC<Props> = ({ onClickNew, ...props }) =>
       { align: "center" },
       `Share notes of your conversations with others to grow your network.`
     ),
-    h(Button, { onClick: onClickNew }, t(`note.empty.buttonCopy`)),
+    h(
+      Button,
+      {
+        onClick: onClickNew,
+        leftIcon: h(AddIcon, { boxSize: 3 }),
+      },
+      t(`note.empty.buttonCopy`)
+    ),
   ])
 
 EmptyView.displayName = "EmptyView"

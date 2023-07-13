@@ -34,6 +34,13 @@ defmodule AppWeb.Graph.Analytics do
     value(:digest, as: "digest")
   end
 
+  enum :new_conversation_source do
+    value(:nav, as: "nav")
+    value(:conversations, as: "conversations")
+    value(:timeline, as: "timeline")
+    value(:profile, as: "profile")
+  end
+
   # TODO: macro to dedupe input_object/object
   input_object :event_properties_input do
     field(:conversation_id, :id)
@@ -43,6 +50,8 @@ defmodule AppWeb.Graph.Analytics do
     # notifications
     field(:notification_channel, :notification_channel)
     field(:notification_kind, :notification_kind)
+    # where new conversation tapped from
+    field(:new_conversation_source, :new_conversation_source)
   end
 
   object :event_properties do

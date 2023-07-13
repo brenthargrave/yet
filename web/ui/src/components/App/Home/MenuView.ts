@@ -4,7 +4,8 @@ import { FC, Ref, useRef, RefObject } from "react"
 import { FiHome } from "react-icons/fi"
 import { TbArrowsSplit2, TbNotes } from "react-icons/tb"
 import { CgProfile } from "react-icons/cg"
-import { ariaLabel, Button } from "~/system"
+import { AddIcon } from "@chakra-ui/icons"
+import { ariaLabel, Button, Divider } from "~/system"
 import { oppsEnabled } from "~/graph"
 import { MenuButton } from "./MenuButton"
 
@@ -12,6 +13,7 @@ const iconConversations = TbNotes
 const iconOpps = TbArrowsSplit2
 const iconHome = FiHome
 const iconProfile = CgProfile
+const iconAdd = AddIcon
 
 export enum Orientation {
   horizontal = "horizontal",
@@ -25,6 +27,7 @@ export interface Props {
   onClickOpps: () => void
   onClickHome: () => void
   onClickProfile: () => void
+  onClickNew: () => void
 }
 
 const onClickBlur = (
@@ -44,6 +47,7 @@ export const MenuView: FC<Props> = ({
   onClickOpps: _onClickOpps,
   onClickHome: _onClickHome,
   onClickProfile: _onClickProfile,
+  onClickNew: _onClickNew,
 }) => {
   const buttonRefConvos = useRef<HTMLButtonElement>()
   const onClickConvos = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -59,6 +63,8 @@ export const MenuView: FC<Props> = ({
   const onClickHome = onClickBlur(buttonRefHome, _onClickHome)
   const buttonRefProfile = useRef<HTMLButtonElement>()
   const onClickProfile = onClickBlur(buttonRefProfile, _onClickProfile)
+  const buttonRefNew = useRef<HTMLButtonElement>()
+  const onClickNew = onClickBlur(buttonRefNew, _onClickNew)
 
   const stack = orientation === Orientation.horizontal ? HStack : VStack
   const iconOnly = true
@@ -95,6 +101,16 @@ export const MenuView: FC<Props> = ({
       ref: buttonRefProfile,
       icon: iconProfile,
       iconOnly,
+    }),
+    h(Divider),
+    h(MenuButton, {
+      label: "New Note",
+      icon: iconAdd,
+      iconOnly,
+      variant: "outline",
+      isVisible: !showHomeOnly,
+      onClick: onClickNew,
+      ref: buttonRefProfile,
     }),
   ])
 }

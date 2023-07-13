@@ -9,15 +9,27 @@ export interface Props {
   isVisible: boolean
   icon: IconType
   iconOnly: boolean
+  variant: "outline" | "solid"
 }
 
 export const MenuButton = forwardRef(
-  ({ label, onClick, isVisible, icon, iconOnly = true, ...rest }: Props, ref) =>
+  (
+    {
+      label,
+      onClick,
+      isVisible,
+      icon,
+      iconOnly = true,
+      variant = "outline",
+      ...rest
+    }: Props,
+    ref
+  ) =>
     iconOnly
       ? h(Tooltip, { shouldWrapChildren: true, label }, [
           h(IconButton, {
             icon: h(Icon, { as: icon }),
-            variant: "outline",
+            variant,
             ref,
             onClick,
             ...ariaLabel(label),
@@ -28,7 +40,7 @@ export const MenuButton = forwardRef(
           {
             leftIcon: h(Icon, { as: icon }),
             // size: "lg",
-            variant: "outline",
+            variant,
             ref,
             onClick,
             ...ariaLabel(label),

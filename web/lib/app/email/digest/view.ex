@@ -47,7 +47,11 @@ defmodule App.Email.Digest.View do
         date
         |> Timex.format!(date_fmt)
 
-      date_link = link(date_formatted, conversation_url)
+      date_link =
+        link(
+          ~s(#{date_formatted}),
+          conversation_url
+        )
 
       note =
         note

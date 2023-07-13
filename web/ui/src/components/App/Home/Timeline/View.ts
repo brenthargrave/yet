@@ -4,8 +4,14 @@ import { FC } from "react"
 import { TimelineEventList } from "~/components/TimelineEvent"
 import { isEmpty } from "~/fp"
 import { Conversation, Customer, TimelineEvent } from "~/graph"
-import { containerProps, FullWidthVStack, Header, Nav } from "~/system"
-import { EmptyView, Props as EmptyViewProps } from "./EmptyView"
+import {
+  containerProps,
+  CreateButton,
+  FullWidthVStack,
+  Header,
+  Nav,
+} from "~/system"
+import { EmptyView, OnClickNew, Props as EmptyViewProps } from "./EmptyView"
 import { EmptyView as ConversationsEmptyView } from "../Conversations/List/EmptyView"
 
 export enum State {
@@ -19,6 +25,7 @@ export interface Props extends EmptyViewProps {
   events: TimelineEvent[]
   onClickConversation?: (c: Conversation) => void
   conversations: Conversation[]
+  onClickNew?: OnClickNew
 }
 
 export const View: FC<Props> = ({
@@ -41,6 +48,7 @@ export const View: FC<Props> = ({
           //
           h(Heading, { size: "md" }, "Latest"),
           h(Spacer),
+          h(CreateButton, { onClick: onClickNew }),
         ]),
         h(TimelineEventList, { viewer, events, onClickConversation }),
       ])

@@ -5,9 +5,11 @@ it("Conversation shared and cosigned", async () => {
   const { customer, exit } = await makeBrowser({ headless: true })
 
   const d = await customer(David)
+  // const d = await customer(David, { headless: false, devtools: true })
   const c = await customer(Charlie)
   const b = await customer(Bob)
   const a = await customer(Alice)
+  // const a = await customer(Alice, { headless: false, devtools: true })
   try {
     await a.visit("/")
     await a.click("Create Account")

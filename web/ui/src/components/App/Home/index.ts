@@ -6,17 +6,26 @@ import {
   EMPTY,
   map,
   merge,
+  mergeMap,
   of,
   share,
   startWith,
   switchMap,
+  withLatestFrom,
 } from "rxjs"
 import { match } from "ts-pattern"
 import { ulid } from "ulid"
 import { Actions, Source as ActionSource } from "~/action"
 import { Onboarding } from "~/components/Onboarding"
 import { isEmpty, pluck } from "~/fp"
-import { isAuthenticated, isOnboarding, Source as GraphSource } from "~/graph"
+import {
+  EventName,
+  isAuthenticated,
+  isOnboarding,
+  NewConversationSource,
+  Source as GraphSource,
+  track$,
+} from "~/graph"
 import { makeTagger } from "~/log"
 import {
   anyConversationsRouteGroup,
@@ -135,6 +144,25 @@ export const Home = (sources: Sources) => {
   const [onClickConversations, onClickConvos$] = cb$(tag("onClickConvos$"))
   const [onClickOpps, onClickOpps$] = cb$(tag("onClickOpps$"))
   const [onClickProfile, onClickProfile$] = cb$(tag("onClickProfile$"))
+  const [onClickNew, clickNew$] = cb$(tag("clickNew$"))
+
+  // TODO: extract, share across components (Convo/Empty views)
+  const newConvo$ = clickNew$.pipe(
+    mapTo(push(routes.conversation({ id: NEWID })))
+  )
+  const trackNew$ = clickNew$.pipe(
+    withLatestFrom(me$),
+    mergeMap(([_, me]) =>
+      track$({
+        name: EventName.TapNewConversation,
+        properties: {
+          signatureCount: me?.stats?.signatureCount,
+          newConversationSource: NewConversationSource.Nav,
+        },
+        customerId: me?.id,
+      })
+    )
+  )
 
   const rootRouter$ = merge(
     onClickHome$.pipe(mapTo(push(routes.root()))),
@@ -234,6 +262,7 @@ export const Home = (sources: Sources) => {
           onClickOpps,
           onClickHome,
           onClickProfile,
+          onClickNew,
         },
         [subview]
       )
@@ -267,9 +296,13 @@ export const Home = (sources: Sources) => {
     ...pluck("router", [conversations, timeline, profiles, payments]),
     rootRouter$,
     oppsRouter$,
-    redirectToAuth$
+    redirectToAuth$,
+    newConvo$
   )
-  const track = merge(...pluck("track", [conversations]))
+  const track = merge(
+    ...pluck("track", [conversations, timeline, profiles]),
+    trackNew$
+  )
   const notice = merge(
     ...pluck("notice", [conversations, opps, onboarding, profiles, payments])
   )

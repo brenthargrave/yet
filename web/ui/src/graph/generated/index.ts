@@ -134,6 +134,7 @@ export type EventProperties = {
 export type EventPropertiesInput = {
   conversationId?: InputMaybe<Scalars['ID']>;
   intent?: InputMaybe<Intent>;
+  newConversationSource?: InputMaybe<NewConversationSource>;
   notificationChannel?: InputMaybe<NotificationChannel>;
   notificationKind?: InputMaybe<NotificationKind>;
   platform?: InputMaybe<Platform>;
@@ -213,6 +214,13 @@ export type MoneyInput = {
   amount: Scalars['Int'];
   currency: Currency;
 };
+
+export enum NewConversationSource {
+  Conversations = 'CONVERSATIONS',
+  Nav = 'NAV',
+  Profile = 'PROFILE',
+  Timeline = 'TIMELINE'
+}
 
 export enum NotificationChannel {
   Email = 'EMAIL',

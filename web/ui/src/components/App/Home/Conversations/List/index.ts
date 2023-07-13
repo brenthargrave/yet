@@ -12,6 +12,7 @@ import {
   Conversation,
   EventName,
   isLurking,
+  NewConversationSource,
   Source as GraphSource,
   track$,
 } from "~/graph"
@@ -51,13 +52,14 @@ export const List = (sources: Sources, tagPrefix?: string) => {
     mapTo(push(routes.conversation({ id: NEWID })))
   )
 
-  const track = clickNew$.pipe(
+  const trackNewConvo$ = clickNew$.pipe(
     withLatestFrom(me$),
     mergeMap(([_, me]) =>
       track$({
         name: EventName.TapNewConversation,
         properties: {
           signatureCount: me?.stats?.signatureCount,
+          newConversationSource: NewConversationSource.Conversations,
         },
         customerId: me?.id,
       })
@@ -83,6 +85,7 @@ export const List = (sources: Sources, tagPrefix?: string) => {
   )
 
   const router = merge(newConvo$, editConvo$, redirectLurkerToRoot$)
+  const track = merge(trackNewConvo$)
 
   return {
     react,

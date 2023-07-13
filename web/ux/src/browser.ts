@@ -276,7 +276,7 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
         await see("Welcome!")
         await click("Note a conversation")
       } else {
-        await click("New conversation")
+        await click("New note")
       }
       // TODO: invitees.foreEach input, select if presnt or hit "enter"
       const invitee = first(c.invitees ?? [])

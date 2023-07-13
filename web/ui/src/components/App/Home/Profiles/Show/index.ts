@@ -5,12 +5,20 @@ import {
   filter,
   map,
   merge,
+  mergeMap,
   share,
   startWith,
+  withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { act, Actions, Source as ActionSource } from "~/action"
-import { Conversation, Source as GraphSource } from "~/graph"
+import {
+  Conversation,
+  EventName,
+  NewConversationSource,
+  Source as GraphSource,
+  track$,
+} from "~/graph"
 import { makeTagger } from "~/log"
 import { NEWID, push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
@@ -54,6 +62,19 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
     tag("new$"),
     share()
   )
+  const trackNewConvo$ = onClickNew$.pipe(
+    withLatestFrom(me$),
+    mergeMap(([_, me]) =>
+      track$({
+        name: EventName.TapNewConversation,
+        properties: {
+          signatureCount: me?.stats?.signatureCount,
+          newConversationSource: NewConversationSource.Profile,
+        },
+        customerId: me?.id,
+      })
+    )
+  )
 
   const [onClickConversation, onClickConv$] = cb$<Conversation>(
     tag("clickNew$")
@@ -82,10 +103,12 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
   )
   const action = merge(edit$)
   const router = merge(newConversation$, showConv$)
+  const track = merge(trackNewConvo$)
 
   return {
     react,
     action,
     router,
+    track,
   }
 }

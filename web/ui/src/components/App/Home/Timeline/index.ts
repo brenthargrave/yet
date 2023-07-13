@@ -6,14 +6,23 @@ import {
   filter,
   map,
   merge,
+  mergeMap,
   share,
   startWith,
   switchMap,
+  withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { filterResultOk } from "ts-results/rxjs-operators"
 import { Source as ActionSource } from "~/action"
-import { Conversation, getTimeline$, Source as GraphSource } from "~/graph"
+import {
+  Conversation,
+  EventName,
+  getTimeline$,
+  NewConversationSource,
+  Source as GraphSource,
+  track$,
+} from "~/graph"
 import { makeTagger } from "~/log"
 import { NEWID, push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
@@ -39,6 +48,19 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
   const [onClickNew, clickNew$] = cb$(tag("clickNew$"))
   const newConvo$ = clickNew$.pipe(
     map(() => push(routes.conversation({ id: NEWID })))
+  )
+  const trackNewConvo$ = clickNew$.pipe(
+    withLatestFrom(me$),
+    mergeMap(([_, me]) =>
+      track$({
+        name: EventName.TapNewConversation,
+        properties: {
+          signatureCount: me?.stats?.signatureCount,
+          newConversationSource: NewConversationSource.Timeline,
+        },
+        customerId: me?.id,
+      })
+    )
   )
 
   const [onClickConversation, clickConvo$] = cb$<Conversation>(tag("clickNew$"))
@@ -83,9 +105,11 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
   )
 
   const router = merge(newConvo$, showConvo$)
+  const track = merge(trackNewConvo$)
 
   return {
     react,
     router,
+    track,
   }
 }
