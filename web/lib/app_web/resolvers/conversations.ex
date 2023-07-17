@@ -29,6 +29,7 @@ defmodule AppWeb.Resolvers.Conversations do
           %{context: context} = _resolution
         ) :: resolver_result(ConversationPayload.t()) do
     customer = Map.get(context, :customer, nil)
+
     Conversations.get_conversation(id, customer)
     |> fmap(&%ConversationPayload{conversation: &1})
     |> convert_error(:not_found, %ConversationPayload{user_error: UserError.not_found()})

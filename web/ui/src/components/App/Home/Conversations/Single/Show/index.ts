@@ -10,11 +10,14 @@ import {
   pluck,
   share,
   startWith,
+  switchMap,
   withLatestFrom,
 } from "rxjs"
+import { filterResultOk } from "ts-results/rxjs-operators"
 import { any, not } from "~/fp"
 import {
   Conversation,
+  deleteConversation$,
   isSignableStatus,
   isSignedBy,
   Source as GraphSource,
@@ -45,11 +48,6 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
   const record$ = _record$.pipe(tag("record$"), shareLatest())
 
   const [onClickBack, onClickBack$] = cb$(tag("onClickBack$"))
-  const goToList$ = merge(onClickBack$).pipe(
-    map((_) => push(routes.conversations())),
-    tag("onClickBack$"),
-    share()
-  )
 
   const [onClickShare, onClickShare$] = cb$(tag("onClickShare$"))
   const [onCloseShare, onCloseShare$] = cb$(tag("onCloseShare$"))
@@ -58,14 +56,45 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
     onCloseShare$.pipe(map((_) => false))
   ).pipe(startWith(false), tag("isOpenShare$"), shareLatest())
 
+  // delete conversation
+  const [onClickDelete, onClickDelete$] = cb$(tag("onClickDelete$"))
+  const delete$ = merge(onClickDelete$).pipe(
+    withLatestFrom(record$),
+    switchMap(([_, record]) => deleteConversation$({ id: record.id })),
+    tag("delete$"),
+    share()
+  )
+  const deleted$ = delete$.pipe(filterResultOk(), tag("deleted$"), share())
+  const goToList$ = merge(onClickBack$, deleted$).pipe(
+    map((_) => push(routes.conversations())),
+    tag("goToList$"),
+    share()
+  )
+  const isDeleting$: Observable<boolean> = merge(
+    onClickDelete$.pipe(map((_) => true)),
+    delete$.pipe(map((_) => false))
+  ).pipe(
+    startWith(false),
+    distinctUntilChanged(),
+    tag("isDeleting$"),
+    shareLatest()
+  )
+
   const props$ = combineLatest({
     viewer: me$,
     intent: of(Intent.Read),
     conversation: record$,
     isOpenShare: isOpenShare$,
+    isDeleting: isDeleting$,
   }).pipe(
     map((props) => {
-      return { ...props, onClickShare, onCloseShare, onClickBack }
+      return {
+        ...props,
+        onClickShare,
+        onCloseShare,
+        onClickBack,
+        onClickDelete,
+      }
     }),
     tag("props$")
   )

@@ -5,17 +5,17 @@ import { Conversation, Customer, Maybe } from "~/graph"
 import { localizeDate, t } from "~/i18n"
 import { routes, routeURL } from "~/router"
 import {
+  AriaHeading,
+  bold,
+  containerProps,
+  DeleteButton,
   FullWidthVStack,
   Header,
-  Heading,
   MarkdownView,
   Nav,
   ShareModal,
   Spacer,
   Stack,
-  bold,
-  containerProps,
-  AriaHeading,
 } from "~/system"
 import { View as AuthPrompt } from "./AuthPrompt"
 import { ShareButton } from "./ShareButton"
@@ -49,6 +49,9 @@ export interface Props {
   isOpenShare?: boolean
   onCloseShare?: () => void
   onClickBack?: () => void
+  onClickDelete?: () => void
+  // convo deletion
+  isDeleting?: boolean
 }
 
 export const View: FC<Props> = ({
@@ -63,6 +66,8 @@ export const View: FC<Props> = ({
   isOpenShare = false,
   onCloseShare = () => null,
   onClickBack,
+  onClickDelete,
+  isDeleting = false,
 }) => {
   const { id, occurredAt, creator, signatures } = conversation
   const isObscured = isSigningStep(intent, step, Step.Auth) || isOpenShare
@@ -125,9 +130,13 @@ export const View: FC<Props> = ({
         h(Stack, { direction: "row" }, [
           isSigningStep(intent, step, Step.Sign) &&
             h(SignButton, { onClickSign, isSignLoading }),
-          isReading(intent) &&
-            //
-            h(ShareButton, { onClickShare }),
+          isReading(intent) && h(ShareButton, { onClickShare }),
+          h(Spacer),
+          h(DeleteButton, {
+            onClick: onClickDelete,
+            isLoading: isDeleting,
+            isDisabled: false,
+          }),
         ]),
       ]
     ),

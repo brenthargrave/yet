@@ -69,11 +69,14 @@ defmodule App.Conversations do
 
   defun get_conversation(
           id :: id(),
-          _viewer :: Customer.t()
+          viewer :: Customer.t()
         ) :: Brex.Result.s(Conversation.t()) do
     Repo.get(Conversation, id)
     |> Repo.preload(@preloads)
     |> lift(nil, :not_found)
+    # TODO: hide drafts from all but creator
+    # |> bind(&if &1.status == :draft && viewer != &1.creator, do: error(:not_found), else: ok(&1))
+    |> bind(&if &1.status == :deleted, do: error(:not_found), else: ok(&1))
   end
 
   defun delete_conversation(
@@ -86,6 +89,7 @@ defmodule App.Conversations do
     |> bind(&if &1.creator == viewer, do: ok(&1), else: error(:unauthorized))
     |> fmap(&Conversation.tombstone_changeset(&1))
     |> bind(&Repo.insert_or_update(&1))
+    |> bind(&Timeline.handle_deleted(&1))
   end
 
   defun get_conversations(viewer :: Customer.t()) :: Brex.Result.s(list(Conversation.t())) do

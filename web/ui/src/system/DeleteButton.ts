@@ -3,7 +3,7 @@ import { Button } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 
-export interface Props {
+interface Props {
   onClick?: () => void
   isLoading?: boolean
   isDisabled?: boolean

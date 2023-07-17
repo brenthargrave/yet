@@ -57,6 +57,11 @@ defmodule App.Timeline do
     conversation
   end
 
+  defun handle_deleted(conversation :: Conversation.t()) :: Conversation.t() do
+    Repo.delete_all(from(e in TimelineEvent, where: e.conversation_id == ^conversation.id))
+    ok(conversation)
+  end
+
   defun handle_published(
           conversation :: Conversation.t(),
           _notify_subscriptions \\ false

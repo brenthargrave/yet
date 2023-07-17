@@ -11,10 +11,10 @@ import {
   Nav,
   Stack,
   Status,
+  DeleteButton,
 } from "~/system"
 import { Props as ActionBarProps, View as ActionBar } from "./ActionBar"
 import { View as AddOppModal } from "./AddOppModal"
-import { DeleteButton } from "./DeleteButton"
 import { Props as NoteEditorProps, View as NoteEditor } from "./NoteEditor"
 import { PublishView } from "./PublishView"
 import { Props as WhenProps, View as When } from "./When"
