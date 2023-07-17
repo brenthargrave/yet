@@ -2,7 +2,6 @@ import { h, ReactSource } from "@cycle/react"
 import { of } from "ramda"
 import {
   combineLatest,
-  filter,
   map,
   merge,
   Observable,
@@ -11,7 +10,6 @@ import {
   switchMap,
   withLatestFrom,
 } from "rxjs"
-import { isNotNullish } from "rxjs-etc"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { act, Actions, Source as ActionSource } from "~/action"
 import { Source as GraphSource, updateProfile$ } from "~/graph"
@@ -19,6 +17,7 @@ import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
+import { TextInput } from "./TextInput"
 import { Props as ViewProps, View } from "./View"
 
 export interface Sources {
@@ -33,29 +32,46 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
   const tag = makeTagger(tagScope)
 
   const {
-    router: { history$ },
     graph: { me$: _me$, profile$: _profile$ },
   } = sources
-  const me$ = _me$.pipe(filter(isNotNullish), tag("me$"))
   const profile$ = _profile$.pipe(tag("profile$"))
 
-  const [onChangeName, onChangeName$] = cb$<string>(tag("onChangeName$"))
+  const firstName = TextInput(
+    {
+      props: {
+        placeholder: "First Name",
+        autoFocus: false,
+        prior$: profile$.pipe(
+          map(({ firstName }) => firstName),
+          tag("firstName$"),
+          shareLatest()
+        ),
+      },
+    },
+    `${tagScope}/FirstName`
+  )
+
+  const lastName = TextInput(
+    {
+      props: {
+        placeholder: "Last Name",
+        autoFocus: false,
+        prior$: profile$.pipe(
+          map((profile) => profile.lastName),
+          tag("lastName$"),
+          shareLatest()
+        ),
+      },
+    },
+    `${tagScope}/LastName`
+  )
+
   const [onSubmit, onSubmit$] = cb$(tag("onSubmit$"))
   const [onCancel, onCancel$] = cb$(tag("onCancel$"))
 
-  const priorName$ = profile$.pipe(
-    map(({ name }) => name),
-    tag("savedName$"),
-    shareLatest()
-  )
-
-  const name$ = merge(priorName$, onChangeName$).pipe(
-    tag("name$"),
-    shareLatest()
-  )
-
   const input$ = combineLatest({
-    name: name$,
+    firstName: firstName.value,
+    lastName: lastName.value,
   }).pipe(tag("input$"), shareLatest())
 
   const upsert$ = onSubmit$.pipe(
@@ -87,11 +103,12 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
   const props$: Observable<ViewProps> = combineLatest({
     isSaving: isSaving$,
     isDisabledSubmit: of(false),
-    defaultValueName: priorName$,
+    firstNameInput: firstName.react,
+    lastNameInput: lastName.react,
   }).pipe(tag("props$"), shareLatest())
 
   const react = props$.pipe(
-    map((props) => h(View, { ...props, onChangeName, onSubmit, onCancel }))
+    map((props) => h(View, { ...props, onSubmit, onCancel }))
   )
 
   const action = merge(show$)

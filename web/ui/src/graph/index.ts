@@ -611,6 +611,7 @@ export const updateProfile$ = (input: UpdateProfileInput) => {
       const { userError, profile } = data!.updateProfile!
       return userError ? new Err(userError) : new Ok(profile!)
     }),
+    makeUnrecoverable(),
     tag("upsertConversation$")
   )
 }

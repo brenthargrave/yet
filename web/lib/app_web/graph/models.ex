@@ -27,6 +27,8 @@ defmodule AppWeb.Graph.Models do
     # profile
     field(:id, non_null(:id))
     field(:name, :string)
+    field(:first_name, :string)
+    field(:last_name, :string)
     field(:email, :string)
     field(:org, :string)
     field(:role, :string)

@@ -11,6 +11,8 @@ fragment AuthenticatedCustomerProps on Customer {
   token
   e164
   name
+  firstName
+  lastName
   email
   org
   role

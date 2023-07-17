@@ -1,6 +1,8 @@
 import { h } from "@cycle/react"
 import { form } from "@cycle/react-dom"
+import { snakeCase } from "change-case"
 import { Ref } from "react"
+import { ProfileProp } from "~/graph"
 import {
   ariaLabel,
   Button,
@@ -10,8 +12,6 @@ import {
   InputGroup,
   Stack,
 } from "~/system"
-import { toLower } from "~/fp"
-import { ProfileProp } from "~/graph"
 
 const size = "lg"
 
@@ -67,7 +67,7 @@ export const View = ({
               isRequired: true,
               onChange,
               isDisabled: isInputDisabled,
-              ...ariaLabel(toLower(attr)),
+              ...ariaLabel(snakeCase(attr)),
             }),
           ]),
           h(

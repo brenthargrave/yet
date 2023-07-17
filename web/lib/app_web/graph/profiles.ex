@@ -4,6 +4,8 @@ defmodule AppWeb.Graph.Profiles do
 
   object :profile do
     field(:id, non_null(:id))
+    field(:first_name, non_null(:string))
+    field(:last_name, non_null(:string))
     field(:name, non_null(:string))
     field(:email, :string)
     field(:org, :string)
@@ -37,7 +39,8 @@ defmodule AppWeb.Graph.Profiles do
   end
 
   input_object :update_profile_input do
-    field(:name, non_null(:string))
+    field(:first_name, non_null(:string))
+    field(:last_name, non_null(:string))
   end
 
   object :profiles_mutations do

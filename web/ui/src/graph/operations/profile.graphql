@@ -1,9 +1,19 @@
 fragment ProfileProps on Profile {
   id
   name
+  firstName
+  lastName
   email
   role
   org
+}
+
+fragment OnboardingProfileProps on OnboardingProfile {
+  id
+  name
+  firstName
+  lastName
+  email
 }
 
 query GetProfile($input: GetProfileInput) {
@@ -39,7 +49,7 @@ mutation PatchProfile($input: PatchProfileInput!) {
       message
     }
     profile {
-      ...ProfileProps
+      ...OnboardingProfileProps
     }
   }
 }

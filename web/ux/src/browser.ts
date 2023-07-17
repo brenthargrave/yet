@@ -59,7 +59,8 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
   const exits: (() => Promise<void>)[] = []
 
   const customer = async (p: Persona, launchOptions: LaunchOptions = {}) => {
-    const { name, phone, email } = p
+    const { first_name, last_name, phone, email } = p
+    const name = `${first_name} ${last_name}`
 
     const browser = await puppeteer.launch({
       dumpio: !!UX_DEBUG_BROWSER,
@@ -185,8 +186,11 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
 
     const signup = async () => {
       await auth()
-      await see("name")
-      await input("name", name)
+      await see("first_name")
+      await input("first_name", first_name)
+      await click("Continue")
+      await see("last_name")
+      await input("last_name", last_name)
       await click("Continue")
       await input("email", email)
       await click("Continue")

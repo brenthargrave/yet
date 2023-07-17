@@ -1,51 +1,39 @@
 import { CheckIcon, ViewIcon } from "@chakra-ui/icons"
-import { Icon, Box } from "@chakra-ui/react"
+import { Icon } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { form } from "@cycle/react-dom"
-import { FC } from "react"
+import { FC, ReactNode } from "react"
 import {
   Button,
+  containerProps,
   Divider,
   FullWidthVStack,
   Header,
   Heading,
-  Input,
   Nav,
   Spacer,
   Stack,
-  containerProps,
 } from "~/system"
 import { CancelButton } from "~/system/CancelButton"
-import { InputControl } from "~/system/InputControl"
-
-type Callback = (value: string) => void
-const makeOnChange =
-  (cb?: Callback): React.ChangeEventHandler<HTMLInputElement> =>
-  (e) => {
-    const { value } = e.currentTarget
-    if (cb) cb(value)
-  }
 
 export interface Props {
   isDisabledSubmit?: boolean
-  onChangeName?: () => void
-  defaultValueName?: string
   onSubmit?: () => void
   onCancel?: () => void
-  // onClickBack?: () => void
   onClickShow?: () => void
   isSaving?: boolean
+  firstNameInput: ReactNode
+  lastNameInput: ReactNode
 }
 
 export const View: FC<Props> = ({
-  onChangeName,
-  defaultValueName,
   isDisabledSubmit = true,
   onSubmit: _onSubmit,
   onCancel,
-  // onClickBack,
   onClickShow,
   isSaving = false,
+  firstNameInput,
+  lastNameInput,
   ...props
 }) => {
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = (e) => {
@@ -73,14 +61,8 @@ export const View: FC<Props> = ({
     h(FullWidthVStack, { isBody: true }, [
       form({ id: "edit", onSubmit, style: { width: "100%" } }, [
         h(Stack, { direction: "column", width: "100%", gap: 2 }, [
-          h(InputControl, { label: "Name", isRequired: true }, [
-            h(Input, {
-              autoFocus: true,
-              defaultValue: defaultValueName,
-              onChange: makeOnChange(onChangeName),
-              placeholder: "Cofounder, Engineer, Designer, etc.",
-            }),
-          ]),
+          firstNameInput,
+          lastNameInput,
           h(Stack, { direction: "column", paddingTop: 2 }, [
             h(Divider),
             h(Stack, { direction: "row", alignItems: "center" }, [

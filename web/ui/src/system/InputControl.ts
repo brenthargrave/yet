@@ -9,7 +9,7 @@ import { h } from "@cycle/react"
 import { FC } from "react"
 
 interface Props extends FormControlProps {
-  label: string
+  label?: string
   helperMessage?: string
   errorMessage?: string
 }
@@ -27,7 +27,7 @@ export const InputControl: FC<Props> = ({
     FormControl,
     { isRequired, isDisabled, isInvalid: !!errorMessage, ...props },
     [
-      h(FormLabel, label),
+      label && h(FormLabel, label),
       children,
       helperMessage && h(FormHelperText, helperMessage),
       errorMessage && h(FormErrorMessage, errorMessage),

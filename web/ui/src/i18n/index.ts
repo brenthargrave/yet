@@ -25,9 +25,13 @@ const messages: Record<string, string> = {
   "default.error.title": "Oops, a bug!",
   "default.error.description": "We've been notified and will fix it ASAP.",
 
-  "onboarding.name.headingCopy": "What's your name?",
-  "onboarding.name.inputPlaceholer": shared.empty,
-  "onboarding.name.submitButtonCopy": shared.continue,
+  "onboarding.first_name.headingCopy": "What's your first name?",
+  "onboarding.first_name.inputPlaceholer": shared.empty,
+  "onboarding.first_name.submitButtonCopy": shared.continue,
+
+  "onboarding.last_name.headingCopy": "What's your last name?",
+  "onboarding.last_name.inputPlaceholer": shared.empty,
+  "onboarding.last_name.submitButtonCopy": shared.continue,
 
   "onboarding.email.headingCopy": "What's your email?",
   "onboarding.email.inputPlaceholer": shared.empty,

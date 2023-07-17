@@ -57,6 +57,8 @@ export const makeParticipant = (): Omit<Profile, "__typename"> => {
   return {
     id: makeId(),
     name: makeName(),
+    firstName: makeName(),
+    lastName: makeName(),
     org: makeOrg(),
     role: makeRole(),
     email: makeEmail(),

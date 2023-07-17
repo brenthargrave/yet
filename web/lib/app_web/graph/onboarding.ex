@@ -3,7 +3,8 @@ defmodule AppWeb.Graph.Onboarding do
   alias AppWeb.Resolvers.{Onboarding}
 
   enum :profile_prop do
-    value(:name, as: "name")
+    value(:first_name, as: "first_name")
+    value(:last_name, as: "last_name")
     value(:email, as: "email")
     value(:org, as: "org")
     value(:role, as: "role")
@@ -15,8 +16,19 @@ defmodule AppWeb.Graph.Onboarding do
     field(:value, non_null(:string))
   end
 
+  # same as Profile, but all fields optional, as profile is built-up
+  object :onboarding_profile do
+    field(:id, non_null(:id))
+    field(:first_name, :string)
+    field(:last_name, :string)
+    field(:email, :string)
+    field(:name, :string)
+    field(:org, :string)
+    field(:role, :string)
+  end
+
   object :patch_profile_payload do
-    field(:profile, :profile)
+    field(:profile, :onboarding_profile)
     field(:user_error, :user_error)
   end
 

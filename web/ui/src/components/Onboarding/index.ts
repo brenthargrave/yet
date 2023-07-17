@@ -1,4 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
+import { snakeCase } from "change-case"
 import { createRef } from "react"
 import {
   combineLatest,
@@ -14,7 +15,7 @@ import {
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
-import { isEmpty, toLower, trim } from "~/fp"
+import { isEmpty, trim } from "~/fp"
 import {
   firstRequiredProfileProp,
   nextRequiredProfileProp,
@@ -112,7 +113,7 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     isLoading,
   }).pipe(
     map(({ attr, ...props }) => {
-      const key = toLower(attr)
+      const key = snakeCase(attr)
       return h(View, {
         attr,
         ...props,

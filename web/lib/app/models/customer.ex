@@ -4,6 +4,10 @@ defmodule App.Customer do
   import Ecto.Changeset
   import App.Types
   use Brex.Result
+  # bulk update
+  import Ecto.Query
+  alias Ecto.Multi
+  alias App.{Repo, Customer}
 
   @type changeset :: Ecto.Changeset.t()
 
@@ -26,6 +30,8 @@ defmodule App.Customer do
     field(:e164, :string, null: false)
     field(:token, :string)
     field(:name, :string, null: false)
+    field(:first_name, :string)
+    field(:last_name, :string)
     field(:email, :string)
     field(:org, :string)
     field(:role, :string)
@@ -42,7 +48,8 @@ defmodule App.Customer do
 
   def changeset(record, attrs) do
     record
-    |> cast(attrs, [:e164])
+    |> cast(attrs, [:e164, :name, :first_name, :last_name])
+    |> IO.inspect(label: "changeset")
   end
 
   def stats_changeset(customer, stats) do
@@ -53,5 +60,23 @@ defmodule App.Customer do
   def settings_changeset(customer, settings) do
     customer
     |> cast(settings, [:digest])
+  end
+
+  def update_all(customers_attrs) do
+    Enum.reduce(customers_attrs, Multi.new(), fn attrs, multi ->
+      email = attrs.email
+      customer = Repo.one(from(c in Customer, where: c.email == ^email, limit: 1))
+      [first | tail] = String.split(attrs.name)
+      last = Enum.join(tail, " ")
+
+      attrs = Map.merge(attrs, %{first_name: first, last_name: last})
+
+      Multi.update(
+        multi,
+        {:customer, email},
+        Customer.changeset(customer, attrs)
+      )
+    end)
+    |> Repo.transaction()
   end
 end
