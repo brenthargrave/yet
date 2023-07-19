@@ -91,6 +91,7 @@ export * from "./EditButton"
 export * from "./InputControl"
 export * from "./CancelButton"
 export * from "./DeleteButton"
+export * from "./Logo"
 
 export { Header } from "./Header"
 export { BackButton } from "./BackButton"

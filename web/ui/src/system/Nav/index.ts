@@ -7,7 +7,7 @@ import { isAuthenticated, me$ } from "~/graph"
 import { t } from "~/i18n"
 import { push, routes } from "~/router"
 import { cb$ } from "~/rx"
-import { AriaButton, BackButton, Header } from "~/system"
+import { AriaButton, BackButton, Header, Heading, Logo } from "~/system"
 
 // NOTE: cheat, inject auth functionality w/ global vars
 const [onClickAuth, onClickAuth$] = cb$(share())
@@ -37,7 +37,8 @@ export const Nav: FC<Props> = ({ onClickBack, backButtonText: cta }) => {
         cta,
         onClick: onClickBack,
       }),
-    h(Spacer, { minHeight: "24px" }),
     !authenticated && h(AriaButton, { onClick: onClickAuth }, t("app.auth")),
+    h(Spacer, { minHeight: "24px" }),
+    h(Logo),
   ])
 }
