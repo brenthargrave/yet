@@ -1,7 +1,9 @@
+import { HStack, IconButton, Link, Spinner, Text } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { form } from "@cycle/react-dom"
+import { a, form, span } from "@cycle/react-dom"
 import { snakeCase } from "change-case"
 import { Ref } from "react"
+import { FaFacebook, FaTwitter } from "react-icons/fa"
 import { ProfileProp } from "~/graph"
 import {
   ariaLabel,
@@ -11,6 +13,8 @@ import {
   Input,
   InputGroup,
   Stack,
+  twitterBlue,
+  TwitterIcon,
 } from "~/system"
 
 const size = "lg"
@@ -28,6 +32,9 @@ export interface Props {
   formRef?: Ref<HTMLFormElement>
   inputRef?: Ref<HTMLInputElement>
   buttonRef?: Ref<HTMLButtonElement>
+  onClickAuthTwitter: () => void
+  onClickAuthFacebook: () => void
+  authPending?: boolean
 }
 
 export const View = ({
@@ -43,6 +50,9 @@ export const View = ({
   inputRef,
   formRef,
   buttonRef,
+  onClickAuthTwitter,
+  onClickAuthFacebook,
+  authPending = false,
 }: Props) => {
   const key = `input-${attr}`
   const onSubmit: React.FormEventHandler<HTMLButtonElement> = (e) => {
@@ -82,6 +92,52 @@ export const View = ({
               ...ariaLabel(submitButtonCopy),
             },
             submitButtonCopy
+          ),
+          // Twitter auth
+          h(
+            Stack,
+            {
+              direction: "column",
+              align: "center",
+              pt: 4,
+              spacing: 4,
+              // NOTE: min-height to prevent spinner resizing/moving other eles
+              minHeight: "100px",
+            },
+            [
+              h(Text, { fontSize: "md", fontStyle: "italic" }, "or"),
+              authPending
+                ? h(Spinner, { size: "md", color: twitterBlue })
+                : h(HStack, { alignItems: "center" }, [
+                    h(Text, { fontSize: "lg" }, "Onboard with "),
+                    h(
+                      Button,
+                      {
+                        //
+                        leftIcon: h(TwitterIcon),
+                        variant: "outline",
+                        size: "md",
+                        onClick: onClickAuthTwitter,
+                      },
+                      "Twitter"
+                    ),
+                    // TODO: add facebook once deletion supported
+                    false &&
+                      h(
+                        Button,
+                        {
+                          //
+                          size: "md",
+                          variant: "outline",
+                          colorScheme: "facebook",
+                          leftIcon: h(FaFacebook),
+                          borderColor: "gray.200",
+                          onClick: onClickAuthFacebook,
+                        },
+                        "Facebook"
+                      ),
+                  ]),
+            ]
           ),
         ]),
       ]),

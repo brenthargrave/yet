@@ -12,7 +12,7 @@ import { FullWidthList, LinkedListItem } from "~/system"
 
 export interface Props {
   viewer: Customer
-  events: TimelineEvent[] | Maybe<TimelineEvent[]>
+  events: TimelineEvent[] | Maybe<TimelineEvent[]> | undefined
   onClickConversation?: (conversation: Conversation) => void
 }
 

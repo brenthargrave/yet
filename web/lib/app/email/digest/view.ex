@@ -24,12 +24,15 @@ defmodule App.Email.Digest.View do
     ~s(<b>#{text}</b>)
   end
 
-  # TODO
-  # defp profile_url(customer) do
-  #   ~s(#{root_url}/p)
-  # end
-  # def profile_link(customer) do
-  # end
+  def profile_href(profile) do
+    # "https://yet.wip/p/:id"
+    ~s(https://#{System.get_env("HOST")}/p/#{profile.id})
+  end
+
+  def profile_link(profile, bold \\ true) do
+    link = link(profile.name, profile_href(profile), %{text_decoration: "underline"})
+    if bold, do: bold(link), else: link
+  end
 
   def timeline_events(events) do
     events
@@ -50,7 +53,8 @@ defmodule App.Email.Digest.View do
       date_link =
         link(
           ~s(#{date_formatted}),
-          conversation_url
+          conversation_url,
+          %{text_decoration: "underline"}
         )
 
       note =
@@ -61,10 +65,12 @@ defmodule App.Email.Digest.View do
         |> String.replace("<p", "<p style='margin: 0px; padding: 16px 0px 0px 0px;'")
         |> String.replace("<ul", "<ul style='padding-left: 16px; margin: 0px'")
 
-      creator_name = bold(conversation.creator.name)
+      creator = conversation.creator
+      creator_name = profile_link(creator)
 
+      # NOTE: ignore invitees, as only signed conversations in timeline
       others_names =
-        Enum.map(conversation.signatures, &bold(&1.signer.name))
+        Enum.map(conversation.signatures, fn sig -> profile_link(sig.signer) end)
         |> RList.to_sentence()
 
       participants_header = link(~s(#{creator_name} with #{others_names}), conversation_url)

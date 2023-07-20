@@ -5,6 +5,7 @@ import {
   filter,
   map,
   merge,
+  mergeMap,
   Observable,
   share,
   startWith,
@@ -13,7 +14,9 @@ import {
 } from "rxjs"
 import { not } from "~/fp"
 import {
+  EventName,
   submitPhone$,
+  track$,
   UserError,
   Verification,
   VerificationStatus,
@@ -21,7 +24,7 @@ import {
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
 import { callback$, makeObservableCallback, shareLatest } from "~/rx"
-import { View } from "./View"
+import { COUNTRY_CODE_DEFAULT, View } from "./View"
 
 export { View }
 
@@ -35,15 +38,30 @@ interface Sources {
   react: ReactSource
 }
 
-export const PhoneSubmit = ({ ...sources }: Sources) => {
+export const PhoneSubmit = ({ ...sources }: Sources, tagPrefix?: string) => {
+  const tagScope = `${tagPrefix}/PhoneSubmit`
+  const tag = makeTagger(tagScope)
+
   const { $: phoneInput$, cb: onChangePhoneInput } = callback$<string>(
     tag("phoneINput$")
   )
+  const { $: countryCode$, cb: onChangeCountryCode } = callback$<string>(
+    tag("phoneINput$")
+  )
 
-  const phoneValidation$ = phoneInput$.pipe(
+  const phone$ = combineLatest({
+    code: countryCode$.pipe(startWith(COUNTRY_CODE_DEFAULT), tag("code$")),
+    number: phoneInput$,
+  }).pipe(
+    map(({ code, number }) => `+${code} ${number}`),
+    tag("phone$"),
+    shareLatest()
+  )
+
+  const phoneValidation$ = phone$.pipe(
     map((phone) =>
       validatePhone(phone, {
-        country: "USA",
+        country: "",
         strictDetection,
         validateMobilePrefix,
       })
@@ -77,6 +95,16 @@ export const PhoneSubmit = ({ ...sources }: Sources) => {
     tag("result$"),
     share()
   )
+  const track = submit$.pipe(
+    mergeMap((_) =>
+      track$({
+        name: EventName.SubmitPhoneNumber,
+        properties: {},
+      })
+    ),
+    tag("track"),
+    share()
+  )
 
   const userError$ = result$.pipe(
     filter((result): result is UserError => result.__typename === "UserError")
@@ -90,6 +118,7 @@ export const PhoneSubmit = ({ ...sources }: Sources) => {
     map((v) => v.status),
     tag("verificationStatus$")
   )
+  // ! TODO: handle Twilio pending/cancelled states
   const pending$ = verificationStatus$.pipe(
     filter((status) => status === VerificationStatus.Pending)
   )
@@ -119,7 +148,9 @@ export const PhoneSubmit = ({ ...sources }: Sources) => {
     isSubmitButtonDisabled: isSubmitButtonDisabled$,
     isPhoneInputDisabled: isPhoneInputDisabled$,
   }).pipe(
-    map((props) => h(View, { ...props, onSubmit, onChangePhoneInput })),
+    map((props) =>
+      h(View, { ...props, onSubmit, onChangePhoneInput, onChangeCountryCode })
+    ),
     tag("react")
   )
 
@@ -136,5 +167,6 @@ export const PhoneSubmit = ({ ...sources }: Sources) => {
     react,
     notice,
     value,
+    track,
   }
 }

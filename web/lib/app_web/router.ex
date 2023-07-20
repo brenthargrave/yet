@@ -9,6 +9,12 @@ defmodule AppWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
+  pipeline :api do
+    plug(:accepts, ["json"])
+    plug(:fetch_session)
+    plug(:put_secure_browser_headers)
+  end
+
   pipeline :authenticate do
     plug(AppWeb.Plug.Authenticate)
   end
@@ -63,8 +69,26 @@ defmodule AppWeb.Router do
     end
   end
 
+  scope "/auth", AppWeb do
+    pipe_through([:browser])
+
+    get("/:provider", AuthController, :request)
+    get("/:provider/callback", AuthController, :callback)
+  end
+
+  scope "/api", AppWeb do
+    pipe_through([:api])
+
+    post("/session_start", AuthController, :session_start)
+    post("/session_end", AuthController, :session_end)
+  end
+
   scope "/", AppWeb do
-    pipe_through(:browser)
+    pipe_through([:browser])
+
+    get("/privacy", PageController, :privacy)
+    get("/terms", PageController, :terms)
+    get("/deletion", PageController, :deletion)
     get("/*path", PageController, :index, as: :root)
   end
 end

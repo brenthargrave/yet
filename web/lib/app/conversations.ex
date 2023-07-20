@@ -69,7 +69,7 @@ defmodule App.Conversations do
 
   defun get_conversation(
           id :: id(),
-          viewer :: Customer.t()
+          _viewer :: Customer.t()
         ) :: Brex.Result.s(Conversation.t()) do
     Repo.get(Conversation, id)
     |> Repo.preload(@preloads)

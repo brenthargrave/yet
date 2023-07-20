@@ -18,6 +18,7 @@ export const paddingDefault = 4
 export const white = "#fff"
 
 export const lightGray = rgb(237, 242, 248).toString()
+export const twitterBlue = "#1D9BF0"
 
 // status colors
 const alpha = 0.5

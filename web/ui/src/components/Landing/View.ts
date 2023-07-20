@@ -1,15 +1,7 @@
 import { Divider } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { productName, t } from "~/i18n"
-import {
-  Button,
-  Center,
-  Heading,
-  Stack,
-  ariaLabel,
-  Logo,
-  LogoLocation,
-} from "~/system"
+import { t } from "~/i18n"
+import { ariaLabel, Button, Center, Logo, LogoLocation, Stack } from "~/system"
 
 export interface Props {
   onClickJoin: React.MouseEventHandler<HTMLButtonElement>

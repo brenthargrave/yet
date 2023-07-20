@@ -13,6 +13,7 @@ import { createRef, FC, useState } from "react"
 import { GoGear } from "react-icons/go"
 import { formatDateInput, localizeDate, parseDateInput } from "~/i18n"
 import { Button, Spacer, Text } from "~/system"
+import { SyncIcon } from "./SyncIcon"
 
 // TODO: natural language date input
 // https://github.com/wanasit/chrono/pull/448

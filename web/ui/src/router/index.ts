@@ -41,15 +41,23 @@ const oppPayment = oppPayments.extend(
 )
 const newOppPayment = oppPayment.extend("/new")
 
-// const profiles = root.extend("/p")
-// const profile = profiles.extend({ pid: param.path.string }, (p) => `/${p.pid}`)
-
+const profiles = root.extend("/p")
+const profile = profiles.extend({ pid: param.path.string }, (p) => `/${p.pid}`)
 const me = root.extend("/me")
 
 const unsubscribe = root.extend("/unsubscribe")
 const unsubscribeDigest = unsubscribe.extend(
   { id: param.path.string },
   (p) => `/digest/${p.id}`
+)
+
+const oauth = root.extend(
+  {
+    status: param.query.string,
+    title: param.query.optional.string,
+    description: param.query.optional.string,
+  },
+  () => `/oauth`
 )
 
 export const { routes, useRoute, RouteProvider, session } = createRouter({
@@ -67,15 +75,17 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
   newOppPayment,
   opps,
   opp,
-  // profiles,
-  // profile,
+  profiles,
+  profile,
   me,
   unsubscribeDigest,
+  oauth,
 })
 
 export const routesProfilesList = [
-  // routes.profiles,
-  // routes.profiles,
+  //
+  routes.profiles,
+  routes.profile,
   routes.me,
 ]
 export const routeGroupProfiles = createGroup(routesProfilesList)

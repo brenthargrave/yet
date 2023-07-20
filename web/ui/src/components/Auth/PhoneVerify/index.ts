@@ -4,12 +4,11 @@ import {
   BehaviorSubject,
   catchError,
   combineLatest,
-  EMPTY,
   filter,
+  from,
   map,
   merge,
   Observable,
-  of,
   share,
   startWith,
   switchMap,
@@ -22,6 +21,7 @@ import { not } from "~/fp"
 import {
   Customer,
   loggedIn,
+  putTokenInSession,
   SubmitCodePayload,
   SubmitCodeResult,
   UserError,
@@ -112,7 +112,7 @@ export const PhoneVerify = (sources: Sources) => {
     pluck("me"),
     tag("me$")
   )
-  const token$ = me$.pipe(pluck("token"), tag("token$"))
+  const token$ = me$.pipe(pluck("token"), tag("token$"), share())
 
   const userError$ = result$.pipe(
     filter((result): result is UserError => result.__typename === "UserError"),

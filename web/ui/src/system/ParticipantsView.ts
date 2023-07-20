@@ -1,6 +1,6 @@
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { isEmpty, isNotEmpty, map, prop } from "~/fp"
+import { isNotEmpty, map, prop } from "~/fp"
 import {
   ConversationStatus,
   Customer,
@@ -10,7 +10,8 @@ import {
   Profile,
 } from "~/graph"
 import { toSentence } from "~/i18n"
-import { MarkdownView, bold } from "~/system"
+import { routes } from "~/router"
+import { bold, MarkdownView } from "~/system"
 
 type Participant = Omit<Invitee, "__typename" | "isContact">
 
@@ -25,6 +26,17 @@ export interface Props {
   signers: Profile[]
 }
 
+const link = (text: string, href: string) =>
+  `<a style="text-decoration: underline;" href=${href}>${text}</a>`
+
+const profileLink = (profile: Profile, viewer: Maybe<Customer>) => {
+  const route =
+    viewer?.id === profile.id
+      ? routes.me()
+      : routes.profile({ pid: profile.id })
+  return link(profile.name, route.href)
+}
+
 export const ParticipantsView: FC<Props> = ({
   viewer,
   status,
@@ -32,14 +44,13 @@ export const ParticipantsView: FC<Props> = ({
   invitees,
   signers,
 }) => {
-  const creatorName = creator.name
-  const others: Participant[] = isStatusClosed(status) ? signers : invitees
-  let md = bold(creatorName)
+  let md = bold(profileLink(creator, viewer))
+  const others = isStatusClosed(status)
+    ? signers.map((signer) => bold(profileLink(signer, viewer)))
+    : invitees.map((invitee) => bold(invitee.name))
   if (isNotEmpty(others)) {
-    const othersNames = map(prop("name"), others)
-    md += ` with ${toSentence(map(bold, othersNames))}`
+    md += ` with ${toSentence(others)}`
   }
-  // md: `${bold(creatorName)} with ${toSentence(map(bold, othersNames))}`,
   return h(MarkdownView, { md })
 }
 

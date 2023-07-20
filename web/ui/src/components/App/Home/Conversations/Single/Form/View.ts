@@ -17,6 +17,7 @@ import { Props as ActionBarProps, View as ActionBar } from "./ActionBar"
 import { View as AddOppModal } from "./AddOppModal"
 import { Props as NoteEditorProps, View as NoteEditor } from "./NoteEditor"
 import { PublishView } from "./PublishView"
+import { SyncIcon } from "./SyncIcon"
 import { Props as WhenProps, View as When } from "./When"
 import { Props as WhoProps, View as Who } from "./Who"
 
@@ -92,6 +93,7 @@ export const View = ({
     h(Header, [
       h(Heading, { size: "md" }, "Conversation"),
       h(Spacer),
+      h(SyncIcon, { boxSize: 4, syncing: isSyncing }),
       h(Status, { status }),
     ]),
     h(Stack, { id: "edit", direction: "column", width: "100%", pt: 0 }, [
@@ -114,6 +116,7 @@ export const View = ({
         onClickAddOpp,
         isDisabled: isDisabledEditing,
         noteInputRef,
+        isSyncing,
       }),
       h(
         ActionBar,

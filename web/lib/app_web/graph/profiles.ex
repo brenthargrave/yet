@@ -8,9 +8,20 @@ defmodule AppWeb.Graph.Profiles do
     field(:last_name, non_null(:string))
     field(:name, non_null(:string))
     field(:email, :string)
+    # TODO: filter (contacts-only) here in backend, not client
+    field(:e164, :string)
+    field(:phone, :string)
     field(:org, :string)
     field(:role, :string)
+    field(:website, :string)
+    field(:location, :string)
+    field(:description, :string)
+    field(:twitter_handle, :string)
+    field(:facebook_url, :string)
+    field(:facebook_name, :string)
+    field(:facebook_image, :string)
     field(:events, list_of(non_null(:timeline_event)))
+    field(:social_distance, :integer)
   end
 
   ## GetProfile
@@ -41,6 +52,8 @@ defmodule AppWeb.Graph.Profiles do
   input_object :update_profile_input do
     field(:first_name, non_null(:string))
     field(:last_name, non_null(:string))
+    field(:org, :string)
+    field(:role, :string)
   end
 
   object :profiles_mutations do

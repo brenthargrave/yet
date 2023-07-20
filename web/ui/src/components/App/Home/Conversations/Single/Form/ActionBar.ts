@@ -5,6 +5,7 @@ import { head, isEmpty } from "~/fp"
 import { ConversationStatus } from "~/graph"
 import { toSentence } from "~/i18n"
 import { ariaLabel, Spacer, Stack } from "~/system"
+import { SyncIcon } from "./SyncIcon"
 
 export type OnClickPublish = () => void
 

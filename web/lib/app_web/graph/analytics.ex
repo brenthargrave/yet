@@ -5,12 +5,16 @@ defmodule AppWeb.Graph.Analytics do
   enum :event_name do
     value(:tap_signup, as: "tap_signup")
     value(:tap_signin, as: "tap_signin")
+    value(:submit_phone_number, as: "submit_phone_number")
+    value(:verify_phone_number, as: "verify_phone_number")
     value(:tap_new_conversation, as: "tap_new_conversation")
     value(:tap_propose, as: "tap_propose")
     value(:review_conversation, as: "review_conversation")
     value(:view_conversation, as: "view_conversation")
     value(:unsubscribe_notification, as: "unsubscribe_notification")
     value(:subscribe_notification, as: "subscribe_notification")
+    value(:tap_authorize, as: "tap_authorize")
+    value(:tap_social, as: "tap_social")
   end
 
   enum :intent do
@@ -34,11 +38,14 @@ defmodule AppWeb.Graph.Analytics do
     value(:digest, as: "digest")
   end
 
-  enum :new_conversation_source do
+  # TODO: consider combining w/ "view into single prop
+  enum :from_view do
     value(:nav, as: "nav")
     value(:conversations, as: "conversations")
     value(:timeline, as: "timeline")
     value(:profile, as: "profile")
+    value(:onboarding, as: "onboarding")
+    # TODO: onboarding step?
   end
 
   # TODO: macro to dedupe input_object/object
@@ -47,11 +54,14 @@ defmodule AppWeb.Graph.Analytics do
     field(:intent, :intent)
     field(:platform, :platform)
     field(:signature_count, :integer)
+    field(:view, :from_view)
     # notifications
     field(:notification_channel, :notification_channel)
     field(:notification_kind, :notification_kind)
-    # where new conversation tapped from
-    field(:new_conversation_source, :new_conversation_source)
+    # oauth
+    field(:auth_provider, :auth_provider)
+    # profiles
+    field(:social_distance, :integer)
   end
 
   object :event_properties do
@@ -62,6 +72,8 @@ defmodule AppWeb.Graph.Analytics do
     # notifications
     field(:notification_channel, :notification_channel)
     field(:notification_kind, :notification_kind)
+    # oauth
+    field(:auth_provider, :auth_provider)
   end
 
   input_object :track_event_input do

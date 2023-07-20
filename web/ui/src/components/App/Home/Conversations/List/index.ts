@@ -11,8 +11,8 @@ import {
 import {
   Conversation,
   EventName,
+  FromView,
   isLurking,
-  NewConversationSource,
   Source as GraphSource,
   track$,
 } from "~/graph"
@@ -59,7 +59,7 @@ export const List = (sources: Sources, tagPrefix?: string) => {
         name: EventName.TapNewConversation,
         properties: {
           signatureCount: me?.stats?.signatureCount,
-          newConversationSource: NewConversationSource.Conversations,
+          view: FromView.Conversations,
         },
         customerId: me?.id,
       })

@@ -20,9 +20,9 @@ import { Onboarding } from "~/components/Onboarding"
 import { isEmpty, pluck } from "~/fp"
 import {
   EventName,
+  FromView,
   isAuthenticated,
   isOnboarding,
-  NewConversationSource,
   Source as GraphSource,
   track$,
 } from "~/graph"
@@ -41,7 +41,6 @@ import {
 import { cb$, mapTo, shareLatest } from "~/rx"
 import { redirectToAuth$ } from "~/system"
 import { Conversations } from "./Conversations"
-import { HeaderNav } from "./HeaderNav"
 import { Location, Opps, State as OppsState } from "./Opps"
 import { Payments } from "./Payments"
 import { Profiles } from "./Profiles"
@@ -68,8 +67,8 @@ interface Sources {
   action: ActionSource
 }
 
-export const Home = (sources: Sources) => {
-  const tagScope = "Home"
+export const Home = (sources: Sources, tagPrefix?: string) => {
+  const tagScope = `${tagPrefix}/Home`
   const tag = makeTagger(tagScope)
 
   const {
@@ -78,7 +77,7 @@ export const Home = (sources: Sources) => {
   } = sources
 
   // NOTE: force onboarding everywhere in main app after auth
-  const onboarding = Onboarding(sources)
+  const onboarding = Onboarding(sources, tagScope)
   const conversations = Conversations(sources, tagScope)
   const timeline = Timeline(sources, tagScope)
   const profiles = Profiles(sources, tagScope)
@@ -157,7 +156,7 @@ export const Home = (sources: Sources) => {
         name: EventName.TapNewConversation,
         properties: {
           signatureCount: me?.stats?.signatureCount,
-          newConversationSource: NewConversationSource.Nav,
+          view: FromView.Nav,
         },
         customerId: me?.id,
       })
@@ -186,10 +185,6 @@ export const Home = (sources: Sources) => {
           .when(
             (route) => anyRootOppsRouteGroup.has(route),
             () => RootState.opps
-          )
-          .when(
-            (route) => routeGroupProfiles.has(route),
-            () => RootState.profiles
           )
           .when(
             (route) => routeGroupPayments.has(route),
@@ -231,13 +226,14 @@ export const Home = (sources: Sources) => {
   const showHomeOnly$ = me$.pipe(
     map((me) => !isAuthenticated(me)),
     startWith(true),
+    distinctUntilChanged(),
     tag("showHomeOnly$"),
     shareLatest()
   )
 
   const props$ = combineLatest({
     showHomeOnly: showHomeOnly$,
-  }).pipe(tag("props$"))
+  }).pipe(tag("props$"), shareLatest())
 
   const subview$ = rootState$.pipe(
     switchMap((state) =>
@@ -249,7 +245,8 @@ export const Home = (sources: Sources) => {
         .with(RootState.payments, () => payments.react)
         .exhaustive()
     ),
-    tag("subview$")
+    tag("subview$"),
+    share()
   )
 
   const rootView$ = combineLatest({ subview: subview$, props: props$ }).pipe(
@@ -300,7 +297,7 @@ export const Home = (sources: Sources) => {
     newConvo$
   )
   const track = merge(
-    ...pluck("track", [conversations, timeline, profiles]),
+    ...pluck("track", [conversations, timeline, profiles, onboarding]),
     trackNew$
   )
   const notice = merge(

@@ -58,6 +58,12 @@ const messages: Record<string, string> = {
   "conversations.sign.once-signed": `Once cosigned they become visible to your combined networks, and you'll get attribution for any mentioned opportunities, leads, etc.`,
   "unsubscribe.unsubscribed": "Unsubscribed!",
   "unsubscribe.home": "Back to Home",
+
+  "oauth.success.message": "Welcome aboard!",
+  "oauth.error.message": "Authorization failed",
+
+  "profles.show.me.heading": "Your Profile",
+  "profles.show.other.heading": "Profile",
 }
 
 export const t = (key: string): string => messages[key]

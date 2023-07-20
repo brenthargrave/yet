@@ -12,6 +12,7 @@ import {
 } from "rxjs"
 import { map, switchMap } from "rxjs/operators"
 import { match } from "ts-pattern"
+import { pluck } from "ramda"
 import { Source as ActionSource } from "~/action"
 import { Auth } from "~/components/Auth"
 import { Landing } from "~/components/Landing"
@@ -29,6 +30,7 @@ import { shareLatest } from "~/rx"
 import { toast } from "~/toast"
 import { Home } from "./Home"
 import { View as AppView } from "./View"
+import { Oauth } from "./Oauth"
 
 export type CycleComponent<T> = (
   sources: T,
@@ -59,14 +61,13 @@ export const App = (sources: Sources) => {
 
   const { token$, me$: cachedMe$ } = sources.graph
 
-  const { react: landingView$ } = Landing(sources)
-
-  const home = Home(sources)
+  const landing = Landing(sources, tagScope)
+  const oauth = Oauth(sources, tagScope)
+  const home = Home(sources, tagScope)
   const {
     value: { me$: authMe$ },
     ...auth
-  } = Auth(sources)
-
+  } = Auth(sources, tagScope)
   const unsubscribe = Unsubscribe(sources, "App")
 
   const me$: Observable<null | Customer> = merge(authMe$, cachedMe$).pipe(
@@ -102,7 +103,7 @@ export const App = (sources: Sources) => {
   const bodyView$ = state$.pipe(
     switchMap((state) =>
       match(state)
-        .with(State.landing, () => landingView$)
+        .with(State.landing, () => landing.react)
         .with(State.auth, () => auth.react)
         .with(State.home, () => home.react)
         .with(State.unsubscribe, () => unsubscribe.react)
@@ -133,15 +134,17 @@ export const App = (sources: Sources) => {
 
   const router = merge(
     guardHistory$,
+    landing.router,
     auth.router,
     home.router,
-    unsubscribe.router
+    unsubscribe.router,
+    oauth.router
   ).pipe(eatUnrecoverableError())
   const notice = merge(auth.notice, home.notice).pipe(eatUnrecoverableError())
   const graph = merge(auth.graph, home.graph).pipe(eatUnrecoverableError())
-  const track = merge(home.track, unsubscribe.track).pipe(
-    eatUnrecoverableError()
-  )
+  const track = merge(
+    ...pluck("track", [landing, auth, home, unsubscribe])
+  ).pipe(eatUnrecoverableError())
   const action = merge(home.action)
 
   return {

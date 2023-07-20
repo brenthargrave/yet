@@ -25,7 +25,7 @@ config :app, AppWeb.Endpoint,
     patterns: [
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{lib/app_web/views/.*(ex)$},
-      ~r{lib/app_web/templates/.*(eex|slim)$},
+      ~r{lib/app_web/templates/.*(eex|slim|md)$},
       ~r{lib/app/email/.*(ex|slim)$}
     ]
   ]
@@ -33,7 +33,11 @@ config :app, AppWeb.Endpoint,
 config :slime, :keep_lines, true
 
 # Do not include metadata nor timestamps in development logs
-config :logger, :console, format: "[$level] $message\n", level: :debug
+config :logger, :console,
+  format: "[$level] $message\n",
+  level:
+    System.get_env("DEV_LOG_LEVEL", "error")
+    |> String.to_atom()
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.

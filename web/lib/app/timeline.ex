@@ -225,6 +225,18 @@ defmodule App.Timeline do
           ),
         else: query
 
+    viewed_id = Map.get(filters, :only_with)
+
+    query =
+      if viewed_id,
+        do:
+          from(e in query,
+            join: c in assoc(e, :conversation),
+            join: s in assoc(c, :signatures),
+            where: c.creator_id == ^viewed_id or s.signer_id == ^viewed_id
+          ),
+        else: query
+
     Repo.all(query)
     # TODO: hack. debug db query
     |> Enum.sort_by(& &1.occurred_at, {:desc, DateTime})

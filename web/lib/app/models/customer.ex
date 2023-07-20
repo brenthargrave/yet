@@ -37,6 +37,19 @@ defmodule App.Customer do
     field(:role, :string)
     embeds_one(:stats, Stats, on_replace: :update)
     field(:digest, :boolean, null: false, default: true)
+    ## oauth addditions
+    field(:website, :string)
+    field(:location, :string)
+    field(:description, :string)
+    # twitter
+    field(:twitter_handle, :string)
+    field(:twitter_image, :string)
+    # facebook
+    field(:facebook_id, :string)
+    field(:facebook_handle, :string)
+    field(:facebook_url, :string)
+    field(:facebook_name, :string)
+    field(:facebook_image, :string)
   end
 
   def auth_changeset(customer, attrs) do
@@ -49,7 +62,6 @@ defmodule App.Customer do
   def changeset(record, attrs) do
     record
     |> cast(attrs, [:e164, :name, :first_name, :last_name])
-    |> IO.inspect(label: "changeset")
   end
 
   def stats_changeset(customer, stats) do
@@ -60,6 +72,29 @@ defmodule App.Customer do
   def settings_changeset(customer, settings) do
     customer
     |> cast(settings, [:digest])
+  end
+
+  def authorization_changeset(record, attrs) do
+    required = [:name, :first_name, :last_name, :email]
+
+    optional = [
+      :website,
+      :location,
+      :description,
+      :twitter_handle,
+      :twitter_image,
+      :facebook_id,
+      :facebook_handle,
+      :facebook_url,
+      :facebook_name,
+      :facebook_image
+    ]
+
+    all = required ++ optional
+
+    record
+    |> cast(attrs, all)
+    |> validate_required(required)
   end
 
   def update_all(customers_attrs) do

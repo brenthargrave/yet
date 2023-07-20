@@ -27,7 +27,8 @@ config :app, App.Repo,
 
 config :phoenix, :template_engines,
   slim: PhoenixSlime.Engine,
-  slime: PhoenixSlime.Engine
+  slime: PhoenixSlime.Engine,
+  md: PhoenixMarkdown.Engine
 
 config :vite_phx,
   release_app: :app,
@@ -63,5 +64,34 @@ config :app, App.Email.Mailer,
 # domain: {:system, "MAILGUN_DOMAIN"}
 # adapter: Swoosh.Adapters.Sendgrid,
 # api_key: {:system, "SENDGRID_API_KEY"}
+
+config :phoenix_markdown, :earmark, %{
+  gfm: true,
+  breaks: true
+}
+
+config :ueberauth, Ueberauth,
+  providers: [
+    twitter:
+      {Ueberauth.Strategy.Twitter,
+       [
+         callback_params: ["auth_id"]
+       ]},
+    facebook:
+      {Ueberauth.Strategy.Facebook,
+       [
+         callback_params: ["auth_id"],
+         default_scope: "email,public_profile,user_link"
+         #  profile_fields: "name,email,first_name,last_name"
+       ]}
+  ]
+
+config :ueberauth, Ueberauth.Strategy.Twitter.OAuth,
+  consumer_key: System.get_env("TWITTER_CONSUMER_KEY"),
+  consumer_secret: System.get_env("TWITTER_CONSUMER_SECRET")
+
+config :ueberauth, Ueberauth.Strategy.Facebook.OAuth,
+  client_id: System.get_env("FACEBOOK_CLIENT_ID"),
+  client_secret: System.get_env("FACEBOOK_CLIENT_SECRET")
 
 import_config "#{Mix.env()}.exs"

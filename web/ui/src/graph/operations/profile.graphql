@@ -4,8 +4,18 @@ fragment ProfileProps on Profile {
   firstName
   lastName
   email
+  e164
+  phone
   role
   org
+  website
+  location
+  description
+  twitterHandle
+  facebookUrl
+  facebookName
+  facebookImage
+  socialDistance
 }
 
 fragment OnboardingProfileProps on OnboardingProfile {

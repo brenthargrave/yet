@@ -103,6 +103,8 @@ export { ShareModal } from "./ShareModal"
 export type { Props as ShareModalProps } from "./ShareModal"
 export { Status } from "./Status"
 
+export * from "./social"
+
 export const AriaButton = forwardRef(
   ({ children, ...rest }: ButtonProps, ref) => {
     return typeof children === "string"

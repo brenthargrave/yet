@@ -1,6 +1,6 @@
 defmodule App.Analytics do
   import Ecto.Query, warn: false
-  alias App.Repo
+  alias App.{Repo}
   alias App.Analytics.Event
   use Brex.Result
   use Croma
@@ -35,5 +35,26 @@ defmodule App.Analytics do
     |> Segment.Analytics.track()
 
     event
+  end
+
+  def identify(customer) do
+    id = customer.id
+
+    traits =
+      customer
+      |> Map.from_struct()
+      |> Map.take([
+        :e164,
+        :email,
+        :name,
+        :first_name,
+        :last_name,
+        :twitter_handle,
+        :digest
+      ])
+
+    Segment.Analytics.identify(id, traits)
+
+    customer
   end
 end

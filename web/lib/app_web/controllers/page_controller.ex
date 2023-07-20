@@ -1,6 +1,35 @@
 defmodule AppWeb.PageController do
   use AppWeb, :controller
-  alias App.{Repo, Conversation}
+  alias App.{Repo, Conversation, Auth}
+
+  defp handle_static_page(conn) do
+    conn
+    |> put_resp_header("content-type", "text/html; charset=utf-8")
+    |> put_resp_header("cache-control", "no-store, private")
+    |> put_resp_header("pragma", "no-cache")
+    |> put_layout(false)
+  end
+
+  def privacy(conn, _params) do
+    conn
+    |> handle_static_page()
+    |> render("privacy.html")
+  end
+
+  def terms(conn, _params) do
+    conn
+    |> handle_static_page()
+    |> render("terms.html")
+  end
+
+  def deletion(conn, _params) do
+    token = get_session(conn, :token)
+    name = if token, do: Auth.customer_for_token(token).name, else: "Stranger"
+
+    conn
+    |> handle_static_page()
+    |> render("deletion.html", %{name: name})
+  end
 
   def index(conn, %{"path" => ["c", "new" | _]} = _params) do
     render(conn, "index.html")

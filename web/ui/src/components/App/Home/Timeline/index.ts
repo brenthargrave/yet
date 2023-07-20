@@ -18,8 +18,8 @@ import { Source as ActionSource } from "~/action"
 import {
   Conversation,
   EventName,
+  FromView,
   getTimeline$,
-  NewConversationSource,
   Source as GraphSource,
   track$,
 } from "~/graph"
@@ -56,7 +56,7 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
         name: EventName.TapNewConversation,
         properties: {
           signatureCount: me?.stats?.signatureCount,
-          newConversationSource: NewConversationSource.Timeline,
+          view: FromView.Timeline,
         },
         customerId: me?.id,
       })

@@ -13,7 +13,7 @@ defmodule App.MixProject do
       aliases: aliases(),
       deps: deps(),
       # NOTE: silences ExTwilio warning:
-      xref: [exclude: [ExTwilio.Verify.Verifications]]
+      xref: [exclude: [ExTwilio.Verify.Verifications, HtmlEntities]]
     ]
   end
 
@@ -23,7 +23,7 @@ defmodule App.MixProject do
   def application do
     [
       mod: {App.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :ueberauth_facebook]
     ]
   end
 
@@ -64,7 +64,7 @@ defmodule App.MixProject do
       {:timex, "~> 3.0"},
       {:r_enum, "~> 0.6"},
       {:html_sanitize_ex, "~> 1.4"},
-      {:httpoison, "~> 2.1"},
+      {:httpoison, "~> 1.0"},
       {:money, "~> 1.9"},
       {:corsica, "~> 1.0"},
       {:ecto_commons, "~> 0.3.3"},
@@ -77,7 +77,12 @@ defmodule App.MixProject do
       {:file_system, "~> 0.2", only: [:dev, :test]},
       {:mjml_eex, "~> 0.9.1"},
       {:xml_builder, "~> 2.1"},
-      {:premailex, "~> 0.3.18"}
+      {:premailex, "~> 0.3.18"},
+      {:phoenix_markdown, "~> 1.0"},
+      {:ueberauth_twitter, github: "en30/ueberauth_twitter"},
+      {:ueberauth_facebook, "~> 0.8"},
+      {:ecto_phone_number, "~> 0.4"},
+      {:tesla, "~> 1.4"}
     ]
   end
 

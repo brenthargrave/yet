@@ -13,7 +13,7 @@ defmodule AppWeb.Endpoint do
     )
   end
 
-  plug Corsica, origins: "*"
+  plug(Corsica, origins: "*")
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
@@ -21,7 +21,10 @@ defmodule AppWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_app_key",
-    signing_salt: "lrelcTN2"
+    signing_salt: "lrelcTN2",
+    # 100 years
+    max_age: 24 * 60 * 60 * 365 * 100,
+    encryption_salt: System.get_env("PHX_ENCRYPTION_SALT")
   ]
 
   socket("/socket", AppWeb.UserSocket,

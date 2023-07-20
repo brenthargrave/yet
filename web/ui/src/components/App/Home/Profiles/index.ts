@@ -50,12 +50,13 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
         .otherwise(() => EMPTY)
     ),
     tag("localState$"),
-    share()
+    shareLatest()
   )
 
   const state$ = history$.pipe(
     map((route) =>
       match(route)
+        .with({ name: routes.profile.name }, () => State.show)
         .with({ name: routes.me.name }, () => State.show)
         .otherwise(() => State.pending)
     ),
@@ -76,13 +77,14 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
         .with(State.pending, () => EMPTY)
         .exhaustive()
     ),
-    tag("react")
+    tag("react"),
+    share()
   )
 
   const action = merge(...pluck("action", [edit, show]))
   const notice = merge(...pluck("notice", [edit]))
   const router = merge(...pluck("router", [show]))
-  const track = merge(...pluck("track", [show]))
+  const track = merge(...pluck("track", [show, edit]))
 
   return {
     react,

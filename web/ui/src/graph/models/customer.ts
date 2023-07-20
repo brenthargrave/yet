@@ -12,6 +12,9 @@ export const requiredProfileProps = [
   ProfileProp.FirstName,
   ProfileProp.LastName,
   ProfileProp.Email,
+  // TODO: restore once org impl. improved
+  // ProfileProp.Org,
+  // ProfileProp.Role,
 ]
 
 export const hasAllRequiredProfileProps = (me: Customer) =>

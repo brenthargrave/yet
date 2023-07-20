@@ -15,9 +15,12 @@ import {
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
+import { AuthService } from "~/components/App/AuthService"
 import { isEmpty, trim } from "~/fp"
 import {
+  AuthProvider,
   firstRequiredProfileProp,
+  FromView,
   nextRequiredProfileProp,
   patchProfile$,
   ProfileProp,
@@ -29,8 +32,6 @@ import { error } from "~/notice"
 import { cb$, shareLatest } from "~/rx"
 import { View } from "./View"
 
-const tag = makeTagger("Onboarding")
-
 const inputRef = createRef<HTMLInputElement>()
 
 interface Sources {
@@ -38,7 +39,12 @@ interface Sources {
   graph: GraphSource
 }
 
-export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
+export const Onboarding = (sources: Sources, tagPrefix?: string) => {
+  const tagScope = `${tagPrefix}/Onboarding`
+  const tag = makeTagger(tagScope)
+  const {
+    graph: { me$: _me$ },
+  } = sources
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"), shareLatest())
 
   const attr$ = me$.pipe(
@@ -106,11 +112,33 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     shareLatest()
   )
 
+  const twitter = AuthService(
+    sources,
+    {
+      provider: AuthProvider.Twitter,
+      from: FromView.Onboarding,
+    },
+    tagScope
+  )
+  const facebook = AuthService(
+    sources,
+    {
+      provider: AuthProvider.Facebook,
+      from: FromView.Onboarding,
+    },
+    tagScope
+  )
+  const authPending = merge(
+    twitter.value.authPending,
+    facebook.value.authPending
+  )
+
   const react = combineLatest({
     attr: attr$,
     isSubmitButtonDisabled,
     isInputDisabled,
     isLoading,
+    authPending,
   }).pipe(
     map(({ attr, ...props }) => {
       const key = snakeCase(attr)
@@ -123,6 +151,8 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
         inputPlaceholder: t(`onboarding.${key}.inputPlaceholer`),
         submitButtonCopy: t(`onboarding.${key}.submitButtonCopy`),
         inputRef,
+        onClickAuthTwitter: twitter.value.onClickAuth,
+        onClickAuthFacebook: facebook.value.onClickAuth,
       })
     }),
     tap(() => {
@@ -137,9 +167,11 @@ export const Onboarding = ({ graph: { me$: _me$ } }: Sources) => {
     map(({ message }) => error({ description: message })),
     tag("notice")
   )
+  const track = merge(twitter.track)
 
   return {
     react,
     notice,
+    track,
   }
 }

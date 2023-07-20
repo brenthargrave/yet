@@ -2,3 +2,4 @@
 *.lock binary
 *.ico binary
 **/generated/*ts binary
+*.md binary

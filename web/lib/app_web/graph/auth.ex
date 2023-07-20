@@ -53,6 +53,12 @@ defmodule AppWeb.Graph.Auth do
     end)
   end
 
+  # OAuth
+  enum :auth_provider do
+    value(:twitter, as: :twitter)
+    value(:facebook, as: :facebook)
+  end
+
   object :auth_mutations do
     field :submit_phone, type: :submit_phone_result do
       arg(:input, non_null(:submit_phone_input))

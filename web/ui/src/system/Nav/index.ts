@@ -39,6 +39,5 @@ export const Nav: FC<Props> = ({ onClickBack, backButtonText: cta }) => {
       }),
     !authenticated && h(AriaButton, { onClick: onClickAuth }, t("app.auth")),
     h(Spacer, { minHeight: "24px" }),
-    h(Logo),
   ])
 }

@@ -74,7 +74,7 @@ export const Logo: FC<Props> = ({ location = LogoLocation.nav }) => {
           {
             fontSize: isNav ? "0.5rem" : "xs",
           },
-          "BETA"
+          "ALPHA"
         ),
       ]
     ),

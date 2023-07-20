@@ -8,6 +8,7 @@ import { ConversationStatus, oppsEnabled } from "~/graph"
 import { t } from "~/i18n"
 import { ariaLabel, AutosizeTextarea, Button, Spacer, Stack } from "~/system"
 import { MarkdownLink } from "./MarkdownLink"
+import { SyncIcon } from "./SyncIcon"
 
 const noteInputsId = "note"
 const previewId = "preview"
@@ -20,6 +21,7 @@ export interface Props {
   isDisabled?: boolean
   onClickAddOpp?: () => void
   noteInputRef?: Ref<HTMLTextAreaElement>
+  isSyncing?: boolean
 }
 
 export const View: FC<Props> = ({
@@ -30,6 +32,7 @@ export const View: FC<Props> = ({
   isDisabled = false,
   onClickAddOpp,
   noteInputRef,
+  isSyncing = false,
 }) => {
   const [minHeight, setMinHeight] = useState<number | null>(0)
   useEffect(() => {

@@ -2,22 +2,32 @@ import { h, ReactSource } from "@cycle/react"
 import {
   combineLatest,
   distinctUntilChanged,
+  EMPTY,
   filter,
   map,
   merge,
   mergeMap,
   share,
   startWith,
+  switchMap,
+  Observable,
   withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
+import { match } from "ts-pattern"
+import { filterResultOk } from "ts-results/rxjs-operators"
 import { act, Actions, Source as ActionSource } from "~/action"
+import { SocialProfile } from "~/components/App/SocialProfile"
 import {
   Conversation,
   EventName,
-  NewConversationSource,
+  FromView,
+  getProfile$,
   Source as GraphSource,
   track$,
+  Profile,
+  TimelineFilters,
+  GetProfileInput,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { NEWID, push, routes, Source as RouterSource } from "~/router"
@@ -37,9 +47,24 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
 
   const {
     graph: { me$: _me$, profile$: _profile$ },
+    router: { history$ },
   } = sources
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"))
-  const profile$ = _profile$.pipe(tag("profile$"))
+
+  const profile$ = history$.pipe(
+    switchMap((route) =>
+      match(route)
+        .with({ name: routes.me.name }, () => _profile$)
+        .with({ name: routes.profile.name }, ({ params: { pid } }) => {
+          const timelineFilters: TimelineFilters = { onlyWith: pid }
+          const profileInput: GetProfileInput = { id: pid, timelineFilters }
+          return getProfile$(profileInput).pipe(filterResultOk())
+        })
+        .otherwise(() => EMPTY)
+    ),
+    tag("profile$"),
+    shareLatest()
+  )
 
   const state$ = profile$.pipe(
     map(() => State.ready),
@@ -69,7 +94,7 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
         name: EventName.TapNewConversation,
         properties: {
           signatureCount: me?.stats?.signatureCount,
-          newConversationSource: NewConversationSource.Profile,
+          view: FromView.Profile,
         },
         customerId: me?.id,
       })
@@ -85,6 +110,15 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
+  const social = SocialProfile(
+    {
+      ...sources,
+      props: { profile$, from: FromView.Profile },
+    },
+    tagScope
+  )
+  const { onClickSocial } = social.value
+
   const props$ = combineLatest({
     state: state$,
     viewer: me$,
@@ -98,12 +132,13 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
         onClickEdit,
         onClickNewConversation,
         onClickConversation,
+        onClickSocial,
       })
     )
   )
   const action = merge(edit$)
   const router = merge(newConversation$, showConv$)
-  const track = merge(trackNewConvo$)
+  const track = merge(trackNewConvo$, social.track)
 
   return {
     react,

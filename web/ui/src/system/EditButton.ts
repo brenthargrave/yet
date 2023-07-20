@@ -15,7 +15,7 @@ export const EditButton: FC<Props> = ({ onClick, cta, ...props }) =>
     {
       ...props,
       leftIcon: h(Icon, { as: EditIcon }),
-      size: "sm",
+      size: "xs",
       onClick,
     },
     cta ?? `Edit`

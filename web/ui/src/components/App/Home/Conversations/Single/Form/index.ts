@@ -21,12 +21,10 @@ import {
   tap,
   withLatestFrom,
 } from "rxjs"
-import { isNotNullish, toggle } from "rxjs-etc"
-import { equals } from "rxjs-etc/dist/esm/operators"
+import { isNotNullish } from "rxjs-etc"
 import { match } from "ts-pattern"
 import { filterResultOk } from "ts-results/rxjs-operators"
-import { Actions, Source as ActionSource } from "~/action"
-import { Location, Opps, State as OppsState } from "~/components/App/Home/Opps"
+import { Source as ActionSource } from "~/action"
 import {
   and,
   includes,
@@ -52,12 +50,12 @@ import {
   justSignedNotice,
   MentionInput,
   oppEmbedText,
+  Profile,
   proposeConversation$,
   refetchContacts,
   Source as GraphSource,
   track$,
   upsertConversation$,
-  Profile,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { info } from "~/notice"
@@ -71,7 +69,6 @@ import {
 } from "~/router"
 import { cb$, shareLatest } from "~/rx"
 import { KeyCode, shortcut$ } from "~/system"
-import { State } from ".."
 import { NestedOpps } from "./NestedOpps"
 import { Mode, Option as ContactOption, SelectedOption, View } from "./View"
 

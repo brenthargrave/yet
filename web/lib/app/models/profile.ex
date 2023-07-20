@@ -13,6 +13,19 @@ defmodule App.Profile do
     field(:email, :string)
     field(:org, :string)
     field(:role, :string)
+    ## oauth addditions
+    field(:website, :string)
+    field(:location, :string)
+    field(:description, :string)
+    # twitter
+    field(:twitter_handle, :string)
+    field(:twitter_image, :string)
+    # facebook
+    field(:facebook_id, :string)
+    field(:facebook_handle, :string)
+    field(:facebook_url, :string)
+    field(:facebook_name, :string)
+    field(:facebook_image, :string)
   end
 
   def onboarding_changeset(record, %{first_name: _first_name} = attrs) do

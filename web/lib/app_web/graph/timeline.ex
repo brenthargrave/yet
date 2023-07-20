@@ -49,6 +49,7 @@ defmodule AppWeb.Graph.Timeline do
     field(:omit_own, :boolean)
     field(:only_own, :boolean)
     field(:kind, :timeline_event_type)
+    field(:only_with, :id)
   end
 
   input_object :timeline_input do

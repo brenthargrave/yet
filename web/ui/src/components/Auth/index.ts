@@ -2,17 +2,25 @@ import { ReactSource } from "@cycle/react"
 import {
   distinctUntilChanged,
   filter,
+  from,
   map,
   merge,
   Observable,
   startWith,
   switchMap,
+  tap,
   withLatestFrom,
 } from "rxjs"
 import { isNotNullish, isNullish } from "rxjs-etc"
 import { pairwiseStartWith } from "rxjs-etc/dist/esm/operators"
 import { match } from "ts-pattern"
-import { checkToken$, loggedOut, token$, VerificationStatus } from "~/graph"
+import {
+  checkToken$,
+  clearSession,
+  loggedOut,
+  token$,
+  VerificationStatus,
+} from "~/graph"
 import { makeTagger } from "~/log"
 import { isRoute, push, routes, Source as RouterSource } from "~/router"
 import { shareLatest } from "~/rx"
@@ -31,18 +39,25 @@ interface Sources {
   router: RouterSource
 }
 
-export const Auth = (sources: Sources) => {
+export const Auth = (sources: Sources, tagPrefix?: string) => {
+  const tagScope = `${tagPrefix}/Auth`
+  const tag = makeTagger(tagScope)
+
   const {
     router: { history$ },
   } = sources
 
   const {
+    track: submitTrack$,
     react: submitView$,
     notice: submitNotice$,
     value: { e164$, verificationStatus$ },
-  } = PhoneSubmit({
-    ...sources,
-  })
+  } = PhoneSubmit(
+    {
+      ...sources,
+    },
+    tagScope
+  )
 
   const {
     react: verifyView$,
@@ -86,8 +101,10 @@ export const Auth = (sources: Sources) => {
   )
   const logout$ = merge(tokenInvalidated$, logoutRequested$).pipe(
     map((_) => loggedOut()),
+    tap(() => from(clearSession())),
     tag("logout$")
   )
+
   const redirectToRoot$ = logout$.pipe(
     map((_) => push(routes.root())),
     tag("redirectToRootRoute$")
@@ -109,6 +126,7 @@ export const Auth = (sources: Sources) => {
   const router = merge(redirectToRoot$, redirectAfterAuth$)
   const notice = merge(verifyNotice$, submitNotice$)
   const value = { me$ }
+  const track = merge(submitTrack$)
 
   return {
     react,
@@ -116,5 +134,6 @@ export const Auth = (sources: Sources) => {
     notice,
     value,
     graph,
+    track,
   }
 }

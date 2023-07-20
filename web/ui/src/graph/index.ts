@@ -4,11 +4,12 @@
 
 import { captureException } from "@sentry/react"
 import { GraphQLError } from "graphql"
-import { filter as _filter, first, pipe, reverse, sort } from "remeda"
+import { first } from "remeda"
 import {
   BehaviorSubject,
   catchError,
   debounceTime,
+  distinctUntilChanged,
   EMPTY,
   filter,
   from,
@@ -22,7 +23,7 @@ import {
 import { isNotNullish } from "rxjs-etc"
 import { switchMap } from "rxjs/operators"
 import { Err, Ok } from "ts-results"
-import { filterResultOk, resultMap } from "ts-results/rxjs-operators"
+import { filterResultOk } from "ts-results/rxjs-operators"
 import { isNotEmpty } from "~/fp"
 import { makeTagger } from "~/log"
 import { shareLatest, zenToRx } from "~/rx"
@@ -34,12 +35,8 @@ import {
   ConversationChangedDocument,
   ConversationChangedInput,
   ConversationInput,
-  ConversationStatus,
   DeleteConversationDocument,
   DeleteConversationInput,
-  Event,
-  EventName,
-  EventProperties,
   GetConversationsDocument,
   GetMentionsDocument,
   GetOppProfileDocument,
@@ -86,7 +83,6 @@ import {
   ViewConversationDocument,
 } from "./generated"
 import { hasAllRequiredProfileProps, isAuthenticated } from "./models"
-import { client as urqlClient } from "./urql"
 
 export { loggedIn, loggedOut } from "./driver"
 export type { Commands, Source } from "./driver"
@@ -170,13 +166,48 @@ export const verifyCode$ = (input: SubmitCodeInput) =>
 const token$$ = new BehaviorSubject<string | null>(
   localStorage.getItem(tokenCacheKey)
 )
+
+export const putTokenInSession = async (token: string) => {
+  await fetch("/api/session_start", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      token,
+    }),
+  })
+  return token
+}
+
+export const clearSession = async () =>
+  fetch("/api/session_end", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+
 export const token$ = token$$.asObservable().pipe(tag("token$"), shareLatest())
+
+// ! NOTE: workaround to sync token w/ local sessionStorage copy
+// ! sync local token w/ session on every signin / reload
+// ! TODO: find a more reliable session/localStorage sync strategy
+token$
+  .pipe(
+    filter(isNotNullish),
+    distinctUntilChanged(),
+    tap((token) => from(putTokenInSession(token)))
+  )
+  .subscribe()
+
 export const setToken = (token: string | null | undefined) => {
   if (token) {
     localStorage.setItem(tokenCacheKey, token)
     token$$.next(token)
   } else {
     localStorage.clear()
+    sessionStorage.clear() // token replicated to session for html/json html requests
     token$$.next(null)
     // NOTE: call .stop() to avoid error: ""
     // https://github.com/apollographql/apollo-client/issues/2919#issuecomment-7327464900
@@ -569,6 +600,7 @@ export const getProfile$ = (input: GetProfileInput) =>
     client.watchQuery({
       query: GetProfileDocument,
       variables: { input },
+      fetchPolicy: "no-cache",
     })
   ).pipe(
     handleGraphErrors(),
@@ -603,7 +635,11 @@ export const updateProfile$ = (input: UpdateProfileInput) => {
     client.mutate({
       mutation: UpdateProfileDocument,
       variables: { input },
-      refetchQueries: [{ query: GetConversationsDocument }],
+      refetchQueries: [
+        { query: GetConversationsDocument },
+        // TODO: added to update profile/show after save in edit; shouldn't be necessary
+        { query: MeDocument },
+      ],
     })
   ).pipe(
     handleGraphErrors(),
@@ -612,7 +648,7 @@ export const updateProfile$ = (input: UpdateProfileInput) => {
       return userError ? new Err(userError) : new Ok(profile!)
     }),
     makeUnrecoverable(),
-    tag("upsertConversation$")
+    tag("updateProfile$")
   )
 }
 
@@ -623,7 +659,7 @@ export const profile$ = me$.pipe(
     if (!isAuthenticated(me)) return EMPTY
     if (!hasAllRequiredProfileProps(me)) return EMPTY
     const { id } = me
-    const timelineFilters: TimelineFilters = { onlyOwn: true }
+    const timelineFilters: TimelineFilters = { onlyWith: me.id }
     const profileInput: GetProfileInput = { id, timelineFilters }
     return merge(
       getProfile$(profileInput),
