@@ -5,11 +5,14 @@ import ReactMarkdown from "react-markdown"
 import remarkBreaks from "remark-breaks"
 import remarkGfm from "remark-gfm"
 import { style } from "typestyle"
+import rehypeRaw from "rehype-raw"
 import { join, split, take, trim } from "~/fp"
 import { session } from "~/router"
 import { Box } from "."
 
-export const bold = (value: string) => `**${value}**`
+// export const bold = (value: string) => `**${value}**`
+export const bold = (value: string) =>
+  `<span style="font-weight: bold; white-space: nowrap;">${value}</span>`
 export const i = (value: string) => `*${value}*`
 
 const className = style({ textDecoration: "underline" })
@@ -52,6 +55,7 @@ export const MarkdownView: FC<Props> = ({ md, maxLines, ...props }) => {
     h(ReactMarkdown, {
       children,
       remarkPlugins: [remarkBreaks, remarkGfm],
+      rehypePlugins: [rehypeRaw],
       // NOTE: open off-domain links in new tab
       // linkTarget: "_blank"
       linkTarget: (href, children, title) =>
