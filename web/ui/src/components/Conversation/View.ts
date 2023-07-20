@@ -1,4 +1,4 @@
-import { Spacer } from "@chakra-ui/react"
+import { Divider, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { NoteView, Props as NoteViewProps } from "~/components/Note"
@@ -80,3 +80,5 @@ export const ConversationPublishedView: FC<ConversationPublishedViewProps> = (
     showOpps: true,
     // showNote: false,
   })
+
+export const ConversationDivider: FC = () => h(Divider, { pt: 4, pb: 4 })

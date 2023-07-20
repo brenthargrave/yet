@@ -41,6 +41,7 @@ export const View: FC<Props> = ({
     closeOnOverlayClick: true,
     isOpen,
     onClose,
+    size: "sm",
     children: [
       h(ModalOverlay, { key: "overlay" }),
       h(ModalContent, { key: "content" }, [

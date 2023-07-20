@@ -1,8 +1,10 @@
-import { Divider } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { match } from "ts-pattern"
-import { ConversationPublishedView } from "~/components/Conversation/View"
+import {
+  ConversationDivider,
+  ConversationPublishedView,
+} from "~/components/Conversation/View"
 import { isNotLastItem } from "~/fp"
 import { Conversation, Customer, Maybe, TimelineEvent } from "~/graph"
 import { canViewNotes } from "~/graph/models/timeline"
@@ -38,7 +40,7 @@ export const TimelineEventList: FC<Props> = ({
                   conversation,
                   showNote: canViewNotes(persona),
                 }),
-                isNotLastItem(idx, all) && h(Divider, { padding: 4 }),
+                isNotLastItem(idx, all) && h(ConversationDivider),
               ]
             )
         )

@@ -1,14 +1,16 @@
-import { Heading, Spacer } from "@chakra-ui/react"
+import { Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { ConversationView } from "~/components/Conversation/View"
+import {
+  ConversationDivider,
+  ConversationView,
+} from "~/components/Conversation/View"
 import { isEmpty, isNotLastItem } from "~/fp"
 import { Conversation, Customer, Maybe } from "~/graph"
 import {
   AriaHeading,
   containerProps,
   CreateButton,
-  Divider,
   FullWidthList,
   FullWidthVStack,
   Header,
@@ -49,7 +51,7 @@ export const View: FC<Props> = ({
               { key: idx, onClick: () => onClickConversation(conversation) },
               [
                 h(ConversationView, { viewer, conversation, maxLines: 10 }),
-                isNotLastItem(idx, all) && h(Divider, { padding: 4 }),
+                isNotLastItem(idx, all) && h(ConversationDivider),
               ]
             )
           })
