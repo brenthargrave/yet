@@ -3,13 +3,7 @@ defmodule AppWeb.Resolvers.Onboarding do
   use App.Types
   use TypedStruct
   use Brex.Result
-  alias App.{Onboarding}
-  alias App.{UserError, Profile}
-
-  typedstruct module: UpdateProfilePayload do
-    field(:profile, Profile.t())
-    field(:user_error, UserError.t())
-  end
+  alias App.Onboarding
 
   defun patch_profile(
           _parent,
@@ -17,7 +11,5 @@ defmodule AppWeb.Resolvers.Onboarding do
           _resolution
         ) :: resolver_result() do
     Onboarding.patch_profile(id, prop, value)
-    # TODO: validation error -> {:ok, UserError}
-    |> fmap(&%UpdateProfilePayload{profile: &1})
   end
 end

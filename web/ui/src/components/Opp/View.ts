@@ -26,7 +26,7 @@ import {
 } from "~/system"
 import { Location } from "~/components/App/Home/Opps"
 
-const { VITE_FF_PAYMENT: isEnabledPayment } = process.env
+const isEnabledPayment = false
 
 export type OnClickPay = (opp: Opp) => void
 

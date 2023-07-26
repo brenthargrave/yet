@@ -3,19 +3,26 @@ defmodule App.Onboarding do
   use Brex.Result
   use Croma
   use TypedStruct
-  alias App.{UserError, Repo, Profile}
+  import App.Helpers, only: [format_ecto_errors: 1]
+
+  alias App.{
+    UserError,
+    Repo,
+    Profile
+  }
 
   @type prop :: String.t()
   @type value :: String.t()
-  @type result() :: Brex.Result.s(Customer.t() | UserError.t())
+  @type result() :: Brex.Result.s(Profile.t() | UserError.t())
 
   defun patch_profile(id :: ulid(), prop :: prop(), value :: value()) :: result() do
     key = String.to_atom(prop)
     attrs = %{:id => id, key => value}
 
     Repo.get(Profile, id)
-    |> lift(nil, :not_found)
+    |> lift(nil, UserError.not_found())
     |> fmap(&Profile.onboarding_changeset(&1, attrs))
     |> bind(&Repo.update/1)
+    |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 end

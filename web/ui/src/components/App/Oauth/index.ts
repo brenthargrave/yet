@@ -37,12 +37,12 @@ export const Oauth = (sources: Sources, tagPrefix?: string) => {
     tag("$result")
   )
 
-  const redirectHome$ = result$.pipe(
-    switchMap((_result) => of(push(routes.root()))),
+  const redirect$ = result$.pipe(
+    switchMap((_result) => of(push(routes.me()))),
     tag("redirectHome$")
   )
 
-  const router = merge(redirectHome$)
+  const router = merge(redirect$)
 
   return {
     router,

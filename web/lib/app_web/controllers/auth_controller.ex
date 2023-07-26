@@ -29,7 +29,7 @@ defmodule AppWeb.AuthController do
   end
 
   def callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
-    success = %{status: :success, description: "Welcome aboard!"}
+    success = %{status: :success, description: "Success!"}
     failure = %{status: :error, description: "Authorization failed"}
 
     token = get_session(conn, :token)

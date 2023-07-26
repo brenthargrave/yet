@@ -24,6 +24,7 @@ defmodule Sentry.PlugTunnel do
       url = "https://#{uri.host}/api/#{project_id}/envelope/"
 
       {:ok, response} = HTTPoison.post(url, envelope)
+      # |> IO.inspect(label: "THIS")
 
       conn
       |> resp(code(:ok), response.body)

@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { Driver } from "@cycle/run"
+import { captureException } from "@sentry/react"
 import { Observable } from "rxjs"
 import { match } from "ts-pattern"
 import { Stream } from "xstream"
@@ -54,7 +55,7 @@ export function makeDriver(): Driver<Sink, Source> {
           })
           .otherwise((res) => console.info(res))
       },
-      error: (error) => console.error(error),
+      error: (error) => captureException(error),
       complete: () => console.info("complete"),
     })
 

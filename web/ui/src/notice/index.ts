@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { Driver } from "@cycle/run"
+import { captureException } from "@sentry/react"
 import { Stream } from "xstream"
 import { toast } from "~/toast"
 
@@ -19,7 +20,7 @@ export function makeDriver(): Driver<Sink, Source> {
       next: (notice) => {
         toast(notice)
       },
-      error: (error) => console.error(error),
+      error: (error) => captureException(error),
       complete: () => console.info("complete"),
     })
 

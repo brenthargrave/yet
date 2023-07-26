@@ -1,4 +1,6 @@
 import { ReactSource } from "@cycle/react"
+import { setUser } from "@sentry/react"
+import { pluck } from "ramda"
 import {
   distinctUntilChanged,
   filter,
@@ -27,8 +29,6 @@ import { shareLatest } from "~/rx"
 import { PhoneSubmit } from "./PhoneSubmit"
 import { PhoneVerify } from "./PhoneVerify"
 
-const tag = makeTagger("Auth")
-
 enum VerificationStep {
   Submit,
   Verify,
@@ -48,10 +48,8 @@ export const Auth = (sources: Sources, tagPrefix?: string) => {
   } = sources
 
   const {
-    track: submitTrack$,
-    react: submitView$,
-    notice: submitNotice$,
     value: { e164$, verificationStatus$ },
+    ...submit
   } = PhoneSubmit(
     {
       ...sources,
@@ -60,14 +58,15 @@ export const Auth = (sources: Sources, tagPrefix?: string) => {
   )
 
   const {
-    react: verifyView$,
-    notice: verifyNotice$,
-    graph: verifyGraph$,
     value: { me$, verified$ },
-  } = PhoneVerify({
-    props: { e164$ },
-    ...sources,
-  })
+    ...verify
+  } = PhoneVerify(
+    {
+      props: { e164$ },
+      ...sources,
+    },
+    tagScope
+  )
 
   const step$: Observable<VerificationStep> = verificationStatus$.pipe(
     map((status) =>
@@ -82,7 +81,7 @@ export const Auth = (sources: Sources, tagPrefix?: string) => {
 
   const react = step$.pipe(
     switchMap((step) => {
-      return step === VerificationStep.Submit ? submitView$ : verifyView$
+      return step === VerificationStep.Submit ? submit.react : verify.react
     }),
     tag("react")
   )
@@ -102,6 +101,7 @@ export const Auth = (sources: Sources, tagPrefix?: string) => {
   const logout$ = merge(tokenInvalidated$, logoutRequested$).pipe(
     map((_) => loggedOut()),
     tap(() => from(clearSession())),
+    tap(() => setUser(null)),
     tag("logout$")
   )
 
@@ -122,11 +122,11 @@ export const Auth = (sources: Sources, tagPrefix?: string) => {
     tag("redirectToPriorOrRootRoute$")
   )
 
-  const graph = merge(verifyGraph$, logout$)
-  const router = merge(redirectToRoot$, redirectAfterAuth$)
-  const notice = merge(verifyNotice$, submitNotice$)
   const value = { me$ }
-  const track = merge(submitTrack$)
+  const graph = merge(verify.graph, logout$)
+  const router = merge(redirectToRoot$, redirectAfterAuth$)
+  const notice = merge(...pluck("notice", [submit, verify]))
+  const track = merge(...pluck("track", [submit, verify]))
 
   return {
     react,

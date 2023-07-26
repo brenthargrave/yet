@@ -43,7 +43,7 @@ service.send("TOGGLE")
 //           .with(CommandType.push, () => route?.push())
 //           .exhaustive()
 //       },
-//       error: (error) => console.error(error),
+//       error: (error) => captureException(error),
 //       complete: () => console.info("complete"),
 //     })
 

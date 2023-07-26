@@ -15,7 +15,7 @@ export const CreateButton = ({
   onClick,
   isLoading,
   isDisabled,
-  size = "sm",
+  size = "xs",
   variant = "solid",
   cta = `New note`,
 }: Props) =>

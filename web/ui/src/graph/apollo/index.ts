@@ -67,7 +67,8 @@ const splitLink = split(
 const link = ApolloLink.from([
   //
   sentryLink,
-  errorLink,
+  // NOTE: errorLink creates similar, dupe error reports on Sentry
+  // errorLink,
   splitLink,
 ])
 

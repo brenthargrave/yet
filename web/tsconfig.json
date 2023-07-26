@@ -17,10 +17,10 @@
     "noUnusedLocals": false,
     "resolveJsonModule": true,
     "skipLibCheck": false,
-    "sourceMap": true,
     "strict": true,
     "target": "esnext",
     "useDefineForClassFields": true,
+    "sourceMap": true,
   },
   "exclude": ["node_modules", "build", "scripts"]
 }

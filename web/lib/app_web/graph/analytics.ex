@@ -7,6 +7,7 @@ defmodule AppWeb.Graph.Analytics do
     value(:tap_signin, as: "tap_signin")
     value(:submit_phone_number, as: "submit_phone_number")
     value(:verify_phone_number, as: "verify_phone_number")
+    value(:update_profile, as: "update_profile")
     value(:tap_new_conversation, as: "tap_new_conversation")
     value(:tap_propose, as: "tap_propose")
     value(:review_conversation, as: "review_conversation")
@@ -62,6 +63,9 @@ defmodule AppWeb.Graph.Analytics do
     field(:auth_provider, :auth_provider)
     # profiles
     field(:social_distance, :integer)
+    # onboarding
+    field(:country_code, :string)
+    field(:profile_prop, :profile_prop)
   end
 
   object :event_properties do

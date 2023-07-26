@@ -10,7 +10,7 @@ config :app, AppWeb.Endpoint,
       cd: Path.expand("..", __DIR__)
     ],
     node: [
-      "./dev.mjs",
+      "./node_modules/vite/bin/vite.js",
       cd: Path.expand("../ui", __DIR__)
     ]
   ],

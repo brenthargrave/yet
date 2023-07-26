@@ -1,7 +1,8 @@
 import { color, rgb, rgba } from "csx"
 
 // export const maxWidth = 468
-export const maxWidth = { base: "468px", md: "678px" }
+// export const maxWidth = { base: "468px", md: "678px" }
+export const maxWidth = { base: "468px", md: "818px" }
 
 export const modalStyleProps = {
   minHeight: "70vh",

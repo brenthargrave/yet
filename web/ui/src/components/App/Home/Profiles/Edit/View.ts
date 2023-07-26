@@ -229,6 +229,13 @@ export const View: FC<Props> = ({
                       {
                         size: "sm",
                         leftIcon: h(iconForSocial(social)),
+                        isLoading: match(social)
+                          .with(AuthProvider.Twitter, () => authPendingTwitter)
+                          .with(
+                            AuthProvider.Facebook,
+                            () => authPendingFacebook
+                          )
+                          .exhaustive(),
                         onClick: () => {
                           match(social)
                             .with(AuthProvider.Twitter, () => {

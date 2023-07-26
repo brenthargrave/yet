@@ -1,12 +1,12 @@
-import { HStack, Icon, IconButton, Tooltip, VStack } from "@chakra-ui/react"
+import { AddIcon } from "@chakra-ui/icons"
+import { HStack, VStack } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { FC, Ref, useRef, RefObject } from "react"
+import { FC, RefObject, useRef } from "react"
+import { CgProfile } from "react-icons/cg"
 import { FiHome } from "react-icons/fi"
 import { TbArrowsSplit2, TbNotes } from "react-icons/tb"
-import { CgProfile } from "react-icons/cg"
-import { AddIcon } from "@chakra-ui/icons"
-import { ariaLabel, Button, Divider } from "~/system"
 import { oppsEnabled } from "~/graph"
+import { Divider } from "~/system"
 import { MenuButton } from "./MenuButton"
 
 const iconConversations = TbNotes
@@ -66,10 +66,24 @@ export const MenuView: FC<Props> = ({
   const buttonRefNew = useRef<HTMLButtonElement>()
   const onClickNew = onClickBlur(buttonRefNew, _onClickNew)
 
-  const stack = orientation === Orientation.horizontal ? HStack : VStack
-  const iconOnly = true
-  return h(stack, { gap: 1 }, [
+  const isMobile = orientation === Orientation.horizontal
+  const stack = isMobile ? HStack : VStack
+  const align: AlignSetting = "start"
+  const iconOnly = isMobile
+  const variant = isMobile ? "outline" : "ghost"
+  return h(stack, { gap: 1, align }, [
     h(MenuButton, {
+      variant,
+      label: "Note",
+      icon: iconAdd,
+      iconOnly,
+      isVisible: !showHomeOnly,
+      onClick: onClickNew,
+      ref: buttonRefProfile,
+    }),
+    // h(Divider),
+    h(MenuButton, {
+      variant,
       isVisible: true,
       label: "Home",
       onClick: onClickHome,
@@ -78,6 +92,7 @@ export const MenuView: FC<Props> = ({
       iconOnly,
     }),
     h(MenuButton, {
+      variant,
       isVisible: !showHomeOnly,
       label: "Conversations",
       onClick: onClickConvos,
@@ -87,6 +102,7 @@ export const MenuView: FC<Props> = ({
     }),
     oppsEnabled &&
       h(MenuButton, {
+        variant,
         isVisible: !showHomeOnly,
         label: "Opportunities",
         onClick: onClickOpps,
@@ -95,22 +111,13 @@ export const MenuView: FC<Props> = ({
         iconOnly,
       }),
     h(MenuButton, {
+      variant,
       isVisible: !showHomeOnly,
       label: "Profile",
       onClick: onClickProfile,
       ref: buttonRefProfile,
       icon: iconProfile,
       iconOnly,
-    }),
-    h(Divider),
-    h(MenuButton, {
-      label: "New Note",
-      icon: iconAdd,
-      iconOnly,
-      variant: "outline",
-      isVisible: !showHomeOnly,
-      onClick: onClickNew,
-      ref: buttonRefProfile,
     }),
   ])
 }

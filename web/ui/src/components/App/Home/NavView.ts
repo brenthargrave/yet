@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { createRef, FC, useLayoutEffect, useState } from "react"
+import { Logo, LogoLocation } from "~/system"
 import { MenuView, Orientation, Props as MenuProps } from "./MenuView"
 
 const ref = createRef<HTMLElement>()
@@ -55,12 +56,31 @@ export const View: FC<Props> = ({
 
   const onClickOutside = (e: React.MouseEvent) => e.stopPropagation()
 
-  const gutterWidth = { base: "0px", md: "100px" }
+  // const gutterWidth = { base: "0px", md: "100px" }
+  const gutterWidth = { base: "0px", md: "170px" }
+  const rightGutterWidth = { base: "0px", md: "170px" }
 
   return h(Stack, { direction: "column", width: "100%", height: "100%" }, [
     h(Stack, { width: "100%", direction: "row" }, [
-      h(VStack, { minWidth: gutterWidth }, [
+      h(VStack, { minWidth: gutterWidth, align: "start" }, [
         h(Show, { above: "sm" }, [
+          h(
+            VStack,
+            {
+              pl: 4,
+              sx: {
+                position: "sticky",
+                top: "20px",
+                // left: "20px",
+              },
+            },
+            [
+              h(Logo, {
+                location: LogoLocation.nav,
+                onClick: onClickHome,
+              }),
+            ]
+          ),
           h(
             HStack,
             {
@@ -79,7 +99,7 @@ export const View: FC<Props> = ({
                 onClickProfile,
                 onClickNew,
               }),
-              h(Divider, { orientation: "vertical" }),
+              // h(Divider, { orientation: "vertical" }),
             ]
           ),
         ]),
@@ -91,7 +111,7 @@ export const View: FC<Props> = ({
       //   children,
       // ]),
       children,
-      h(VStack, { minWidth: gutterWidth }, [
+      h(VStack, { minWidth: rightGutterWidth }, [
         //
         h(Spacer),
       ]),

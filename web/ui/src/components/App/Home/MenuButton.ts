@@ -9,7 +9,7 @@ export interface Props {
   isVisible: boolean
   icon: IconType
   iconOnly: boolean
-  variant: "outline" | "solid"
+  variant: "outline" | "solid" | "ghost"
 }
 
 export const MenuButton = forwardRef(

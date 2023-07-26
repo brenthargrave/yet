@@ -164,7 +164,7 @@ export const View: FC<Props> = ({
                       Link,
                       {
                         //
-                        fontSize: "md",
+                        fontSize: "sm",
                         href: website,
                         target: "_blank",
                       },
@@ -175,7 +175,7 @@ export const View: FC<Props> = ({
                   h(HStack, {}, [
                     //
                     h(Icon, { as: GrLocation }),
-                    h(Text, { fontSize: "md" }, location),
+                    h(Text, { fontSize: "sm" }, location),
                   ]),
               ]),
             ]),

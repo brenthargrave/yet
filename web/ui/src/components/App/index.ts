@@ -140,7 +140,9 @@ export const App = (sources: Sources) => {
     unsubscribe.router,
     oauth.router
   ).pipe(eatUnrecoverableError())
-  const notice = merge(auth.notice, home.notice).pipe(eatUnrecoverableError())
+  const notice = merge(...pluck("notice", [auth, home])).pipe(
+    eatUnrecoverableError()
+  )
   const graph = merge(auth.graph, home.graph).pipe(eatUnrecoverableError())
   const track = merge(
     ...pluck("track", [landing, auth, home, unsubscribe])

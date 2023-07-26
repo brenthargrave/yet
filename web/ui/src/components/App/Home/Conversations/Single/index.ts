@@ -32,6 +32,7 @@ import {
   Source as GraphSource,
   subscribeConversation$,
   track$,
+  UserError,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { error } from "~/notice"
@@ -97,7 +98,12 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const userError$ = result$.pipe(filterResultErr(), tag("userError$"), share())
+  const error$ = result$.pipe(filterResultErr(), tag("error$"), share())
+  const userError$ = error$.pipe(
+    filter((error): error is UserError => error instanceof UserError),
+    tag("userError$"),
+    share()
+  )
 
   const userErrorNotice$ = userError$.pipe(
     map(({ message }) => error({ description: message })),
@@ -105,12 +111,12 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const redirectNotFound$ = userError$.pipe(
-    filter(({ code }) => code === ErrorCode.NotFound),
-    map((_) => push(routes.conversations())),
-    tag("redirectNotFound$"),
-    share()
-  )
+  // const redirectNotFound$ = userError$.pipe(
+  //   filter(({ code }) => code === ErrorCode.NotFound),
+  //   map((_) => push(routes.conversations())),
+  //   tag("redirectNotFound$"),
+  //   share()
+  // )
 
   const isLoading$ = combineLatest({ id: id$, opp: record$ }).pipe(
     map(({ id, opp }) => opp.id !== id),
@@ -231,8 +237,8 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
   const notice = merge(...pluck("notice", [edit, sign]), userErrorNotice$)
 
   const router = merge(
-    ...pluck("router", [edit, sign, show]),
-    redirectNotFound$
+    ...pluck("router", [edit, sign, show])
+    // redirectNotFound$
   )
   const track = merge(...pluck("track", [edit, sign]), trackView$)
   const graph = merge(...pluck("graph", [edit]))

@@ -1,6 +1,7 @@
 defmodule AppWeb.Graph.Onboarding do
   use Absinthe.Schema.Notation
   alias AppWeb.Resolvers.{Onboarding}
+  alias App.{Profile, UserError}
 
   enum :profile_prop do
     value(:first_name, as: "first_name")
@@ -27,13 +28,20 @@ defmodule AppWeb.Graph.Onboarding do
     field(:role, :string)
   end
 
-  object :patch_profile_payload do
-    field(:profile, :onboarding_profile)
-    field(:user_error, :user_error)
+  union :patch_profile_result do
+    types([:onboarding_profile, :user_error])
+
+    resolve_type(fn
+      %Profile{}, _ ->
+        :onboarding_profile
+
+      %UserError{}, _ ->
+        :user_error
+    end)
   end
 
   object :onboarding_mutations do
-    field :patch_profile, :patch_profile_payload do
+    field :patch_profile, :patch_profile_result do
       arg(:input, non_null(:patch_profile_input))
       resolve(&Onboarding.patch_profile/3)
     end

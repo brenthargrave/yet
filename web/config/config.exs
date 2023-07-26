@@ -16,6 +16,10 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+filter_fields = ["password", "secret", "token"]
+config :phoenix, :filter_parameters, filter_fields
+config :absinthe, Absinthe.Logger, filter_variables: filter_fields
+
 config :phoenix, :json_library, Jason
 
 config :app, App.Repo,
@@ -44,7 +48,8 @@ config :sentry,
   included_environments: [:prod],
   environment_name: Mix.env(),
   enable_source_code_context: true,
-  root_source_code_path: File.cwd!()
+  root_source_code_path: File.cwd!(),
+  filter: App.SentryEventFilter
 
 config :app, App.Scheduler,
   jobs: [

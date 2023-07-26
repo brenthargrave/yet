@@ -1,4 +1,3 @@
-import { faker } from "@faker-js/faker"
 import { capitalCase } from "change-case"
 import { ulid } from "ulid"
 import {
@@ -9,13 +8,12 @@ import {
   includes,
   isEmpty,
   isNotEmpty,
-  join,
   prop,
   symmetricDifferenceWith,
 } from "~/fp"
-import { Profile, Conversation, Customer, Invitee, MakeOptional } from ".."
-import { ConversationStatus, ConversationInput } from "../generated"
 import { routes } from "~/router"
+import { Conversation, Customer, Invitee, MakeOptional } from ".."
+import { ConversationInput, ConversationStatus } from "../generated"
 
 export type DraftConversation = MakeOptional<
   ConversationInput,
@@ -43,48 +41,6 @@ export const inviteesDiffer = (current: Invitee[], old: Invitee[]): boolean =>
     // @ts-ignore
     symmetricDifferenceWith(eqBy<Invitee>(prop<Invitee>("id")), old, current)
   )
-
-const makeId = () => ulid()
-const makeName = () =>
-  join(" ", [faker.name.firstName(), faker.name.lastName()])
-const makeDate = () => faker.date.past()
-const makeOrg = () => faker.company.companyName()
-const makeRole = () => faker.name.jobTitle()
-const makeBool = () => faker.datatype.boolean()
-const makeEmail = () => faker.internet.email()
-
-export const makeParticipant = (): Omit<Profile, "__typename"> => {
-  return {
-    id: makeId(),
-    name: makeName(),
-    firstName: makeName(),
-    lastName: makeName(),
-    org: makeOrg(),
-    role: makeRole(),
-    email: makeEmail(),
-  }
-}
-
-export const makeInvitee = (): Omit<Invitee, "__typename"> => {
-  return {
-    id: makeId(),
-    name: makeName(),
-    isContact: makeBool(),
-  }
-}
-
-export const makeConversation = (): DraftConversation => ({
-  id: makeId(),
-  occurredAt: makeDate(),
-  invitees: [makeInvitee(), makeInvitee()],
-  note: faker.lorem.paragraph(),
-  status: faker.helpers.arrayElement([
-    ConversationStatus.Draft,
-    ConversationStatus.Proposed,
-    ConversationStatus.Signed,
-    ConversationStatus.Deleted,
-  ]),
-})
 
 export const newConversation = (): DraftConversation => ({
   id: ulid(),

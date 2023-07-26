@@ -1,4 +1,5 @@
 import { Driver } from "@cycle/run"
+import { captureException } from "@sentry/react"
 import { Stream } from "xstream"
 import { makeTagger } from "~/log"
 
@@ -15,7 +16,7 @@ export function makeDriver(): Driver<Sink, Source> {
         //   .with(CommandType.push, () => route?.push())
         //   .exhaustive()
       },
-      error: (error) => console.error(error),
+      error: (error) => captureException(error),
       complete: () => console.info("complete"),
     })
 

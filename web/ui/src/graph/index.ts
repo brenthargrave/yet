@@ -2,7 +2,19 @@
 /* eslint no-console: 0 */
 /* eslint max-classes-per-file: 0 */
 
-import { captureException } from "@sentry/react"
+import {
+  FetchPolicy,
+  RefetchQueriesInclude,
+  RefetchQueryDescriptor,
+} from "@apollo/client"
+import { TypedDocumentNode } from "@graphql-typed-document-node/core"
+import {
+  addBreadcrumb,
+  captureException,
+  setUser,
+  Severity,
+  User as SentryUser,
+} from "@sentry/react"
 import { GraphQLError } from "graphql"
 import { first } from "remeda"
 import {
@@ -18,11 +30,13 @@ import {
   MonoTypeOperatorFunction,
   Observable,
   of,
+  share,
   tap,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { switchMap } from "rxjs/operators"
-import { Err, Ok } from "ts-results"
+import { match } from "ts-pattern"
+import { Err, Ok, Result } from "ts-results"
 import { filterResultOk } from "ts-results/rxjs-operators"
 import { isNotEmpty } from "~/fp"
 import { makeTagger } from "~/log"
@@ -32,11 +46,14 @@ import { client, tokenCacheKey } from "./apollo"
 import {
   CheckTokenDocument,
   ContactsDocument,
+  Conversation,
   ConversationChangedDocument,
   ConversationChangedInput,
   ConversationInput,
   DeleteConversationDocument,
   DeleteConversationInput,
+  ErrorCode,
+  Exact,
   GetConversationsDocument,
   GetMentionsDocument,
   GetOppProfileDocument,
@@ -47,12 +64,16 @@ import {
   GetProfileDocument,
   GetProfileInput,
   GetTimelineDocument,
+  MakeOptional,
   MeDocument,
   MentionsInput,
+  OnboardingProfile,
   OppInput,
   PatchProfileDocument,
   PatchProfileInput,
+  PatchProfileMutation,
   Platform,
+  Profile,
   ProposeConversationDocument,
   ProposeInput,
   ReviewConversationDocument,
@@ -63,9 +84,11 @@ import {
   SignInput,
   SubmitCodeDocument,
   SubmitCodeInput,
+  SubmitCodeMutation,
+  SubmitCodePayload,
   SubmitPhoneDocument,
   SubmitPhoneInput,
-  SubmitPhoneResult,
+  SubmitPhoneMutation,
   TimelineEventsAddedDocument,
   TimelineEventsAddedInput,
   TimelineFilters,
@@ -80,7 +103,10 @@ import {
   UpsertOppDocument,
   UpsertPaymentDocument,
   UpsertPaymentInput,
+  Verification,
   ViewConversationDocument,
+  ViewConversationQuery,
+  ViewConversationQueryVariables,
 } from "./generated"
 import { hasAllRequiredProfileProps, isAuthenticated } from "./models"
 
@@ -92,7 +118,27 @@ export type ID = Scalars["ID"]
 
 const tag = makeTagger("graph")
 
-export class GraphError extends Error {}
+// NOTE: refs
+// https://engineering.udacity.com/handling-errors-like-a-pro-in-typescript-d7a314ad4991
+export class BaseError extends Error {}
+export class UserError extends BaseError {
+  message: string
+
+  code?: ErrorCode
+
+  cause?: Error | undefined
+
+  constructor(message: string, code?: ErrorCode, cause?: Error) {
+    super()
+    this.code = code
+    this.message = message
+    this.cause = cause
+  }
+}
+export class AppError extends BaseError {}
+export class GraphError extends AppError {}
+
+// ! TODO: drop
 export class UnrecoverableGraphError extends GraphError {}
 
 export function eatUnrecoverableError<T>(
@@ -128,40 +174,120 @@ export function makeUnrecoverable<T>(): MonoTypeOperatorFunction<T> {
   return (source) =>
     source.pipe(
       catchError((error, _caught$) => {
-        throw new UnrecoverableGraphError(error.message, { cause: error })
+        const err = new UnrecoverableGraphError(error.message)
+        err.cause = error
+        throw error
       })
     )
 }
 
-export const submitPhone$ = (
-  input: SubmitPhoneInput
-): Observable<SubmitPhoneResult> =>
+const _handleApolloErrors = <T>(errors?: readonly GraphQLError[]) => {
+  if (errors) {
+    const error = first(errors)
+    if (error) throw error
+  }
+}
+
+const _handleGraphError = (error: Error) => {
+  // NOTE: sentry all errors except UserError
+  if (error instanceof UserError) {
+    return of(Err(error))
+  }
+  captureException(error)
+  return of(Err(error))
+}
+
+const mutate$ = <InputType, MutationType, ValueType>({
+  input,
+  mutation,
+  getValue,
+  refetchQueries,
+}: {
+  input: InputType
+  mutation: TypedDocumentNode<MutationType, Exact<{ input: InputType }>>
+  getValue: (data: MutationType) => ValueType
+  refetchQueries?: RefetchQueriesInclude
+}): Observable<Result<ValueType, Error>> =>
   from(
     client.mutate({
-      mutation: SubmitPhoneDocument,
+      mutation,
       variables: { input },
+      refetchQueries,
     })
   ).pipe(
-    handleGraphErrors(),
-    map((response) => {
-      return response.data?.submitPhone
+    map(({ errors, data /* context, extensions */ }) => {
+      _handleApolloErrors<MutationType>(errors)
+      if (!data) throw new GraphError("MIA data")
+      return Ok(getValue(data))
     }),
-    filter(isNotNullish)
+    catchError((error, _caught$) => _handleGraphError(error))
   )
 
-export const verifyCode$ = (input: SubmitCodeInput) =>
+const query$ = <QueryType, QueryVariablesType, ValueType>({
+  query,
+  variables,
+  getValue,
+  fetchPolicy = "network-only",
+}: {
+  query: TypedDocumentNode<QueryType, QueryVariablesType>
+  variables: QueryVariablesType
+  getValue: (data: QueryType) => ValueType
+  fetchPolicy?: FetchPolicy
+}): Observable<Result<ValueType, Error>> =>
   from(
-    client.mutate({
-      mutation: SubmitCodeDocument,
-      variables: { input },
+    client.query({
+      query,
+      variables,
+      fetchPolicy,
     })
   ).pipe(
-    handleGraphErrors(),
-    map(({ data, errors, extensions, context }) => {
-      return data?.submitCode
+    map(({ errors, data /* context, extensions */ }) => {
+      _handleApolloErrors(errors)
+      if (!data) throw new GraphError("MIA data")
+      return Ok(getValue(data))
     }),
-    filter(isNotNullish)
+    catchError((error, _caught$) => _handleGraphError(error))
   )
+
+export const partitionError$ = (error$: Observable<Error>) => {
+  const userError$ = error$.pipe(
+    filter((error): error is UserError => error instanceof UserError),
+    share()
+  )
+  const appError$ = error$.pipe(
+    filter((error): error is Error => !(error instanceof UserError)),
+    share()
+  )
+  return { userError$, appError$ }
+}
+
+export const submitPhone$ = (input: SubmitPhoneInput) =>
+  mutate$<SubmitPhoneInput, SubmitPhoneMutation, Verification>({
+    input,
+    mutation: SubmitPhoneDocument,
+    getValue: (data) => {
+      return match(data.submitPhone)
+        .with({ __typename: "Verification" }, (v) => v)
+        .with({ __typename: "UserError" }, ({ message }) => {
+          throw new UserError(message)
+        })
+        .run()
+    },
+  })
+
+export const verifyCode$ = (input: SubmitCodeInput) =>
+  mutate$<SubmitCodeInput, SubmitCodeMutation, SubmitCodePayload>({
+    input,
+    mutation: SubmitCodeDocument,
+    getValue: (data) => {
+      return match(data.submitCode)
+        .with({ __typename: "SubmitCodePayload" }, (v) => v)
+        .with({ __typename: "UserError" }, ({ message }) => {
+          throw new UserError(message)
+        })
+        .run()
+    },
+  })
 
 const token$$ = new BehaviorSubject<string | null>(
   localStorage.getItem(tokenCacheKey)
@@ -190,8 +316,8 @@ export const clearSession = async () =>
 
 export const token$ = token$$.asObservable().pipe(tag("token$"), shareLatest())
 
-// ! NOTE: workaround to sync token w/ local sessionStorage copy
-// ! sync local token w/ session on every signin / reload
+// NOTE: workaround to sync token w/ local sessionStorage copy
+// sync local token w/ session on every signin / reload
 // ! TODO: find a more reliable session/localStorage sync strategy
 token$
   .pipe(
@@ -250,6 +376,13 @@ export const me$ = token$.pipe(
         }
       ),
       filter(isNotNullish),
+      tap((me) => {
+        // https://docs.sentry.io/platforms/javascript/enriching-events/identify-user
+        const user: SentryUser = {
+          id: me.id,
+        }
+        setUser(user)
+      }),
       tag("watchQuery(me)")
     )
   }),
@@ -277,6 +410,13 @@ export const track$ = (
       platform: Platform.Web,
     },
   }
+  addBreadcrumb({
+    level: Severity.Info,
+    category: "analytics",
+    message: input.name,
+    data: properties,
+    timestamp: Date.now(),
+  })
   return from(
     client.mutate({
       mutation: TrackEventDocument,
@@ -423,23 +563,17 @@ export const reviewConversation$ = (input: ReviewInput) => {
   )
 }
 
-export const getConversation$ = (id: string) => {
-  return from(
-    client.query({
-      query: ViewConversationDocument,
-      variables: { id },
-      fetchPolicy: "network-only",
-    })
-  ).pipe(
-    handleGraphErrors(),
-    map(({ data }) => {
+export const getConversation$ = (id: string) =>
+  query$<ViewConversationQuery, ViewConversationQueryVariables, Conversation>({
+    query: ViewConversationDocument,
+    variables: { id },
+    getValue: (data) => {
       const { userError, conversation } = data!.getConversation!
-      return userError ? new Err(userError) : new Ok(conversation!)
-    }),
-    makeUnrecoverable(),
-    tag("getConversation$")
-  )
-}
+      if (userError) throw new UserError(userError.message)
+      if (!conversation) throw new GraphError(`MIA conversation ${id}`)
+      return conversation
+    },
+  }).pipe(tag("getConversation$"))
 
 export const subscribeConversation$ = (input: ConversationChangedInput) =>
   from(
@@ -615,20 +749,19 @@ export const getProfile$ = (input: GetProfileInput) =>
   )
 
 export const patchProfile$ = (input: PatchProfileInput) =>
-  from(
-    client.mutate({
-      mutation: PatchProfileDocument,
-      variables: { input },
-      refetchQueries: [{ query: MeDocument }],
-    })
-  ).pipe(
-    handleGraphErrors(),
-    map(({ data, errors, extensions, context }) => {
-      const { userError, profile } = data!.patchProfile!
-      return userError ? new Err(userError) : new Ok(profile!)
-    }),
-    tag("updateProfile$")
-  )
+  mutate$<PatchProfileInput, PatchProfileMutation, OnboardingProfile>({
+    input,
+    mutation: PatchProfileDocument,
+    getValue: (data) => {
+      return match(data.patchProfile)
+        .with({ __typename: "OnboardingProfile" }, (v) => v)
+        .with({ __typename: "UserError" }, ({ message }) => {
+          throw new UserError(message)
+        })
+        .run()
+    },
+    refetchQueries: [MeDocument],
+  })
 
 export const updateProfile$ = (input: UpdateProfileInput) => {
   return from(

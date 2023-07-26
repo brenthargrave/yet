@@ -3,8 +3,6 @@ interface ImportMeta {
     VITE_API_ENV: "dev" | "test" | "prod"
     VITE_HOST: string
     VITE_SENTRY_DSN: string
-    VITE_SENTRY_DEBUG?: boolean
-    VITE_LOG?: boolean
-    VITE_DEBUG_OATH: boolean
+    VITE_SENTRY_DEBUG: string
   }
 }

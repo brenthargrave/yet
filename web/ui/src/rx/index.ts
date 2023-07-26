@@ -11,6 +11,8 @@ import {
 import { Source as WonkaSource, toObservable } from "wonka"
 import { Observable as ZenObservable } from "zen-observable-ts"
 import { pluck } from "~/fp"
+import { partitionError$ } from "~/graph"
+import { error } from "~/notice"
 
 export type ObservableCallback<O> = { $: Observable<O>; cb: (t?: any) => void }
 export type ObservableCallbackTuple<O> = [(t?: any) => void, Observable<O>]
@@ -62,3 +64,14 @@ export function shareLatest<T>(bufferSize = 1): MonoTypeOperatorFunction<T> {
 // TODO: mergeProp("sink", source1, source2, ...)
 // export const mergeProp = (prop: string, ...sources: []) =>
 //   merge(...pluck(prop, sources))
+
+export const noticeFromError$ = (error$: Observable<Error>) => {
+  const { appError$, userError$ } = partitionError$(error$)
+  const userErrorNotice = userError$.pipe(
+    map(({ message }) => error({ description: message }))
+  )
+  const appErrorNotice = appError$.pipe(
+    map(({ message }) => error({ description: message }))
+  )
+  return merge(userErrorNotice, appErrorNotice)
+}

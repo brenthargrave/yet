@@ -6,24 +6,16 @@ import {
   map,
   merge,
   mergeMap,
-  Observable,
   share,
   startWith,
   switchMap,
   withLatestFrom,
 } from "rxjs"
+import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { not } from "~/fp"
-import {
-  EventName,
-  submitPhone$,
-  track$,
-  UserError,
-  Verification,
-  VerificationStatus,
-} from "~/graph"
+import { EventName, submitPhone$, track$, VerificationStatus } from "~/graph"
 import { makeTagger } from "~/log"
-import { error } from "~/notice"
-import { callback$, makeObservableCallback, shareLatest } from "~/rx"
+import { cb$, noticeFromError$, shareLatest } from "~/rx"
 import { COUNTRY_CODE_DEFAULT, View } from "./View"
 
 export { View }
@@ -31,8 +23,6 @@ export { View }
 const { VITE_API_ENV } = import.meta.env
 const strictDetection = VITE_API_ENV === "prod"
 const validateMobilePrefix = strictDetection
-
-const tag = makeTagger("PhoneSubmit")
 
 interface Sources {
   react: ReactSource
@@ -42,15 +32,16 @@ export const PhoneSubmit = ({ ...sources }: Sources, tagPrefix?: string) => {
   const tagScope = `${tagPrefix}/PhoneSubmit`
   const tag = makeTagger(tagScope)
 
-  const { $: phoneInput$, cb: onChangePhoneInput } = callback$<string>(
-    tag("phoneINput$")
-  )
-  const { $: countryCode$, cb: onChangeCountryCode } = callback$<string>(
-    tag("phoneINput$")
+  const [onChangePhoneInput, phoneInput$] = cb$(tag("phoneINput$"))
+  const [onChangeCountryCode, _countryCode$] = cb$<string>(tag("_countryCode$"))
+  const countryCode$ = _countryCode$.pipe(
+    startWith(COUNTRY_CODE_DEFAULT),
+    tag("countryCode$"),
+    shareLatest()
   )
 
   const phone$ = combineLatest({
-    code: countryCode$.pipe(startWith(COUNTRY_CODE_DEFAULT), tag("code$")),
+    code: countryCode$,
     number: phoneInput$,
   }).pipe(
     map(({ code, number }) => `+${code} ${number}`),
@@ -69,24 +60,27 @@ export const PhoneSubmit = ({ ...sources }: Sources, tagPrefix?: string) => {
     tag("phoneValidation$"),
     share()
   )
-  const e164$: Observable<string> = phoneValidation$.pipe(
+
+  const e164$ = phoneValidation$.pipe(
     map(({ phoneNumber }) => phoneNumber || ""),
     startWith(""),
     tag("e164$"),
-    shareLatest() // TODO: subscribe from outer component to preserve across views -> share()
+    shareLatest()
   )
+
   const isPhoneValid$ = phoneValidation$.pipe(
     map(({ isValid }) => isValid),
     startWith(false),
     tag("isPhoneValid$")
   )
+
   const isPhoneInvalid$ = isPhoneValid$.pipe(
     map(not),
     tag("isPhoneInvalid$"),
     share()
   )
 
-  const { $: submit$, cb: onSubmit } = callback$(tag("submit$"))
+  const [onSubmit, submit$] = cb$(tag("submit$"))
 
   const result$ = submit$.pipe(
     withLatestFrom(e164$),
@@ -95,24 +89,27 @@ export const PhoneSubmit = ({ ...sources }: Sources, tagPrefix?: string) => {
     tag("result$"),
     share()
   )
+
   const track = submit$.pipe(
-    mergeMap((_) =>
+    withLatestFrom(countryCode$),
+    mergeMap(([_, countryCode]) =>
       track$({
         name: EventName.SubmitPhoneNumber,
-        properties: {},
+        properties: {
+          countryCode,
+        },
       })
     ),
     tag("track"),
     share()
   )
 
-  const userError$ = result$.pipe(
-    filter((result): result is UserError => result.__typename === "UserError")
-  )
+  const error$ = result$.pipe(filterResultErr(), tag("error$"), share())
+
   const verification$ = result$.pipe(
-    filter(
-      (result): result is Verification => result.__typename === "Verification"
-    )
+    filterResultOk(),
+    tag("verification$"),
+    share()
   )
   const verificationStatus$ = verification$.pipe(
     map((v) => v.status),
@@ -154,9 +151,7 @@ export const PhoneSubmit = ({ ...sources }: Sources, tagPrefix?: string) => {
     tag("react")
   )
 
-  const notice = userError$.pipe(
-    map(({ message }) => error({ description: message }))
-  )
+  const notice = noticeFromError$(error$)
 
   const value = {
     e164$,

@@ -19,6 +19,7 @@ fragment ProfileProps on Profile {
 }
 
 fragment OnboardingProfileProps on OnboardingProfile {
+# fragment OnboardingProfileProps on Profile {
   id
   name
   firstName
@@ -55,12 +56,15 @@ query GetProfile($input: GetProfileInput) {
 
 mutation PatchProfile($input: PatchProfileInput!) {
   patchProfile(input: $input) {
-    userError {
+    ...on UserError {
       message
     }
-    profile {
+    ...on OnboardingProfile {
       ...OnboardingProfileProps
     }
+    # ...on Profile {
+    #   ...OnboardingProfileProps
+    # }
   }
 }
 

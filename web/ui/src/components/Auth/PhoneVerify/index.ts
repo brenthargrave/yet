@@ -2,12 +2,12 @@ import { h, ReactSource } from "@cycle/react"
 import { createRef } from "react"
 import {
   BehaviorSubject,
-  catchError,
   combineLatest,
+  delay,
   filter,
-  from,
   map,
   merge,
+  mergeMap,
   Observable,
   share,
   startWith,
@@ -17,26 +17,18 @@ import {
 } from "rxjs"
 import { pairwiseStartWith, pluck } from "rxjs-etc/dist/esm/operators"
 import { match } from "ts-pattern"
+import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { not } from "~/fp"
 import {
-  Customer,
+  EventName,
   loggedIn,
-  putTokenInSession,
-  SubmitCodePayload,
-  SubmitCodeResult,
-  UserError,
-  Verification,
+  track$,
   VerificationStatus,
   verifyCode$,
 } from "~/graph"
 import { makeTagger } from "~/log"
-import { error } from "~/notice"
-import { callback$, makeObservableCallback, shareLatest } from "~/rx"
+import { cb$, noticeFromError$, shareLatest } from "~/rx"
 import { View } from "./View"
-
-const tag = makeTagger("PhoneVerify")
-
-const firstInputRef = createRef<HTMLInputElement>()
 
 interface Props {
   e164$: Observable<string>
@@ -47,7 +39,11 @@ interface Sources {
   props: Props
 }
 
-export const PhoneVerify = (sources: Sources) => {
+export const PhoneVerify = (sources: Sources, tagPrefix?: string) => {
+  const tag = makeTagger(`${tagPrefix}/PhoneVerify`)
+
+  const firstInputRef = createRef<HTMLInputElement>()
+
   const {
     props: { e164$ },
   } = sources
@@ -61,9 +57,9 @@ export const PhoneVerify = (sources: Sources) => {
     shareLatest()
   )
 
-  const { $: submit$, cb: onSubmit } = callback$(tag("submit$"))
+  const [onSubmit, submit$] = cb$(tag("submit$"))
+  const [onComplete, complete] = cb$(tag("complete"))
 
-  const { $: complete, cb: onComplete } = makeObservableCallback<string>()
   const complete$ = complete.pipe(
     withLatestFrom(codeLatestPair$),
     tag("withLatestFrom(codeLatestPairs$)"),
@@ -83,42 +79,42 @@ export const PhoneVerify = (sources: Sources) => {
   )
 
   const request$ = merge(submit$, complete$)
-  const result$: Observable<SubmitCodeResult> = request$.pipe(
+  const result$ = request$.pipe(
     withLatestFrom(input$),
     tag("withLatestFrom(input)$"),
     switchMap(([_, input]) => verifyCode$(input).pipe(tag("verifyCode$"))),
-    tap((_) => firstInputRef.current?.focus()),
-    catchError((error, _caught$) => {
-      code$$.next("")
-      throw error
+    tap((result) => {
+      if (result.err) {
+        code$$.next("")
+      }
     }),
     tag("result$"),
     share()
   )
+  // NOTE: must delay else focus is wiped out by input clearing/reset
+  // Also, note that it needs a persistent subscription, so can't be part of
+  // transient result$ subsciption (closes once complete)
+  const refocusInput$ = result$.pipe(
+    delay(20),
+    tap((_) => firstInputRef.current?.focus()),
+    share()
+  )
 
-  // TODO: payload$ = result$.pipe(filter(result => result.success))
-  const submitCodePayload$: Observable<SubmitCodePayload> = result$.pipe(
-    filter(
-      (result): result is SubmitCodePayload =>
-        result.__typename === "SubmitCodePayload",
-      tag("submitCodePayload$")
-    )
+  const submitCodePayload$ = result$.pipe(
+    filterResultOk(),
+    tag("submitCodePayload$"),
+    share()
   )
-  const verification$: Observable<Verification> = submitCodePayload$.pipe(
+  const verification$ = submitCodePayload$.pipe(
     pluck("verification"),
-    tag("verification$")
+    tag("verification$"),
+    share()
   )
-  const me$: Observable<Customer> = submitCodePayload$.pipe(
-    pluck("me"),
-    tag("me$")
-  )
+  const me$ = submitCodePayload$.pipe(pluck("me"), tag("me$"), share())
+
   const token$ = me$.pipe(pluck("token"), tag("token$"), share())
 
-  const userError$ = result$.pipe(
-    filter((result): result is UserError => result.__typename === "UserError"),
-    tap((_) => code$$.next("")), // reset code on error | TODO: how fix focus?
-    tag("userError$")
-  )
+  const error$ = result$.pipe(filterResultErr(), tag("error$"), share())
 
   const isLoading$ = merge(
     request$.pipe(map((_) => true)),
@@ -131,10 +127,16 @@ export const PhoneVerify = (sources: Sources) => {
     map(not),
     startWith(true),
     tag("codeIsInvalid$"),
-    share()
+    shareLatest()
   )
 
-  const isDisabledCodeInput$ = isLoading$.pipe(tag("isDisabledCodeInput$"))
+  const isDisabledCodeInput$ = isLoading$.pipe(
+    withLatestFrom(refocusInput$),
+    map(([v, _]) => v),
+    tag("isDisabledCodeInput$"),
+    startWith(false),
+    shareLatest()
+  )
 
   const isDisabledSubmitButton$ = combineLatest({
     isLoading: isLoading$,
@@ -143,7 +145,7 @@ export const PhoneVerify = (sources: Sources) => {
     map(({ isLoading, codeIsInvalid }) => isLoading || codeIsInvalid),
     startWith(false),
     tag("loading$ || invalid$"),
-    share()
+    shareLatest()
   )
 
   const react = combineLatest({
@@ -169,26 +171,32 @@ export const PhoneVerify = (sources: Sources) => {
     map(({ status }) =>
       match(status)
         .with(VerificationStatus.Approved, () => true)
-        .run()
+        .otherwise(() => false)
     ),
     startWith(false),
     tag("verified$"),
     shareLatest()
   )
 
-  const notice = userError$.pipe(
-    map(({ message }) => error({ description: message })),
-    tag("notice")
-  )
-
+  const notice = noticeFromError$(error$)
   const value = { me$, verified$ }
-
   const graph = token$.pipe(map((token) => loggedIn(token)))
+  const track = complete$.pipe(
+    mergeMap((_) =>
+      track$({
+        name: EventName.VerifyPhoneNumber,
+        properties: {},
+      })
+    ),
+    tag("track"),
+    share()
+  )
 
   return {
     react,
     notice,
     value,
     graph,
+    track,
   }
 }

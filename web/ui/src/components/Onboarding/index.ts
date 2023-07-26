@@ -1,12 +1,14 @@
 import { h, ReactSource } from "@cycle/react"
 import { snakeCase } from "change-case"
 import { createRef } from "react"
+import { pluck } from "ramda"
 import {
   combineLatest,
   distinctUntilChanged,
   filter,
   map,
   merge,
+  mergeMap,
   share,
   startWith,
   switchMap,
@@ -19,17 +21,18 @@ import { AuthService } from "~/components/App/AuthService"
 import { isEmpty, trim } from "~/fp"
 import {
   AuthProvider,
+  EventName,
   firstRequiredProfileProp,
   FromView,
   nextRequiredProfileProp,
   patchProfile$,
   ProfileProp,
   Source as GraphSource,
+  track$,
 } from "~/graph"
 import { t } from "~/i18n"
 import { makeTagger } from "~/log"
-import { error } from "~/notice"
-import { cb$, shareLatest } from "~/rx"
+import { cb$, noticeFromError$, shareLatest } from "~/rx"
 import { View } from "./View"
 
 const inputRef = createRef<HTMLInputElement>()
@@ -81,7 +84,22 @@ export const Onboarding = (sources: Sources, tagPrefix?: string) => {
     share()
   )
   const _ = result$.pipe(filterResultOk())
-  const userError$ = result$.pipe(filterResultErr(), tag("userError$"))
+  const error$ = result$.pipe(filterResultErr(), tag("error$"))
+
+  const trackStep$ = submit$.pipe(
+    withLatestFrom(collected$),
+    mergeMap(([_, { me, value, attr }]) => {
+      return track$({
+        customerId: me.id,
+        name: EventName.UpdateProfile,
+        properties: {
+          profileProp: attr,
+          view: FromView.Onboarding,
+          signatureCount: me.stats?.signatureCount,
+        },
+      })
+    })
+  )
 
   const isLoading = merge(
     submit$.pipe(map((_) => true)),
@@ -163,11 +181,8 @@ export const Onboarding = (sources: Sources, tagPrefix?: string) => {
     tag("react")
   )
 
-  const notice = userError$.pipe(
-    map(({ message }) => error({ description: message })),
-    tag("notice")
-  )
-  const track = merge(twitter.track)
+  const notice = noticeFromError$(error$)
+  const track = merge(...pluck("track", [twitter, facebook]), trackStep$)
 
   return {
     react,
