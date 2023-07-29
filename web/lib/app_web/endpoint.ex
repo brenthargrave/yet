@@ -8,7 +8,7 @@ defmodule AppWeb.Endpoint do
     plug(Phoenix.Ecto.SQL.Sandbox,
       at: "/sandbox",
       repo: App.Repo,
-      timeout: 30_000
+      timeout: 60_000 * 10
       # header: "sandbox"
     )
   end

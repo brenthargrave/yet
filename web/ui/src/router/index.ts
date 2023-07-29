@@ -25,7 +25,7 @@ const conversation = conversations.extend(
   { id: param.path.string },
   (p) => `/${p.id}`
 )
-const signConversation = conversation.extend("/sign")
+const joinConversation = conversation.extend("/join")
 const conversationOpps = conversation.extend("/o")
 const conversationOpp = conversationOpps.extend(
   { oid: param.path.string },
@@ -66,7 +66,7 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
   root,
   conversations,
   conversation,
-  signConversation,
+  joinConversation,
   conversationOpps,
   conversationOpp,
   // NOTE: must precede opps routes
@@ -104,7 +104,7 @@ export const routeGroupPayments = createGroup(routesPayments)
 
 export const singleConversationRoutesGroup = createGroup([
   routes.conversation,
-  routes.signConversation,
+  routes.joinConversation,
   routes.conversationOpp,
   routes.conversationOpps,
 ])
@@ -126,7 +126,7 @@ export const conversationOppsRouteGroup = createGroup([
 export const anyConversationsRouteGroup = createGroup([
   routes.conversations,
   routes.conversation,
-  routes.signConversation,
+  routes.joinConversation,
   routes.conversationOpps,
   routes.conversationOpp,
 ])

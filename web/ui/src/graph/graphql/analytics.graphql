@@ -1,4 +1,4 @@
-fragment EventsProps on Event {
+fragment AnalyticsEventProps on AnalyticsEvent {
     occurredAt
     name
     anonId
@@ -6,21 +6,20 @@ fragment EventsProps on Event {
       conversationId
       intent
       platform
-      signatureCount
       notificationKind
       notificationChannel
     }
     customerId
 }
 
-mutation TrackEvent($input: TrackEventInput!) {
-  trackEvent(input: $input) {
-    ...EventsProps
+mutation CreateEvent($input: CreateEventInput!) {
+  createEvent(input: $input) {
+    ...AnalyticsEventProps
   }
 }
 
 query GetEvents {
-  events {
-    ...EventsProps
+  analyticsEvents {
+    ...AnalyticsEventProps
   }
 }

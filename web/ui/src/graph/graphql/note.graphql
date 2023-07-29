@@ -1,0 +1,55 @@
+fragment NoteProps on Note {
+  id
+  conversationId
+  text
+  status
+  createdAt
+  deletedAt
+  creator {
+    ...on Profile {
+      id
+      name
+      firstName
+      lastName
+    }
+  }
+}
+
+mutation UpsertNote($input: UpsertNoteInput!) {
+  upsertNote(input: $input) {
+    ...on Note  {
+      ...NoteProps
+    }
+    ...on UserError {
+      ...UserErrorProps
+    }
+  }
+}
+
+mutation DeleteNote($input: DeleteNoteInput!) {
+  deleteNote(input: $input) {
+    ...on Note {
+      ...NoteProps
+    }
+    ...on UserError {
+      ...UserErrorProps
+    }
+  }
+}
+
+mutation PostNote($input: PostNoteInput!) {
+  postNote(input: $input) {
+    ...on Note {
+      ...NoteProps
+    }
+    ...on UserError {
+      ...UserErrorProps
+    }
+  }
+}
+
+subscription NoteAdded($input: NotedAddedInput!) {
+  noteAdded(input: $input) {
+    ...NoteProps
+  }
+}

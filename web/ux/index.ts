@@ -17,14 +17,10 @@ mocha.fullTrace()
 
 mocha.slow(0)
 
-// mocha.run()
-mocha.run((failures) => {
+const runner = mocha.run((failures) => {
   if (failures > 0) {
     process.exit(1)
   }
-  // process.on("exit", () => {
-  //   process.exit(failures)
-  // })
 })
 
 // TODO: make sure to clear files on reruns

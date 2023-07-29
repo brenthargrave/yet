@@ -1,6 +1,6 @@
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { isNotEmpty, map, prop } from "~/fp"
+import { isNotEmpty } from "~/fp"
 import {
   ConversationStatus,
   Customer,
@@ -13,8 +13,6 @@ import { toSentence } from "~/i18n"
 import { routes } from "~/router"
 import { bold, MarkdownView } from "~/system"
 
-type Participant = Omit<Invitee, "__typename" | "isContact">
-
 const personalizedName = (me: Maybe<Customer>, subject: Profile | Invitee) =>
   !!me && me.id === subject.id ? "You" : subject.name
 
@@ -23,7 +21,7 @@ export interface Props {
   status: ConversationStatus
   creator: Profile
   invitees: Invitee[]
-  signers: Profile[]
+  participants: Profile[]
 }
 
 const link = (text: string, href: string) =>
@@ -42,11 +40,11 @@ export const ParticipantsView: FC<Props> = ({
   status,
   creator,
   invitees,
-  signers,
+  participants,
 }) => {
   let md = bold(profileLink(creator, viewer))
   const others = isStatusClosed(status)
-    ? signers.map((signer) => bold(profileLink(signer, viewer)))
+    ? participants.map((participant) => bold(profileLink(participant, viewer)))
     : invitees.map((invitee) => bold(invitee.name))
   if (isNotEmpty(others)) {
     md += ` with ${toSentence(others)}`

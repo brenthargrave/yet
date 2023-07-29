@@ -1,5 +1,5 @@
 import { Alice, Bob, Charlie, makeBrowser, Nav } from "~/browser"
-import { specConv } from "~/models"
+import { specConv, specNote } from "~/models"
 
 it.skip("View conversation when signed out", async () => {
   const { customer, exit } = await makeBrowser({ headless: true })
@@ -12,18 +12,20 @@ it.skip("View conversation when signed out", async () => {
     await a.click("Create Account")
     await a.signup()
 
-    // Alice creates a conversation with Bob
-    const aliceWithBob = specConv({
-      invitees: [Bob],
-      note: "Alice <> Bob",
+    const aliceWithBob = await a.createConversation({
+      conversation: specConv({
+        invitees: [Bob],
+        note: specNote({ text: "Alice + Bob", publish: true }),
+      }),
+      isInitial: true,
     })
-    const cosignPath = await a.createConversation(aliceWithBob, true)
+    await b.signupAndJoinConversationAtPath(aliceWithBob.joinPath)
 
-    // NOTE: verify conversation isn't publicly visible before signed, so skip
+    // NOTE: to verify conversation isn't publicly visible before joined, skip
     // Bob receiving, signing up and cosigning.
 
     // Charlie tries to view the conversation
-    const conversationPath = cosignPath.replace(/\/sign/, "")
+    const conversationPath = aliceWithBob.path
     await c.visit(conversationPath)
     await c.see("Sign in / Sign up")
     await c.seeNavOptions({

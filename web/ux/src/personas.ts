@@ -1,4 +1,4 @@
-import { ConversationSpec } from "./models"
+import { DraftConversationSpec } from "./models"
 
 export interface Persona {
   first_name: string
@@ -6,6 +6,7 @@ export interface Persona {
   name: string
   phone: string
   email: string
+  id?: string
 }
 
 export const Alice: Persona = {

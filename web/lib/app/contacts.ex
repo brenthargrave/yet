@@ -8,23 +8,14 @@ defmodule App.Contacts do
 
   alias App.{
     Repo,
-    Contact,
-    Customer
+    Contact
   }
 
-  defun get_contacts(viewer :: Customer.t()) :: list(Contact.t()) do
-    get_contacts_for_viewers([viewer])
-  end
-
-  def get_contacts_for_viewers(viewers) do
-    viewer_ids =
-      viewers
-      |> Enum.map(&Map.get(&1, :id))
-
-    signers =
+  def get_for(viewer_ids) when is_list(viewer_ids) do
+    participants =
       from(contact in Contact,
-        join: signature in assoc(contact, :signatures),
-        join: conversation in assoc(signature, :conversation),
+        join: participation in assoc(contact, :participations),
+        join: conversation in assoc(participation, :conversation),
         where: conversation.creator_id in ^viewer_ids,
         where: conversation.status != :deleted,
         distinct: contact.id
@@ -33,12 +24,16 @@ defmodule App.Contacts do
     creators =
       from(contact in Contact,
         join: conversation in assoc(contact, :conversations),
-        join: signature in assoc(conversation, :signatures),
-        where: signature.signer_id in ^viewer_ids,
+        join: participation in assoc(conversation, :participations),
+        where: participation.participant_id in ^viewer_ids,
         where: conversation.status != :deleted,
         distinct: contact.id
       )
 
-    Repo.all(from(c in signers, union: ^creators))
+    Repo.all(from(c in participants, union: ^creators))
+  end
+
+  def get_for(viewer_id) when not is_list(viewer_id) do
+    get_for([viewer_id])
   end
 end

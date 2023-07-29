@@ -4,6 +4,7 @@ import { FC } from "react"
 import {
   ConversationDivider,
   ConversationView,
+  Props as ConversationViewProps,
 } from "~/components/Conversation/View"
 import { isEmpty, isNotLastItem } from "~/fp"
 import { Conversation, Customer, Maybe } from "~/graph"
@@ -46,11 +47,17 @@ export const View: FC<Props> = ({
         h(
           FullWidthList,
           conversations.map((conversation, idx, all) => {
+            const props: ConversationViewProps = {
+              readOnly: true,
+              viewer,
+              conversation,
+              maxLines: 10,
+            }
             return h(
               LinkedListItem,
               { key: idx, onClick: () => onClickConversation(conversation) },
               [
-                h(ConversationView, { viewer, conversation, maxLines: 10 }),
+                h(ConversationView, props),
                 isNotLastItem(idx, all) && h(ConversationDivider),
               ]
             )

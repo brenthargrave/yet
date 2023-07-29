@@ -7,10 +7,12 @@ import {
   merge,
   of,
   share,
+  startWith,
   switchMap,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
 import { match } from "ts-pattern"
+import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { Source as ActionSource } from "~/action"
 import {
   EventName,
@@ -22,7 +24,7 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
-import { cb$, shareLatest } from "~/rx"
+import { cb$, noticeFromError$, shareLatest } from "~/rx"
 import { View, State } from "./View"
 
 export interface Sources {
@@ -56,13 +58,22 @@ export const Unsubscribe = (sources: Sources, tagPrefix?: string) => {
 
   const result$ = id$.pipe(
     switchMap((customerId) => unsubscribe$({ customerId })),
-    tag("result$")
+    tag("result$"),
+    shareLatest()
   )
+  const settingsEvent$ = result$.pipe(filterResultOk(), shareLatest())
+  const error$ = result$.pipe(filterResultErr(), share())
+  const errorNotice$ = noticeFromError$(error$)
 
   const state$ = merge(
     id$.pipe(map((_) => State.loading)),
     result$.pipe(map((_) => State.loaded))
-  ).pipe(tag("state$"), shareLatest())
+  ).pipe(
+    //
+    startWith(State.loading),
+    tag("state$"),
+    shareLatest()
+  )
 
   const trackUnsubscribe$ = id$.pipe(
     switchMap((id) =>
@@ -84,16 +95,18 @@ export const Unsubscribe = (sources: Sources, tagPrefix?: string) => {
 
   const props$ = combineLatest({
     state: state$,
-    result: result$,
+    result: settingsEvent$,
   }).pipe(tag("props$"), shareLatest())
 
   const react = props$.pipe(map((props) => h(View, { ...props, onClickHome })))
   const router = merge(goHome$)
   const track = merge(trackUnsubscribe$)
+  const notice = merge(errorNotice$)
 
   return {
     react,
     router,
     track,
+    notice,
   }
 }

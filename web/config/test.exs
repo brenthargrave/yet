@@ -8,13 +8,13 @@ import Config
 import_config "dev.exs"
 
 # 5 minutes
-timeout = 18_000_000
+timeout = 60_000 * 10
 
 config :app, App.Repo,
-  pool: Ecto.Adapters.SQL.Sandbox,
-  sql_sandbox: true,
   ownership_timeout: timeout,
-  timeout: timeout
+  timeout: timeout,
+  pool: Ecto.Adapters.SQL.Sandbox,
+  sql_sandbox: true
 
 config :logger, :console, level: String.to_atom(System.get_env("TEST_LOG_LEVEL") || "warn")
 

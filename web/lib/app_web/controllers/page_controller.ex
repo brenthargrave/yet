@@ -1,6 +1,13 @@
 defmodule AppWeb.PageController do
   use AppWeb, :controller
-  alias App.{Repo, Conversation, Auth}
+
+  alias App.{
+    #
+    Repo,
+    Conversation,
+    Auth,
+    Conversations
+  }
 
   defp handle_static_page(conn) do
     conn
@@ -38,24 +45,24 @@ defmodule AppWeb.PageController do
   # %{"path" => ["c", "01G9DG5VJS7N568PCSM0R157MY"]}
   def index(conn, %{"path" => ["c", id | _]} = _params) do
     conversation =
-      Repo.get(Conversation, id)
-      |> Repo.preload([:creator, signatures: [:signer]])
+      Conversations.get_conversation(id)
+      |> Repo.preload([:creator, participations: [:participant]])
 
     assigns =
       case conversation do
         %Conversation{
           status: status,
-          signatures: signatures,
+          participations: participations,
           invitees: invitees,
           creator: creator,
-          occurred_at: occurred_at,
-          note: note
+          occurred_at: occurred_at
+          # note: note
         } = _conversation ->
           root_url = "https://#{AppWeb.Endpoint.host()}"
 
           others =
-            if status == "signed",
-              do: Enum.map(signatures, & &1.signer),
+            if status == :joined,
+              do: Enum.map(participations, & &1.participant),
               else: invitees
 
           others_names =
@@ -67,13 +74,14 @@ defmodule AppWeb.PageController do
 
           on = Calendar.strftime(occurred_at, "%B %-d, %Y")
 
-          truncated =
-            note
-            |> Earmark.as_html!(compact_output: true, gfm: true)
-            |> HtmlSanitizeEx.strip_tags()
-            |> Util.StringFormatter.truncate(max_length: 100)
+          # truncated =
+          #   note
+          #   |> Earmark.as_html!(compact_output: true, gfm: true)
+          #   |> HtmlSanitizeEx.strip_tags()
+          #   |> Util.StringFormatter.truncate(max_length: 100)
 
-          description = ~s<#{on} - #{truncated}>
+          # description = ~s<#{on} - #{truncated}>
+          description = ~s|#{on}|
 
           %{
             og: %{

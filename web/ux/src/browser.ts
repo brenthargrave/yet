@@ -1,11 +1,19 @@
+import { expect } from "earl"
 import fs from "fs"
 import * as puppeteer from "puppeteer"
 import { startsWith } from "ramda"
 import { first } from "remeda"
-import { ConversationSpec, oppAriaLabel, OppSpec } from "./models"
+import { match } from "ts-pattern"
+import {
+  ConversationSpec,
+  DraftConversationSpec,
+  DraftNoteSpec,
+  Notification,
+  oppAriaLabel,
+  OppSpec,
+} from "./models"
 import { Persona } from "./personas"
 import { ClickOptions, LaunchOptions } from "./puppeteer-extras"
-import { extractULIDs } from "./ulid"
 export * from "./personas"
 
 export enum Nav {
@@ -15,11 +23,25 @@ export enum Nav {
   Opps = "Opportunities",
 }
 
-interface SeeOptions {
-  mjml?: boolean
+export enum SelectAttribute {
+  ariaLablel = "ariaLabel",
+  id = "id",
+  class = "class",
+  raw = "raw",
 }
 
-const { UX_DEBUG_BROWSER, PORT_SSL, PRODUCT_NAME = "TBD", HOST } = process.env
+interface SeeOptions extends puppeteer.WaitForSelectorOptions {
+  mjml?: boolean
+  attribute?: SelectAttribute
+}
+
+const {
+  UX_DEBUG_BROWSER,
+  PORT_SSL,
+  PRODUCT_NAME = "TBD",
+  HOST,
+  BROWSER_TIMEOUT_SECONDS,
+} = process.env
 
 const screenieDir = "scratch/screenies"
 
@@ -33,8 +55,8 @@ const sandboxURL = `${baseURL}/sandbox`
 
 export const checkoutSandbox = async () =>
   await fetch(sandboxURL, { method: "POST" })
-    .then((response) => {
-      const value = response?.text()
+    .then(async (response) => {
+      const value = await response?.text()
       if (!value) throw new Error("MIA: sandbox value for headers")
       return value
     })
@@ -44,14 +66,22 @@ export const checkoutSandbox = async () =>
     })
 
 export const checkinSandbox = async () =>
-  await fetch(sandboxURL, { method: "DELETE" }).then((res) =>
-    console.debug(res.body)
-  )
+  await fetch(sandboxURL, { method: "DELETE" })
 
 const ariaLabelSel = (ariaLabelValue: string) =>
   `[aria-label="${ariaLabelValue}"]`
 
 const classSel = (value: string) => `[class="${value}"]`
+
+const idSel = (value: string) => `[id="${value}"]`
+
+const selector = (attribute: SelectAttribute | undefined, value: string) =>
+  match(attribute)
+    .with(SelectAttribute.ariaLablel, () => ariaLabelSel(value))
+    .with(SelectAttribute.class, () => classSel(value))
+    .with(SelectAttribute.id, () => idSel(value))
+    .with(SelectAttribute.raw, () => value)
+    .otherwise(() => ariaLabelSel(value))
 
 export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
   const userAgent = await checkoutSandbox()
@@ -78,7 +108,7 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       console.error("pageerror", name, error, error.cause)
     })
 
-    const seconds = 5
+    const seconds = parseInt(BROWSER_TIMEOUT_SECONDS ?? "20")
     page.setDefaultTimeout(seconds * 1000)
     page.setDefaultNavigationTimeout(seconds * 1000)
     page.setUserAgent(userAgent)
@@ -124,31 +154,37 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       await press("Enter")
     }
 
-    const see = async (ariaLabelValue: string, opts: SeeOptions = {}) => {
-      console.debug(`${p.name} see: "${ariaLabelValue}"`)
-      const sel = opts.mjml
-        ? classSel(ariaLabelValue)
-        : ariaLabelSel(ariaLabelValue)
-      await page.waitForSelector(sel, { visible: true })
-    }
-    const notSee = async (ariaLabelValue: string, opts: SeeOptions = {}) => {
-      console.debug(`${p.name} NOT see: "${ariaLabelValue}"`)
-      const sel = opts.mjml
-        ? classSel(ariaLabelValue)
-        : ariaLabelSel(ariaLabelValue)
-      await page.waitForSelector(sel, { hidden: true })
+    const see = async (value: string, opts: SeeOptions = {}) => {
+      console.debug(`${p.name} see "${value}"`)
+      const sel = selector(opts.attribute, value)
+      await page.waitForSelector(sel, { ...opts, visible: true })
     }
 
-    const screenie = async () => {
+    const notSee = async (value: string, opts: SeeOptions = {}) => {
+      console.debug(`${p.name} NOT see: "${value}"`)
+      const sel = selector(opts.attribute, value)
+      await page.waitForSelector(sel, { ...opts, hidden: true })
+    }
+
+    const screenie = async (desc?: string) => {
       fs.mkdirSync(screenieDir, { recursive: true })
       const ts = Date.now().toString()
+      const pathParts = []
+      pathParts.push(ts)
+      pathParts.push(p.name)
+      if (desc) {
+        pathParts.push(desc)
+      }
+      const filename = pathParts.join("-")
+      const path = `${screenieDir}/${filename}.png`
       await page.screenshot({
-        path: `${screenieDir}/${ts}-${p.name}.png`,
+        path,
         fullPage: true,
       })
     }
 
     const press = async (key: puppeteer.KeyInput) => {
+      console.debug(`${p.name} type: "${key}"`)
       await page.keyboard.press(key)
     }
 
@@ -159,12 +195,31 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       await page.keyboard.type(text, { delay: 50 })
     }
 
-    const input = async (ariaLabelValue: string, text?: string) => {
+    const input = async (
+      ariaLabelValue: string,
+      text?: string,
+      opts?: SeeOptions
+    ) => {
       if (!text) throw Error("MIA: input text")
       console.debug(`${p.name} type: "${text}" in "${ariaLabelValue}"`)
       const sel = ariaLabelSel(ariaLabelValue)
-      await page.waitForSelector(sel, { visible: true })
+      await page.waitForSelector(sel, { ...opts, visible: true })
       await page.type(sel, text)
+    }
+
+    const seeNavOptions = async ({
+      show,
+      hide,
+    }: {
+      show: Nav[]
+      hide: Nav[]
+    }) => {
+      for (const view of show) {
+        await see(view)
+      }
+      for (const view of hide) {
+        await notSee(view)
+      }
     }
 
     // NOTE: composite actions
@@ -196,9 +251,21 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       await click("Continue")
       await see("Home")
 
+      await seeNavOptions({
+        show: [Nav.Home, Nav.Conversations, Nav.Profile],
+        hide: [],
+      })
+
+      // store ID
+      p.id = await page.evaluate(() => {
+        const ele = document.getElementById("me-id")
+        const value = ele?.getAttribute(`data-me-id`)
+        if (!value) throw new Error(`MIA: me ID ${value}`)
+        return value
+      })
+
       // NOTE: set auth header for non-api HTTP requests (UX tests only ATM)
       const token = await page.evaluate(async () => {
-        // TODO: dedupe; import from ui/graph
         const token = localStorage.getItem("token")
         return token
       })
@@ -229,23 +296,61 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       await see(copy)
     }
 
-    const seeConversation = async (
-      c: ConversationSpec,
+    const seeNote = async (note: DraftNoteSpec, opts: SeeOptions = {}) => {
+      await see(`/n/${note.id}`, {
+        attribute: SelectAttribute.id,
+        ...opts,
+      })
+    }
+    const notSeeNote = async (note: DraftNoteSpec, opts: SeeOptions = {}) => {
+      await notSee(`/n/${note.id}`, {
+        attribute: SelectAttribute.id,
+        ...opts,
+      })
+    }
+    const notSeeNotes = async (
+      c: DraftConversationSpec,
       opts: SeeOptions = {}
     ) => {
-      await see(`/c/${c.id}`, opts)
+      const sel = `[id="/c/${c.id}"] .note`
+      await notSee(sel, {
+        attribute: SelectAttribute.raw,
+      })
+    }
+    const seeNotes = async (
+      c: DraftConversationSpec,
+      opts: SeeOptions = {}
+    ) => {
+      const sel = `[id="/c/${c.id}"] .note`
+      await see(sel, {
+        attribute: SelectAttribute.raw,
+      })
+    }
+
+    const seeConversation = async (
+      c: DraftConversationSpec,
+      opts: SeeOptions = {}
+    ) => {
+      await see(`/c/${c.id}`, {
+        attribute: SelectAttribute.id,
+        ...opts,
+      })
       // TODO: invitees, note, status
     }
     const notSeeConversation = async (
-      c: ConversationSpec,
+      c: DraftConversationSpec,
       opts: SeeOptions = {}
     ) => {
-      await notSee(`/c/${c.id}`, opts)
+      await notSee(`/c/${c.id}`, {
+        attribute: SelectAttribute.id,
+        ...opts,
+      })
     }
-    const seeConversationProfile = async (spec: ConversationSpec) => {
+
+    const seeConversationProfile = async (c: DraftConversationSpec) => {
       await see("Conversation")
       await see("Share") // only on Show, not Edit
-      await seeConversation(spec)
+      await seeConversation(c)
     }
 
     const accessOpp = async (o: OppSpec) => {
@@ -255,7 +360,7 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
     }
 
     const verifyFirstConversation = async (
-      c: ConversationSpec,
+      c: DraftConversationSpec,
       o?: OppSpec
     ) => {
       console.log(`${p.name} verify first convo`)
@@ -271,37 +376,81 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       await seeConversation(c)
       await click("Profile")
       await see("Your Profile")
-      await seeConversation(c)
+      if (c.note && c.note.publish) {
+        await seeConversation(c)
+      } else {
+        await notSeeConversation(c)
+      }
     }
 
-    const createConversation = async (c: ConversationSpec, isFirst = false) => {
+    const publishNote = async (note: DraftNoteSpec) => {
+      // TODO: requires direct nav back to note's conv URL, fixing test-env CORS bug
+      // const path = note.conversation?.path
+      // if (path) visit(path)
+      await click("Publish Note")
+      await page.waitForSelector(`[data-note-id]`, { visible: true })
+      note.id = await page.evaluate(() => {
+        const eles = document.getElementsByClassName("note")
+        const ele = eles.item(0)
+        const value = ele?.getAttribute(`data-note-id`)
+        if (!value) throw new Error(`MIA: note ID ${value}`)
+        return value
+      })
+      await page.waitForSelector(`[id='note-${note.id}-show']`, {
+        visible: true,
+      })
+    }
+
+    const createConversation = async ({
+      conversation,
+      isInitial = false,
+    }: {
+      conversation: DraftConversationSpec
+      isInitial?: boolean
+    }): Promise<ConversationSpec> => {
+      console.debug(`${p.name} createConversation ${conversation.note?.text}`)
       await click("Conversations")
-      if (isFirst) {
+      if (isInitial) {
         await see("Welcome!")
         await click("Note a conversation")
       } else {
-        await click("New note")
+        await click("New")
       }
-      // TODO: invitees.foreEach input, select if presnt or hit "enter"
-      const invitee = first(c.invitees ?? [])
-      await input("Who", invitee?.name)
-      await press("Enter")
-      await input("Note", c.note)
-      const opps = c.mentions
-      if (opps) {
-        await click("Mention Opp")
-        for (const opp of opps) {
-          await seeOpp(opp)
-          await addOpp(opp)
+
+      for (const invitee of conversation.invitees ?? []) {
+        await input("Who", invitee.name)
+        // ID set once signed up
+        if (invitee.id) {
+          await press("ArrowDown") // assume first search result is correct
+          await press("Enter")
+        } else {
+          await press("Enter")
         }
       }
-      // TODO: pressing Publish button fails?
-      // await click("Publish", { delay: 2000 })
-      await page.keyboard.down("Control")
-      await page.keyboard.press("p")
-      await page.keyboard.up("Control")
 
-      await see("Copy share link to clipboard")
+      await page.waitForSelector(`[data-conversation-id]`, { visible: true })
+      conversation.id = await page.evaluate(() => {
+        const eles = document.getElementsByClassName("conversation")
+        const ele = eles.item(0)
+        const value = ele?.getAttribute(`data-conversation-id`)
+        if (!value) throw new Error(`MIA: conversation ID ${value}`)
+        return value
+      })
+
+      const note = conversation.note
+      if (note) {
+        note.conversation = conversation
+        const { text, publish } = note
+        await click("Add note")
+        await input("Note", text)
+        if (publish) {
+          await publishNote(note)
+        }
+      }
+
+      await click("Invite")
+
+      await see("Copy link to clipboard")
       await click("Copy")
       // await notice("Copied!")
       const shareURL = await page.evaluate(() => {
@@ -309,59 +458,69 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
         if (!value) throw new Error("MIA: shareURL value")
         return value
       })
-      const cosignPath = new URL(shareURL).pathname
-      // update conversation object w/ ids UUID
-      const ulids = extractULIDs(cosignPath)
-      const cid = first(ulids)
-      c.id = cid
-      console.log(`${p.name} created: ${c.id}`)
-      return cosignPath
+      await screenie("invited")
+
+      // await click("Close")
+      await press("Escape")
+      const url = new URL(shareURL)
+      const joinPath = url.pathname
+      conversation.joinPath = joinPath
+      conversation.path = joinPath.replace("/join", "")
+      conversation.url = url.href.replace("/join", "")
+      conversation.joinURL = shareURL
+      return conversation as ConversationSpec
     }
 
-    const signupAndSignConversationAtPath = async (path: string) => {
+    const signupAndJoinConversationAtPath = async (path: string) => {
       await visit(path)
-      await see("Please sign in to review them.")
+      // verify signed-out ux
+      await seeNavOptions({
+        show: [Nav.Home],
+        hide: [Nav.Conversations, Nav.Profile],
+      })
+      await see("Please sign in to participate.")
       await click("Sign in / Sign up")
       await signup()
-      await click("Cosign")
     }
 
-    const accessConversation = async ({
-      c,
-      show,
-      hide,
-    }: {
-      c: ConversationSpec
-      show: Nav[]
-      hide: Nav[]
-    }) => {
+    const accessConversation = async (
+      {
+        c,
+        show,
+        hide,
+      }: {
+        c: DraftConversationSpec
+        show: Nav[]
+        hide: Nav[]
+      },
+      clickOptions?: ClickOptions
+    ) => {
       for (const view of show) {
-        await click(view)
+        await click(view, clickOptions)
         await seeConversation(c)
       }
       for (const view of hide) {
-        await click(view)
+        await click(view, clickOptions)
         await notSeeConversation(c)
       }
     }
 
-    const seeNavOptions = async ({
-      show,
-      hide,
-    }: {
-      show: Nav[]
-      hide: Nav[]
-    }) => {
-      for (const view of show) {
-        await see(view)
-      }
-      for (const view of hide) {
-        await notSee(view)
-      }
+    const reload = async () => {
+      console.debug(`${p.name}: RELOAD`)
+      page.reload({ waitUntil: "domcontentloaded" })
     }
 
-    const reload = async () => {
-      page.reload({ waitUntil: "domcontentloaded" })
+    const receivedSMS = async (body: string) => {
+      const baseURL = `https://${HOST}`
+      const url = `${baseURL}/api/notifications`
+      const response = await fetch(url, {
+        headers: {
+          ["user-agent"]: userAgent,
+        },
+      })
+      const notifications: Notification[] = await response.json()
+      const latest = first(notifications)
+      expect(latest?.body).toEqual(body)
     }
 
     return {
@@ -388,20 +547,30 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       seeConversation,
       seeConversationProfile,
       notSeeConversation,
+      seeNote,
+      seeNotes,
+      notSeeNote,
+      notSeeNotes,
       verifyFirstConversation,
       createConversation,
-      signupAndSignConversationAtPath,
+      signupAndJoinConversationAtPath,
       accessConversation,
       accessOpp,
       seeNavOptions,
       reload,
+      publishNote,
+      receivedSMS,
     }
   }
 
   const checkinSandbox = async () => {
     console.log("CHECKIN SANDBOX")
-    return await fetch(sandboxURL, { method: "DELETE" })
-    //.then((res) => console.debug(res.body))
+    return await fetch(sandboxURL, {
+      method: "DELETE",
+      headers: {
+        ["user-agent"]: userAgent,
+      },
+    })
   }
 
   const exit = async () => {
@@ -409,8 +578,15 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
     return Promise.all([
       //
       ...exits.map((fn) => fn()),
-      checkinSandbox(),
-    ])
+    ]).then((results) =>
+      checkinSandbox()
+        .then(async (response) => {
+          const { status, statusText } = response
+          console.info(`CHECKIN: ${status} ${statusText}`)
+        })
+        .catch((error) => console.error(error))
+        .finally(() => console.log("CHECKIN COMPLETE"))
+    )
   }
 
   return {

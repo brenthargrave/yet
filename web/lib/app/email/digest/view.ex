@@ -38,7 +38,7 @@ defmodule App.Email.Digest.View do
     events
     |> Enum.map(fn event ->
       conversation = event.conversation
-      note = conversation.note
+      notes = Enum.map(conversation.notes, & &1.text)
       date = conversation.occurred_at
 
       aria = "/c/#{conversation.id}"
@@ -57,27 +57,29 @@ defmodule App.Email.Digest.View do
           %{text_decoration: "underline"}
         )
 
-      note =
-        note
-        |> Earmark.as_html!(gfm: true, breaks: true)
-        # NOTE: make all note links open new page
-        |> String.replace("<a ", "<a style='color: black;' target='_blank' ")
-        |> String.replace("<p", "<p style='margin: 0px; padding: 16px 0px 0px 0px;'")
-        |> String.replace("<ul", "<ul style='padding-left: 16px; margin: 0px'")
+      notes =
+        notes
+        |> Enum.map(fn note ->
+          Earmark.as_html!(note, gfm: true, breaks: true)
+          # NOTE: make all note links open new page
+          |> String.replace("<a ", "<a style='color: black;' target='_blank' ")
+          |> String.replace("<p", "<p style='margin: 0px; padding: 16px 0px 0px 0px;'")
+          |> String.replace("<ul", "<ul style='padding-left: 16px; margin: 0px'")
+        end)
+        |> Enum.map(fn note ->
+          # var(--chakra-colors-gray-200) #E2E8F0
+          ~s[<div style="border: 1px solid #E2E8F0; padding: 8px 16px 16px 16px; margin: 0px">#{note}</div>]
+        end)
 
       creator = conversation.creator
       creator_name = profile_link(creator)
 
       # NOTE: ignore invitees, as only signed conversations in timeline
       others_names =
-        Enum.map(conversation.signatures, fn sig -> profile_link(sig.signer) end)
+        Enum.map(conversation.participations, fn p -> profile_link(p.participant) end)
         |> RList.to_sentence()
 
       participants_header = link(~s(#{creator_name} with #{others_names}), conversation_url)
-
-      # var(--chakra-colors-gray-200) #E2E8F0
-      note_styled =
-        ~s(<div style="border: 1px solid #E2E8F0; padding: 8px 16px 16px 16px; margin: 0px">#{note}</div>)
 
       %{
         id: event.id,
@@ -89,7 +91,7 @@ defmodule App.Email.Digest.View do
           occurred_at: conversation.occurred_at,
           participants_header: participants_header,
           date_link: date_link,
-          note: note_styled
+          notes: notes
         }
       }
     end)

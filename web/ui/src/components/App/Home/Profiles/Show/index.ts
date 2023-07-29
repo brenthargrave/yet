@@ -10,7 +10,6 @@ import {
   share,
   startWith,
   switchMap,
-  Observable,
   withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
@@ -23,11 +22,10 @@ import {
   EventName,
   FromView,
   getProfile$,
-  Source as GraphSource,
-  track$,
-  Profile,
-  TimelineFilters,
   GetProfileInput,
+  Source as GraphSource,
+  TimelineFilters,
+  track$,
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { NEWID, push, routes, Source as RouterSource } from "~/router"
@@ -58,7 +56,11 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
         .with({ name: routes.profile.name }, ({ params: { pid } }) => {
           const timelineFilters: TimelineFilters = { onlyWith: pid }
           const profileInput: GetProfileInput = { id: pid, timelineFilters }
-          return getProfile$(profileInput).pipe(filterResultOk())
+          return getProfile$(profileInput).pipe(
+            filterResultOk(),
+            tag("getProfile$"),
+            share()
+          )
         })
         .otherwise(() => EMPTY)
     ),
@@ -93,7 +95,6 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
       track$({
         name: EventName.TapNewConversation,
         properties: {
-          signatureCount: me?.stats?.signatureCount,
           view: FromView.Profile,
         },
         customerId: me?.id,

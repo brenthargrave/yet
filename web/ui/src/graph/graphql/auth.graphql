@@ -16,9 +16,6 @@ fragment AuthenticatedCustomerProps on Customer {
   email
   org
   role
-  stats {
-    signatureCount
-  }
 }
 
 query Me {
@@ -33,7 +30,7 @@ mutation SubmitPhone($input: SubmitPhoneInput!) {
       status
     }
     ...on UserError {
-      message
+      ...UserErrorProps
     }
   }
 }
@@ -49,7 +46,7 @@ mutation SubmitCode($input: SubmitCodeInput!) {
       }
     }
     ...on UserError {
-      message
+      ...UserErrorProps
     }
   }
 }

@@ -119,7 +119,7 @@ export const Auth = (sources: Sources, tagPrefix?: string) => {
     filter((isVerified) => isVerified),
     withLatestFrom(priorAndCurrentRoute$),
     map(([_, [priorRoute, currentRoute]]) => push(priorRoute ?? routes.root())),
-    tag("redirectToPriorOrRootRoute$")
+    tag("redirectToPriorOrRootRoute$", true)
   )
 
   const value = { me$ }

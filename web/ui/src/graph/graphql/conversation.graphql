@@ -1,0 +1,134 @@
+fragment BaseConversationProps on Conversation {
+  id
+  insertedAt
+  creator {
+    ...ProfileProps
+  }
+  invitees {
+    id
+    name
+    isContact
+  }
+  status
+  insertedAt
+  occurredAt
+  deletedAt
+  notes {
+    id
+    conversationId
+    status
+    text
+    createdAt
+    creator {
+      id
+      name
+      firstName
+      lastName
+    }
+  }
+}
+
+fragment ConversationProps on Conversation {
+  ...BaseConversationProps
+  participations {
+    id
+    conversationId
+    occurredAt
+    participant {
+      ...ProfileProps
+    }
+  }
+  opps {
+    ...OppProps
+  }
+}
+
+fragment UserErrorProps on UserError {
+  code
+  message
+}
+
+query GetConversations {
+  getConversations {
+    conversations {
+      ...ConversationProps
+    }
+  }
+}
+
+query GetConversation($id: ID!) {
+  getConversation(id: $id) {
+    ...on Conversation {
+      ...ConversationProps
+    }
+    ...on UserError {
+      ...UserErrorProps
+    }
+  }
+}
+
+mutation UpsertConversation($input: ConversationInput!) {
+  upsertConversation(input: $input) {
+    ...on Conversation {
+      ...ConversationProps
+    }
+    ...on UserError {
+      ...UserErrorProps
+    }
+  }
+}
+
+mutation DeleteConversation($input: DeleteConversationInput!) {
+  deleteConversation(input: $input) {
+    ...on Conversation {
+      ...ConversationProps
+    }
+    ...on UserError {
+      ...UserErrorProps
+    }
+  }
+}
+
+mutation ProposeConversation($input: ProposeInput!) {
+  propose(input: $input) {
+    ...on Conversation {
+      ...ConversationProps
+    }
+    ...on UserError {
+      ...UserErrorProps
+    }
+  }
+}
+
+mutation JoinConversation($input: ParticipateInput!) {
+  participate(input: $input) {
+    ...on Conversation {
+      ...ConversationProps
+    }
+    ...on UserError {
+      ...UserErrorProps
+    }
+  }
+
+}
+
+subscription ConversationChanged($input: ConversationChangedInput!) {
+  conversationChanged(input: $input) {
+    ...ConversationProps
+  }
+}
+
+fragment ParticipationProps on Participation {
+    id,
+    conversationId,
+    occurredAt,
+    participant {
+      ...ProfileProps
+    }
+}
+
+subscription ConversationJoined($input: ConversationJoinedInput!) {
+  conversationJoined(input: $input) {
+    ...ParticipationProps
+  }
+}

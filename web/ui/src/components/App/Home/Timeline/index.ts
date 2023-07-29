@@ -21,6 +21,8 @@ import {
   FromView,
   getTimeline$,
   Source as GraphSource,
+  subscribeTimeline$,
+  TimelineInput,
   track$,
 } from "~/graph"
 import { makeTagger } from "~/log"
@@ -43,11 +45,17 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
     router: { history$ },
     graph: { me$: _me$, conversations$ },
   } = sources
-  const me$ = _me$.pipe(filter(isNotNullish), tag("me$"))
+  const me$ = _me$.pipe(
+    //
+    filter(isNotNullish),
+    tag("me$"),
+    shareLatest()
+  )
 
   const [onClickNew, clickNew$] = cb$(tag("clickNew$"))
   const newConvo$ = clickNew$.pipe(
-    map(() => push(routes.conversation({ id: NEWID })))
+    map(() => push(routes.conversation({ id: NEWID }))),
+    share()
   )
   const trackNewConvo$ = clickNew$.pipe(
     withLatestFrom(me$),
@@ -55,7 +63,6 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
       track$({
         name: EventName.TapNewConversation,
         properties: {
-          signatureCount: me?.stats?.signatureCount,
           view: FromView.Timeline,
         },
         customerId: me?.id,
@@ -69,20 +76,26 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
   )
 
   const result$ = history$.pipe(
-    switchMap((route) =>
-      route.name === routes.root.name
-        ? getTimeline$({ filters: { omitOwn: true } })
-        : EMPTY
-    ),
+    filter((route) => route.name === routes.root.name),
+    withLatestFrom(me$),
+    switchMap(([route, { id }]) => {
+      const input: TimelineInput = { filters: { omitOwn: true } }
+      const initial = getTimeline$(input)
+      const live = subscribeTimeline$({ id }).pipe(
+        switchMap((_) => getTimeline$(input))
+      )
+      return merge(initial, live)
+    }),
     tag("result$"),
-    shareLatest()
+    share()
   )
 
   const events$ = result$.pipe(
     filterResultOk(),
+    map((timeline) => timeline.events),
     startWith([]),
     tag("events$"),
-    share()
+    shareLatest()
   )
 
   const state$ = events$.pipe(
@@ -101,7 +114,8 @@ export const Timeline = (sources: Sources, tagPrefix?: string) => {
   }).pipe(tag("props$"), shareLatest())
 
   const react = props$.pipe(
-    map((props) => h(View, { ...props, onClickNew, onClickConversation }))
+    map((props) => h(View, { ...props, onClickNew, onClickConversation })),
+    share()
   )
 
   const router = merge(newConvo$, showConvo$)

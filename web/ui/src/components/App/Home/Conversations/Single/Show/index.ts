@@ -2,28 +2,23 @@ import { ReactSource } from "@cycle/react"
 import {
   combineLatest,
   distinctUntilChanged,
-  filter,
   map,
   merge,
   Observable,
   of,
-  pluck,
   share,
   startWith,
   switchMap,
   withLatestFrom,
 } from "rxjs"
 import { filterResultOk } from "ts-results/rxjs-operators"
-import { any, not } from "~/fp"
 import {
   Conversation,
   deleteConversation$,
-  isSignableStatus,
-  isSignedBy,
   Source as GraphSource,
 } from "~/graph"
 import { makeTagger } from "~/log"
-import { push, routes, Source as RouterSource } from "~/router"
+import { push, Source as RouterSource, routes } from "~/router"
 import { cb$, shareLatest } from "~/rx"
 import { Intent } from "../View"
 
@@ -49,6 +44,7 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
 
   const [onClickBack, onClickBack$] = cb$(tag("onClickBack$"))
 
+  // TODO: dedupe w/ Form
   const [onClickShare, onClickShare$] = cb$(tag("onClickShare$"))
   const [onCloseShare, onCloseShare$] = cb$(tag("onCloseShare$"))
   const isOpenShare$ = merge(
@@ -99,53 +95,8 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
     tag("props$")
   )
 
-  const status$ = record$.pipe(
-    pluck("status"),
-    filter((status) => !!status),
-    distinctUntilChanged(),
-    tag("status$"),
-    share()
-  )
-  const statusIsSignable$ = status$.pipe(
-    map(isSignableStatus),
-    startWith(false),
-    distinctUntilChanged(),
-    tag("statusIsSignable$"),
-    share()
-  )
-  const isReviewer$ = combineLatest({ me: me$, record: record$ }).pipe(
-    map(({ record, me }) =>
-      any((review) => review.reviewer.id === me?.id, record.reviews)
-    ),
-    startWith(false),
-    distinctUntilChanged(),
-    tag("isReviewer$")
-  )
-  const notSigned$ = combineLatest({ me: me$, record: record$ }).pipe(
-    map(({ record, me }) => not(isSignedBy(record, me))),
-    startWith(false),
-    distinctUntilChanged(),
-    tag("notSigned$")
-  )
-
-  const redirectReviewerToSign$ = combineLatest({
-    isSignable: statusIsSignable$,
-    isReviewer: isReviewer$,
-    notSigned: notSigned$,
-  }).pipe(
-    filter(
-      ({ isSignable, isReviewer, notSigned }) =>
-        isReviewer && isSignable && notSigned
-    ),
-    withLatestFrom(record$),
-    map(([_, { id }]) => push(routes.signConversation({ id }))),
-    tag("redirectReviewerToSign$"),
-    share()
-  )
-
   const router = merge(
     //
-    redirectReviewerToSign$,
     goToList$
   )
   const value = { props$ }

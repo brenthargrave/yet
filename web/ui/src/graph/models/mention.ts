@@ -32,11 +32,11 @@ export const mentionersFrom = (mentions: Mention[], me: Customer) =>
   pipe(
     mentions.reduce((target, mention, _idx) => {
       const {
-        conversation: { signatures, creator },
+        conversation: { participations, creator },
       } = mention
       process(target, creator, me)
-      signatures.forEach(({ signer }) => {
-        process(target, signer, me)
+      participations.forEach(({ participant }) => {
+        process(target, participant, me)
       })
       return target
     }, {}),

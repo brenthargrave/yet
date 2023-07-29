@@ -74,7 +74,7 @@ export const MenuView: FC<Props> = ({
   return h(stack, { gap: 1, align }, [
     h(MenuButton, {
       variant,
-      label: "Note",
+      label: "New",
       icon: iconAdd,
       iconOnly,
       isVisible: !showHomeOnly,

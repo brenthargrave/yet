@@ -70,10 +70,10 @@ export const View: FC<Props> = ({
                       { __typename: "ConversationPublished" },
                       ({ conversation }) =>
                         h(ListItem, { key: idx }, [
-                          h(ConversationPublishedView, {
-                            viewer,
-                            conversation,
-                          }),
+                          // h(ConversationPublishedView, {
+                          //   viewer,
+                          //   conversation,
+                          // }),
                           isNotLastItem(idx, all) && h(Divider, { padding: 4 }),
                         ])
                     )

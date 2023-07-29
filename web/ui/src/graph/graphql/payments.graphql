@@ -4,17 +4,7 @@ query GetMentions($input: MentionsInput!) {
       id
       insertedAt
       conversation {
-        id
-        note
-        occurredAt
-        creator {
-          ...ProfileProps
-        }
-        signatures {
-          signer {
-            ...ProfileProps
-          }
-        }
+        ...BaseConversationProps
       }
     }
   }

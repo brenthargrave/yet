@@ -18,21 +18,33 @@ defmodule App.Timeline do
   alias AppWeb.Resolvers.Timeline.{TimelinePayload}
 
   @preloads [
-    conversation: [
-      :creator,
-      opps: [:creator, :owner],
-      signatures: [:signer, :conversation],
-      reviews: [:reviewer, :conversation]
-    ]
+    conversation: Conversations.preloads()
   ]
 
-  def backfill_all do
+  def delete(conversation) do
+    Repo.delete_all(from(e in TimelineEvent, where: e.conversation_id == ^conversation.id))
+
+    conversation
+  end
+
+  def delete_note(note) do
+    conversation = note.conversation
+
+    unless Enum.any?(conversation.notes, &(&1.status == :posted)) do
+      Repo.delete_all(from(e in TimelineEvent, where: e.conversation_id == ^conversation.id))
+    end
+
+    note
+  end
+
+  def backfill_all(notify_subscriptions \\ false) do
     from(c in Conversation,
-      where: c.status == :signed,
+      where: c.status == :joined,
       preload: ^Conversations.preloads()
     )
     |> Repo.all()
-    |> Enum.each(&handle_published(&1, false))
+    |> Enum.reject(&Enum.empty?(&1.notes))
+    |> Enum.each(&add(&1, notify_subscriptions))
   end
 
   def rebuild_all do
@@ -40,136 +52,101 @@ defmodule App.Timeline do
     __MODULE__.backfill_all()
   end
 
-  defun async_handle_published(
-          conversation :: Conversation.t(),
-          notify_subscriptions \\ false
-        ) ::
-          Conversation.t() do
+  def async_add(
+        conversation,
+        _notify_subscriptions \\ false
+      ) do
+    # TODO: scalable solution
+    # presently recalcs events for all convos on every convo-joined/note-published
     App.Task.async_nolink(fn ->
-      handle_published(conversation, notify_subscriptions)
-      # ! TODO: scalable solution
-      # NOTE: rerun for all prior records every time someone makes new contacts
-      if notify_subscriptions do
-        __MODULE__.backfill_all()
-      end
+      backfill_all(false)
     end)
+
+    # TODO: until refactored, ping all participants to refresh own profiles
+    participants_ids = Enum.map(conversation.participations, & &1.participant_id)
+
+    [conversation.creator_id | participants_ids]
+    |> Enum.uniq()
+    |> Contacts.get_for()
+    |> Enum.uniq_by(& &1.id)
+    |> Enum.map(& &1.id)
+    |> Enum.each(
+      &Absinthe.Subscription.publish(
+        AppWeb.Endpoint,
+        %TimelinePayload{events: []},
+        timeline_events_added: &1
+      )
+    )
 
     conversation
   end
 
-  defun handle_deleted(conversation :: Conversation.t()) :: Conversation.t() do
-    Repo.delete_all(from(e in TimelineEvent, where: e.conversation_id == ^conversation.id))
-    ok(conversation)
-  end
+  def add(conversation, _notify_subscriptions \\ false) do
+    # NOTE: omit conversations from timeline without posted notes
+    if conversation.status == :joined && Enum.any?(conversation.notes, &(&1.status == :posted)) do
+      all_participants = Conversation.get_all_participants(conversation)
 
-  defun handle_published(
-          conversation :: Conversation.t(),
-          _notify_subscriptions \\ false
-        ) :: Conversation.t() do
-    participants = Conversation.get_participants(conversation)
+      all_participants_ids = Enum.map(all_participants, & &1.id)
 
-    participants_ids = Enum.map(participants, & &1.id)
+      # all contacts of participants + creator
+      all_participants_contacts = Contacts.get_for(all_participants_ids)
 
-    # all contacts of signers
-    # all contacts of creator
-    participants_contacts = Contacts.get_contacts_for_viewers(participants)
+      all_potential_viewers =
+        all_participants_contacts
+        |> Enum.uniq_by(&Map.get(&1, :id))
 
-    # opps_ids =
-    #   conversation.opps
-    #   |> Enum.map(&Map.get(&1, :id))
+      _events =
+        Enum.map(all_potential_viewers, fn viewer ->
+          viewer_id = viewer.id
 
-    # # all owners of conversations mentioning this convo's opps
-    # creators =
-    #   from(contact in Contact,
-    #     join: conversation in assoc(contact, :conversations),
-    #     left_join: opp in assoc(conversation, :opps),
-    #     where: opp.id in ^opps_ids
-    #   )
+          contacts_id_set =
+            Contacts.get_for(viewer.id)
+            |> Enum.map(& &1.id)
+            |> MapSet.new()
 
-    # # ditto, but all signers
-    # signers =
-    #   from(contact in Contact,
-    #     join: signature in assoc(contact, :signatures),
-    #     join: conversation in assoc(signature, :conversation),
-    #     left_join: opp in assoc(conversation, :opps),
-    #     where: opp.id in ^opps_ids
-    #   )
+          participants_id_set = MapSet.new(all_participants_ids)
 
-    # all_opps_viewers =
-    #   Repo.all(
-    #     from(contact in Contact,
-    #       union: ^creators,
-    #       union: ^signers,
-    #       distinct: contact.id
-    #     )
-    #   )
+          is_participant = Enum.member?(all_participants_ids, viewer_id)
 
-    # all_opps_viewers_ids = Enum.map(all_opps_viewers, &Map.get(&1, :id))
+          is_contact =
+            contacts_id_set
+            |> MapSet.intersection(participants_id_set)
+            |> Enum.any?()
 
-    all_viewers =
-      participants_contacts
-      # TODO: opps_ids ignored below, bug: query returns false viewers: restore?
-      # |> Enum.concat(all_opps_viewers)
-      |> Enum.uniq_by(&Map.get(&1, :id))
+          persona =
+            cond do
+              is_participant ->
+                :participant
 
-    # NOTE: exclude participants, any need to see own activity?
-    # NOTE: preserve for "viewed as contact" in profile view
-    # |> Enum.drop_while(&Enum.member?(participants_ids, &1.id))
+              is_contact ->
+                :contact
 
-    Enum.map(all_viewers, fn viewer ->
-      viewer_id = viewer.id
+              true ->
+                :public
+            end
 
-      contacts_id_set =
-        Contacts.get_contacts_for_viewers([viewer])
-        |> Enum.map(& &1.id)
-        |> MapSet.new()
+          event =
+            TimelineEvent.conversation_published_changeset(%{
+              viewer: viewer,
+              conversation: conversation,
+              conversation_published_persona: persona
+            })
+            |> Repo.insert!(on_conflict: :nothing)
 
-      participants_id_set = MapSet.new(participants_ids)
+          event
+        end)
 
-      is_participant = Enum.member?(participants_ids, viewer_id)
-
-      is_contact =
-        contacts_id_set
-        |> MapSet.intersection(participants_id_set)
-        |> Enum.any?()
-
-      # TODO: restore opps? (see above todo)
-      # is_opportunist = Enum.member?(all_opps_viewers_ids, viewer_id)
-      # is_opportunist = false
-
-      persona =
-        cond do
-          is_participant ->
-            :participant
-
-          is_contact ->
-            :contact
-
-          # is_opportunist ->
-          #   :opportunist
-
-          true ->
-            :public
-        end
-
-      event =
-        TimelineEvent.conversation_published_changeset(%{
-          viewer: viewer,
-          conversation: conversation,
-          conversation_published_persona: persona
-        })
-        |> Repo.insert!(on_conflict: :nothing)
-
-      payload = %TimelinePayload{events: personalize([event])}
-
-      Absinthe.Subscription.publish(
-        AppWeb.Endpoint,
-        payload,
-        timeline_events_added: viewer.id
-      )
-
-      payload
-    end)
+      # if notify_subscriptions do
+      #   Enum.each(
+      #     all_potential_viewers,
+      #     &Absinthe.Subscription.publish(
+      #       AppWeb.Endpoint,
+      #       %TimelinePayload{events: personalize(events)},
+      #       timeline_events_added: &1.id
+      #     )
+      #   )
+      # end
+    end
 
     conversation
   end
@@ -208,8 +185,8 @@ defmodule App.Timeline do
         do:
           from(e in query,
             join: c in assoc(e, :conversation),
-            join: s in assoc(c, :signatures),
-            where: c.creator_id != ^viewer.id and s.signer_id != ^viewer.id
+            join: s in assoc(c, :participations),
+            where: c.creator_id != ^viewer.id and s.participant_id != ^viewer.id
           ),
         else: query
 
@@ -220,8 +197,8 @@ defmodule App.Timeline do
         do:
           from(e in query,
             join: c in assoc(e, :conversation),
-            join: s in assoc(c, :signatures),
-            where: c.creator_id == ^viewer.id or s.signer_id == ^viewer.id
+            join: s in assoc(c, :participations),
+            where: c.creator_id == ^viewer.id or s.participant_id == ^viewer.id
           ),
         else: query
 
@@ -232,8 +209,8 @@ defmodule App.Timeline do
         do:
           from(e in query,
             join: c in assoc(e, :conversation),
-            join: s in assoc(c, :signatures),
-            where: c.creator_id == ^viewed_id or s.signer_id == ^viewed_id
+            join: s in assoc(c, :participations),
+            where: c.creator_id == ^viewed_id or s.participant_id == ^viewed_id
           ),
         else: query
 
@@ -244,7 +221,7 @@ defmodule App.Timeline do
     |> ok()
   end
 
-  defun personalize(events :: list(TimelineEvent.t())) :: list(TimelineEvent.t()) do
+  def personalize(events) do
     events
     |> Enum.map(
       &case &1 do
@@ -256,7 +233,12 @@ defmodule App.Timeline do
           # participant | contact => include notes
           # opportunist | public => w/o notes
           if Enum.member?([:opportunist, :public], persona),
-            do: put_in(event, [Access.key!(:conversation), Access.key!(:note)], nil),
+            do:
+              put_in(
+                event,
+                [Access.key!(:conversation), Access.key!(:notes)],
+                []
+              ),
             else: event
 
         any ->

@@ -1,10 +1,11 @@
 defmodule App.Contact do
   use App.Schema
   use Croma
-  alias App.{Signature, Conversation}
+  alias App.{Participation, Conversation}
 
   typed_schema "customers" do
     timestamps(type: :utc_datetime_usec)
+    field(:e164, :string, null: false)
     field(:name, :string, null: false)
     field(:first_name, :string)
     field(:last_name, :string)
@@ -12,8 +13,8 @@ defmodule App.Contact do
     field(:org, :string)
     field(:role, :string)
 
-    has_many(:signatures, Signature,
-      foreign_key: :signer_id,
+    has_many(:participations, Participation,
+      foreign_key: :participant_id,
       on_delete: :delete_all
     )
 

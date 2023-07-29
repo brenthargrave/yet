@@ -9,7 +9,7 @@ import {
   share,
 } from "rxjs"
 import { Source as ActionSource } from "~/action"
-import { Conversation, Source as GraphSource } from "~/graph"
+import { Conversation, isCreatedBy, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
 import { push, routes, Source as RouterSource } from "~/router"
 import { shareLatest } from "~/rx"
@@ -36,7 +36,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
   const tag = makeTagger(tagScope)
 
   const record$ = _record$.pipe(tag("record$"), shareLatest())
-  const liveRecord$ = _liveRecord$.pipe(tag("record$"), shareLatest())
+  const liveRecord$ = _liveRecord$.pipe(tag("liveRecord$"), shareLatest())
 
   const id$ = record$.pipe(
     //
@@ -45,24 +45,7 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const redirectNonCreatorsToShow$ = combineLatest({
-    me: me$,
-    record: record$,
-  }).pipe(
-    filter(({ me, record }) => record.creator.id !== me?.id),
-    map(({ record }) => push(routes.conversation({ id: record.id }))),
-    tag("redirectNonCreatorToShow$"),
-    share()
-  )
-
-  const {
-    react,
-    router: formRouter$,
-    notice: formNotice$,
-    track,
-    graph,
-    action,
-  } = Form(
+  const form = Form(
     {
       ...sources,
       props: { id$, record$, liveRecord$ },
@@ -71,15 +54,11 @@ export const Main = (sources: Sources, tagPrefix?: string) => {
     Mode.edit
   )
 
-  const router = merge(formRouter$, redirectNonCreatorsToShow$)
-  const notice = merge(formNotice$)
-
   return {
-    react,
-    notice,
-    router,
-    track,
-    graph,
-    action,
+    ...form,
+    router: merge(
+      //
+      form.router
+    ),
   }
 }

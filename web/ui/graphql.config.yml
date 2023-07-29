@@ -1,4 +1,4 @@
 # vscode-graphql: https://git.io/Jz1hH
 # TODO: dedupe against codegen.yml, apollo.config.yml
-schema: "http://localhost:${PORT:5000}/graphql"
+schema: "http://127.0.0.1:${PORT:5000}/graphql"
 documents: "src/**/*.graphql"

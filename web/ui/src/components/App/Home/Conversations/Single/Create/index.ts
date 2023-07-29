@@ -1,5 +1,14 @@
 import { ReactSource } from "@cycle/react"
-import { distinctUntilChanged, map, Observable, of, switchMap } from "rxjs"
+import {
+  distinctUntilChanged,
+  map,
+  merge,
+  Observable,
+  of,
+  share,
+  switchMap,
+} from "rxjs"
+import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { Source as ActionSource } from "~/action"
 import {
   newConversation,
@@ -8,7 +17,7 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { Source as RouterSource } from "~/router"
-import { shareLatest } from "~/rx"
+import { noticeFromError$, shareLatest } from "~/rx"
 import { Form, Mode } from "../Form"
 
 interface Sources {
@@ -42,9 +51,23 @@ export const Create = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const liveRecord$ = id$.pipe(
+  const liveRecordResult$ = id$.pipe(
     distinctUntilChanged(),
     switchMap((id) => subscribeConversation$({ id })),
+    tag("liveRecordResult$"),
+    share()
+  )
+
+  const liveRecordErrorNotice$ = noticeFromError$(
+    liveRecordResult$.pipe(
+      filterResultErr(),
+      tag("liveRecordErrorNotice$"),
+      share()
+    )
+  )
+
+  const liveRecord$ = liveRecordResult$.pipe(
+    filterResultOk(),
     tag("liveRecord$"),
     shareLatest()
   )
@@ -60,5 +83,6 @@ export const Create = (sources: Sources, tagPrefix?: string) => {
 
   return {
     ...form,
+    notice: merge(form.notice, liveRecordErrorNotice$),
   }
 }

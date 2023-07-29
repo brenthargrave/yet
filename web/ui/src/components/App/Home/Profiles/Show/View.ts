@@ -13,9 +13,6 @@ import { h } from "@cycle/react"
 import { FC } from "react"
 import { GrLocation } from "react-icons/gr"
 import { HiOutlineOfficeBuilding } from "react-icons/hi"
-import {} from "remeda"
-import { TimelineEventList } from "~/components/TimelineEvent"
-import { isEmpty } from "~/fp"
 import {
   AuthProvider,
   Conversation,
@@ -35,7 +32,7 @@ import {
   MarkdownView,
   Nav,
 } from "~/system"
-import { EmptyView } from "../../Timeline/EmptyView"
+import { ProfileTabs, Props as ProfileTabsProps } from "./ProfileTabs"
 
 export enum State {
   loading = "loading",
@@ -71,7 +68,6 @@ export const View: FC<Props> = ({
     org,
     location,
     website,
-    events = [],
   } = profile
   const isOwn = socialDistance === 0
   const isContact = socialDistance === 1
@@ -80,6 +76,13 @@ export const View: FC<Props> = ({
   const socials = Object.values(AuthProvider).filter((social) =>
     hasSocial(social, profile)
   )
+
+  const profileTabsProps: ProfileTabsProps = {
+    viewer,
+    subject: profile,
+    onClickConversation,
+    onClickNewConversation,
+  }
 
   return state === State.loading
     ? null
@@ -100,9 +103,9 @@ export const View: FC<Props> = ({
           FullWidthVStack,
           {
             //
-            gap: 4,
+            gap: 6,
             isBody: true,
-            divider: h(StackDivider, { borderColor: "gray.200" }),
+            // divider: h(StackDivider, { borderColor: "gray.200" }),
           },
           [
             h(FullWidthVStack, { gap: 2 }, [
@@ -179,12 +182,7 @@ export const View: FC<Props> = ({
                   ]),
               ]),
             ]),
-            isEmpty(events)
-              ? h(EmptyView, { onClickNew: onClickNewConversation })
-              : h(FullWidthVStack, [
-                  h(Heading, { size: "sm" }, `Activity`),
-                  h(TimelineEventList, { viewer, events, onClickConversation }),
-                ]),
+            h(ProfileTabs, profileTabsProps),
           ]
         ),
       ])

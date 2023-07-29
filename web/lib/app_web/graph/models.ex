@@ -8,17 +8,17 @@ defmodule AppWeb.Graph.Models do
   enum :error_code do
     value(:not_found)
     value(:unauthorized)
+    value(:bad_request)
   end
 
   object :user_error do
     is_type_of(:base_error)
     field(:message, non_null(:string))
-    field(:code, :error_code)
+    field(:code, non_null(:error_code))
   end
 
-  object :stats do
-    field(:signature_count, :integer)
-  end
+  # object :stats do
+  # end
 
   object :customer do
     # auth
@@ -33,6 +33,6 @@ defmodule AppWeb.Graph.Models do
     field(:org, :string)
     field(:role, :string)
     # stats
-    field(:stats, :stats)
+    # field(:stats, :stats)
   end
 end

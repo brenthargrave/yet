@@ -35,6 +35,10 @@ import toLower from "ramda/es/toLower"
 import trim from "ramda/es/trim"
 import uniqBy from "ramda/es/uniqBy"
 import values from "ramda/es/values"
+import append from "ramda/es/append"
+import difference from "ramda/es/difference"
+import symmetricDifference from "ramda/es/symmetricDifference"
+import last from "ramda/es/last"
 
 const isEmpty = (i: any): boolean => isNil(i) || _isEmpty(i)
 const isNotEmpty = (i: any): boolean => not(isEmpty(i))
@@ -42,12 +46,14 @@ const isPresent = (i: any): boolean => not(isNil(i))
 const isNotLastItem = (idx: number, all: any[]) => !(idx + 1 === all.length)
 
 export {
+  append,
   all,
   and,
   any,
   ascend,
   compose,
   descend,
+  difference,
   eqBy,
   filter,
   find,
@@ -75,6 +81,7 @@ export {
   sort,
   sortBy,
   split,
+  symmetricDifference,
   symmetricDifferenceWith,
   take,
   toLower,
@@ -82,4 +89,5 @@ export {
   uniqBy,
   values,
   isNotLastItem,
+  last,
 }

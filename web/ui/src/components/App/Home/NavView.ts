@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { createRef, FC, useLayoutEffect, useState } from "react"
+import { Customer } from "~/graph"
 import { Logo, LogoLocation } from "~/system"
 import { MenuView, Orientation, Props as MenuProps } from "./MenuView"
 
@@ -26,10 +27,12 @@ export const isFrom = (event: React.MouseEvent<HTMLElement>) => {
 }
 
 export interface Props extends Omit<MenuProps, "orientation"> {
+  viewer: Customer | null
   showHomeOnly: boolean
 }
 
 export const View: FC<Props> = ({
+  viewer,
   children,
   showHomeOnly,
   onClickConversations,
@@ -60,100 +63,110 @@ export const View: FC<Props> = ({
   const gutterWidth = { base: "0px", md: "170px" }
   const rightGutterWidth = { base: "0px", md: "170px" }
 
-  return h(Stack, { direction: "column", width: "100%", height: "100%" }, [
-    h(Stack, { width: "100%", direction: "row" }, [
-      h(VStack, { minWidth: gutterWidth, align: "start" }, [
-        h(Show, { above: "sm" }, [
-          h(
-            VStack,
-            {
-              pl: 4,
-              sx: {
-                position: "sticky",
-                top: "20px",
-                // left: "20px",
+  return h(
+    Stack,
+    {
+      id: "me-id",
+      "data-me-id": viewer?.id,
+      direction: "column",
+      width: "100%",
+      height: "100%",
+    },
+    [
+      h(Stack, { width: "100%", direction: "row" }, [
+        h(VStack, { minWidth: gutterWidth, align: "start" }, [
+          h(Show, { above: "sm" }, [
+            h(
+              VStack,
+              {
+                pl: 4,
+                sx: {
+                  position: "sticky",
+                  top: "20px",
+                  // left: "20px",
+                },
               },
-            },
-            [
-              h(Logo, {
-                location: LogoLocation.nav,
-                onClick: onClickHome,
-              }),
-            ]
-          ),
-          h(
-            HStack,
-            {
-              minWidth: gutterWidth,
-              sx: { position: "sticky", top: "60px" },
-              justify: "end",
-              paddingRight: 4,
-            },
-            [
-              h(MenuView, {
-                orientation: Orientation.vertical,
-                showHomeOnly,
-                onClickConversations,
-                onClickOpps,
-                onClickHome,
-                onClickProfile,
-                onClickNew,
-              }),
-              // h(Divider, { orientation: "vertical" }),
-            ]
-          ),
+              [
+                h(Logo, {
+                  location: LogoLocation.nav,
+                  onClick: onClickHome,
+                }),
+              ]
+            ),
+            h(
+              HStack,
+              {
+                minWidth: gutterWidth,
+                sx: { position: "sticky", top: "60px" },
+                justify: "start",
+                paddingRight: 4,
+              },
+              [
+                h(MenuView, {
+                  orientation: Orientation.vertical,
+                  showHomeOnly,
+                  onClickConversations,
+                  onClickOpps,
+                  onClickHome,
+                  onClickProfile,
+                  onClickNew,
+                }),
+                // h(Divider, { orientation: "vertical" }),
+              ]
+            ),
+          ]),
+        ]),
+        // TODO: prefer once rxjs/xstream compat fixed
+        // h(FullWidthVStack, { height: "100%" }, [
+        //   //
+        //   headerNav,
+        //   children,
+        // ]),
+        children,
+        h(VStack, { minWidth: rightGutterWidth }, [
+          //
+          h(Spacer),
         ]),
       ]),
-      // TODO: prefer once rxjs/xstream compat fixed
-      // h(FullWidthVStack, { height: "100%" }, [
-      //   //
-      //   headerNav,
-      //   children,
-      // ]),
-      children,
-      h(VStack, { minWidth: rightGutterWidth }, [
+      // NOTE: need an empty footer to make room for nav
+      h(Box, { width: "100%", minHeight: `${footerH}px` }, [
         //
         h(Spacer),
       ]),
-    ]),
-    // NOTE: need an empty footer to make room for nav
-    h(Box, { width: "100%", minHeight: `${footerH}px` }, [
-      //
-      h(Spacer),
-    ]),
-    h(Hide, { above: "sm" }, [
-      h(
-        Stack,
-        {
-          ref,
-          sx: {
-            position: "fixed",
-            left,
-            bottom: 0,
-            zIndex: 2,
+      h(Hide, { above: "sm" }, [
+        h(
+          Stack,
+          {
+            ref,
+            sx: {
+              position: "fixed",
+              left,
+              bottom: 0,
+              zIndex: 2,
+            },
+            direction: "row",
+            alignItems: "center",
+            padding: 4,
+            marginBottom: 4,
+            backgroundColor: "white",
+            borderRadius: "lg",
+            onClick: onClickOutside,
           },
-          direction: "row",
-          alignItems: "center",
-          padding: 4,
-          marginBottom: 4,
-          backgroundColor: "white",
-          borderRadius: "lg",
-          onClick: onClickOutside,
-        },
-        [
-          h(MenuView, {
-            orientation: Orientation.horizontal,
-            showHomeOnly,
-            onClickConversations,
-            onClickOpps,
-            onClickHome,
-            onClickProfile,
-            onClickNew,
-          }),
-        ]
-      ),
-    ]),
-  ])
+          [
+            h(MenuView, {
+              orientation: Orientation.horizontal,
+              showHomeOnly,
+              onClickConversations,
+              onClickOpps,
+              onClickHome,
+              onClickProfile,
+              onClickNew,
+            }),
+          ]
+        ),
+      ]),
+    ]
+  )
 }
 
 View.displayName = "NavView"

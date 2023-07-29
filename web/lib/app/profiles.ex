@@ -11,7 +11,8 @@ defmodule App.Profiles do
     Customer,
     Profile,
     Timeline,
-    Contacts
+    Contacts,
+    Conversations
   }
 
   @type input :: %{id: String.t(), filters: Timeline.filters()}
@@ -23,34 +24,60 @@ defmodule App.Profiles do
     id = Map.get(input, :id)
     filters = Map.get(input, :timeline_filters, %{})
 
-    events =
-      Timeline.get_events(viewer, filters)
-      |> case do
-        {:ok, results} ->
-          results
-
-        {:error, _} ->
-          []
-      end
+    {:ok, events} = Timeline.get_events(viewer, filters)
 
     viewer_id = viewer.id
-    contacts_ids = Contacts.get_contacts_for_viewers([viewer])
+
+    viewer_contacts = Contacts.get_for(viewer.id)
+
+    viewer_contacts_ids =
+      viewer_contacts
+      |> Enum.map(& &1.id)
 
     distance =
       cond do
         viewer_id == id ->
           0
 
-        Enum.member?(contacts_ids, viewer_id) ->
+        Enum.member?(viewer_contacts_ids, id) ->
           1
 
         true ->
           2
       end
 
+    subject_contacts = Contacts.get_for(id)
+
+    # TODO: hide contact info based on distance to contact, not profile subject
+    # NOTE: omit sensitive contact details from 1+ degree connections
+    subject_contacts =
+      if distance == 0,
+        do: subject_contacts,
+        else: Enum.map(subject_contacts, &Map.drop(&1, ~w(e164 email)a))
+
+    # annotate contacts w/ context
+    subject_conversations =
+        Conversations.get_conversations(id)
+        |> Repo.preload(Conversations.preloads())
+
+    subject_contacts =
+      subject_contacts
+      |> Enum.map(fn contact ->
+        count =
+          subject_conversations
+          |> Enum.count(fn conv ->
+            participants_ids =
+              Enum.map(conv.participations, fn p -> p.participant_id end)
+
+            conv.creator_id == contact.id or Enum.member?(participants_ids, contact.id)
+          end)
+
+        Map.put(contact, :conversation_count_with_subject, count)
+      end)
+      |> Enum.sort_by(& &1.conversation_count_with_subject, :desc)
+
     Repo.get(Profile, id)
     |> lift(nil, :not_found)
-    # TODO: drop phone below, just display e164
     |> fmap(&Map.put(&1, :phone, &1.e164))
     # |> fmap(fn profile ->
     #   phone =
@@ -64,8 +91,9 @@ defmodule App.Profiles do
 
     #   Map.put(profile, :phone, phone)
     # end)
-    |> fmap(&Map.put(&1, :events, events))
     |> fmap(&Map.put(&1, :social_distance, distance))
+    |> fmap(&Map.put(&1, :events, events))
+    |> fmap(&Map.put(&1, :contacts, subject_contacts))
   end
 
   defun update(

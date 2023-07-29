@@ -2,14 +2,21 @@ import { DeleteIcon } from "@chakra-ui/icons"
 import { Button } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
+import { ID } from "~/graph"
 
 interface Props {
-  onClick?: () => void
+  onClick?: (id?: ID) => void
   isLoading?: boolean
   isDisabled?: boolean
+  cta?: string
 }
 
-export const DeleteButton: FC<Props> = ({ onClick, isLoading, isDisabled }) =>
+export const DeleteButton: FC<Props> = ({
+  onClick,
+  isLoading,
+  isDisabled,
+  cta = "Delete",
+}) =>
   h(
     Button,
     {
@@ -22,7 +29,7 @@ export const DeleteButton: FC<Props> = ({ onClick, isLoading, isDisabled }) =>
       loadingText: "Deleting...",
       isDisabled,
     },
-    `Delete`
+    cta
   )
 
 DeleteButton.displayName = "DeleteButton"

@@ -13,6 +13,7 @@ import {
   token$,
   opps$,
   profile$,
+  Contact,
 } from "~/graph"
 import { Conversation, Opp, Profile } from "./generated"
 
@@ -21,7 +22,7 @@ type Token = string
 export interface Source {
   token$: Observable<Token | null>
   me$: Observable<Customer | null>
-  contacts$: Observable<Profile[]>
+  contacts$: Observable<Contact[]>
   conversations$: Observable<Conversation[]>
   opps$: Observable<Opp[]>
   profile$: Observable<Profile>

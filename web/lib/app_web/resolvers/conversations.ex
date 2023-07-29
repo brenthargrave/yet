@@ -17,33 +17,42 @@ defmodule AppWeb.Resolvers.Conversations do
           _parent,
           %{input: input} = _args,
           %{context: %{customer: customer}} = _resolution
-        ) :: resolver_result(ConversationPayload.t()) do
+        ) :: resolver_result(Conversation.t()) do
     Conversations.upsert_conversation(customer, input)
-    |> fmap(&%ConversationPayload{conversation: &1})
-  end
-
-  defun get_conversation(
-          _parent,
-          %{id: id} = _args,
-          # NOTE: customer is optional, not available when lurking (unauth'd)
-          %{context: context} = _resolution
-        ) :: resolver_result(ConversationPayload.t()) do
-    customer = Map.get(context, :customer, nil)
-
-    Conversations.get_conversation(id, customer)
-    |> fmap(&%ConversationPayload{conversation: &1})
-    |> convert_error(:not_found, %ConversationPayload{user_error: UserError.not_found()})
   end
 
   defun delete_conversation(
           _parent,
           %{input: %{id: id}} = _args,
           %{context: %{customer: customer}} = _resolution
-        ) :: resolver_result(ConversationPayload.t()) do
+        ) :: resolver_result(Conversation.t()) do
     Conversations.delete_conversation(id, customer)
-    |> fmap(&%ConversationPayload{conversation: &1})
-    |> convert_error(:not_found, %ConversationPayload{user_error: UserError.not_found()})
-    |> convert_error(:unauthorized, %ConversationPayload{user_error: UserError.unauthorized()})
+  end
+
+  defun propose_conversation(
+          _parent,
+          %{input: input} = _args,
+          %{context: %{customer: customer}} = _resolution
+        ) :: resolver_result(Conversation.t()) do
+    Conversations.propose_conversation(customer, input)
+  end
+
+  defun get_conversation(
+          _parent,
+          %{id: id} = _args,
+          %{context: context} = _resolution
+        ) :: resolver_result(Conversation.t()) do
+    # NOTE: customer is optional, not available when lurking (unauth'd)
+    customer = Map.get(context, :customer)
+    Conversations.get_conversation(id, customer)
+  end
+
+  defun join_conversation(
+          _parent,
+          %{input: input} = _args,
+          %{context: %{customer: customer}} = _resolution
+        ) :: resolver_result(ConversationPayload.t()) do
+    Conversations.join_conversation(customer, input)
   end
 
   typedstruct module: ConversationsPayload do
@@ -61,32 +70,5 @@ defmodule AppWeb.Resolvers.Conversations do
 
   def get_conversations(_parent, _args, _resolution) do
     ok([])
-  end
-
-  defun sign_conversation(
-          _parent,
-          %{input: input} = _args,
-          %{context: %{customer: customer}} = _resolution
-        ) :: resolver_result(ConversationPayload.t()) do
-    Conversations.sign_conversation(customer, input)
-    |> fmap(&%ConversationPayload{conversation: &1})
-  end
-
-  defun propose_conversation(
-          _parent,
-          %{input: input} = _args,
-          %{context: %{customer: customer}} = _resolution
-        ) :: resolver_result(ConversationPayload.t()) do
-    Conversations.propose_conversation(customer, input)
-    |> fmap(&%ConversationPayload{conversation: &1})
-  end
-
-  defun review_conversation(
-          _parent,
-          %{input: input} = _args,
-          %{context: %{customer: customer}} = _resolution
-        ) :: resolver_result(ConversationPayload.t()) do
-    Conversations.review_conversation(customer, input)
-    |> fmap(&%ConversationPayload{conversation: &1})
   end
 end

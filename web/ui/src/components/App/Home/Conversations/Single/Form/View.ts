@@ -1,163 +1,213 @@
-import { Spacer, Tooltip } from "@chakra-ui/react"
+import { Box, Divider, Spacer, Tooltip } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { ReactNode, Ref } from "react"
-import { isEmpty, not } from "~/fp"
-import { ConversationStatus, Invitee } from "~/graph"
+import { ReactNode } from "react"
+import { isNotEmpty } from "~/fp"
+import { ConversationStatus, ID, Invitee } from "~/graph"
+import { routes, routeURL } from "~/router"
 import {
+  AriaHeading,
   containerProps,
+  DeleteButton,
   FullWidthVStack,
   Header,
   Heading,
   Nav,
+  ShareModal,
   Stack,
   Status,
-  DeleteButton,
 } from "~/system"
-import { Props as ActionBarProps, View as ActionBar } from "./ActionBar"
-import { View as AddOppModal } from "./AddOppModal"
-import { Props as NoteEditorProps, View as NoteEditor } from "./NoteEditor"
-import { PublishView } from "./PublishView"
+import { ShareButton } from "../ShareButton"
+import { InviteButton } from "./InviteButton"
+import { InviteView } from "./InviteView"
 import { SyncIcon } from "./SyncIcon"
-import { Props as WhenProps, View as When } from "./When"
-import { Props as WhoProps, View as Who } from "./Who"
-
-export type { Option, SelectedOption } from "./Who"
 
 export enum Mode {
   create = "create",
   edit = "edit",
 }
 
-export interface Props
-  extends WhenProps,
-    NoteEditorProps,
-    WhoProps,
-    ActionBarProps {
-  isSyncing?: boolean
-  onClickBack?: () => void
-  onClickDelete?: () => void
-  isDeleting?: boolean
-  isDeleteDisabled?: boolean
-  isOpenPublish: boolean
-  onClosePublish: () => void
-  shareURL?: string
-  onShareURLCopied?: () => void
+export interface Props {
+  onClickBack: () => void
+  isSyncing: boolean
+  status: ConversationStatus
+  when: ReactNode
+  who: ReactNode
+
+  // delete
+  onClickDelete: () => void
+  isDeleting: boolean
+  isDisabledDelete: boolean
+
+  // invite
+  inviteeNames: string[]
+  onClickInvite: () => void
+  isOpenInvite: boolean
+  onCloseInvite: () => void
+  knownInvitees: Invitee[]
+  unknownInvitees: Invitee[]
+  hasInvited?: boolean
+  isInvitable?: boolean
+
+  // share
+  showShare?: boolean
+  joinURL: string
+  onShareURLCopied: () => void
   onClickShare: () => void
-  status?: ConversationStatus
-  isDisabledEditing?: boolean
-  knownInvitees?: Invitee[]
-  unknownInvitees?: Invitee[]
-  isOpenAddOpp?: boolean
-  onClickAddOpp?: () => void
-  onCloseAddOpp?: () => void
-  oppsView: ReactNode
-  noteInputRef?: Ref<HTMLTextAreaElement>
-  mode?: Mode
+  onCloseShare: () => void
+  isOpenShare: boolean
+  id: ID
+
+  // notes
+  addButton: ReactNode
+  notes: ReactNode
+
+  // mode?: Mode
 }
 
 export const View = ({
-  options,
-  onSelect,
-  selectedOptions,
-  note,
-  onChangeNote,
-  isSyncing = false,
   onClickBack,
+  isSyncing = false,
+  status = ConversationStatus.Draft,
+  when,
+  who,
+
+  // delete
   onClickDelete,
   isDeleting = false,
-  isDeleteDisabled = true,
-  occurredAt,
-  onChangeOccurredAt,
-  participantNames,
-  isPublishDisabled = true,
-  isOpenPublish = false,
-  onClickPublish,
-  onClosePublish,
-  shareURL,
-  onShareURLCopied,
-  onClickShare,
-  status = ConversationStatus.Draft,
-  isDisabledEditing = false,
+  isDisabledDelete = true,
+
+  // invite
+  inviteeNames = [],
+  onClickInvite,
+  isOpenInvite = false,
+  onCloseInvite,
   knownInvitees,
   unknownInvitees,
-  isOpenAddOpp = false,
-  onClickAddOpp,
-  onCloseAddOpp: onCloseAddApp,
-  oppsView,
-  noteInputRef,
-  mode = Mode.create,
+  hasInvited = false,
+  isInvitable = false,
+
+  // share
+  showShare = false,
+  joinURL,
+  onShareURLCopied,
+  onClickShare,
+  onCloseShare,
+  isOpenShare,
+  id,
+
+  // notes
+  notes,
+  addButton,
+
+  // mode = Mode.create,
   ...props
-}: Props) =>
-  h(FullWidthVStack, { ...containerProps }, [
-    h(Nav, { onClickBack, backButtonText: "Conversations" }),
-    h(Header, [
-      h(Heading, { size: "md" }, "Conversation"),
-      h(Spacer),
-      h(SyncIcon, { boxSize: 4, syncing: isSyncing }),
-      h(Status, { status }),
-    ]),
-    h(Stack, { id: "edit", direction: "column", width: "100%", pt: 0 }, [
-      h(When, {
-        occurredAt,
-        onChangeOccurredAt,
-        isDisabled: isDisabledEditing,
+}: Props) => {
+  const key = `/c/${id}`
+  return h(
+    FullWidthVStack,
+    {
+      //
+      ...containerProps,
+      // @ts-ignore
+      className: "conversation",
+      ...(!!id && {
+        key,
+        id: key,
+        // @ts-ignore
+        "data-conversation-id": id,
       }),
-      h(Who, {
-        onSelect,
-        options,
-        selectedOptions,
-        isDisabled: isDisabledEditing,
-        autoFocus: isEmpty(selectedOptions),
+    },
+    [
+      h(ShareModal, {
+        isOpen: isOpenShare,
+        onClose: onCloseShare,
+        shareURL: routeURL(routes.conversation({ id })),
       }),
-      h(NoteEditor, {
-        status,
-        note,
-        onChangeNote,
-        onClickAddOpp,
-        isDisabled: isDisabledEditing,
-        noteInputRef,
-        isSyncing,
+      h(InviteView, {
+        isOpen: isOpenInvite,
+        onClose: onCloseInvite,
+        shareURL: joinURL,
+        onShareURLCopied,
+        onClickShareViaApp: onClickShare,
+        knownInvitees,
+        unknownInvitees,
+        hasInvited,
       }),
-      h(
-        ActionBar,
-        {
-          status,
-          participantNames,
-          isPublishDisabled,
-          onClickPublish,
-          autoFocus: not(isEmpty(selectedOptions)),
-        },
-        [
-          h(
-            Tooltip,
-            {
-              shouldWrapChildren: true,
-              // label: "Disabled once shared",
-              isDisabled: !isDeleteDisabled,
-            },
-            [
-              h(DeleteButton, {
-                onClick: onClickDelete,
-                isLoading: isDeleting,
-                isDisabled: isDeleteDisabled,
-              }),
-            ]
-          ),
-        ]
-      ),
-    ]),
-    h(PublishView, {
-      isOpen: isOpenPublish,
-      onClose: onClosePublish,
-      shareURL,
-      onShareURLCopied,
-      onClickShareViaApp: onClickShare,
-      knownInvitees,
-      unknownInvitees,
-    }),
-    h(AddOppModal, {
-      isOpen: isOpenAddOpp,
-      onClose: onCloseAddApp,
-      oppsView,
-    }),
-  ])
+      //
+      h(Nav, { onClickBack, backButtonText: "Conversations" }),
+      h(Header, [
+        h(AriaHeading, { size: "md" }, "Conversation"),
+        h(Spacer),
+        h(SyncIcon, { boxSize: 4, syncing: isSyncing }),
+        // ? TODO: hide status if note pending cosign instead?
+        h(Status, { status }),
+      ]),
+
+      //
+      h(Stack, { id: "edit", direction: "column", width: "100%", pt: 0 }, [
+        when,
+        who,
+        notes,
+        h(
+          Stack,
+          {
+            //
+            width: "100%",
+            paddingTop: 2,
+            direction: "column",
+            alignItems: "start",
+            spacing: 4,
+          },
+          [
+            h(Divider),
+            h(
+              Box,
+              {
+                display: "flex",
+                direction: "row",
+                alignItems: "center",
+                width: "100%",
+                space: 4,
+              },
+              [
+                h(
+                  Stack,
+                  {
+                    direction: "row",
+                    justifyContent: "start",
+                    alignItems: "start",
+                    width: "100%",
+                  },
+                  [
+                    // Invite
+                    !showShare &&
+                      h(InviteButton, {
+                        inviteeNames,
+                        isInvitable,
+                        hasInvited,
+                        onClick: onClickInvite,
+                      }),
+                    // Share
+                    showShare &&
+                      //
+                      h(ShareButton, { onClickShare }),
+                    // Add
+                    addButton,
+                    h(Spacer),
+                    // Delete
+                    !isDisabledDelete &&
+                      h(DeleteButton, {
+                        onClick: onClickDelete,
+                        isLoading: isDeleting,
+                        isDisabled: isDisabledDelete,
+                      }),
+                  ]
+                ),
+              ]
+            ),
+          ]
+        ),
+      ]),
+    ]
+  )
+}

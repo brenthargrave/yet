@@ -1,14 +1,19 @@
 defmodule AppWeb.Graph.Profiles do
   use Absinthe.Schema.Notation
+
   alias AppWeb.Resolvers.Profiles
 
-  object :profile do
+  alias App.{
+    Profile,
+    UserError
+  }
+
+  object :base_profile do
     field(:id, non_null(:id))
     field(:first_name, non_null(:string))
     field(:last_name, non_null(:string))
     field(:name, non_null(:string))
     field(:email, :string)
-    # TODO: filter (contacts-only) here in backend, not client
     field(:e164, :string)
     field(:phone, :string)
     field(:org, :string)
@@ -20,15 +25,46 @@ defmodule AppWeb.Graph.Profiles do
     field(:facebook_url, :string)
     field(:facebook_name, :string)
     field(:facebook_image, :string)
-    field(:events, list_of(non_null(:timeline_event)))
     field(:social_distance, :integer)
   end
 
-  ## GetProfile
+  interface :profile_like do
+    import_fields(:base_profile)
 
-  object :get_profile_payload do
-    field(:profile, non_null(:profile))
+    resolve_type(fn
+      %{events: _}, _ -> :profile
+      _, _ -> :contact
+    end)
   end
+
+  object :contact do
+    import_fields(:base_profile)
+    field(:conversation_count_with_subject, :integer)
+  end
+
+  object :profile do
+    import_fields(:base_profile)
+    field(:events, list_of(non_null(:timeline_event)))
+    field(:contacts, list_of(non_null(:contact)))
+  end
+
+  object :contact_list do
+    field(:contacts, non_null(list_of(non_null(:contact))))
+  end
+
+  union :profile_result do
+    types([:profile, :user_error])
+
+    resolve_type(fn
+      %Profile{}, _ ->
+        :profile
+
+      %UserError{}, _ ->
+        :user_error
+    end)
+  end
+
+  ## GetProfile
 
   input_object :get_profile_input do
     field(:id, non_null(:id))
@@ -36,18 +72,17 @@ defmodule AppWeb.Graph.Profiles do
   end
 
   object :profiles_queries do
-    field :get_profile, :get_profile_payload do
-      arg(:input, :get_profile_input)
+    field :get_profile, :profile_result do
+      arg(:input, non_null(:get_profile_input))
       resolve(&Profiles.get/3)
+    end
+
+    field :get_contacts, :contact_list do
+      resolve(&Profiles.get_contacts/3)
     end
   end
 
   ## UpdateProfile
-
-  object :update_profile_payload do
-    field(:profile, :profile)
-    field(:user_error, :user_error)
-  end
 
   input_object :update_profile_input do
     field(:first_name, non_null(:string))
@@ -57,7 +92,7 @@ defmodule AppWeb.Graph.Profiles do
   end
 
   object :profiles_mutations do
-    field :update_profile, :update_profile_payload do
+    field :update_profile, :profile_result do
       arg(:input, :update_profile_input)
       resolve(&Profiles.update/3)
     end

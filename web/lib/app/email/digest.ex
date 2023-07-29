@@ -68,7 +68,7 @@ defmodule App.Email.Digest do
 
     unsubscribe_all_link =
       link(
-        "Unsubscribe from everything, forever.",
+        "Unsubscribe from everything.",
         "{{{ pm:unsubscribe }}}",
         %{
           text_decoration: "underline",

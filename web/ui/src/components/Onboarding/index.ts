@@ -78,7 +78,7 @@ export const Onboarding = (sources: Sources, tagPrefix?: string) => {
         id: me.id,
         prop: attr,
         value,
-      }).pipe(tag("updateProfile$"))
+      }).pipe(tag("patchProfile$"))
     ),
     tag("result$"),
     share()
@@ -95,7 +95,6 @@ export const Onboarding = (sources: Sources, tagPrefix?: string) => {
         properties: {
           profileProp: attr,
           view: FromView.Onboarding,
-          signatureCount: me.stats?.signatureCount,
         },
       })
     })

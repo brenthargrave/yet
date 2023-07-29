@@ -79,8 +79,12 @@ defmodule AppWeb.Router do
   scope "/api", AppWeb do
     pipe_through([:api])
 
-    post("/session_start", AuthController, :session_start)
-    post("/session_end", AuthController, :session_end)
+    post("/session_create", AuthController, :session_create)
+    post("/session_delete", AuthController, :session_delete)
+
+    if Mix.env() in [:dev, :test] do
+      get("/notifications", TestController, :notifications)
+    end
   end
 
   scope "/", AppWeb do

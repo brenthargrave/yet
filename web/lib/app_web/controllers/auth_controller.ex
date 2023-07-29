@@ -5,7 +5,10 @@ defmodule AppWeb.AuthController do
 
   alias App.{Auth}
 
-  def session_start(conn, _params) do
+  ## Oauth support
+  #
+
+  def session_create(conn, _params) do
     token =
       conn.body_params
       |> Map.get("token")
@@ -16,7 +19,7 @@ defmodule AppWeb.AuthController do
     |> json(%{token: get_session(conn, :token)})
   end
 
-  def session_end(conn, _params) do
+  def session_delete(conn, _params) do
     conn
     |> clear_session()
     |> json(%{status: :ok})

@@ -181,9 +181,10 @@ export const PhoneVerify = (sources: Sources, tagPrefix?: string) => {
   const notice = noticeFromError$(error$)
   const value = { me$, verified$ }
   const graph = token$.pipe(map((token) => loggedIn(token)))
-  const track = complete$.pipe(
-    mergeMap((_) =>
+  const track = me$.pipe(
+    mergeMap((me) =>
       track$({
+        customerId: me.id,
         name: EventName.VerifyPhoneNumber,
         properties: {},
       })

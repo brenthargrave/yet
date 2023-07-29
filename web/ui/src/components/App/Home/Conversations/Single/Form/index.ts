@@ -1,18 +1,17 @@
 import { h, ReactSource } from "@cycle/react"
-import { createRef } from "react"
 import {
   combineLatest,
   debounceTime,
   distinctUntilChanged,
+  distinctUntilKeyChanged,
   EMPTY,
   filter,
-  fromEvent,
   map,
   merge,
   mergeMap,
+  NEVER,
   Observable,
   of,
-  pairwise,
   pluck,
   scan,
   share,
@@ -22,35 +21,21 @@ import {
   withLatestFrom,
 } from "rxjs"
 import { isNotNullish } from "rxjs-etc"
-import { match } from "ts-pattern"
-import { filterResultOk } from "ts-results/rxjs-operators"
+import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { Source as ActionSource } from "~/action"
+import { Notes } from "~/components/Notes"
+import { map as _map, pluck as _pluck, prop } from "~/fp"
 import {
-  and,
-  includes,
-  map as _map,
-  match as _match,
-  not,
-  pluck as _pluck,
-  prop,
-  uniqBy,
-} from "~/fp"
-import {
-  Conversation,
+  conversationJoined$,
   ConversationStatus,
   deleteConversation$,
   DraftConversation,
   EventName,
   hasBeenShared,
-  Invitee,
-  inviteesDiffer,
-  isCompleteConversation,
-  isStatusEditable,
+  isEditable,
   isValidConversation,
-  justSignedNotice,
-  MentionInput,
-  oppEmbedText,
-  Profile,
+  isValidInviteeSet,
+  justJoinedNotice,
   proposeConversation$,
   refetchContacts,
   Source as GraphSource,
@@ -59,42 +44,14 @@ import {
 } from "~/graph"
 import { makeTagger } from "~/log"
 import { info } from "~/notice"
-import {
-  conversationOppsRouteGroup,
-  NEWID,
-  push,
-  routes,
-  routeURL,
-  Source as RouterSource,
-} from "~/router"
-import { cb$, shareLatest } from "~/rx"
+import { push, routes, routeURL, Source as RouterSource } from "~/router"
+import { cb$, noticeFromError$, shareLatest } from "~/rx"
 import { KeyCode, shortcut$ } from "~/system"
-import { NestedOpps } from "./NestedOpps"
-import { Mode, Option as ContactOption, SelectedOption, View } from "./View"
+import { Mode, View } from "./View"
+import { When } from "./When"
+import { Who } from "./Who"
 
 export { Mode }
-
-const noteInputRef = createRef<HTMLTextAreaElement>()
-
-const contactsToOptions = (contacts: Profile[]): SelectedOption[] =>
-  contacts.map(({ id, name }, idx, _) => {
-    return { label: name, value: id }
-  })
-const inviteesToOptions = (invitees: Invitee[]): SelectedOption[] =>
-  invitees.map(({ id, name }, idx, _) => {
-    return { label: name, value: id }
-  })
-
-const optionsToInvitees = (
-  options: ContactOption[],
-  contacts: Profile[]
-): Invitee[] => {
-  const contactIds = _pluck("id", contacts)
-  return options.map(({ label: name, value: id }) => {
-    const isContact = includes(id, contactIds)
-    return { name, id, isContact } as Invitee
-  })
-}
 
 interface Sources {
   react: ReactSource
@@ -113,29 +70,17 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
   const tag = makeTagger(tagPrefix)
 
   const {
-    graph: { contacts$, me$ },
+    graph: { me$ },
     props: { id$, record$: _record$, liveRecord$ },
     router: { history$ },
   } = sources
 
-  // Opps
-  const [onClickAddOpp, onClickAddOpp$] = cb$(tag("onClickAddOpp$"))
-  const [onCloseAddOpp, _onCloseAddOpp$] = cb$(tag("onCloseAddOpp$"))
-  // ! TODO: why does ESC fail to close Opps modal but not Publish?
-  const onEscape$ = fromEvent<KeyboardEvent>(document, "keydown").pipe(
-    filter((e) => e.key === "Escape"),
-    tag("escape$")
-  )
   const record$ = _record$.pipe(tag("record$"), shareLatest())
   const mergedRecord$ = merge(record$, liveRecord$).pipe(
     tag("mergedRecord$"),
     shareLatest()
   )
-  const onCloseAddOpp$ = merge(_onCloseAddOpp$, onEscape$)
-  const opps = NestedOpps(sources, tagPrefix, mode)
-  const {
-    value: { embedOpp$ },
-  } = opps
+  const id = mergedRecord$.pipe(pluck("id"), tag("id"), shareLatest())
 
   const status$ = mergedRecord$.pipe(
     pluck("status"),
@@ -146,157 +91,51 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     shareLatest()
   )
 
-  const justSignedNotice$ = mergedRecord$.pipe(
-    pairwise(),
-    filter(
-      ([prev, curr]) =>
-        prev?.id === curr.id &&
-        prev.status !== ConversationStatus.Signed &&
-        curr.status === ConversationStatus.Signed
-    ),
-    map(([_prev, record]) =>
-      info({ description: justSignedNotice(record as Conversation) })
-    ),
-    tag("justSignedNotice$"),
-    tap((_) => refetchContacts()),
-    share()
+  const isDisabledEditing$ = status$.pipe(
+    map((status) => !isEditable(status)),
+    startWith(false),
+    tag("isDisabledEditing$")
   )
 
-  const redirectJustSignedToShow$ = justSignedNotice$.pipe(
-    withLatestFrom(id$),
-    map(([_, id]) => push(routes.conversation({ id }))),
-    tag("redirectJustSigned$")
+  const when = When(
+    {
+      ...sources,
+      props: {
+        record$: mergedRecord$,
+        isDisabled$: isDisabledEditing$,
+      },
+    },
+    tagPrefix
   )
+  const { onChangeOccurredAt$, occurredAt$ } = when.value
 
-  const recordInvitees$ = record$.pipe(pluck("invitees"))
-  const recordInviteesAsOptions$ = recordInvitees$.pipe(
-    map(inviteesToOptions),
-    tag("recordInviteesAsOptions$"),
-    shareLatest()
+  const who = Who(
+    {
+      ...sources,
+      props: {
+        record$: mergedRecord$,
+        isDisabled$: isDisabledEditing$,
+      },
+    },
+    tagPrefix
   )
+  const { onSelect$, invitees$ } = who.value
 
-  const [onSelect, onSelect$] = cb$<ContactOption[]>(tag("onSelect$"))
+  const formTouch$ = merge(
+    //
+    onChangeOccurredAt$,
+    onSelect$
+  ).pipe(tag("formTouch$"), share())
 
-  const selectedOptions$ = merge(recordInviteesAsOptions$, onSelect$).pipe(
-    tag("selectedOptions$"),
-    shareLatest()
-  )
-
-  const options$ = contacts$.pipe(
-    map(contactsToOptions),
-    tag("options$"),
-    shareLatest()
-  )
-
-  const invitees$ = combineLatest({
-    options: selectedOptions$,
-    contacts: contacts$,
-  }).pipe(
-    // @ts-ignore
-    map(({ options, contacts }) => optionsToInvitees(options, contacts)),
-    distinctUntilChanged(inviteesDiffer),
-    tag("invitees$"),
-    shareLatest()
-  )
-
-  const recordNote$ = record$.pipe(
-    pluck("note"),
-    tag("recordNote$"),
-    shareLatest()
-  )
-
-  const [onChangeNote, onChangeNote$] = cb$<string>(tag("onChangeNote$"))
-
-  const editedNote$ = merge(recordNote$, onChangeNote$).pipe(
-    distinctUntilChanged(),
-    tag("editedNote$"),
-    shareLatest()
-  )
-
-  const noteWithEmbed$ = embedOpp$.pipe(
-    withLatestFrom(editedNote$),
-    map(([opp, note]) => {
-      const noteText = note ?? ""
-      const embedText = oppEmbedText(opp)
-      const ele = noteInputRef.current
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const pos = ele?.selectionStart ?? 0
-      const noteWithEmbed =
-        noteText.slice(0, pos) + embedText + noteText.slice(pos)
-      if (ele) ele.value = noteWithEmbed
-      // NOTE: modal close loses textarea focus, fix:
-      setTimeout(() => {
-        if (ele) {
-          ele.focus()
-          ele.value = noteWithEmbed
-          ele.selectionStart = pos
-          ele.selectionEnd = pos
-        }
-      }, 400)
-      return noteWithEmbed
-    }),
-    tag("noteWithEmbed$"),
-    shareLatest()
-  )
-
-  const note$ = merge(editedNote$, noteWithEmbed$).pipe(
-    distinctUntilChanged(),
-    tag("note$"),
-    shareLatest()
-  )
-
-  const mentionInputs$: Observable<MentionInput[]> = note$.pipe(
-    filter(isNotNullish),
-    withLatestFrom(id$),
-    map(([note, cid]) => {
-      const matches = _match(/o\/[A-Z0-9]{26}/g, note)
-      const mentionInputs = matches.map((match) => {
-        return {
-          id: `c/${cid}/${match}`,
-          oppId: match.replace("o/", ""),
-        }
-      })
-      return uniqBy(prop("id"), mentionInputs)
-    }),
-    startWith([]),
-    tag("mentionInputs$"),
-    shareLatest()
-  )
-
-  const [onChangeOccurredAt, onChangeOccurredAt$] = cb$<Date>(
-    tag("onChangeOccurredAt$")
-  )
-
-  const recordOccurredAt$: Observable<Date> = record$.pipe(
-    pluck("occurredAt"),
-    distinctUntilChanged(),
-    tag("recordOccurredAt$"),
-    shareLatest()
-  )
-
-  const occurredAt$ = merge(recordOccurredAt$, onChangeOccurredAt$).pipe(
-    distinctUntilChanged(),
-    startWith(new Date()),
-    tag("occurredAt$"),
-    shareLatest()
-  )
-
-  const formTouch$ = merge(onSelect$, onChangeNote$, onChangeOccurredAt$).pipe(
-    tag("formTouch$"),
-    share()
-  )
-
-  const formChangeCount$ = merge(formTouch$, noteWithEmbed$).pipe(
+  const formChangeCount$ = merge(formTouch$).pipe(
     scan((acc, curr, idx) => acc + 1, 0),
     tag("formChangeCount$")
   )
 
   const payload$ = combineLatest({
     id: id$,
-    invitees: invitees$,
-    note: note$,
     occurredAt: occurredAt$,
-    mentions: mentionInputs$,
+    invitees: invitees$,
   }).pipe(tag("payload$"), shareLatest())
 
   const isValid$ = payload$.pipe(
@@ -304,14 +143,6 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     startWith(false),
     distinctUntilChanged(),
     tag("isValid$"),
-    shareLatest()
-  )
-
-  const isComplete$ = payload$.pipe(
-    map(isCompleteConversation),
-    startWith(false),
-    distinctUntilChanged(),
-    tag("isComplete$"),
     shareLatest()
   )
 
@@ -332,35 +163,51 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     tag("upsert$"),
     share()
   )
-
-  const isSyncing$ = merge(
-    formTouch$.pipe(map((_) => true)),
-    upsert$.pipe(map((_) => false))
-  ).pipe(
-    startWith(false),
-    distinctUntilChanged(),
-    tag("isSyncing$"),
-    shareLatest()
+  const conversation$ = upsert$.pipe(
+    filterResultOk(),
+    tag("conversation$"),
+    share()
   )
+  const upsertError$ = upsert$.pipe(
+    filterResultErr(),
+    tag("upsertError"),
+    share()
+  )
+  const upsertNotice = noticeFromError$(upsertError$)
+
+  // Delete
+  //
 
   const [onClickBack, onClickBack$] = cb$(tag("onClickBack$"))
   const [onClickDelete, onClickDelete$] = cb$(tag("onClickDelete$"))
 
-  const cleanupAbandedRecord$ = onClickBack$.pipe(
-    withLatestFrom(isValid$),
-    tag("withLatestFrom(isValid$)"),
-    filter(([_, isValid]) => !isValid),
-    tag("cleanupAbandedRecord$"),
-    share()
-  )
-
-  const delete$ = merge(onClickDelete$, cleanupAbandedRecord$).pipe(
+  const delete$ = merge(onClickDelete$).pipe(
     withLatestFrom(id$),
     switchMap(([_, id]) => deleteConversation$({ id })),
     tag("delete$"),
     share()
   )
   const deleted$ = delete$.pipe(filterResultOk(), tag("deleted$"), share())
+  const deleteError$ = delete$.pipe(
+    filterResultErr(),
+    tag("deleteError$"),
+    share()
+  )
+  const deleteNotice = noticeFromError$(deleteError$)
+  const deleteTrack = deleted$.pipe(
+    withLatestFrom(me$),
+    mergeMap(([conversation, me]) =>
+      track$({
+        customerId: me?.id,
+        name: EventName.DeleteConversation,
+        properties: {
+          conversationId: conversation.id,
+        },
+      })
+    ),
+    tag("deleteTrack"),
+    share()
+  )
 
   const isDeleting$: Observable<boolean> = merge(
     onClickDelete$.pipe(map((_) => true)),
@@ -379,13 +226,14 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     share()
   )
 
-  const isDeleteDisabled$ = combineLatest({
+  const isDisabledDelete = combineLatest({
     isValid: isValid$,
     isDeleting: isDeleting$,
     isExposed: isExposed$,
   }).pipe(
     map(
       ({ isValid, isDeleting, isExposed }) =>
+        // NOTE: only creator can delete
         !isValid || isDeleting || isExposed
     ),
     startWith(false),
@@ -394,28 +242,22 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     shareLatest()
   )
 
-  // NOTE: disable fields once cosigned
-  const isDisabledEditing$ = status$.pipe(
-    map((status) => !isStatusEditable(status)),
-    startWith(false),
-    tag("isDisabledEditing$")
-  )
+  // Invite
 
-  const isPublishable$ = combineLatest({
-    isDisabledEditing: isDisabledEditing$,
-    isComplete: isComplete$,
-  }).pipe(
-    map(({ isComplete, isDisabledEditing }) =>
-      and(isComplete, !isDisabledEditing)
-    ),
-    startWith(true),
+  // NOTE: can't invite until *persisted* record has valid invitees
+  const isInvitable$ = mergedRecord$.pipe(
+    map((record) => isValidInviteeSet(record.invitees)),
+    startWith(false),
     distinctUntilChanged(),
-    tag("isPublishable$"),
+    tag("isInvitable$"),
     shareLatest()
   )
-  const isPublishDisabled$ = isPublishable$.pipe(
-    map(not),
-    tag("isPublishDisabled$")
+
+  const hasInvited = mergedRecord$.pipe(
+    map((record) => record.status !== ConversationStatus.Draft),
+    startWith(false),
+    tag("hasInvited"),
+    shareLatest()
   )
 
   const goToList$ = merge(onClickBack$, deleted$).pipe(
@@ -423,26 +265,33 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     share()
   )
 
-  const [onClickPublish, onClickPublish$] = cb$(tag("onClickPublish$"))
-  const [onClosePublish, onClosePublish$] = cb$(tag("onClosePublish$"))
+  const [onClickInvite, onClickInvite$] = cb$(tag("onClickInvite$"))
+  const [onCloseInvite, onCloseInvite$] = cb$(tag("onCloseInvite$"))
 
-  const propose$ = onClickPublish$.pipe(
+  const propose$ = onClickInvite$.pipe(
     withLatestFrom(record$),
-    tag("propose$ withLatestFrom"),
     filter(([_, record]) => record.status === ConversationStatus.Draft),
     switchMap(([_, { id }]) => proposeConversation$({ id })),
     tag("propose$")
   )
-  const trackPropose$ = onClickPublish$.pipe(
+  const proposeError$ = propose$.pipe(
+    filterResultErr(),
+    tag("proposeError$"),
+    share()
+  )
+  const noticePropose = noticeFromError$(proposeError$).pipe(
+    tag("proposeNotice"),
+    share()
+  )
+  const trackPropose$ = onClickInvite$.pipe(
     withLatestFrom(id$, me$),
     switchMap(([_, id, me]) =>
       track$({
+        customerId: me?.id,
         name: EventName.TapPropose,
         properties: {
           conversationId: id,
-          signatureCount: me?.stats?.signatureCount,
         },
-        customerId: me?.id,
       })
     ),
     tag("trackPropose$"),
@@ -451,13 +300,13 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
 
   const openShortcut$ = shortcut$([KeyCode.ControlLeft, KeyCode.KeyP])
 
-  const isOpenPublish$ = merge(
-    merge(openShortcut$, onClickPublish$).pipe(map((_) => true)),
-    onClosePublish$.pipe(map((_) => false))
-  ).pipe(startWith(false), tag("isOpenPublish$"), share())
+  const isOpenInvite$ = merge(
+    merge(openShortcut$, onClickInvite$).pipe(map((_) => true)),
+    onCloseInvite$.pipe(map((_) => false))
+  ).pipe(startWith(false), tag("isOpenInvite$"), shareLatest())
 
-  const shareURL$ = id$.pipe(
-    map((id) => routeURL(routes.signConversation({ id }))),
+  const joinURL$ = id$.pipe(
+    map((id) => routeURL(routes.joinConversation({ id }))),
     tag("shareURL$"),
     shareLatest()
   )
@@ -465,10 +314,24 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
   const [onShareURLCopied, onShareURLCopied$] = cb$(tag("onShareURLCopied$"))
   const shareURLCopiedNotice$ = onShareURLCopied$.pipe(
     map((_) => info({ description: "Copied!" })),
-    tag("shareURLCopiedNotice$")
+    tag("shareURLCopiedNotice$"),
+    share()
   )
 
+  // TODO: dedupe w/ Show
   const [onClickShare, onClickShare$] = cb$(tag("onClickShare$"))
+  const [onCloseShare, onCloseShare$] = cb$(tag("onCloseShare$"))
+  const isOpenShare$ = merge(
+    onClickShare$.pipe(map((_) => true)),
+    onCloseShare$.pipe(map((_) => false))
+  ).pipe(startWith(false), tag("isOpenShare$"), shareLatest())
+
+  const showShare = mergedRecord$.pipe(
+    map((record) => record.status === ConversationStatus.Joined),
+    startWith(false),
+    tag("showShare"),
+    shareLatest()
+  )
 
   const knownInvitees$ = invitees$.pipe(
     map((invitees) => invitees.filter((invitee) => invitee.isContact)),
@@ -481,97 +344,123 @@ export const Form = (sources: Sources, _tagPrefix: string, mode: Mode) => {
     share()
   )
 
-  const participantNames$ = invitees$.pipe(
+  const inviteeNames$ = invitees$.pipe(
     map(_map(prop("name"))),
     tag("participantNames$"),
     share()
   )
 
-  const showOpps$ = onClickAddOpp$.pipe(
-    withLatestFrom(record$),
-    map(([_, { id }]) =>
-      match(mode)
-        .with(Mode.create, () => push(routes.conversationOpps({ id: NEWID })))
-        .with(Mode.edit, () => push(routes.conversationOpps({ id })))
-        .exhaustive()
+  const justJoinedNotice$ = mergedRecord$.pipe(
+    distinctUntilKeyChanged("id"),
+    switchMap(({ id: conversationId }) =>
+      conversationJoined$({ conversationId }).pipe(
+        //
+        filterResultOk()
+      )
     ),
-    tag("showOpp$"),
+    withLatestFrom(me$),
+    filter(([p, me]) => p.participant.id !== me?.id),
+    tap((_) => refetchContacts()),
+    map(([p, me]) => info({ description: justJoinedNotice(p) })),
     share()
   )
 
-  const hideOpps$ = merge(onCloseAddOpp$, noteWithEmbed$).pipe(
-    withLatestFrom(record$),
-    map(([_, { id }]) =>
-      match(mode)
-        .with(Mode.create, () => push(routes.conversation({ id: NEWID })))
-        .with(Mode.edit, () => push(routes.conversation({ id })))
-        .exhaustive()
-    ),
-    tag("hideOpps$"),
+  const redirectJustJoinedToShow$ = justJoinedNotice$.pipe(
+    withLatestFrom(id$),
+    map(([_, id]) => push(routes.conversation({ id }))),
+    tag("redirectJustJoinedToShow$"),
     share()
   )
 
-  const isOpenAddOpp$ = history$.pipe(
-    map((route) => conversationOppsRouteGroup.has(route)),
-    tag("isOpenAddOpp$"),
+  const notes = Notes(
+    {
+      ...sources,
+      props: {
+        conversation$: mergedRecord$,
+      },
+    },
+    tagPrefix
+  )
+
+  const isSyncing = merge(
+    request$.pipe(map((_) => true)),
+    upsert$.pipe(map((_) => false)),
+    notes.value.isSyncing
+  ).pipe(
     startWith(false),
-    share()
-  )
-
-  const router = merge(
-    goToList$,
-    redirectJustSignedToShow$,
-    showOpps$,
-    hideOpps$,
-    opps.router
+    distinctUntilChanged(),
+    tag("isSyncing$"),
+    shareLatest()
   )
 
   const props$ = combineLatest({
-    options: options$,
-    selectedOptions: selectedOptions$,
-    isSyncing: isSyncing$,
-    note: note$,
-    isDeleting: isDeleting$,
-    isDeleteDisabled: isDeleteDisabled$,
-    occurredAt: occurredAt$,
-    isPublishDisabled: isPublishDisabled$,
-    isOpenPublish: isOpenPublish$,
-    shareURL: shareURL$,
-    participantNames: participantNames$,
+    isSyncing,
     status: status$,
-    isDisabledEditing: isDisabledEditing$,
+    when: when.react,
+    who: who.react,
+
+    // delete
+    isDeleting: isDeleting$,
+    isDisabledDelete,
+
+    // invite
+    inviteeNames: inviteeNames$,
+    isInvitable: isInvitable$,
+    isOpenInvite: isOpenInvite$,
     knownInvitees: knownInvitees$,
     unknownInvitees: unknownInvitees$,
-    isOpenAddOpp: isOpenAddOpp$,
-    oppsView: opps.react,
+    joinURL: joinURL$,
+    hasInvited,
+
+    // share
+    id,
+    isOpenShare: isOpenShare$,
+    showShare,
+
+    // Notes
+    notes: notes.react.view,
+    addButton: notes.react.addButton,
   }).pipe(tag("props$"))
 
   const react = props$.pipe(
     map((props) =>
       h(View, {
         ...props,
-        onSelect,
-        onChangeNote,
         onClickBack,
+        onClickInvite,
         onClickDelete,
-        onChangeOccurredAt,
-        onClickPublish,
-        onClosePublish,
+        onCloseInvite,
         onShareURLCopied,
         onClickShare,
-        onClickAddOpp,
-        onCloseAddOpp,
-        noteInputRef,
-        mode,
+        onCloseShare,
       })
     ),
     tag("react")
   )
 
-  const notice = merge(shareURLCopiedNotice$, justSignedNotice$, opps.notice)
-  const track = merge(trackPropose$)
+  const notice = merge(
+    upsertNotice,
+    deleteNotice,
+    noticePropose,
+    shareURLCopiedNotice$,
+    justJoinedNotice$,
+    notes.notice
+  )
   const graph = merge(propose$)
-  const action = merge(opps.action)
+  const action = merge(NEVER) // opps.action
+  const track = merge(
+    ..._pluck("track", [when, who, notes]),
+    deleteTrack,
+    trackPropose$
+  )
+  const router = merge(
+    goToList$,
+    redirectJustJoinedToShow$
+    // Opps
+    // showOpps$,
+    // hideOpps$,
+    // opps.router
+  )
 
   return {
     react,

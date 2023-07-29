@@ -1,4 +1,5 @@
 import { capitalCase } from "change-case"
+import { match } from "ts-pattern"
 import { ulid } from "ulid"
 import {
   any,
@@ -13,11 +14,16 @@ import {
 } from "~/fp"
 import { routes } from "~/router"
 import { Conversation, Customer, Invitee, MakeOptional } from ".."
-import { ConversationInput, ConversationStatus } from "../generated"
+import { ConversationStatus, Participation } from "../generated"
 
 export type DraftConversation = MakeOptional<
-  ConversationInput,
-  "status" | "mentions"
+  Conversation,
+  // Opps
+  | "status" // | "mentions"
+  | "creator"
+  | "notes"
+  | "opps"
+  | "participations"
 >
 
 type Note = string | null | undefined
@@ -26,11 +32,9 @@ export const isValidNote = (note: Note) => isNotEmpty(note)
 
 export const isValidInviteeSet = (invitees: Invitee[]) => isNotEmpty(invitees)
 
-export const isValidConversation = ({ note, invitees }: DraftConversation) =>
-  isValidNote(note) || isValidInviteeSet(invitees)
-
-export const isCompleteConversation = ({ note, invitees }: DraftConversation) =>
-  isValidNote(note) && isValidInviteeSet(invitees)
+export const isValidConversation = ({ invitees }: DraftConversation) =>
+  // isValidNote(note) || isValidInviteeSet(invitees)
+  isValidInviteeSet(invitees)
 
 // NOTE: used to prevent deletion once circulated for cosign
 export const hasBeenShared = (c: DraftConversation) =>
@@ -45,45 +49,38 @@ export const inviteesDiffer = (current: Invitee[], old: Invitee[]): boolean =>
 export const newConversation = (): DraftConversation => ({
   id: ulid(),
   invitees: [],
-  note: null,
+  notes: [],
   status: ConversationStatus.Draft,
   occurredAt: new Date(),
 })
 
-export const isSignedBy = (
-  conversation: Conversation,
-  customer: Customer | null
-) => {
-  if (!customer) return false
-  return any(({ signer }) => customer.id === signer.id, conversation.signatures)
-}
-
-export const isReviewedBy = (
+export const isParticipantIn = (
   conversation: Conversation,
   customer: Customer | null
 ) => {
   if (!customer) return false
   return any(
-    ({ reviewer }) => customer.id === reviewer.id,
-    conversation.reviews
+    ({ participant }) => customer.id === participant.id,
+    conversation.participations
   )
 }
 
-export const allStatusesList = [
-  ConversationStatus.Draft,
-  ConversationStatus.Proposed,
-  ConversationStatus.Signed,
-  ConversationStatus.Deleted,
-]
+export const isParticipant = (
+  conversation: Conversation,
+  customer: Customer | null
+) => {
+  if (!customer) return false
+  return any(
+    ({ participant }) => customer.id === participant.id,
+    conversation.participations
+  )
+}
 
-export const isSignableStatus = (status: ConversationStatus): boolean =>
-  includes(status, [ConversationStatus.Proposed, ConversationStatus.Signed])
-
-export const isStatusEditable = (status: ConversationStatus): boolean =>
-  includes(status, [ConversationStatus.Draft, ConversationStatus.Proposed])
+export const isEditable = (status: ConversationStatus): boolean =>
+  includes(status, [ConversationStatus.Draft])
 
 export const isStatusClosed = (status: ConversationStatus): boolean =>
-  includes(status, [ConversationStatus.Signed, ConversationStatus.Deleted])
+  includes(status, [ConversationStatus.Joined, ConversationStatus.Deleted])
 
 export const isCreatedBy = (conversation: Conversation, me: Customer | null) =>
   conversation.creator.id === me?.id
@@ -91,17 +88,19 @@ export const isCreatedBy = (conversation: Conversation, me: Customer | null) =>
 export const statusText = (
   status: ConversationStatus,
   participantList?: string
-) =>
-  // eslint-disable-next-line no-nested-ternary
-  status === ConversationStatus.Proposed
-    ? participantList
-      ? `Pending cosign by ${participantList}`
-      : `Pending cosign`
-    : capitalCase(status)
+) => {
+  return match(status)
+    .with(ConversationStatus.Proposed, () => {
+      const pre = "Pending"
+      return participantList ? `${pre}: ${participantList}` : pre
+      // : capitalCase(status)
+    })
+    .with(ConversationStatus.Joined, () => "Confirmed")
+    .otherwise(() => capitalCase(status))
+}
 
-export const justSignedNotice = ({ signatures }: Conversation) => {
-  const latest = head(signatures.sort(descend(prop("signedAt"))))
-  return `${latest?.signer?.name} cosigned!`
+export const justJoinedNotice = (participation: Participation) => {
+  return `${participation.participant?.name} joined the conversation`
 }
 
 export const ariaLabelValue = (c: Conversation) =>

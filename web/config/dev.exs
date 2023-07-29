@@ -34,6 +34,8 @@ config :slime, :keep_lines, true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console,
+  truncate: :infinity,
+  colors: [enabled: true],
   format: "[$level] $message\n",
   level:
     System.get_env("DEV_LOG_LEVEL", "error")

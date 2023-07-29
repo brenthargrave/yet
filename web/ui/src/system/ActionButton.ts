@@ -28,6 +28,7 @@ export const ActionButton: FC<Props> = ({
       onClick,
       isDisabled,
       isLoading,
+      size: "sm",
     },
     cta
   )

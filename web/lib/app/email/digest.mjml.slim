@@ -20,7 +20,8 @@ mjml
           mj-column padding-top="0px"
             mj-text padding-top="0px" = conversation.participants_header
             mj-text padding-top="0px" padding-bottom="16px" = conversation.date_link
-            mj-text padding-top="0px" line-height="1.6" = conversation.note
+            = Enum.map conversation.notes, fn note ->
+              mj-text padding-top="0px" line-height="1.6" = note
     // footer
     mj-section
       mj-column

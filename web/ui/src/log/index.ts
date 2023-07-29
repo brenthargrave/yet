@@ -11,13 +11,10 @@ if (env === "prod") {
   spy.log()
 }
 
-interface TagOptions {
-  focus?: boolean
-}
 const makeTagger =
   <T>(scope: string) =>
-  <T>(label: string, opts?: TagOptions) => {
-    return opts?.focus
+  <T>(label: string, focus = false) => {
+    return focus
       ? tag<T>(`${scope} > THIS ${label}`)
       : tag<T>(`${scope} > ${label}`)
   }

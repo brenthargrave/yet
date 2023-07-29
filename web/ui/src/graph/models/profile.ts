@@ -1,7 +1,7 @@
 import { FaFacebook, FaTwitter } from "react-icons/fa"
 import { match } from "ts-pattern"
 import { isNotEmpty } from "~/fp"
-import { AuthProvider, MakeOptional, Profile } from "../generated"
+import { AuthProvider, MakeOptional, Profile, Contact } from "../generated"
 
 export const socialLowered = (social: AuthProvider) => social.toLowerCase()
 

@@ -19,7 +19,6 @@ fragment ProfileProps on Profile {
 }
 
 fragment OnboardingProfileProps on OnboardingProfile {
-# fragment OnboardingProfileProps on Profile {
   id
   name
   firstName
@@ -27,9 +26,32 @@ fragment OnboardingProfileProps on OnboardingProfile {
   email
 }
 
-query GetProfile($input: GetProfileInput) {
+# NOTE: keep sync'd  w/ Propfiel
+fragment ContactProps on Contact {
+  id
+  name
+  firstName
+  lastName
+  email
+  e164
+  phone
+  role
+  org
+  website
+  location
+  description
+  twitterHandle
+  facebookUrl
+  facebookName
+  facebookImage
+  socialDistance
+  # additions
+  conversationCountWithSubject
+}
+
+query GetProfile($input: GetProfileInput!) {
   getProfile(input: $input) {
-    profile {
+    ...on Profile {
       ...ProfileProps
 
       events {
@@ -50,6 +72,23 @@ query GetProfile($input: GetProfileInput) {
         }
       }
 
+      contacts {
+        ...ContactProps
+      }
+    }
+    ... on UserError {
+      ...UserErrorProps
+    }
+  }
+}
+
+mutation UpdateProfile($input: UpdateProfileInput!) {
+  updateProfile(input: $input) {
+    ...on Profile {
+      ...ProfileProps
+    }
+    ... on UserError {
+      ...UserErrorProps
     }
   }
 }
@@ -62,19 +101,14 @@ mutation PatchProfile($input: PatchProfileInput!) {
     ...on OnboardingProfile {
       ...OnboardingProfileProps
     }
-    # ...on Profile {
-    #   ...OnboardingProfileProps
-    # }
   }
 }
 
-mutation UpdateProfile($input: UpdateProfileInput!) {
-  updateProfile(input: $input) {
-    userError {
-      ...UserErrorProps
-    }
-    profile {
-      ...ProfileProps
+
+query GetContacts {
+  getContacts {
+    contacts {
+      ...ContactProps
     }
   }
 }

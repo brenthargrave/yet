@@ -19,8 +19,8 @@ export const toast = (props: ToastProps) => {
   _toast({
     position: "top",
     isClosable: true,
-    // ! TODO: duration: stauts === "error" ? false : 5000
-    // ! verify tapping outside it doesn't dismiss it either
+    // TODO: duration: status === "error" ? false : 5000
+    // TODO: verify tapping outside it doesn't dismiss it either
     // NOTE: don't auto-dismiss errors, preserver for screenie
     duration: 5000,
     render: () => {

@@ -1,7 +1,12 @@
 import { Divider, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { NoteView, Props as NoteViewProps } from "~/components/Note"
+import { Props as NoteViewProps } from "~/components/Notes/Single/Show/View"
+import {
+  NoteViewModel,
+  Props as NotesViewProps,
+  View as NotesView,
+} from "~/components/Notes/View"
 import { isEmpty, map } from "~/fp"
 import { ariaLabelValue, Conversation, Customer, Maybe } from "~/graph"
 import { localizeDate } from "~/i18n"
@@ -9,7 +14,8 @@ import { ariaLabel, Stack, Status, Text } from "~/system"
 import { ParticipantsView } from "~/system/ParticipantsView"
 import { MentionsView } from "./MentionsView"
 
-export interface Props extends Omit<NoteViewProps, "note"> {
+export interface Props extends Omit<NoteViewProps, "note" | "text" | "status"> {
+  readOnly?: boolean
   viewer: Maybe<Customer>
   conversation: Conversation
   showStatus?: boolean
@@ -18,6 +24,7 @@ export interface Props extends Omit<NoteViewProps, "note"> {
 }
 
 export const ConversationView: FC<Props> = ({
+  readOnly,
   viewer,
   conversation,
   maxLines,
@@ -26,12 +33,42 @@ export const ConversationView: FC<Props> = ({
   showNote = true,
   showOpps = false,
 }) => {
-  const { creator, signatures, invitees, note, occurredAt, status, opps, id } =
+  const { creator, participations, invitees, occurredAt, status, opps, id } =
     conversation
-  const signers = map((sig) => sig.signer, signatures)
+
+  const participants = map((p) => p.participant, participations)
+
+  const notes: NoteViewModel[] = conversation.notes.map((note) => {
+    return {
+      ...note,
+      isDeleting: false,
+      isPosting: false,
+    }
+  })
+
+  const notesViewProps: NotesViewProps = {
+    viewer,
+    conversationID: id,
+    notes,
+    readOnly,
+    maxLines,
+    isObscured,
+  }
+
+  const key = `/c/${id}`
+
   return h(
     Stack,
-    { direction: "column", ...ariaLabel(ariaLabelValue(conversation)) },
+    {
+      //
+      key,
+      id: key,
+      direction: "column",
+      ...ariaLabel(ariaLabelValue(conversation)),
+      className: "conversation",
+      // @ts-ignore
+      "data-conversation-id": id,
+    },
     [
       h(Stack, { direction: "row", alignItems: "end" }, [
         h(Stack, { direction: "column", alignItems: "start" }, [
@@ -40,7 +77,7 @@ export const ConversationView: FC<Props> = ({
             status,
             creator,
             invitees,
-            signers,
+            participants,
           }),
           h(Text, { fontSize: "sm" }, localizeDate(occurredAt)),
         ]),
@@ -59,7 +96,7 @@ export const ConversationView: FC<Props> = ({
         ),
       ]),
       showOpps && !isEmpty(opps) && h(MentionsView, { opps }),
-      showNote && h(NoteView, { note, maxLines, isObscured }),
+      showNote && h(NotesView, notesViewProps),
     ]
   )
 }
@@ -78,6 +115,7 @@ export const ConversationPublishedView: FC<ConversationPublishedViewProps> = (
     maxLines: 10,
     showStatus: false,
     showOpps: true,
+    readOnly: true,
     // showNote: false,
   })
 

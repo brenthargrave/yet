@@ -1,4 +1,5 @@
 import { h, ReactSource } from "@cycle/react"
+import { pluck } from "ramda"
 import {
   combineLatest,
   distinctUntilChanged,
@@ -10,6 +11,7 @@ import {
   mergeMap,
   Observable,
   of,
+  pluck as pluck$,
   share,
   startWith,
   switchMap,
@@ -20,7 +22,6 @@ import { match } from "ts-pattern"
 import { filterResultErr, filterResultOk } from "ts-results/rxjs-operators"
 import { Source as ActionSource } from "~/action"
 import { ErrorView } from "~/components/App/ErrorView"
-import { and, pluck } from "~/fp"
 import {
   Conversation,
   ErrorCode,
@@ -28,14 +29,15 @@ import {
   getConversation$,
   Intent,
   isCreatedBy,
-  isStatusEditable,
+  noteAdded$,
+  noteAddedNotice,
+  partitionError$,
   Source as GraphSource,
   subscribeConversation$,
   track$,
-  UserError,
 } from "~/graph"
 import { makeTagger } from "~/log"
-import { error } from "~/notice"
+import { info } from "~/notice"
 import {
   NEWID,
   push,
@@ -43,17 +45,17 @@ import {
   singleConversationRoutesGroup,
   Source as RouterSource,
 } from "~/router"
-import { shareLatest } from "~/rx"
+import { noticeFromError$, shareLatest } from "~/rx"
 import { Main as Edit } from "./Edit"
+import { Join } from "./Join"
 import { Show } from "./Show"
-import { Sign } from "./Sign"
 import { View } from "./View"
 
 export enum State {
   pending = "pending",
   edit = "edit",
-  sign = "sign",
   show = "show",
+  join = "join",
 }
 
 interface Sources {
@@ -80,6 +82,7 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
         )
         .otherwise(() => EMPTY)
     ),
+    distinctUntilChanged(),
     tag("id$"),
     shareLatest()
   )
@@ -92,34 +95,45 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
 
   const record$ = result$.pipe(filterResultOk(), tag("record$"), shareLatest())
 
-  const liveRecord$ = id$.pipe(
+  const liveRecordResult$ = id$.pipe(
+    distinctUntilChanged(),
     switchMap((id) => subscribeConversation$({ id })),
+    tag("liveRecordResult$"),
+    share()
+  )
+
+  const liveRecordErrorNotice$ = noticeFromError$(
+    liveRecordResult$.pipe(
+      filterResultErr(),
+      tag("liveRecordErrorNotice$"),
+      share()
+    )
+  )
+
+  const liveRecord$ = liveRecordResult$.pipe(
+    filterResultOk(),
     tag("liveRecord$"),
     shareLatest()
   )
 
+  const mergedRecord$ = merge(record$, liveRecord$).pipe(
+    tag("mergedRecord$"),
+    shareLatest()
+  )
+
   const error$ = result$.pipe(filterResultErr(), tag("error$"), share())
-  const userError$ = error$.pipe(
-    filter((error): error is UserError => error instanceof UserError),
-    tag("userError$"),
+  const errorNotice$ = noticeFromError$(error$)
+  const { userError$, appError$ } = partitionError$(error$)
+
+  const redirectNotFound$ = userError$.pipe(
+    filter(({ code }) => code === ErrorCode.NotFound),
+    map((_) => push(routes.conversations())),
+    tag("redirectNotFound$"),
     share()
   )
 
-  const userErrorNotice$ = userError$.pipe(
-    map(({ message }) => error({ description: message })),
-    tag("userErrorNotice$"),
-    share()
-  )
-
-  // const redirectNotFound$ = userError$.pipe(
-  //   filter(({ code }) => code === ErrorCode.NotFound),
-  //   map((_) => push(routes.conversations())),
-  //   tag("redirectNotFound$"),
-  //   share()
-  // )
-
-  const isLoading$ = combineLatest({ id: id$, opp: record$ }).pipe(
-    map(({ id, opp }) => opp.id !== id),
+  const isLoading$ = combineLatest({ id: id$, record: record$ }).pipe(
+    map(({ id, record }) => record.id !== id),
     startWith(true),
     tag("isLoading$"),
     shareLatest()
@@ -135,11 +149,10 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
       isLoading
         ? State.pending
         : match(route)
-            .with({ name: routes.signConversation.name }, () => State.sign)
+            .with({ name: routes.joinConversation.name }, () => State.join)
             .when(singleConversationRoutesGroup.has, ({ params: { id } }) => {
-              const created = isCreatedBy(record, me)
-              const editable = isStatusEditable(record.status)
-              return and(created, editable) ? State.edit : State.show
+              const isCreator = isCreatedBy(record, me)
+              return isCreator ? State.edit : State.show
             })
             .otherwise(() => State.pending)
     ),
@@ -163,20 +176,22 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     )
   }
 
-  const sign = Sign(
+  const join = Join(
     {
       ...sources,
-      props: { record$: stateRecord$(State.sign, merge(record$, liveRecord$)) },
+      props: { record$: stateRecord$(State.join, mergedRecord$) },
     },
     tagScope
   )
+
   const show = Show(
     {
       ...sources,
-      props: { record$: stateRecord$(State.show, merge(record$, liveRecord$)) },
+      props: { record$: stateRecord$(State.show, mergedRecord$) },
     },
     tagScope
   )
+
   const edit = Edit(
     {
       ...sources,
@@ -192,7 +207,7 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     match(state)
       .with(State.edit, () => Intent.Edit)
       .with(State.show, () => Intent.View)
-      .with(State.sign, () => Intent.Sign)
+      .with(State.join, () => Intent.Join)
       .otherwise((state) => {
         throw new Error(`No intent for state: ${state}`)
       })
@@ -206,13 +221,32 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
         name: EventName.ViewConversation,
         customerId: me?.id,
         properties: {
-          conversationId: record.id,
           intent: mapStateToIntent(state),
-          signatureCount: me?.stats?.signatureCount,
         },
       })
     ),
     tag("trackView$"),
+    share()
+  )
+
+  const addedNote$ = mergedRecord$.pipe(
+    pluck$("id"),
+    distinctUntilChanged(),
+    switchMap((conversationId) => noteAdded$({ conversationId })),
+    filterResultOk(),
+    tag("addedNote$"),
+    share()
+  )
+
+  const noticeAddedNote$ = addedNote$.pipe(
+    withLatestFrom(me$),
+    switchMap(([note, me]) => {
+      // skip if own note
+      return note.creator?.id === me?.id
+        ? EMPTY
+        : of(info({ description: noteAddedNotice(note) }))
+    }),
+    tag("noticeAddedNote$"),
     share()
   )
 
@@ -223,8 +257,8 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
         match(state)
           .with(State.pending, () => EMPTY)
           .with(State.edit, () => edit.react)
-          .with(State.sign, () =>
-            sign.value.props$.pipe(map((props) => h(View, { ...props })))
+          .with(State.join, () =>
+            join.value.props$.pipe(map((props) => h(View, { ...props })))
           )
           .with(State.show, () =>
             show.value.props$.pipe(map((props) => h(View, { ...props })))
@@ -234,13 +268,18 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     )
   ).pipe(tag("react"))
 
-  const notice = merge(...pluck("notice", [edit, sign]), userErrorNotice$)
+  const notice = merge(
+    ...pluck("notice", [edit, join]),
+    errorNotice$,
+    noticeAddedNote$,
+    liveRecordErrorNotice$
+  )
 
   const router = merge(
-    ...pluck("router", [edit, sign, show])
-    // redirectNotFound$
+    redirectNotFound$,
+    ...pluck("router", [edit, join, show])
   )
-  const track = merge(...pluck("track", [edit, sign]), trackView$)
+  const track = merge(...pluck("track", [edit, join]), trackView$)
   const graph = merge(...pluck("graph", [edit]))
   const action = merge(...pluck("action", [edit]))
 

@@ -56,12 +56,11 @@ export const List = (sources: Sources, tagPrefix?: string) => {
     withLatestFrom(me$),
     mergeMap(([_, me]) =>
       track$({
+        customerId: me?.id,
         name: EventName.TapNewConversation,
         properties: {
-          signatureCount: me?.stats?.signatureCount,
           view: FromView.Conversations,
         },
-        customerId: me?.id,
       })
     )
   )

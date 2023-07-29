@@ -25,7 +25,9 @@ export const MenuButton = forwardRef(
     }: Props,
     ref
   ) =>
-    iconOnly
+    !isVisible
+      ? null
+      : iconOnly
       ? h(Tooltip, { shouldWrapChildren: true, label }, [
           h(IconButton, {
             icon: h(Icon, { as: icon }),

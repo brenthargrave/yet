@@ -39,7 +39,7 @@ it.skip("Opp reward payment", async () => {
     // // TODO: invitees.foreEach input, select if presnt or hit "enter"
     const aliceWithBobPath = await a.createConversation(aliceWithBob, true)
     // NOTE: assume A sends B url...
-    await b.signupAndSignConversationAtPath(aliceWithBobPath)
+    await b.signupAndJoinConversationAtPath(aliceWithBobPath)
     // TODO: sign if already auth'd/onboard
     await a.see(`${b.name} cosigned!`)
 
@@ -54,7 +54,7 @@ it.skip("Opp reward payment", async () => {
       mentions: [opp],
     })
     const bobWithCharliePath = await b.createConversation(bobWithCharlie)
-    await c.signupAndSignConversationAtPath(bobWithCharliePath)
+    await c.signupAndJoinConversationAtPath(bobWithCharliePath)
 
     await Promise.all([
       // alice: in tl, but not pf
@@ -81,7 +81,7 @@ it.skip("Opp reward payment", async () => {
       mentions: [opp],
     })
     const charlieWithDavidPath = await c.createConversation(charlieWithDavid)
-    await d.signupAndSignConversationAtPath(charlieWithDavidPath)
+    await d.signupAndJoinConversationAtPath(charlieWithDavidPath)
     await Promise.all([
       ...[c, d].map((p) =>
         p.accessConversation({

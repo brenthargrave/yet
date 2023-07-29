@@ -2,33 +2,29 @@ import { Box, Button, Divider } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
 import { head, isEmpty } from "~/fp"
-import { ConversationStatus } from "~/graph"
 import { toSentence } from "~/i18n"
 import { ariaLabel, Spacer, Stack } from "~/system"
-import { SyncIcon } from "./SyncIcon"
 
 export type OnClickPublish = () => void
 
 export interface Props {
-  isPublishDisabled: boolean
-  onClickPublish?: OnClickPublish
-  participantNames?: string[]
-  status?: ConversationStatus
+  inviteeNames?: string[]
+  isDisabledInvite: boolean
+  onClickInvite?: OnClickPublish
   autoFocus?: boolean
 }
 
-export const View: FC<Props> = ({
+export const ActionBar: FC<Props> = ({
   children,
-  isPublishDisabled,
-  onClickPublish,
-  participantNames = [],
-  status = ConversationStatus.Draft,
+  isDisabledInvite,
+  onClickInvite,
+  inviteeNames = [],
   autoFocus = false,
 }) => {
-  const firstNames = participantNames.map(
+  const firstNames = inviteeNames.map(
     (name) => head(name.split(/(\s+)/)) ?? name
   )
-  const participantList = toSentence(firstNames)
+  const inviteeList = toSentence(firstNames)
   return h(
     Stack,
     {
@@ -59,20 +55,18 @@ export const View: FC<Props> = ({
               width: "100%",
             },
             [
-              h(Stack, { direction: "column", gap: 1, alignItems: "start" }, [
-                h(
-                  Button,
-                  {
-                    autoFocus,
-                    isDisabled: isPublishDisabled,
-                    onClick: onClickPublish,
-                    ...ariaLabel("Publish"),
-                  },
-                  isEmpty(participantNames)
-                    ? `Publish`
-                    : `Publish with ${participantList}`
-                ),
-              ]),
+              // h(Stack, { direction: "column", gap: 1, alignItems: "start" }, [
+              h(
+                Button,
+                {
+                  autoFocus,
+                  isDisabled: isDisabledInvite,
+                  onClick: onClickInvite,
+                  ...ariaLabel("Invite"),
+                },
+                isEmpty(inviteeNames) ? `Invite` : `Invite ${inviteeList}`
+              ),
+              // ]),
               h(Spacer),
               children,
             ]
@@ -83,4 +77,4 @@ export const View: FC<Props> = ({
   )
 }
 
-View.displayName = "ActionBar"
+ActionBar.displayName = "ActionBar"

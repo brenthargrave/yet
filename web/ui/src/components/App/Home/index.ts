@@ -153,12 +153,11 @@ export const Home = (sources: Sources, tagPrefix?: string) => {
     withLatestFrom(me$),
     mergeMap(([_, me]) =>
       track$({
+        customerId: me?.id,
         name: EventName.TapNewConversation,
         properties: {
-          signatureCount: me?.stats?.signatureCount,
           view: FromView.Nav,
         },
-        customerId: me?.id,
       })
     )
   )
@@ -233,6 +232,7 @@ export const Home = (sources: Sources, tagPrefix?: string) => {
 
   const props$ = combineLatest({
     showHomeOnly: showHomeOnly$,
+    viewer: me$,
   }).pipe(tag("props$"), shareLatest())
 
   const subview$ = rootState$.pipe(

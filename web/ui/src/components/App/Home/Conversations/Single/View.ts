@@ -1,17 +1,19 @@
+import { Divider } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { ConversationView } from "~/components/Conversation/View"
-import { Conversation, Customer, Maybe } from "~/graph"
-import { localizeDate, t } from "~/i18n"
+import {
+  ConversationView,
+  Props as ConversationViewProps,
+} from "~/components/Conversation/View"
+import { Conversation, Customer, isCreatedBy, isLurking, Maybe } from "~/graph"
+import { localizeDate } from "~/i18n"
 import { routes, routeURL } from "~/router"
 import {
   AriaHeading,
-  bold,
   containerProps,
   DeleteButton,
   FullWidthVStack,
   Header,
-  MarkdownView,
   Nav,
   ShareModal,
   Spacer,
@@ -19,31 +21,21 @@ import {
 } from "~/system"
 import { View as AuthPrompt } from "./AuthPrompt"
 import { ShareButton } from "./ShareButton"
-import { SignButton } from "./SignButton"
 
 export enum Intent {
   Read = "read",
-  Sign = "sign",
+  Join = "join",
 }
-const isReading = (current: Intent) => current === Intent.Read
-const isSigning = (current: Intent) => current === Intent.Sign
 
-export enum Step {
-  Auth = "auth",
-  Sign = "sign",
-}
-const isSigningStep = (intent: Intent, current: Step, step: Step) =>
-  isSigning(intent) && current === step
+const isReading = (current: Intent) => current === Intent.Read
+const isJoining = (current: Intent) => current === Intent.Join
 
 export interface Props {
   viewer: Maybe<Customer>
   intent?: Intent
-  step?: Step
   conversation: Conversation
-  // sign
+  // join
   onClickAuth?: () => void
-  onClickSign?: () => void
-  isSignLoading?: boolean
   // read
   onClickShare?: () => void
   isOpenShare?: boolean
@@ -57,11 +49,8 @@ export interface Props {
 export const View: FC<Props> = ({
   viewer,
   intent = Intent.Read,
-  step = Step.Auth,
   conversation,
   onClickAuth,
-  onClickSign,
-  isSignLoading = false,
   onClickShare,
   isOpenShare = false,
   onCloseShare = () => null,
@@ -69,76 +58,90 @@ export const View: FC<Props> = ({
   onClickDelete,
   isDeleting = false,
 }) => {
-  const { id, occurredAt, creator, signatures } = conversation
-  const isObscured = isSigningStep(intent, step, Step.Auth) || isOpenShare
+  const { id, occurredAt, creator } = conversation
+  const authRequired = isJoining(intent) && isLurking(viewer)
+  const isObscured = authRequired
   const creatorName = creator.name
   const occurredAtDesc = localizeDate(occurredAt)
 
-  return h(FullWidthVStack, { ...containerProps }, [
-    !isSigning(intent) &&
-      h(Nav, { onClickBack, backButtonText: "Conversations" }),
-    h(ShareModal, {
-      isOpen: isReading(intent) && isOpenShare,
-      onClose: onCloseShare,
-      shareURL: routeURL(routes.conversation({ id })),
-    }),
-    h(AuthPrompt, {
-      isOpen: isSigningStep(intent, step, Step.Auth),
-      creatorName,
-      occurredAtDesc,
-      onClickAuth,
-    }),
-    isSigningStep(intent, step, Step.Sign) &&
+  const props: ConversationViewProps = {
+    viewer,
+    conversation,
+    isObscured,
+  }
+
+  const key = `/c/${id}`
+  return h(
+    FullWidthVStack,
+    {
+      //
+      ...containerProps,
+      ...(!!id && {
+        key,
+        id: key,
+        // @ts-ignore
+        "data-conversation-id": id,
+      }),
+    },
+    [
+      !isJoining(intent) &&
+        h(Nav, { onClickBack, backButtonText: "Conversations" }),
+      h(ShareModal, {
+        isOpen: isOpenShare,
+        onClose: onCloseShare,
+        shareURL: routeURL(routes.conversation({ id })),
+      }),
+      h(AuthPrompt, {
+        isOpen: authRequired,
+        creatorName,
+        occurredAtDesc,
+        onClickAuth,
+      }),
       h(
         Stack,
         {
           direction: "column",
-          justifyContent: "start",
-          backgroundColor: "#fafafa",
-          padding: 4,
-          marginBottom: 0,
+          width: "100%",
+          // gap: 4,
+          style: {
+            ...(isObscured && {
+              color: "transparent",
+              textShadow: "0 0 10px rgba(0,0,0,0.5)",
+            }),
+          },
         },
         [
-          h(MarkdownView, {
-            md: `**${bold(creatorName)}** requested that you cosign these notes.
-
-            ${t(`conversations.sign.once-signed`)}
-            `,
-          }),
+          h(Header, [
+            //
+            h(AriaHeading, { size: "md" }, "Conversation"),
+            h(Spacer),
+          ]),
+          h(ConversationView, props),
+          h(Divider),
+          h(
+            Stack,
+            {
+              direction: "row",
+              justifyContent: "start",
+              alignItems: "start",
+              width: "100%",
+            },
+            [
+              isReading(intent) &&
+                //
+                h(ShareButton, { onClickShare }),
+              h(Spacer),
+              // for now, only creator can delete
+              isCreatedBy(conversation, viewer) &&
+                h(DeleteButton, {
+                  onClick: onClickDelete,
+                  isLoading: isDeleting,
+                  isDisabled: false,
+                }),
+            ]
+          ),
         ]
       ),
-    h(
-      Stack,
-      {
-        direction: "column",
-        width: "100%",
-        gap: 4,
-        style: {
-          ...(isObscured && {
-            color: "transparent",
-            textShadow: "0 0 10px rgba(0,0,0,0.5)",
-          }),
-        },
-      },
-      [
-        h(Header, [
-          //
-          h(AriaHeading, { size: "md" }, "Conversation"),
-          h(Spacer),
-        ]),
-        h(ConversationView, { viewer, conversation, isObscured }),
-        h(Stack, { direction: "row" }, [
-          isSigningStep(intent, step, Step.Sign) &&
-            h(SignButton, { onClickSign, isSignLoading }),
-          isReading(intent) && h(ShareButton, { onClickShare }),
-          h(Spacer),
-          h(DeleteButton, {
-            onClick: onClickDelete,
-            isLoading: isDeleting,
-            isDisabled: false,
-          }),
-        ]),
-      ]
-    ),
-  ])
+    ]
+  )
 }

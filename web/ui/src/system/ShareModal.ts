@@ -47,7 +47,7 @@ export const ShareModal = ({
     canShare = navigator.canShare({ url, title: "Conversation" })
   }
 
-  const shareInputLabel = `Copy share link to clipboard`
+  const shareInputLabel = `Copy link to clipboard`
   return h(Modal, { isOpen, onClose, showFooter: true }, [
     h(Stack, { direction: "column", gap: 4 }, [
       cta && h(MarkdownView, { md: cta }),
@@ -55,7 +55,7 @@ export const ShareModal = ({
       subheading && h(Text, subheading),
       (heading || subheading || cta) && h(Divider),
       h(Stack, { direction: "column", gap: 1 }, [
-        h(Heading, { size: "xs" }, shareInputLabel),
+        h(Text, { fontSize: "sm" }, shareInputLabel),
         h(InputGroup, { size }, [
           h(Input, {
             value: shareURL,

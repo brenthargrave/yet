@@ -44,12 +44,12 @@ defmodule App.TimelineEvent do
     id = "t:#{kind}/cid:#{cid}/vid:#{vid}"
     attrs = Map.put(attrs, :id, id)
 
-    first_signature =
-      conversation.signatures
-      |> Enum.sort_by(& &1.signed_at, {:asc, DateTime})
+    first =
+      conversation.participations
+      |> Enum.sort_by(& &1.occurred_at, {:asc, DateTime})
       |> Enum.at(0)
 
-    attrs = Map.put(attrs, :occurred_at, first_signature.signed_at)
+    attrs = Map.put(attrs, :occurred_at, first.occurred_at)
 
     %__MODULE__{}
     |> change(kind: :conversation_published)

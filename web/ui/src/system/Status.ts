@@ -1,25 +1,26 @@
 import { Icon } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { AiOutlineFileDone } from "react-icons/ai"
+import { BsCheckCircle } from "react-icons/bs"
 import { MdPendingActions, MdUnpublished } from "react-icons/md"
-import { RiDraftLine, RiLockLine } from "react-icons/ri"
+import { RiDraftLine } from "react-icons/ri"
+import { match } from "ts-pattern"
 import { ConversationStatus, statusText } from "~/graph"
 import { toSentence } from "~/i18n"
 import { Stack, Text } from "."
 import { lightGray, lightGreen, lightYellow } from "./styles"
 
-const statusIcon = (status: ConversationStatus) => {
-  if (status === ConversationStatus.Draft) return RiDraftLine
-  if (status === ConversationStatus.Proposed) return MdPendingActions
-  if (status === ConversationStatus.Signed) return AiOutlineFileDone
-  if (status === ConversationStatus.Deleted) return MdUnpublished
-  return null
-}
+const statusIcon = (status: ConversationStatus) =>
+  match(status)
+    .with(ConversationStatus.Draft, () => RiDraftLine)
+    .with(ConversationStatus.Proposed, () => MdPendingActions)
+    .with(ConversationStatus.Joined, () => BsCheckCircle) // AiOutlineFileDone
+    .with(ConversationStatus.Deleted, () => MdUnpublished)
+    .exhaustive()
 
 const statusColor = (status: ConversationStatus) => {
   if (status === ConversationStatus.Proposed) return lightYellow // "yellow.100"
-  if (status === ConversationStatus.Signed) return lightGreen // "green.100"
+  if (status === ConversationStatus.Joined) return lightGreen // "green.100"
   if (status === ConversationStatus.Deleted) return "red.100"
   return lightGray // "white"
 }

@@ -17,7 +17,7 @@ export const CreateButton = ({
   isDisabled,
   size = "xs",
   variant = "solid",
-  cta = `New note`,
+  cta = `New`,
 }: Props) =>
   h(
     AriaButton,

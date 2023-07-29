@@ -1418,11 +1418,6 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@braintree/browser-detection@^1.12.1":
-  version "1.12.1"
-  resolved "https://registry.yarnpkg.com/@braintree/browser-detection/-/browser-detection-1.12.1.tgz#917af7834ea37615957f0e1eef67def9d0b142db"
-  integrity sha512-i/54qrax5o/WbJJhsE/7qqKE594/kGhR+xSu/w13rT7Mlr/uITkWDXzxffcKQ6l6FQxK0IG0EfgT6TJpWgZcUQ==
-
 "@chakra-ui/accordion@1.4.11":
   version "1.4.11"
   resolved "https://registry.yarnpkg.com/@chakra-ui/accordion/-/accordion-1.4.11.tgz#31c0f17cd7b7c92f784307b87de73d8a8c4cf9f7"
@@ -12351,10 +12346,10 @@ phoenix@1.6.11:
   resolved "https://registry.yarnpkg.com/phoenix/-/phoenix-1.6.11.tgz#e29c3658c8fd6ba509e87130d2b1b20adc6a9a53"
   integrity sha512-z/MSg9yY20JhTSj6tKmOYE9p+PuU+FVstYtgBfIZPGNLKhSuV9Zcs9LLLKWeiJ9EUzaXS/QeO8Po4+jJnyNfMw==
 
-phone@3.1.16:
-  version "3.1.16"
-  resolved "https://registry.yarnpkg.com/phone/-/phone-3.1.16.tgz#b30beb5960175087753baaafa149b6cb8352d8cb"
-  integrity sha512-PBExcsovITnpmv5FKE9+5s4QU4UQ0Dd7+9k2cR9JDG0Bb4SF4UlBWS7d2QlGTJzM1z5Hvn4cWIZ6h/myGLh3xg==
+phone@3.1.41:
+  version "3.1.41"
+  resolved "https://registry.yarnpkg.com/phone/-/phone-3.1.41.tgz#c02ee8bbb78707b81ec5c286df32b81c6234d389"
+  integrity sha512-sjYk1DdjYqSbcfYyeHQ6FNXr2RH7gHtkQflyleSBQ0V83db3tO9sXHhsr5WyYdsXaOW2tBg4p+P8HVgwFRJp+Q==
 
 picocolors@^1.0.0:
   version "1.0.0"
@@ -12958,6 +12953,11 @@ react-inspector@^5.1.0:
     "@babel/runtime" "^7.0.0"
     is-dom "^1.0.0"
     prop-types "^15.0.0"
+
+react-international-phone@3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/react-international-phone/-/react-international-phone-3.1.2.tgz#2423f2d1211f5c85a2ab14c9b2018c380048c983"
+  integrity sha512-K4IVrSI6kGtree9seShZx1CymPqTocNh4e4SJsyltqI/as/y6NEWAlnItIeZq2wgowx0zpL0Db9jQoy/ZuO0wQ==
 
 react-is@17.0.2, react-is@^17.0.2:
   version "17.0.2"
@@ -13593,13 +13593,6 @@ restore-cursor@^3.1.0:
   dependencies:
     onetime "^5.1.0"
     signal-exit "^3.0.2"
-
-restricted-input@3.0.5:
-  version "3.0.5"
-  resolved "https://registry.yarnpkg.com/restricted-input/-/restricted-input-3.0.5.tgz#c43d279df36be0a11085daa3b1ae1d28044c44d8"
-  integrity sha512-lUuXZ3wUnHURRarj5/0C8vomWIfWJO+p7T6RYwB46v7Oyuyr3yyupU+i7SjqUv4S6RAeAAZt1C/QCLJ9xhQBow==
-  dependencies:
-    "@braintree/browser-detection" "^1.12.1"
 
 ret@~0.1.10:
   version "0.1.15"

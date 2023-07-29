@@ -22,7 +22,15 @@ const options: Sentry.BrowserOptions = {
     dsn,
   },
   beforeSend: (event) =>
-    debug || ["prod", "test"].includes(environment) ? event : null,
+    debug ||
+    [
+      //
+      "prod",
+      "test",
+      "dev",
+    ].includes(environment)
+      ? event
+      : null,
 }
 if (debug) console.debug("Sentry options", options)
 Sentry.init(options)

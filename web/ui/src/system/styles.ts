@@ -19,6 +19,8 @@ export const paddingDefault = 4
 export const white = "#fff"
 
 export const lightGray = rgb(237, 242, 248).toString()
+export const gray = "#888"
+
 export const twitterBlue = "#1D9BF0"
 
 // status colors
@@ -28,4 +30,10 @@ export const lightGreen = rgb(198, 246, 214, 0.3).toString()
 
 export const ariaLabel = (value: string) => {
   return { "aria-label": value }
+}
+
+export const roundedCorners = {
+  borderWidth: "1px",
+  borderRadius: "lg",
+  padding: 4,
 }

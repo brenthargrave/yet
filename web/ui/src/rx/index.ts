@@ -1,18 +1,25 @@
+/* eslint no-console: 0 */
+
+import { captureException, withScope } from "@sentry/react"
 import {
+  catchError,
+  EMPTY,
+  map,
+  merge,
   MonoTypeOperatorFunction,
-  OperatorFunction,
   Observable,
+  OperatorFunction,
   share,
   shareReplay,
   Subject,
-  map,
-  merge,
 } from "rxjs"
 import { Source as WonkaSource, toObservable } from "wonka"
 import { Observable as ZenObservable } from "zen-observable-ts"
-import { pluck } from "~/fp"
 import { partitionError$ } from "~/graph"
+import { reportException } from "~/graph/operations"
+import { t } from "~/i18n"
 import { error } from "~/notice"
+import { toast } from "~/toast"
 
 export type ObservableCallback<O> = { $: Observable<O>; cb: (t?: any) => void }
 export type ObservableCallbackTuple<O> = [(t?: any) => void, Observable<O>]
@@ -71,7 +78,34 @@ export const noticeFromError$ = (error$: Observable<Error>) => {
     map(({ message }) => error({ description: message }))
   )
   const appErrorNotice = appError$.pipe(
-    map(({ message }) => error({ description: message }))
+    map(({ message }) =>
+      error({
+        title: t("default.error.title"),
+        description: t("default.error.description"),
+      })
+    )
   )
   return merge(userErrorNotice, appErrorNotice)
+}
+
+export function swallowError<T>(
+  callback?: (error: Error, caught: Observable<T>) => void
+): MonoTypeOperatorFunction<T> {
+  return (source) =>
+    source.pipe(
+      catchError((error, caught$) => {
+        console.error(error)
+        // custom handling
+        if (callback) callback(error, caught$)
+        reportException(error)
+        // display an error notice
+        toast({
+          title: t("default.error.title"),
+          description: t("default.error.description"),
+          status: "error",
+        })
+        // swallow error
+        return EMPTY
+      })
+    )
 }

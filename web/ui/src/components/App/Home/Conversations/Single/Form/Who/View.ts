@@ -1,6 +1,7 @@
 import { h } from "@cycle/react"
 import { CreatableSelect } from "chakra-react-select"
 import { FC } from "react"
+import { isEmpty } from "~/fp"
 import { InputGroup, Stack, lightGray, ariaLabel } from "~/system"
 
 export interface Option {
@@ -12,7 +13,6 @@ export interface Option {
 export type SelectedOption = Omit<Option, "__isNew__">
 
 export interface Props {
-  autoFocus?: boolean
   options?: Option[]
   onSelect: (option: Option) => void
   selectedOptions?: SelectedOption[]
@@ -20,7 +20,6 @@ export interface Props {
 }
 
 export const View: FC<Props> = ({
-  autoFocus = true,
   options = [],
   selectedOptions = [],
   onSelect,
@@ -32,7 +31,7 @@ export const View: FC<Props> = ({
         isDisabled,
         placeholder: "With whom?",
         ...ariaLabel("Who"),
-        autoFocus,
+        autoFocus: isEmpty(selectedOptions),
         size: "md",
         chakraStyles: {
           container: (provided, state) => ({

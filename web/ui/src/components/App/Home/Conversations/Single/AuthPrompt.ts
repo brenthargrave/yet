@@ -9,6 +9,7 @@ import {
 } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
+import { t } from "~/i18n"
 import {
   AriaButton,
   ariaLabel,
@@ -32,6 +33,7 @@ export const View: FC<Props> = ({
   occurredAtDesc = "???",
 }) => {
   const onClose = () => null
+  const authCTA = `Please sign in to participate.`
   return h(Modal, {
     // isCentered: true,
     autoFocus: true,
@@ -47,17 +49,17 @@ export const View: FC<Props> = ({
           h(Center, {}, [
             h(Stack, { maxWidth, width: "100%", direction: "column", gap: 6 }, [
               h(MarkdownView, {
-                md: `**${creatorName}** wants to share their notes from your conversation on **${occurredAtDesc}**.
+                md: `**${creatorName}** wants to share notes from your conversation on **${occurredAtDesc}**.
 
-               Please sign in to review them.`,
-                ...ariaLabel(`Please sign in to review them.`),
+               ${authCTA}`,
+                ...ariaLabel(authCTA),
               }),
               h(
                 Stack,
                 { direction: "column", alignItems: "center", width: "100%" },
                 [
                   //
-                  h(AriaButton, { onClick: onClickAuth }, `Sign in / Sign up`),
+                  h(AriaButton, { onClick: onClickAuth }, t("app.auth")),
                 ]
               ),
             ]),
