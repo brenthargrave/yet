@@ -24,6 +24,8 @@ defmodule Sentry.PlugTunnel do
       url = "https://#{uri.host}/api/#{project_id}/envelope/"
 
       {:ok, response} = HTTPoison.post(url, envelope)
+      # TODO: error-handling
+      # {:error, %HTTPoison.Error{reason: :timeout, id: nil}}
 
       conn
       |> resp(code(:ok), response.body)

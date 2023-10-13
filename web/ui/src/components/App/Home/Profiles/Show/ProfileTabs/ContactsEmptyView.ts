@@ -2,15 +2,15 @@ import { AddIcon } from "@chakra-ui/icons"
 import { Button, Text } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { Customer, Profile } from "~/graph"
+import { Customer, ProfileExtended } from "~/graph"
 import { t } from "~/i18n"
 import { AriaHeading, EmptyViewBase } from "~/system"
 
 export type OnClickNew = () => void
 
 export interface Props {
+  subject: ProfileExtended
   viewer: Customer
-  subject: Profile
   onClickNew?: OnClickNew
 }
 

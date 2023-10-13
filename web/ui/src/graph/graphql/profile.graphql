@@ -15,7 +15,29 @@ fragment ProfileProps on Profile {
   facebookUrl
   facebookName
   facebookImage
+}
+
+#  dupes ProfileProps
+fragment ProfileExtendedProps on ProfileExtended {
+  id
+  name
+  firstName
+  lastName
+  email
+  e164
+  phone
+  role
+  org
+  website
+  location
+  description
+  twitterHandle
+  facebookUrl
+  facebookName
+  facebookImage
+  #
   socialDistance
+  isMuted
 }
 
 fragment OnboardingProfileProps on OnboardingProfile {
@@ -44,15 +66,14 @@ fragment ContactProps on Contact {
   facebookUrl
   facebookName
   facebookImage
-  socialDistance
   # additions
   conversationCountWithSubject
 }
 
 query GetProfile($input: GetProfileInput!) {
   getProfile(input: $input) {
-    ...on Profile {
-      ...ProfileProps
+    ...on ProfileExtended {
+      ...ProfileExtendedProps
 
       events {
         ...on ConversationPublished {
@@ -100,6 +121,18 @@ mutation PatchProfile($input: PatchProfileInput!) {
     }
     ...on OnboardingProfile {
       ...OnboardingProfileProps
+    }
+  }
+}
+
+
+mutation MuteProfile($input: MuteProfileInput) {
+  muteProfile(input: $input) {
+    ...on ProfileExtended {
+      ...ProfileExtendedProps
+    }
+    ... on UserError {
+      ...UserErrorProps
     }
   }
 }

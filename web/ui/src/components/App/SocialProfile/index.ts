@@ -1,19 +1,10 @@
-import {
-  filter,
-  map,
-  merge,
-  Observable,
-  share,
-  switchMap,
-  withLatestFrom,
-} from "rxjs"
-import { isNotNullish } from "rxjs-etc"
+import { map, merge, Observable, share, switchMap, withLatestFrom } from "rxjs"
 import {
   AuthProvider,
   EventName,
   FromView,
   hrefForSocial,
-  Profile,
+  ProfileExtended,
   Source as GraphSource,
   track$,
 } from "~/graph"
@@ -21,7 +12,7 @@ import { makeTagger } from "~/log"
 import { cb$ } from "~/rx"
 
 interface Props {
-  profile$: Observable<Profile>
+  profile$: Observable<ProfileExtended>
   from: FromView
 }
 

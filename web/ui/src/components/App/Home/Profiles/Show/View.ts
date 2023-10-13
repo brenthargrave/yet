@@ -1,16 +1,18 @@
 import { LinkIcon } from "@chakra-ui/icons"
 import {
+  Button,
   Heading,
   HStack,
   Icon,
   IconButton,
   Link,
   Spacer,
+  Stack,
   StackDivider,
   Text,
 } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { FC } from "react"
+import { FC, ReactNode } from "react"
 import { GrLocation } from "react-icons/gr"
 import { HiOutlineOfficeBuilding } from "react-icons/hi"
 import {
@@ -20,7 +22,7 @@ import {
   formatWebsite,
   hasSocial,
   iconForSocial,
-  Profile,
+  ProfileExtended,
 } from "~/graph"
 import { t } from "~/i18n"
 import {
@@ -32,31 +34,42 @@ import {
   MarkdownView,
   Nav,
 } from "~/system"
-import { ProfileTabs, Props as ProfileTabsProps } from "./ProfileTabs"
+import { View as MuteButton } from "./MuteButton/View"
+import {
+  ProfileListsProps,
+  ProfileTabs,
+  Props as ProfileTabsProps,
+} from "./ProfileTabs"
 
 export enum State {
   loading = "loading",
   ready = "ready",
 }
 
-export interface Props {
+export interface Props extends ProfileListsProps {
+  profile: ProfileExtended
   state: State
   viewer: Customer
-  profile: Profile
   onClickEdit?: () => void
   onClickConversation?: (c: Conversation) => void
   onClickNewConversation?: () => void
   onClickSocial?: (social: AuthProvider) => void
+  //
+  muteButton?: ReactNode
 }
 
 export const View: FC<Props> = ({
   state,
   viewer,
   profile,
+  events,
+  contacts,
   onClickEdit,
   onClickConversation,
   onClickNewConversation,
   onClickSocial,
+  //
+  muteButton,
 }) => {
   const {
     socialDistance,
@@ -69,8 +82,7 @@ export const View: FC<Props> = ({
     location,
     website,
   } = profile
-  const isOwn = socialDistance === 0
-  const isContact = socialDistance === 1
+  const isOwn = viewer.id === profile.id
   const relation = isOwn ? "me" : "other"
 
   const socials = Object.values(AuthProvider).filter((social) =>
@@ -80,6 +92,8 @@ export const View: FC<Props> = ({
   const profileTabsProps: ProfileTabsProps = {
     viewer,
     subject: profile,
+    events,
+    contacts,
     onClickConversation,
     onClickNewConversation,
   }
@@ -92,12 +106,6 @@ export const View: FC<Props> = ({
           //
           h(AriaHeading, { size: "md" }, t(`profles.show.${relation}.heading`)),
           h(Spacer),
-          isOwn &&
-            h(EditButton, {
-              onClick: () => {
-                if (onClickEdit) onClickEdit()
-              },
-            }),
         ]),
         h(
           FullWidthVStack,
@@ -110,8 +118,18 @@ export const View: FC<Props> = ({
           [
             h(FullWidthVStack, { gap: 2 }, [
               h(FullWidthVStack, {}, [
-                // Name
-                h(Heading, { size: "lg" }, name),
+                h(Stack, { direction: "row", width: "100%", align: "center" }, [
+                  // Name
+                  h(Heading, { size: "lg" }, name),
+                  h(Spacer),
+                  isOwn
+                    ? h(EditButton, {
+                        onClick: () => {
+                          if (onClickEdit) onClickEdit()
+                        },
+                      })
+                    : muteButton,
+                ]),
                 // Work
                 role &&
                   org &&

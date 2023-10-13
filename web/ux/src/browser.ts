@@ -249,6 +249,10 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
       await click("Continue")
       await input("email", email)
       await click("Continue")
+      await input("org", `${first_name} & Co.`)
+      await click("Continue")
+      await input("role", `Employee`)
+      await click("Continue")
       await see("Home")
 
       await seeNavOptions({
@@ -458,7 +462,6 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
         if (!value) throw new Error("MIA: shareURL value")
         return value
       })
-      await screenie("invited")
 
       // await click("Close")
       await press("Escape")

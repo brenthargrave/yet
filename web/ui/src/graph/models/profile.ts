@@ -1,7 +1,13 @@
 import { FaFacebook, FaTwitter } from "react-icons/fa"
 import { match } from "ts-pattern"
 import { isNotEmpty } from "~/fp"
-import { AuthProvider, MakeOptional, Profile, Contact } from "../generated"
+import {
+  AuthProvider,
+  MakeOptional,
+  Profile,
+  Contact,
+  ProfileExtended,
+} from "../generated"
 
 export const socialLowered = (social: AuthProvider) => social.toLowerCase()
 
@@ -11,13 +17,16 @@ export const iconForSocial = (social: AuthProvider) =>
     .with(AuthProvider.Facebook, () => FaFacebook)
     .exhaustive()
 
-export const hasSocial = (social: AuthProvider, profile: Profile) =>
+export const hasSocial = (social: AuthProvider, profile: ProfileExtended) =>
   match(social)
     .with(AuthProvider.Twitter, () => isNotEmpty(profile.twitterHandle))
     .with(AuthProvider.Facebook, () => isNotEmpty(profile.facebookUrl))
     .exhaustive()
 
-export const hrefForSocial = (social: AuthProvider, profile: Profile): string =>
+export const hrefForSocial = (
+  social: AuthProvider,
+  profile: ProfileExtended
+): string =>
   match(social)
     .with(
       AuthProvider.Twitter,

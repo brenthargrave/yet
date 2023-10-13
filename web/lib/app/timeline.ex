@@ -95,8 +95,19 @@ defmodule App.Timeline do
         all_participants_contacts
         |> Enum.uniq_by(&Map.get(&1, :id))
 
+      all_participants_muters_ids =
+        Repo.all(App.FilterEvent.all_muted(all_participants_ids))
+        |> Enum.map(& &1.creator_id)
+        |> Enum.uniq()
+
+      all_potential_viewers_sans_mutes =
+        all_potential_viewers
+        |> Enum.reject(fn viewer ->
+          Enum.member?(all_participants_muters_ids, viewer.id)
+        end)
+
       _events =
-        Enum.map(all_potential_viewers, fn viewer ->
+        Enum.map(all_potential_viewers_sans_mutes, fn viewer ->
           viewer_id = viewer.id
 
           contacts_id_set =

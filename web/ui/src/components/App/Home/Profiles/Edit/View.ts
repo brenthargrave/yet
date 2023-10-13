@@ -1,18 +1,10 @@
-import { CheckIcon, DeleteIcon, ViewIcon } from "@chakra-ui/icons"
-import { ButtonGroup, Icon, IconButton, Tooltip } from "@chakra-ui/react"
+import { CheckIcon, ViewIcon } from "@chakra-ui/icons"
+import { Icon } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { form } from "@cycle/react-dom"
 import { partition } from "ramda"
 import { FC, ReactNode } from "react"
-import { match } from "ts-pattern"
-import {
-  AuthProvider,
-  handleForSocial,
-  hasSocial,
-  iconForSocial,
-  Profile,
-  socialProduct,
-} from "~/graph"
+import { AuthProvider, hasSocial, ProfileExtended } from "~/graph"
 import {
   Button,
   containerProps,
@@ -30,7 +22,7 @@ import { Section } from "./Section"
 export const size = "md"
 
 export interface Props {
-  profile: Profile
+  profile: ProfileExtended
   isDisabledSubmit?: boolean
   onSubmit?: () => void
   onCancel?: () => void
@@ -161,7 +153,8 @@ export const View: FC<Props> = ({
           // handle
           // pfp
 
-          // socials
+          // socials (oauth'd)
+          /*
           h(
             Section,
             {
@@ -254,6 +247,7 @@ export const View: FC<Props> = ({
               }),
             ]
           ),
+          */
           // Actions
           h(Stack, { direction: "column", paddingTop: 2 }, [
             h(Divider),

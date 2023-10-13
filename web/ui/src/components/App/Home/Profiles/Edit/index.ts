@@ -243,11 +243,15 @@ export const Edit = (sources: Sources, tagPrefix?: string) => {
   const action = merge(show$)
   const notice = merge(userError$)
   const track = merge(twitter.track, facebook.track, social.track)
+  const value = {
+    editedProfile$: ok$,
+  }
 
   return {
     react,
     notice,
     action,
     track,
+    value,
   }
 }

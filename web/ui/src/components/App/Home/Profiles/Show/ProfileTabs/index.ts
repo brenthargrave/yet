@@ -7,7 +7,7 @@ import {
   Contact,
   Conversation,
   Customer,
-  Profile,
+  ProfileExtended,
   TimelineEvent,
 } from "~/graph"
 import { ariaLabel, FullWidthList, FullWidthVStack } from "~/system"
@@ -15,11 +15,14 @@ import { EmptyView as TimelineEmptyView } from "../../../Timeline/EmptyView"
 import { ContactsEmptyView } from "./ContactsEmptyView"
 import { ContactView } from "./ContactView"
 
-export interface Props {
+export interface ProfileListsProps {
+  events: TimelineEvent[]
+  contacts: Contact[]
+}
+
+export interface Props extends ProfileListsProps {
   viewer: Customer
-  subject: Profile
-  // events: TimelineEvent[]
-  // contacts: Contact[]
+  subject: ProfileExtended
   onClickConversation?: (c: Conversation) => void
   onClickNewConversation?: () => void
 }
@@ -27,10 +30,11 @@ export interface Props {
 export const ProfileTabs: FC<Props> = ({
   viewer,
   subject,
+  events,
+  contacts,
   onClickConversation,
   onClickNewConversation,
 }) => {
-  const { contacts, events } = subject
   return h(
     FullWidthVStack,
     {

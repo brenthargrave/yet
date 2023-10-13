@@ -93,6 +93,7 @@ export const View = ({
             },
             submitButtonCopy
           ),
+          /*
           // Twitter auth
           h(
             Stack,
@@ -139,6 +140,7 @@ export const View = ({
                   ]),
             ]
           ),
+           */
         ]),
       ]),
     ]),

@@ -88,6 +88,9 @@ import {
   MentionsInput,
   MeQuery,
   MeQueryVariables,
+  MuteProfileDocument,
+  MuteProfileInput,
+  MuteProfileMutation,
   Note,
   NoteAddedDocument,
   NoteAddedSubscription,
@@ -105,6 +108,7 @@ import {
   PostNoteInput,
   PostNoteMutation,
   Profile,
+  ProfileExtended,
   ProposeConversationDocument,
   ProposeConversationMutation,
   ProposeInput,
@@ -329,12 +333,12 @@ export const patchProfile$ = (input: PatchProfileInput) =>
   })
 
 export const getProfile$ = (input: GetProfileInput) =>
-  query$<GetProfileQuery, GetProfileQueryVariables, Profile>({
+  watchQuery$<GetProfileQuery, GetProfileQueryVariables, ProfileExtended>({
     query: GetProfileDocument,
     variables: { input },
     getValue: (data) => {
       return match(data.getProfile)
-        .with({ __typename: "Profile" }, (v) => v)
+        .with({ __typename: "ProfileExtended" }, (v) => v)
         .with({ __typename: "UserError" }, handleUserError)
         .run()
     },
@@ -347,6 +351,18 @@ export const updateProfile$ = (input: UpdateProfileInput) =>
     getValue: (data) => {
       return match(data.updateProfile)
         .with({ __typename: "Profile" }, (v) => v)
+        .with({ __typename: "UserError" }, handleUserError)
+        .run()
+    },
+  })
+
+export const mute$ = (input: MuteProfileInput) =>
+  mutate$<MuteProfileInput, MuteProfileMutation, ProfileExtended>({
+    input,
+    mutation: MuteProfileDocument,
+    getValue: (data) => {
+      return match(data.muteProfile)
+        .with({ __typename: "ProfileExtended" }, (v) => v)
         .with({ __typename: "UserError" }, handleUserError)
         .run()
     },

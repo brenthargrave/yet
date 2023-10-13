@@ -66,8 +66,17 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
     shareLatest()
   )
 
-  const show = Show(sources, tagScope)
   const edit = Edit(sources, tagScope)
+  const { editedProfile$ } = edit.value
+  const show = Show(
+    {
+      ...sources,
+      props: {
+        editedProfile$,
+      },
+    },
+    tagScope
+  )
 
   const react = state$.pipe(
     switchMap((state) =>
@@ -82,7 +91,7 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
   )
 
   const action = merge(...pluck("action", [edit, show]))
-  const notice = merge(...pluck("notice", [edit]))
+  const notice = merge(...pluck("notice", [edit, show]))
   const router = merge(...pluck("router", [show]))
   const track = merge(...pluck("track", [show, edit]))
 

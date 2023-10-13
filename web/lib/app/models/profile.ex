@@ -44,6 +44,16 @@ defmodule App.Profile do
     |> validate_email(:email, checks: [:html_input])
   end
 
+  def onboarding_changeset(record, %{org: _} = attrs) do
+    record
+    |> handle_single_attr(attrs, :org)
+  end
+
+  def onboarding_changeset(record, %{role: _} = attrs) do
+    record
+    |> handle_single_attr(attrs, :role)
+  end
+
   def changeset(record, attrs) do
     record
     |> cast(attrs, [:first_name, :last_name, :email, :org, :role])

@@ -30,6 +30,14 @@ defmodule AppWeb.Resolvers.Profiles do
     Profiles.update(customer, input)
   end
 
+  def mute(
+        _parent,
+        %{input: input} = _args,
+        %{context: %{customer: customer}} = _resolution
+      ) do
+    Profiles.mute(customer, input)
+  end
+
   typedstruct module: ContactsPayload do
     field(:contacts, list(Contact.t()))
   end

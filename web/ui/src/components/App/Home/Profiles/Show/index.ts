@@ -7,6 +7,8 @@ import {
   map,
   merge,
   mergeMap,
+  Observable,
+  pluck,
   share,
   startWith,
   switchMap,
@@ -23,6 +25,8 @@ import {
   FromView,
   getProfile$,
   GetProfileInput,
+  Profile,
+  ProfileExtended,
   Source as GraphSource,
   TimelineFilters,
   track$,
@@ -30,9 +34,15 @@ import {
 import { makeTagger } from "~/log"
 import { NEWID, push, routes, Source as RouterSource } from "~/router"
 import { cb$, shareLatest } from "~/rx"
+import { MuteButton } from "./MuteButton"
 import { State, View } from "./View"
 
+interface Props {
+  editedProfile$: Observable<Profile>
+}
+
 export interface Sources {
+  props: Props
   react: ReactSource
   router: RouterSource
   graph: GraphSource
@@ -44,15 +54,33 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
   const tag = makeTagger(tagScope)
 
   const {
-    graph: { me$: _me$, profile$: _profile$ },
+    graph: { me$: _me$, profile$: initialProfile$ },
     router: { history$ },
+    props: { editedProfile$: _editedProfile$ },
   } = sources
+
+  const editedProfile$ = _editedProfile$.pipe(
+    withLatestFrom(initialProfile$),
+    map(([edited, initial]) => {
+      return {
+        ...initial,
+        ...edited,
+      } as ProfileExtended
+    }),
+    tag("editedProfile$ (merged w/ initial)"),
+    share()
+  )
+
   const me$ = _me$.pipe(filter(isNotNullish), tag("me$"))
+  const myProfile$ = merge(initialProfile$, editedProfile$).pipe(
+    tag("myProfile$"),
+    shareLatest()
+  )
 
   const profile$ = history$.pipe(
     switchMap((route) =>
       match(route)
-        .with({ name: routes.me.name }, () => _profile$)
+        .with({ name: routes.me.name }, () => myProfile$)
         .with({ name: routes.profile.name }, ({ params: { pid } }) => {
           const timelineFilters: TimelineFilters = { onlyWith: pid }
           const profileInput: GetProfileInput = { id: pid, timelineFilters }
@@ -120,10 +148,39 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
   )
   const { onClickSocial } = social.value
 
+  const events$ = profile$.pipe(
+    pluck("events"),
+    filter(isNotNullish),
+    startWith([]),
+    tag("events$"),
+    shareLatest()
+  )
+  const contacts$ = profile$.pipe(
+    pluck("contacts"),
+    filter(isNotNullish),
+    startWith([]),
+    tag("contacts$"),
+    shareLatest()
+  )
+
+  const muteButton = MuteButton(
+    {
+      ...sources,
+      props: {
+        me$,
+        profile$,
+      },
+    },
+    tagPrefix
+  )
+
   const props$ = combineLatest({
     state: state$,
     viewer: me$,
     profile: profile$,
+    events: events$,
+    contacts: contacts$,
+    muteButton: muteButton.react,
   }).pipe(tag("props$"), shareLatest())
 
   const react = props$.pipe(
@@ -140,11 +197,13 @@ export const Show = (sources: Sources, tagPrefix?: string) => {
   const action = merge(edit$)
   const router = merge(newConversation$, showConv$)
   const track = merge(trackNewConvo$, social.track)
+  const notice = merge(muteButton.notice)
 
   return {
     react,
     action,
     router,
     track,
+    notice,
   }
 }

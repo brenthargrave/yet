@@ -11,7 +11,12 @@ defmodule App.Email.Digest.View do
     attrs =
       if is_nil(text_decoration),
         do: attrs,
-        else: Map.put(attrs, :style, "text-decoration: #{text_decoration}; color: black;")
+        else:
+          Map.put(
+            attrs,
+            :style,
+            "text-decoration: #{text_decoration}; color: black;"
+          )
 
     label = Map.get(opts, :aria_label)
     attrs = if label, do: Map.put(attrs, "aria-label", label), else: attrs
@@ -30,7 +35,9 @@ defmodule App.Email.Digest.View do
   end
 
   def profile_link(profile, bold \\ true) do
-    link = link(profile.name, profile_href(profile), %{text_decoration: "underline"})
+    link =
+      link(profile.name, profile_href(profile), %{text_decoration: "underline"})
+
     if bold, do: bold(link), else: link
   end
 
@@ -44,7 +51,10 @@ defmodule App.Email.Digest.View do
       aria = "/c/#{conversation.id}"
       conversation_url = ~s(#{root_url()}#{aria})
 
-      date_fmt = if Timex.now().year == date.year, do: "{Mfull} {D}", else: "{Mfull} {D}, {YYYY}"
+      date_fmt =
+        if Timex.now().year == date.year,
+          do: "{Mfull} {D}",
+          else: "{Mfull} {D}, {YYYY}"
 
       date_formatted =
         date
@@ -63,8 +73,14 @@ defmodule App.Email.Digest.View do
           Earmark.as_html!(note, gfm: true, breaks: true)
           # NOTE: make all note links open new page
           |> String.replace("<a ", "<a style='color: black;' target='_blank' ")
-          |> String.replace("<p", "<p style='margin: 0px; padding: 16px 0px 0px 0px;'")
-          |> String.replace("<ul", "<ul style='padding-left: 16px; margin: 0px'")
+          |> String.replace(
+            "<p",
+            "<p style='margin: 0px; padding: 16px 0px 0px 0px;'"
+          )
+          |> String.replace(
+            "<ul",
+            "<ul style='padding-left: 16px; margin: 0px'"
+          )
         end)
         |> Enum.map(fn note ->
           # var(--chakra-colors-gray-200) #E2E8F0
@@ -76,10 +92,13 @@ defmodule App.Email.Digest.View do
 
       # NOTE: ignore invitees, as only signed conversations in timeline
       others_names =
-        Enum.map(conversation.participations, fn p -> profile_link(p.participant) end)
+        Enum.map(conversation.participations, fn p ->
+          profile_link(p.participant)
+        end)
         |> RList.to_sentence()
 
-      participants_header = link(~s(#{creator_name} with #{others_names}), conversation_url)
+      participants_header =
+        link(~s(#{creator_name} with #{others_names}), conversation_url)
 
       %{
         id: event.id,

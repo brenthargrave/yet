@@ -5,17 +5,17 @@ import { Observable } from "rxjs"
 import { match } from "ts-pattern"
 import { Stream } from "xstream"
 import {
+  Contact,
   contacts$,
   conversations$,
   Customer,
   me$,
-  setToken,
-  token$,
   opps$,
   profile$,
-  Contact,
+  setToken,
+  token$,
 } from "~/graph"
-import { Conversation, Opp, Profile } from "./generated"
+import { Conversation, Opp, ProfileExtended } from "./generated"
 
 type Token = string
 
@@ -25,7 +25,7 @@ export interface Source {
   contacts$: Observable<Contact[]>
   conversations$: Observable<Conversation[]>
   opps$: Observable<Opp[]>
-  profile$: Observable<Profile>
+  profile$: Observable<ProfileExtended>
 }
 
 enum CommandType {

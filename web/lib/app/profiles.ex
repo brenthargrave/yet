@@ -8,7 +8,6 @@ defmodule App.Profiles do
 
   alias App.{
     Repo,
-    Customer,
     Profile,
     Timeline,
     Contacts,
@@ -17,10 +16,7 @@ defmodule App.Profiles do
 
   @type input :: %{id: String.t(), filters: Timeline.filters()}
 
-  defun get(
-          viewer :: Customer.t(),
-          input :: input()
-        ) :: Brex.Result.s(Profile.t()) do
+  def get(viewer, input) do
     id = Map.get(input, :id)
     filters = Map.get(input, :timeline_filters, %{})
 
@@ -57,8 +53,8 @@ defmodule App.Profiles do
 
     # annotate contacts w/ context
     subject_conversations =
-        Conversations.get_conversations(id)
-        |> Repo.preload(Conversations.preloads())
+      Conversations.get_conversations(id)
+      |> Repo.preload(Conversations.preloads())
 
     subject_contacts =
       subject_contacts
@@ -66,8 +62,7 @@ defmodule App.Profiles do
         count =
           subject_conversations
           |> Enum.count(fn conv ->
-            participants_ids =
-              Enum.map(conv.participations, fn p -> p.participant_id end)
+            participants_ids = Enum.map(conv.participations, fn p -> p.participant_id end)
 
             conv.creator_id == contact.id or Enum.member?(participants_ids, contact.id)
           end)
@@ -75,6 +70,9 @@ defmodule App.Profiles do
         Map.put(contact, :conversation_count_with_subject, count)
       end)
       |> Enum.sort_by(& &1.conversation_count_with_subject, :desc)
+
+    filter_event = Repo.one(App.FilterEvent.latest(id, viewer_id))
+    muted = if is_nil(filter_event), do: false, else: Map.get(filter_event, :active, false)
 
     Repo.get(Profile, id)
     |> lift(nil, :not_found)
@@ -94,17 +92,43 @@ defmodule App.Profiles do
     |> fmap(&Map.put(&1, :social_distance, distance))
     |> fmap(&Map.put(&1, :events, events))
     |> fmap(&Map.put(&1, :contacts, subject_contacts))
+    |> fmap(&Map.put(&1, :is_muted, muted))
   end
 
-  defun update(
-          customer,
-          input
-        ) :: Brex.Result.s(Profile.t()) do
+  def update(
+        customer,
+        input
+      ) do
     Repo.get(Profile, customer.id)
     |> lift(nil, :not_found)
     |> fmap(&Profile.changeset(&1, input))
     |> bind(&Repo.update/1)
+    # own profile
+    |> fmap(&Map.put(&1, :social_distance, 0))
     |> fmap(&App.Analytics.identify(&1))
+    |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
+  end
+
+  def mute(
+        customer,
+        input
+      ) do
+    Repo.get(Profile, Map.get(input, :profile_id))
+    |> lift(nil, :not_found)
+    |> fmap(fn profile ->
+      Map.merge(input, %{
+        creator: customer,
+        profile: profile,
+        occurred_at: Timex.now()
+      })
+      |> App.FilterEvent.mute_changeset()
+    end)
+    |> bind(&Repo.insert_or_update(&1, on_conflict: {:replace, [:active]}, conflict_target: :id))
+    |> bind(fn filter_event ->
+      id = filter_event.profile_id
+
+      App.Profiles.get(customer, %{id: id, filters: %{only_with: id}})
+    end)
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
   end
 end
