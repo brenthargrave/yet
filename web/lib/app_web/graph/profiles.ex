@@ -25,6 +25,7 @@ defmodule AppWeb.Graph.Profiles do
     field(:facebook_url, :string)
     field(:facebook_name, :string)
     field(:facebook_image, :string)
+    field(:socials, non_null(list_of(non_null(:string))))
   end
 
   object :contact do
@@ -93,6 +94,9 @@ defmodule AppWeb.Graph.Profiles do
     field(:last_name, non_null(:string))
     field(:org, :string)
     field(:role, :string)
+    field(:location, :string)
+    field(:website, :string)
+    field(:socials, non_null(list_of(non_null(:string))))
   end
 
   # Mute
@@ -103,7 +107,7 @@ defmodule AppWeb.Graph.Profiles do
   end
 
   object :profiles_mutations do
-    field :update_profile, :profile_result do
+    field :update_profile, :profile_extended_result do
       arg(:input, :update_profile_input)
       resolve(&Profiles.update/3)
     end

@@ -6,6 +6,7 @@ import remarkBreaks from "remark-breaks"
 import remarkGfm from "remark-gfm"
 import { style } from "typestyle"
 import rehypeRaw from "rehype-raw"
+import { BoxProps } from "@chakra-ui/react"
 import { join, split, take, trim } from "~/fp"
 import { session } from "~/router"
 import { Box } from "."
@@ -19,7 +20,7 @@ const className = style({ textDecoration: "underline" })
 
 const { VITE_HOST: HOST } = import.meta.env
 
-interface Props {
+interface Props extends BoxProps {
   md?: string | null
   maxLines?: number
 }

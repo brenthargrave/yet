@@ -1,21 +1,21 @@
-import { FaFacebook, FaTwitter } from "react-icons/fa"
-import { match } from "ts-pattern"
+import { ReactNode } from "react"
+import {
+  FaFacebook,
+  FaGithub,
+  FaLink,
+  FaLinkedin,
+  FaTwitter,
+} from "react-icons/fa"
+import { match, P } from "ts-pattern"
 import { isNotEmpty } from "~/fp"
 import {
   AuthProvider,
-  MakeOptional,
   Profile,
-  Contact,
   ProfileExtended,
+  SocialSite,
 } from "../generated"
 
 export const socialLowered = (social: AuthProvider) => social.toLowerCase()
-
-export const iconForSocial = (social: AuthProvider) =>
-  match(social)
-    .with(AuthProvider.Twitter, () => FaTwitter)
-    .with(AuthProvider.Facebook, () => FaFacebook)
-    .exhaustive()
 
 export const hasSocial = (social: AuthProvider, profile: ProfileExtended) =>
   match(social)
@@ -46,11 +46,36 @@ export const socialProduct = (social: AuthProvider): string =>
 
 export const handleForSocial = (
   social: AuthProvider,
-  profile: Profile
+  profile: Profile | ProfileExtended
 ): string =>
   match(social)
     .with(AuthProvider.Twitter, () => `@${profile.twitterHandle}`)
     .with(AuthProvider.Facebook, () => profile.facebookName || profile.name)
     .exhaustive()
 
-export const formatWebsite = (url: string) => new URL(url).host
+export const formatWebsite = (url: string) =>
+  new URL(url).host.replace("www.", "")
+
+enum Domain {
+  Github = "github.com",
+}
+
+// UI helpers
+const getSite = (urlString: string): SocialSite => {
+  const domain = new URL(urlString).hostname.replace("www.", "")
+  return match(domain)
+    .with("twitter.com", () => SocialSite.Twitter)
+    .with("linkedin.com", () => SocialSite.Linkedin)
+    .with("facebook.com", () => SocialSite.Facebook)
+    .with("github.com", () => SocialSite.Github)
+    .otherwise(() => SocialSite.Website)
+}
+
+export const iconForSocial = (socialURL: string) =>
+  match(getSite(socialURL))
+    .with(SocialSite.Twitter, () => FaTwitter)
+    .with(SocialSite.Facebook, () => FaFacebook)
+    .with(SocialSite.Linkedin, () => FaLinkedin)
+    .with(SocialSite.Github, () => FaGithub)
+    .with(SocialSite.Website, () => FaLink)
+    .exhaustive()

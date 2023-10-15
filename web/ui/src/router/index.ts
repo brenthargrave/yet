@@ -19,6 +19,9 @@ const tag = makeTagger(tagPrefix)
 
 export const NEWID: ID = "new"
 
+export const toURL = (href: string) =>
+  `https://${window.location.hostname}${href}`
+
 const root = defineRoute("/")
 const conversations = root.extend("/c")
 const conversation = conversations.extend(
@@ -41,9 +44,10 @@ const oppPayment = oppPayments.extend(
 )
 const newOppPayment = oppPayment.extend("/new")
 
+const me = root.extend("/me")
 const profiles = root.extend("/p")
 const profile = profiles.extend({ pid: param.path.string }, (p) => `/${p.pid}`)
-const me = root.extend("/me")
+const profileContacts = profile.extend("/contacts")
 
 const unsubscribe = root.extend("/unsubscribe")
 const unsubscribeDigest = unsubscribe.extend(
@@ -77,6 +81,7 @@ export const { routes, useRoute, RouteProvider, session } = createRouter({
   opp,
   profiles,
   profile,
+  profileContacts,
   me,
   unsubscribeDigest,
   oauth,
@@ -86,9 +91,14 @@ export const routesProfilesList = [
   //
   routes.profiles,
   routes.profile,
+  routes.profileContacts,
   routes.me,
 ]
 export const routeGroupProfiles = createGroup(routesProfilesList)
+export const routeGroupSingleProfile = createGroup([
+  routes.profile,
+  routes.profileContacts,
+])
 
 export const routesOppsList = [routes.conversationOpps, routes.opps]
 export const routeGroupOppsList = createGroup(routesOppsList)
@@ -180,8 +190,8 @@ export const push = (route: Route): Command => {
 export const back = (): Command => {
   return { type: CommandType.back }
 }
-export const replace = (): Command => {
-  return { type: CommandType.replace }
+export const replace = (route: Route): Command => {
+  return { type: CommandType.replace, route }
 }
 
 type Sink = Stream<Command>

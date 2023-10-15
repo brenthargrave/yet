@@ -1,10 +1,17 @@
-import { CheckIcon, ViewIcon } from "@chakra-ui/icons"
-import { Icon } from "@chakra-ui/react"
+import { CheckIcon, DeleteIcon, ViewIcon } from "@chakra-ui/icons"
+import { ButtonGroup, Icon, IconButton, Tooltip } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { form } from "@cycle/react-dom"
 import { partition } from "ramda"
 import { FC, ReactNode } from "react"
-import { AuthProvider, hasSocial, ProfileExtended } from "~/graph"
+import {
+  AuthProvider,
+  handleForSocial,
+  hasSocial,
+  iconForSocial,
+  ProfileExtended,
+  socialProduct,
+} from "~/graph"
 import {
   Button,
   containerProps,
@@ -34,6 +41,10 @@ export interface Props {
   // work
   roleInput: ReactNode
   orgInput: ReactNode
+  // ...
+  locationInput: ReactNode
+  websiteInput: ReactNode
+  socialsInputs: ReactNode[]
   // contact
   email?: string | null
   e164?: string | null
@@ -59,6 +70,10 @@ export const View: FC<Props> = ({
   // work
   roleInput,
   orgInput,
+  // ...
+  locationInput,
+  websiteInput,
+  socialsInputs,
   // misc
   email,
   e164,
@@ -135,23 +150,43 @@ export const View: FC<Props> = ({
               orgInput,
             ]
           ),
+          h(
+            Section,
+            {
+              heading: "Location",
+              size,
+              // leftIcon: h(Icon, { as: HiOutlineOfficeBuilding }),
+            },
+            [locationInput]
+          ),
+          h(
+            Section,
+            {
+              heading: "Website",
+              size,
+              width: "100%",
+              // leftIcon: h(Icon, { as: HiOutlineOfficeBuilding }),
+            },
+            [websiteInput]
+          ),
 
-          // TODO: contact info
-          // email &&
-          //   h(HStack, {}, [
-          //     h(EmailIcon, { size }),
-          //     h(Text, { size }, email),
-          //   ]),
-          // phone &&
-          //   h(HStack, {}, [
-          //     h(PhoneIcon, { size }),
-          //     h(Text, { size }, phone),
-          //   ]),
-
-          // TODO
-          // location
-          // handle
-          // pfp
+          // Socials (links)
+          h(
+            Section,
+            {
+              //
+              heading: "Social accounts",
+              direction: "column",
+              align: "start",
+              pb: 8,
+              spacing: 0,
+              width: "100%",
+            },
+            [
+              //
+              ...socialsInputs,
+            ]
+          ),
 
           // socials (oauth'd)
           /*
@@ -247,7 +282,8 @@ export const View: FC<Props> = ({
               }),
             ]
           ),
-          */
+           */
+
           // Actions
           h(Stack, { direction: "column", paddingTop: 2 }, [
             h(Divider),

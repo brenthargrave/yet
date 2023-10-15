@@ -1,12 +1,20 @@
 import { h } from "@cycle/react"
-import { combineLatest, map, merge, Observable, startWith } from "rxjs"
+import {
+  combineLatest,
+  debounceTime,
+  map,
+  merge,
+  Observable,
+  observeOn,
+  startWith,
+} from "rxjs"
 import { isEmpty } from "~/fp"
 import { makeTagger } from "~/log"
 import { cb$, shareLatest } from "~/rx"
 import { Props as ViewProps, View } from "./View"
 import type { InputType } from "./View"
 
-interface Props
+export interface Props
   extends Omit<
     ViewProps<InputType>,
     "onChange" | "value" | "defaultValue" | "errorMessage"

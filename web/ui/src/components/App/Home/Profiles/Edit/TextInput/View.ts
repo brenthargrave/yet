@@ -1,8 +1,14 @@
-import { FormControl, FormErrorMessage, FormHelperText } from "@chakra-ui/react"
+import {
+  FormControl,
+  FormErrorMessage,
+  FormHelperText,
+  InputGroup,
+  InputRightElement,
+} from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { FC } from "react"
+import { FC, HTMLInputTypeAttribute } from "react"
 import { Maybe } from "~/graph"
-import { ariaLabel, Input } from "~/system"
+import { ariaLabel, Input, TwitterIcon } from "~/system"
 
 export type InputType = string | null | undefined
 
@@ -16,6 +22,7 @@ export interface Props<T> {
   isInvalid?: boolean
   errorMessage?: Maybe<string>
   size?: string
+  type?: HTMLInputTypeAttribute
 }
 
 export const View: FC<Props<InputType>> = ({
@@ -28,25 +35,33 @@ export const View: FC<Props<InputType>> = ({
   isInvalid,
   errorMessage,
   size,
+  type = "text",
   ...props
 }) => {
   const onChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     const next = event.target.value
     if (_onChange) _onChange(next)
   }
-  return h(FormControl, { isInvalid, size }, [
-    h(Input, {
-      ...ariaLabel(label),
-      defaultValue,
-      autoFocus,
-      onChange,
-      placeholder,
-      size,
-      autoComplete: "off",
-    }),
-    isInvalid
-      ? errorMessage && h(FormErrorMessage, {}, errorMessage)
-      : // NOTE: needed to keep inputs horizonally aligned on error
-        h(FormHelperText, {}, "\u00A0"),
+  return h(InputGroup, {}, [
+    h(FormControl, { isInvalid, size }, [
+      h(Input, {
+        ...ariaLabel(label),
+        defaultValue,
+        autoFocus,
+        onChange,
+        placeholder,
+        size,
+        autoComplete: "off",
+        type,
+      }),
+      isInvalid
+        ? errorMessage && h(FormErrorMessage, {}, errorMessage)
+        : // NOTE: needed to keep inputs horizonally aligned on error
+          h(FormHelperText, {}, "\u00A0"),
+    ]),
+    // h(InputRightElement, {}, [
+    //   // where to decide
+    //   // h(TwitterIcon)
+    // ]),
   ])
 }

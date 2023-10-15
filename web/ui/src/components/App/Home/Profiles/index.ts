@@ -3,18 +3,27 @@ import { pluck } from "ramda"
 import {
   distinctUntilChanged,
   EMPTY,
+  filter,
   map,
   merge,
   mergeWith,
   of,
   share,
   switchMap,
+  withLatestFrom,
 } from "rxjs"
 import { match } from "ts-pattern"
 import { Actions, Source as ActionSource } from "~/action"
-import { Source as GraphSource } from "~/graph"
+import { isLurking, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { routes, Source as RouterSource } from "~/router"
+import {
+  routeGroupProfiles,
+  routeGroupSingleProfile,
+  routes,
+  Source as RouterSource,
+  push,
+  replace,
+} from "~/router"
 import { shareLatest } from "~/rx"
 import { Edit } from "./Edit"
 import { Show } from "./Show"
@@ -42,6 +51,14 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
     action: { action$ },
   } = sources
 
+  const guardRedirectToAuth$ = history$.pipe(
+    withLatestFrom(me$),
+    filter(([route, me]) => routeGroupProfiles.has(route) && isLurking(me)),
+    map((_) => push(routes.in())),
+    tag(`guardRedirectToAuth$`),
+    share()
+  )
+
   const localState$ = action$.pipe(
     switchMap((action) =>
       match(action)
@@ -56,7 +73,10 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
   const state$ = history$.pipe(
     map((route) =>
       match(route)
-        .with({ name: routes.profile.name }, () => State.show)
+        .when(
+          (route) => routeGroupSingleProfile.has(route),
+          () => State.show
+        )
         .with({ name: routes.me.name }, () => State.show)
         .otherwise(() => State.pending)
     ),
@@ -92,7 +112,7 @@ export const Profiles = (sources: Sources, tagPrefix?: string) => {
 
   const action = merge(...pluck("action", [edit, show]))
   const notice = merge(...pluck("notice", [edit, show]))
-  const router = merge(...pluck("router", [show]))
+  const router = merge(...pluck("router", [show]), guardRedirectToAuth$)
   const track = merge(...pluck("track", [show, edit]))
 
   return {

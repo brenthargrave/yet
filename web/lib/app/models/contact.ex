@@ -12,6 +12,9 @@ defmodule App.Contact do
     field(:email, :string)
     field(:org, :string)
     field(:role, :string)
+    field(:website, :string)
+    field(:location, :string)
+    field(:socials, {:array, :string})
 
     has_many(:participations, Participation,
       foreign_key: :participant_id,

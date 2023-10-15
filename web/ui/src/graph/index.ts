@@ -345,12 +345,12 @@ export const getProfile$ = (input: GetProfileInput) =>
   })
 
 export const updateProfile$ = (input: UpdateProfileInput) =>
-  mutate$<UpdateProfileInput, UpdateProfileMutation, Profile>({
+  mutate$<UpdateProfileInput, UpdateProfileMutation, ProfileExtended>({
     input,
     mutation: UpdateProfileDocument,
     getValue: (data) => {
       return match(data.updateProfile)
-        .with({ __typename: "Profile" }, (v) => v)
+        .with({ __typename: "ProfileExtended" }, (v) => v)
         .with({ __typename: "UserError" }, handleUserError)
         .run()
     },

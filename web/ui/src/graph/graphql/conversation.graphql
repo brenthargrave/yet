@@ -14,17 +14,7 @@ fragment BaseConversationProps on Conversation {
   occurredAt
   deletedAt
   notes {
-    id
-    conversationId
-    status
-    text
-    createdAt
-    creator {
-      id
-      name
-      firstName
-      lastName
-    }
+    ...NoteProps
   }
 }
 

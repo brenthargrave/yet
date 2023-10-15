@@ -42,6 +42,14 @@ defmodule AppWeb.Graph.Analytics do
     value(:digest, as: "digest")
   end
 
+  enum :social_site do
+    value(:twitter, as: :twitter)
+    value(:facebook, as: :facebook)
+    value(:github, as: :github)
+    value(:linkedin, as: :linkedin)
+    value(:website, as: :website)
+  end
+
   enum :from_view do
     value(:nav, as: "nav")
     value(:conversations, as: "conversations")
@@ -69,11 +77,13 @@ defmodule AppWeb.Graph.Analytics do
     field(:auth_provider, :auth_provider)
     # profiles
     field(:social_distance, :integer)
+    field(:social_site, :social_site)
     # onboarding
     field(:country_code, :string)
     field(:profile_prop, :profile_prop)
     # conversations
     field(:conversation_prop, :conversation_prop)
+    #
   end
 
   object :event_properties do
@@ -86,6 +96,7 @@ defmodule AppWeb.Graph.Analytics do
     field(:notification_kind, :notification_kind)
     # oauth
     field(:auth_provider, :auth_provider)
+    field(:social_site, :social_site)
   end
 
   input_object :create_event_input do

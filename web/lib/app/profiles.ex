@@ -62,9 +62,11 @@ defmodule App.Profiles do
         count =
           subject_conversations
           |> Enum.count(fn conv ->
-            participants_ids = Enum.map(conv.participations, fn p -> p.participant_id end)
+            participants_ids =
+              Enum.map(conv.participations, fn p -> p.participant_id end)
 
-            conv.creator_id == contact.id or Enum.member?(participants_ids, contact.id)
+            conv.creator_id == contact.id or
+              Enum.member?(participants_ids, contact.id)
           end)
 
         Map.put(contact, :conversation_count_with_subject, count)
@@ -72,7 +74,11 @@ defmodule App.Profiles do
       |> Enum.sort_by(& &1.conversation_count_with_subject, :desc)
 
     filter_event = Repo.one(App.FilterEvent.latest(id, viewer_id))
-    muted = if is_nil(filter_event), do: false, else: Map.get(filter_event, :active, false)
+
+    muted =
+      if is_nil(filter_event),
+        do: false,
+        else: Map.get(filter_event, :active, false)
 
     Repo.get(Profile, id)
     |> lift(nil, :not_found)
@@ -107,6 +113,9 @@ defmodule App.Profiles do
     |> fmap(&Map.put(&1, :social_distance, 0))
     |> fmap(&App.Analytics.identify(&1))
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
+    |> bind(fn profile ->
+      get(customer, %{id: profile.id, timeline_filters: %{only_own: true}})
+    end)
   end
 
   def mute(
@@ -123,7 +132,12 @@ defmodule App.Profiles do
       })
       |> App.FilterEvent.mute_changeset()
     end)
-    |> bind(&Repo.insert_or_update(&1, on_conflict: {:replace, [:active]}, conflict_target: :id))
+    |> bind(
+      &Repo.insert_or_update(&1,
+        on_conflict: {:replace, [:active]},
+        conflict_target: :id
+      )
+    )
     |> bind(fn filter_event ->
       id = filter_event.profile_id
 

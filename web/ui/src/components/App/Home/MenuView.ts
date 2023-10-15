@@ -50,15 +50,9 @@ export const MenuView: FC<Props> = ({
   onClickNew: _onClickNew,
 }) => {
   const buttonRefConvos = useRef<HTMLButtonElement>()
-  const onClickConvos = (e: React.MouseEvent<HTMLButtonElement>) => {
-    _onClickConvos()
-    buttonRefConvos.current?.blur()
-  }
+  const onClickConvos = onClickBlur(buttonRefConvos, _onClickConvos)
   const buttonRefOpps = useRef<HTMLButtonElement>()
-  const onClickOpps = (e: React.MouseEvent<HTMLButtonElement>) => {
-    _onClickOpps()
-    buttonRefOpps.current?.blur()
-  }
+  const onClickOpps = onClickBlur(buttonRefOpps, _onClickOpps)
   const buttonRefHome = useRef<HTMLButtonElement>()
   const onClickHome = onClickBlur(buttonRefHome, _onClickHome)
   const buttonRefProfile = useRef<HTMLButtonElement>()

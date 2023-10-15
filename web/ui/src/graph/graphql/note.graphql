@@ -7,10 +7,7 @@ fragment NoteProps on Note {
   deletedAt
   creator {
     ...on Profile {
-      id
-      name
-      firstName
-      lastName
+      ...ProfileProps
     }
   }
 }

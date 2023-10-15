@@ -15,6 +15,7 @@ fragment ProfileProps on Profile {
   facebookUrl
   facebookName
   facebookImage
+  socials
 }
 
 #  dupes ProfileProps
@@ -30,12 +31,14 @@ fragment ProfileExtendedProps on ProfileExtended {
   org
   website
   location
+  socials
   description
+  # oauth provided
   twitterHandle
   facebookUrl
   facebookName
   facebookImage
-  #
+  # calculated, sans contacts|events
   socialDistance
   isMuted
 }
@@ -66,6 +69,7 @@ fragment ContactProps on Contact {
   facebookUrl
   facebookName
   facebookImage
+  socials
   # additions
   conversationCountWithSubject
 }
@@ -105,8 +109,8 @@ query GetProfile($input: GetProfileInput!) {
 
 mutation UpdateProfile($input: UpdateProfileInput!) {
   updateProfile(input: $input) {
-    ...on Profile {
-      ...ProfileProps
+    ...on ProfileExtended {
+      ...ProfileExtendedProps
     }
     ... on UserError {
       ...UserErrorProps

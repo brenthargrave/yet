@@ -40,6 +40,7 @@ defmodule App.Customer do
     ## oauth addditions
     field(:website, :string)
     field(:location, :string)
+    field(:socials, {:array, :string})
     field(:description, :string)
     # twitter
     field(:twitter_handle, :string)

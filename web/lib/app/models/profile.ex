@@ -13,9 +13,9 @@ defmodule App.Profile do
     field(:email, :string)
     field(:org, :string)
     field(:role, :string)
-    ## oauth addditions
     field(:website, :string)
     field(:location, :string)
+    field(:socials, {:array, :string})
     field(:description, :string)
     # twitter
     field(:twitter_handle, :string)
@@ -56,7 +56,7 @@ defmodule App.Profile do
 
   def changeset(record, attrs) do
     record
-    |> cast(attrs, [:first_name, :last_name, :email, :org, :role])
+    |> cast(attrs, [:first_name, :last_name, :email, :org, :role, :location, :website, :socials])
     |> validate_single_attr(:first_name)
     |> validate_single_attr(:last_name)
     |> validate_single_attr(:email)

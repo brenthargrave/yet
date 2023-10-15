@@ -36,6 +36,7 @@ export const Section: FC<Props> = ({
           direction,
           align,
           spacing,
+          ...props,
         },
         [
           //
