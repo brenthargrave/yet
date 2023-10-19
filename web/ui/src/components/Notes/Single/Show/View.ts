@@ -18,8 +18,9 @@ export const View: FC<Props> = ({
   isPreview = false,
   ...rest
 }) => {
-  const { id, text, status } = note
+  const { id, text, status, creator } = note
   const isDraft = status === NoteStatus.Draft
+  const md = `${text}\n\n- ${creator?.firstName}`
   return h(
     Box,
     {
@@ -44,7 +45,7 @@ export const View: FC<Props> = ({
     },
     [
       //
-      h(MarkdownView, { maxLines, md: text }),
+      h(MarkdownView, { maxLines, md }),
     ]
   )
 }

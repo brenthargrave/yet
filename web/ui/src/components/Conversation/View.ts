@@ -1,6 +1,6 @@
 import { Divider, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { FC } from "react"
+import { FC, ReactNode } from "react"
 import { Props as NoteViewProps } from "~/components/Notes/Single/Show/View"
 import {
   NoteViewModel,
@@ -21,6 +21,7 @@ export interface Props extends Omit<NoteViewProps, "note" | "text" | "status"> {
   showStatus?: boolean
   showNote?: boolean
   showOpps?: boolean
+  notesView?: ReactNode
 }
 
 export const ConversationView: FC<Props> = ({
@@ -32,6 +33,7 @@ export const ConversationView: FC<Props> = ({
   showStatus = true,
   showNote = true,
   showOpps = false,
+  notesView,
 }) => {
   const { creator, participations, invitees, occurredAt, status, opps, id } =
     conversation
@@ -96,7 +98,7 @@ export const ConversationView: FC<Props> = ({
         ),
       ]),
       showOpps && !isEmpty(opps) && h(MentionsView, { opps }),
-      showNote && h(NotesView, notesViewProps),
+      showNote && !!notesView ? notesView : h(NotesView, notesViewProps),
     ]
   )
 }

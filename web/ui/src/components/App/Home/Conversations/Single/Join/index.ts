@@ -1,4 +1,4 @@
-import { ReactSource } from "@cycle/react"
+import { h, ReactSource } from "@cycle/react"
 import { or } from "ramda"
 import {
   combineLatest,
@@ -29,7 +29,8 @@ import {
 import { makeTagger } from "~/log"
 import { push, routes, routeURL, Source as RouterSource } from "~/router"
 import { cb$, noticeFromError$, shareLatest } from "~/rx"
-import { Intent } from "../View"
+import { Intent, View, Props } from "../View"
+import { Notes } from "~/components/Notes"
 
 interface Sources {
   react: ReactSource
@@ -119,15 +120,33 @@ export const Join = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const props$ = combineLatest({
+  const notes = Notes(
+    {
+      ...sources,
+      props: {
+        conversation$: record$,
+      },
+    },
+    tagScope
+  )
+
+  const props$: Observable<Props> = combineLatest({
     viewer: me$,
     intent: of(Intent.Join),
     conversation: record$,
+    notesView: notes.react.view,
+    addButton: notes.react.addButton,
   }).pipe(
     map((props) => {
       return { ...props, onClickAuth }
     }),
     tag("props$")
+  )
+
+  const react = props$.pipe(
+    map((props) => h(View, props)),
+    tag("react"),
+    share()
   )
 
   const redirectCreatorOrCosignerToShow$ = combineLatest({
@@ -142,19 +161,18 @@ export const Join = (sources: Sources, tagPrefix?: string) => {
     share()
   )
 
-  const notice = merge(joinErrorNotice$, joinNotice$)
+  const notice = merge(joinErrorNotice$, joinNotice$, notes.notice)
   const router = merge(
     redirectToAuth$,
     redirectToShow$,
     redirectCreatorOrCosignerToShow$
   )
-  const track = merge(trackParticipate$)
-  const value = { props$ }
+  const track = merge(trackParticipate$, notes.notice)
 
   return {
     router,
     notice,
     track,
-    value,
+    react,
   }
 }

@@ -1,7 +1,7 @@
 import { VStack } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { FC } from "react"
-import { reject } from "remeda"
+import { reject, sort, pipe, reverse, sortBy, values } from "remeda"
 import { isEmpty } from "~/fp"
 import { Customer, ID, Maybe, NoteStatus } from "~/graph"
 import {
@@ -34,8 +34,16 @@ export const View: FC<Props> = ({
     const { creator } = note
     const viewerIsOwner = creator?.id === viewer?.id
     const textIsEmpty = isEmpty(note.text?.trim())
-    return readOnly && viewerIsOwner && textIsEmpty
+    return (
+      (readOnly && viewerIsOwner && textIsEmpty) ||
+      (!viewerIsOwner && note.status === NoteStatus.Draft)
+    )
   })
+
+  const sortedNotes = pipe(
+    filteredNotes,
+    sortBy((n: NoteViewModel) => n.postedAt)
+  )
 
   return h(
     VStack,
@@ -48,7 +56,7 @@ export const View: FC<Props> = ({
       spacing: 4,
     },
     [
-      ...filteredNotes.map((note) =>
+      ...sortedNotes.map((note) =>
         h(NoteView, {
           //
           readOnly,

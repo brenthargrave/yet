@@ -35,8 +35,7 @@ defmodule App.Email.Digest.View do
   end
 
   def profile_link(profile, bold \\ true) do
-    link =
-      link(profile.name, profile_href(profile), %{text_decoration: "underline"})
+    link = link(profile.name, profile_href(profile), %{text_decoration: "underline"})
 
     if bold, do: bold(link), else: link
   end
@@ -44,8 +43,19 @@ defmodule App.Email.Digest.View do
   def timeline_events(events) do
     events
     |> Enum.map(fn event ->
+      viewer = event.viewer
       conversation = event.conversation
-      notes = Enum.map(conversation.notes, & &1.text)
+      filtered_conversation = App.Conversations.filter_notes(conversation, viewer)
+
+      notes =
+        filtered_conversation.notes
+        |> Enum.sort_by(& &1.posted_at, {:asc, DateTime})
+
+      notes =
+        Enum.map(notes, fn note ->
+          "#{note.text}\n\n-- #{note.creator.first_name}"
+        end)
+
       date = conversation.occurred_at
 
       aria = "/c/#{conversation.id}"
@@ -97,8 +107,7 @@ defmodule App.Email.Digest.View do
         end)
         |> RList.to_sentence()
 
-      participants_header =
-        link(~s(#{creator_name} with #{others_names}), conversation_url)
+      participants_header = link(~s(#{creator_name} with #{others_names}), conversation_url)
 
       %{
         id: event.id,

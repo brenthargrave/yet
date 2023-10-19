@@ -88,7 +88,7 @@ defmodule App.Notes do
     |> fmap(&Note.post_changeset(&1))
     |> bind(&Repo.insert_or_update(&1))
     |> fmap(&preload_conversation_for_viewer(&1, viewer))
-    |> fmap(&update_conversation_subs(&1))
+    |> fmap(&update_conversation_subs(&1, true))
     |> fmap(&notify_other_participants(&1, viewer))
     |> fmap(&update_timelines(&1))
     |> convert_error(&(&1 = %Ecto.Changeset{}), &format_ecto_errors(&1))
@@ -107,12 +107,14 @@ defmodule App.Notes do
     Map.put(note, :conversation, conversation)
   end
 
-  defp update_conversation_subs(note) do
-    Absinthe.Subscription.publish(
-      AppWeb.Endpoint,
-      note,
-      note_added: note.conversation_id
-    )
+  defp update_conversation_subs(note, note_added \\ false) do
+    if note_added,
+      do:
+        Absinthe.Subscription.publish(
+          AppWeb.Endpoint,
+          note,
+          note_added: note.conversation_id
+        )
 
     Conversation.update_subscriptions(note.conversation)
     note

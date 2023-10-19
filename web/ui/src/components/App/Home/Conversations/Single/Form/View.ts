@@ -1,7 +1,6 @@
-import { Box, Divider, Spacer, Tooltip } from "@chakra-ui/react"
+import { Box, Divider, Spacer } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { ReactNode } from "react"
-import { isNotEmpty } from "~/fp"
 import { ConversationStatus, ID, Invitee } from "~/graph"
 import { routes, routeURL } from "~/router"
 import {
@@ -10,7 +9,6 @@ import {
   DeleteButton,
   FullWidthVStack,
   Header,
-  Heading,
   Nav,
   ShareModal,
   Stack,

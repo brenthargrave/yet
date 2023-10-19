@@ -1,6 +1,6 @@
 import { Divider } from "@chakra-ui/react"
 import { h } from "@cycle/react"
-import { FC } from "react"
+import { FC, ReactNode } from "react"
 import {
   ConversationView,
   Props as ConversationViewProps,
@@ -44,6 +44,9 @@ export interface Props {
   onClickDelete?: () => void
   // convo deletion
   isDeleting?: boolean
+  // notes
+  addButton: ReactNode
+  notesView: ReactNode
 }
 
 export const View: FC<Props> = ({
@@ -57,6 +60,8 @@ export const View: FC<Props> = ({
   onClickBack,
   onClickDelete,
   isDeleting = false,
+  notesView,
+  addButton,
 }) => {
   const { id, occurredAt, creator } = conversation
   const authRequired = isJoining(intent) && isLurking(viewer)
@@ -68,6 +73,7 @@ export const View: FC<Props> = ({
     viewer,
     conversation,
     isObscured,
+    notesView,
   }
 
   const key = `/c/${id}`
@@ -127,9 +133,8 @@ export const View: FC<Props> = ({
               width: "100%",
             },
             [
-              isReading(intent) &&
-                //
-                h(ShareButton, { onClickShare }),
+              isReading(intent) && h(ShareButton, { onClickShare }),
+              isReading(intent) && addButton,
               h(Spacer),
               // for now, only creator can delete
               isCreatedBy(conversation, viewer) &&

@@ -146,7 +146,7 @@ defmodule App.Conversations do
     filtered_notes =
       conversation.notes
       |> Enum.reject(&(&1.status == :deleted))
-      |> Enum.reject(&(&1.status == :draft && conversation.creator != viewer))
+      |> Enum.reject(&(&1.status == :draft && &1.creator != viewer))
 
     Map.put(conversation, :notes, filtered_notes)
   end

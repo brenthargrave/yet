@@ -257,19 +257,19 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
         match(state)
           .with(State.pending, () => EMPTY)
           .with(State.edit, () => edit.react)
-          .with(State.join, () =>
-            join.value.props$.pipe(map((props) => h(View, { ...props })))
-          )
-          .with(State.show, () =>
-            show.value.props$.pipe(map((props) => h(View, { ...props })))
-          )
+          .with(State.join, () => join.react)
+          .with(State.show, () => show.react)
           .exhaustive()
       )
     )
-  ).pipe(tag("react"))
+  ).pipe(
+    //
+    tag("react"),
+    share()
+  )
 
   const notice = merge(
-    ...pluck("notice", [edit, join]),
+    ...pluck("notice", [edit, join, show]),
     errorNotice$,
     noticeAddedNote$,
     liveRecordErrorNotice$
@@ -279,7 +279,7 @@ export const Single = (sources: Sources, tagPrefix?: string) => {
     redirectNotFound$,
     ...pluck("router", [edit, join, show])
   )
-  const track = merge(...pluck("track", [edit, join]), trackView$)
+  const track = merge(...pluck("track", [edit, join, show]), trackView$)
   const graph = merge(...pluck("graph", [edit]))
   const action = merge(...pluck("action", [edit]))
 

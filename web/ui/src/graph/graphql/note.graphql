@@ -5,6 +5,7 @@ fragment NoteProps on Note {
   status
   createdAt
   deletedAt
+  postedAt
   creator {
     ...on Profile {
       ...ProfileProps

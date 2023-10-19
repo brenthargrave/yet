@@ -1,17 +1,9 @@
 import { ReactSource } from "@cycle/react"
-import {
-  combineLatest,
-  filter,
-  map,
-  merge,
-  Observable,
-  pluck,
-  share,
-} from "rxjs"
+import { merge, Observable, pluck } from "rxjs"
 import { Source as ActionSource } from "~/action"
-import { Conversation, isCreatedBy, Source as GraphSource } from "~/graph"
+import { Conversation, Source as GraphSource } from "~/graph"
 import { makeTagger } from "~/log"
-import { push, routes, Source as RouterSource } from "~/router"
+import { Source as RouterSource } from "~/router"
 import { shareLatest } from "~/rx"
 import { Form, Mode } from "../Form"
 

@@ -22,6 +22,7 @@ defmodule AppWeb.Graph.Notes do
     field(:status, non_null(:note_status))
     field(:created_at, non_null(:datetime))
     field(:deleted_at, :datetime)
+    field(:posted_at, :datetime)
     field(:text, :string)
     field(:creator, non_null(:profile))
   end
