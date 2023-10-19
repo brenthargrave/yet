@@ -37,7 +37,7 @@ export const PhoneSubmit = ({ ...sources }: Sources, tagPrefix?: string) => {
 
   const phone$ = phoneInput$.pipe(
     //
-    tag("phone$", true),
+    tag("phone$", false),
     shareLatest()
   )
 
@@ -49,14 +49,14 @@ export const PhoneSubmit = ({ ...sources }: Sources, tagPrefix?: string) => {
         validateMobilePrefix,
       })
     ),
-    tag("phoneValidation$", true),
+    tag("phoneValidation$", false),
     share()
   )
 
   const e164$ = phoneValidation$.pipe(
     map(({ phoneNumber }) => phoneNumber || ""),
     startWith(""),
-    tag("e164$", true),
+    tag("e164$", false),
     shareLatest()
   )
 

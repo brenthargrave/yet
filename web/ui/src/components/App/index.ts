@@ -89,7 +89,7 @@ export const App = (sources: Sources) => {
         .otherwise(() => State.home)
     }),
     distinctUntilChanged(),
-    tag("state$")
+    tag("state$", false)
   )
 
   const bodyView$ = state$.pipe(

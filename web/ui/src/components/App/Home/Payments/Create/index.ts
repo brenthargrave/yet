@@ -73,7 +73,7 @@ export const Create = (sources: Sources, tagPrefix?: string) => {
   )
 
   const existing$ = pid$.pipe(
-    switchMap((id) => getPayment$({ id }, true)),
+    switchMap((id) => getPayment$({ id }, false)),
     tag("existing$"),
     shareLatest()
   )

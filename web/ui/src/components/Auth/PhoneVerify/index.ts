@@ -174,7 +174,7 @@ export const PhoneVerify = (sources: Sources, tagPrefix?: string) => {
         .otherwise(() => false)
     ),
     startWith(false),
-    tag("verified$"),
+    tag("verified$", false),
     shareLatest()
   )
 

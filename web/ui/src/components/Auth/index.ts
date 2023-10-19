@@ -118,8 +118,14 @@ export const Auth = (sources: Sources, tagPrefix?: string) => {
   const redirectAfterAuth$ = verified$.pipe(
     filter((isVerified) => isVerified),
     withLatestFrom(priorAndCurrentRoute$),
-    map(([_, [priorRoute, currentRoute]]) => push(priorRoute ?? routes.root())),
-    tag("redirectToPriorOrRootRoute$", true)
+    map(([_, [priorRoute, currentRoute]]) =>
+      push(
+        priorRoute && priorRoute.name !== routes.in.name
+          ? priorRoute
+          : routes.root()
+      )
+    ),
+    tag("redirectToPriorOrRootRoute$", false)
   )
 
   const value = { me$ }

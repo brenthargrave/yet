@@ -4,9 +4,18 @@ defmodule App.Auth do
   use Brex.Result
   import Ecto.Query
   use App.Types
-  alias App.Auth.{Twilio, Twitter}
-  alias App.{Repo, Customer, UserError, Authorization}
-  import App.Helpers, only: [format_ecto_errors: 1]
+
+  alias App.Auth.{
+    Twilio
+  }
+
+  alias App.{
+    Repo,
+    Customer,
+    UserError,
+    Authorization
+  }
+
   alias Ecto.Multi
 
   typedstruct module: Verification, enforce: true do

@@ -8,11 +8,9 @@ defmodule App.Conversations do
   alias App.{
     Repo,
     Conversation,
-    Signature,
     Customer,
     Notification,
     Timeline,
-    OppVersion,
     UserError,
     Participation
   }
