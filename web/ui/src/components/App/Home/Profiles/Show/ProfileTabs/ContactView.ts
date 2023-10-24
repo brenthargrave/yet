@@ -65,9 +65,6 @@ export const ContactView: FC<Props> = ({ viewer, contact }) => {
             role &&
               org &&
               span({ dangerouslySetInnerHTML: { __html: "&#8226" } }),
-            role &&
-              org &&
-              h(WorkView, { role, org, fontSize: 14, omitIcon: true }),
           ]
         ),
         h(ProfileSummary, { profile: contact, within: WithinView.Contact }),

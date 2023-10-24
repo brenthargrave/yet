@@ -27,9 +27,14 @@ export const ProfileSummary: FC<Props> = ({
   const { role, org, location, website, socials } = profile
 
   return h(FullWidthVStack, { gap: 2 }, [
-    within === WithinView.Profile &&
-      //
-      h(WorkView, { role, org }),
+    //
+    h(WorkView, {
+      role,
+      org,
+      ...(within === WithinView.Contact && {
+        fontSize: "sm",
+      }),
+    }),
     // Socials, links
     h(HStack, { divider: h(StackDivider), gap: 1, fontSize: "sm" }, [
       h(SocialsList, { socials }),
