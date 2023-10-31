@@ -1,7 +1,7 @@
-import { HStack, PinInput, PinInputField } from "@chakra-ui/react"
+import { HStack, Input, PinInput, PinInputField } from "@chakra-ui/react"
 import { h } from "@cycle/react"
 import { form } from "@cycle/react-dom"
-import { Ref } from "react"
+import { Ref, useEffect, useMemo } from "react"
 import { formatPhone, t } from "~/i18n"
 import {
   ariaLabel,
@@ -12,6 +12,8 @@ import {
   Stack,
   Text,
 } from "~/system"
+
+const PIN_CODE_LENGTH = 4
 
 export interface Props {
   e164: string
@@ -47,6 +49,27 @@ export const View = ({
     _onComplete(value)
   }
 
+  // see: https://github.com/chakra-ui/chakra-ui/issues/4095#issuecomment-1790218229
+  const isSafari = useMemo(
+    () =>
+      /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent),
+    []
+  )
+  const isMobile = useMemo(
+    () => /iPhone|iPad|iPod|Android/i.test(navigator.userAgent),
+    []
+  )
+  const isIOS = useMemo(() => /iPhone|iPad|iPod/.test(navigator.userAgent), [])
+
+  const needsWorkaround = useMemo(() => isSafari && isMobile && isIOS, [])
+
+  useEffect(() => {
+    if (needsWorkaround && value && value.length === PIN_CODE_LENGTH) {
+      onComplete(value)
+    }
+  }, [value])
+  //
+
   return h(Center, { width: "100vw", height: "100vh" }, [
     h(Stack, { direction: "column", align: "center" }, [
       h(Heading, { size }, t("auth.tel.verify.head")),
@@ -67,23 +90,39 @@ export const View = ({
           },
           [
             h(HStack, {}, [
-              h(PinInput, {
-                value,
-                onChange: (value: string) => onChangeCodeInput(value),
-                onComplete: (value: string) => onComplete(value),
-                isDisabled: isDisabledCodeInput,
-                autoFocus: true,
-                manageFocus: true,
-                type: "number",
-                size,
-                otp: true,
-                children: [
-                  h(PinInputField, { ref: firstInputRef }),
-                  h(PinInputField),
-                  h(PinInputField),
-                  h(PinInputField),
-                ],
-              }),
+              needsWorkaround
+                ? h(Input, {
+                    value,
+                    onChange: ({
+                      target: { value: newValue },
+                    }: React.BaseSyntheticEvent<HTMLInputElement>) => {
+                      onChangeCodeInput(newValue)
+                    },
+                    isDisabled: isDisabledCodeInput,
+                    autoFocus: true,
+                    type: "number",
+                    size,
+                    autoComplete: "one-time-code",
+                    placeholder: "1234",
+                    htmlSize: PIN_CODE_LENGTH,
+                  })
+                : h(PinInput, {
+                    value,
+                    onChange: (value: string) => onChangeCodeInput(value),
+                    onComplete: (value: string) => onComplete(value),
+                    isDisabled: isDisabledCodeInput,
+                    autoFocus: true,
+                    manageFocus: true,
+                    type: "number",
+                    size,
+                    otp: true,
+                    children: [
+                      h(PinInputField, { ref: firstInputRef }),
+                      h(PinInputField),
+                      h(PinInputField),
+                      h(PinInputField),
+                    ],
+                  }),
             ]),
             h(
               Button,

@@ -134,7 +134,7 @@ export const View: FC<Props> = ({
             },
             [
               isReading(intent) && h(ShareButton, { onClickShare }),
-              isReading(intent) && addButton,
+              isReading(intent) && !isLurking(viewer) && addButton,
               h(Spacer),
               // for now, only creator can delete
               isCreatedBy(conversation, viewer) &&
