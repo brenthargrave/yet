@@ -35,7 +35,7 @@ const port: number = parseInt(VITE_PORT_UI ?? "8080", 10)
 
 const sentryVitePluginOpts: SentryVitePluginOptions = {
   org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT_UI,
+  project: "ui", // frontend Sentry project (trawler/ui) — fixed sourcemap target
   authToken: process.env.SENTRY_AUTH_TOKEN,
   debug: Boolean(process.env.VITE_SENTRY_DEBUG),
   telemetry: false,

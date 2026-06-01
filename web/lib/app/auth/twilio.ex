@@ -7,7 +7,7 @@ defmodule App.Auth.Twilio do
   end
 
   defp live() do
-    System.get_env("TWILIO_STUB") == nil
+    App.SideEffects.enabled?(:twilio_verify) && System.get_env("TWILIO_STUB") == nil
   end
 
   defun create_verification(e164 :: e164()) :: term() do

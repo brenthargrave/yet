@@ -30,7 +30,7 @@ html lang="en" prefix="og: https://ogp.me/ns#"
 
   body
     div id="index" data-product=System.get_env("PRODUCT_NAME")
-    = if Mix.env() !== :prod do
+    = if Application.get_env(:app, :serve_vite_dev?) do
       - port = System.get_env("VITE_PORT_UI")
       - baseURL = "https://localhost:#{port}"
       script type="module" src="#{baseURL}/@vite/client"

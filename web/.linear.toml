@@ -1,0 +1,6 @@
+# Pin the Linear CLI to the Yet workspace for this repo, so `mise run linear`
+# targets yet/trawler issues rather than whatever workspace is the global
+# default (e.g. ChartX). Uses the credential stored by `linear auth login` for
+# this workspace. Do NOT set LINEAR_API_KEY (in Infisical or anywhere) — a key is
+# bound to its own workspace and overrides this setting.
+workspace = "yetapp"

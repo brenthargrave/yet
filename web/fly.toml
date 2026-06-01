@@ -1,0 +1,29 @@
+app = "yet-prod"
+primary_region = "iad"
+
+[build]
+
+[deploy]
+  release_command = "/app/bin/app eval App.Release.migrate"
+
+[env]
+  APP_SIDE_EFFECTS_ENABLED = "false"
+  MIX_ENV = "prod"
+
+[http_service]
+  internal_port = 4000
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 100
+    soft_limit = 80
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory = "512mb"

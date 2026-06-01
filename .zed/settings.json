@@ -1,0 +1,8 @@
+{
+  // Dotenv files are shell-compatible fragments for scripts, but editor
+  // ShellCheck diagnostics treat every assignment as unused. Keep them
+  // searchable without routing them through the Bash language server.
+  "file_types": {
+    "Plain Text": [".env", ".env.*"]
+  }
+}

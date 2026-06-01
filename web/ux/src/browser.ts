@@ -39,15 +39,15 @@ const {
   UX_DEBUG_BROWSER,
   PORT_SSL,
   PRODUCT_NAME = "TBD",
-  HOST,
   BROWSER_TIMEOUT_SECONDS,
 } = process.env
 
 const screenieDir = "scratch/screenies"
 
-// NOTE: node chokes on "localhost" https://github.com/node-fetch/node-fetch/issues/1624#issuecomment-1235826631
-// const baseURL = `https://127.0.0.1:${PORT_SSL}`
-const baseURL = `https://${HOST}`
+// NOTE: hit the test server directly by IP. node/undici chokes on the literal
+// "localhost" (https://github.com/node-fetch/node-fetch/issues/1624), and going
+// straight to 127.0.0.1:$PORT_SSL avoids depending on puma-dev host routing.
+const baseURL = `https://127.0.0.1:${PORT_SSL}`
 // NOTE: node chokes on SSL, https://stackoverflow.com/a/20100521
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0"
 
@@ -93,6 +93,9 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
     const name = `${first_name} ${last_name}`
 
     const browser = await puppeteer.launch({
+      // Local dev serves a self-signed (mkcert) cert; the browser must not reject
+      // it (NODE_TLS_REJECT_UNAUTHORIZED only covers Node's fetch, not Chromium).
+      ignoreHTTPSErrors: true,
       dumpio: !!UX_DEBUG_BROWSER,
       headless: true,
       ...globalLaunchOptions,
@@ -514,7 +517,7 @@ export const makeBrowser = async (globalLaunchOptions: LaunchOptions) => {
     }
 
     const receivedSMS = async (body: string) => {
-      const baseURL = `https://${HOST}`
+      const baseURL = `https://127.0.0.1:${PORT_SSL}`
       const url = `${baseURL}/api/notifications`
       const response = await fetch(url, {
         headers: {

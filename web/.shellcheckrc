@@ -1,1 +1,6 @@
+# Dotenv files are sourced by scripts and expose values to child processes.
+# Suppress "appears unused" noise for assignments such as SENTRY_AUTH_TOKEN.
 disable=SC2034
+
+# Dotenv files do not have shebangs.
+shell=sh

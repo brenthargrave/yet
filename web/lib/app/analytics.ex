@@ -25,19 +25,29 @@ defmodule App.Analytics do
       occurred_at: timestamp
     } = event
 
-    %Segment.Analytics.Track{
-      timestamp: timestamp,
-      anonymousId: anonymousId,
-      userId: userId,
-      event: eventName,
-      properties: properties
-    }
-    |> Segment.Analytics.track()
+    if App.SideEffects.enabled?(:segment) do
+      %Segment.Analytics.Track{
+        timestamp: timestamp,
+        anonymousId: anonymousId,
+        userId: userId,
+        event: eventName,
+        properties: properties
+      }
+      |> Segment.Analytics.track()
+    end
 
     event
   end
 
   def identify(customer) do
+    if App.SideEffects.enabled?(:segment) do
+      send_identify(customer)
+    end
+
+    customer
+  end
+
+  defp send_identify(customer) do
     id = customer.id
 
     traits =
@@ -54,7 +64,5 @@ defmodule App.Analytics do
       ])
 
     Segment.Analytics.identify(id, traits)
-
-    customer
   end
 end

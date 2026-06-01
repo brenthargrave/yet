@@ -1,7 +1,8 @@
 import Config
 
 config :app,
-  ecto_repos: [App.Repo]
+  ecto_repos: [App.Repo],
+  serve_vite_dev?: Mix.env() != :prod
 
 config :app, AppWeb.Endpoint,
   http: [port: System.get_env("PORT")],

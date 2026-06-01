@@ -13,7 +13,12 @@ defmodule AppWeb.Endpoint do
     )
   end
 
-  plug(Corsica, origins: "*")
+  # Dev/test run the SPA on a separate Vite origin, so allow any origin there; in
+  # prod the SPA is same-origin, so restrict cross-origin requests to known hosts.
+  @cors_origins (if Mix.env() == :prod,
+                   do: ["https://yet.app", "https://www.yet.app"],
+                   else: "*")
+  plug(Corsica, origins: @cors_origins)
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.

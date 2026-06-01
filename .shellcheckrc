@@ -1,0 +1,8 @@
+# Dotenv files in this repo are shell fragments sourced by app/provider
+# scripts. Their assignments are intentionally consumed by child processes, so
+# ShellCheck's "appears unused" warning is noise in editor diagnostics.
+disable=SC2034
+
+# Dotenv files do not have shebangs. Give ShellCheck a default shell so opening
+# `.env.*` files in editors does not produce SC2148.
+shell=sh

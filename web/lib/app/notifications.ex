@@ -5,11 +5,12 @@ defmodule App.Notifications do
 
   @type payload() :: %{to: String.t(), body: String.t()}
   defun send(%{to: to, body: body} :: payload()) :: nil do
-    System.get_env("DEBUG_DISABLE_SMS") ||
+    if App.SideEffects.enabled?(:sms) && !System.get_env("DEBUG_DISABLE_SMS") do
       ExTwilio.Message.create(
         messaging_service_sid: System.get_env("TWILIO_MESSAGING_SID"),
         to: to,
         body: body
       )
+    end
   end
 end

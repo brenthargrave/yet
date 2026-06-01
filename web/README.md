@@ -1,52 +1,64 @@
-## Quickstart
+# Yet — web app
 
-```
-# Run setup script
-./scripts/bootstrap.sh
+Phoenix 1.7 (Elixir 1.15 / OTP 26) with a React + Vite UI. This page covers
+local setup only. Deployment, the provider CLIs, and agent workflows are
+documented in the root [`AGENTS.md`](../AGENTS.md).
 
-# enable localhost SSL
-mkcert -install
-(ipaddr=$(ipconfig getifaddr en1) && \
-  cd ./priv/cert/ && \
-  mkcert \
-  --cert-file localhost-cert.pem \
-  --key-file localhost-key.pem \
-  yet.wip localhost 127.0.0.1 ::1 $ipaddr.xip.io \
-  )
+## Prerequisites
 
-### on iOS Simulator
+Install the Homebrew-managed tools (`mise`, `yarn`, `mkcert`, `infisical`, the
+provider CLIs, and the Erlang build deps):
 
-open "$(mkcert -CAROOT)"
-# ...drag/drop *.cer file onto sim, Settings > General > Profiles
-open web/priv/cert
-# ...drag/drop localhost-cert.pem onto sim, Settings > General > Profiles
-
-
-# copy/edit local env vars
-cp .env.dev.example .env.dev
-
-heroku local:run -e .env.dev mix ecto.create
-heroku local:run -e .env.dev mix ecto.migrate
-heroku local -e .env.dev
-
-# optional: `https://yet.wip` using `puma-dev`
-sudo puma-dev -uninstall && puma-dev -setup
-echo 5000 > .port
-wd=$(pwd) && (cd ~/.puma-dev/ && ln -s $wd/.port yet)
-puma-dev -install -debug -d test:wip:localhost -launchd
-open https://yet.wip
+```shell
+brew bundle install --file=.brewfile --no-upgrade
 ```
 
-## Deployment
+`mise` then provides the pinned Elixir, Erlang, and Node versions. A local
+PostgreSQL is also required; the dev `DATABASE_URL` (in Infisical) points at it.
 
-```
-heroku git:remote -r prod -a yet-prod
-(cd .. && git push prod --force `git subtree split --prefix web HEAD`:refs/heads/master)
+## Setup
+
+1. Authenticate to Infisical once. Secrets are injected at run time by
+   `infisical run` (wired into the `mise` tasks) — there are no local `.env`
+   files to create.
+
+   ```shell
+   infisical login
+   ```
+
+2. Install dependencies and configure this clone's git hooks:
+
+   ```shell
+   ./scripts/bootstrap.sh
+   ```
+
+3. Trust a localhost certificate — the dev server runs over HTTPS:
+
+   ```shell
+   mkcert -install
+   (cd priv/cert && mkcert \
+     --cert-file localhost-cert.pem --key-file localhost-key.pem \
+     yet.localhost test.localhost localhost 127.0.0.1 ::1)
+   ```
+
+4. Create and migrate the dev database:
+
+   ```shell
+   mise run db:setup
+   ```
+
+## Run
+
+```shell
+mise run dev     # Phoenix (HTTPS on PORT_SSL) + Vite dev servers
+mise run test    # test suite
+mise run build   # production UI assets
 ```
 
-## Replace local db w/ copy of remote database
+## Everything else
 
-```
-DISABLE_DATABASE_ENVIRONMENT_CHECK=1 heroku local:run -e .env.dev mix ecto.drop && \
-  heroku pg:pull DATABASE_URL yet_dev -r prod
-```
+Deployment (Fly), the production database (Neon), error reporting (Sentry),
+issue tracking (Linear), and the project-scoped provider tasks
+(`mise run fly|neon|db|sentry|linear`) are all covered in
+[`AGENTS.md`](../AGENTS.md). Project plans and decisions live in
+[`../plans/`](../plans/).

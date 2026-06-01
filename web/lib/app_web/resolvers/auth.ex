@@ -20,13 +20,22 @@ defmodule AppWeb.Resolvers.Auth do
     Auth.submit_code(e164, code)
   end
 
-  defun me(
-          _parent,
-          _args,
-          %{context: %{customer: customer}} = _resolution
-        ) :: resolver_result() do
+  @spec me(any(), any(), map()) :: resolver_result()
+  def me(
+        _parent,
+        _args,
+        %{context: %{customer: customer}} = _resolution
+      ) do
     customer
     |> ok()
+  end
+
+  def me(
+        _parent,
+        _args,
+        _resolution
+      ) do
+    {:ok, nil}
   end
 
   def token(

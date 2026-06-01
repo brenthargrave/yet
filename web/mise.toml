@@ -1,0 +1,144 @@
+[tools]
+elixir = "1.15.7-otp-26"
+erlang = "26.1.2"
+node = "18.16.0"
+
+# Non-secret, shared dev config. Same for every developer and safe to commit, so
+# it lives here rather than in Infisical (which holds only secrets plus the
+# per-developer DATABASE_URL). Ports carry defaults here so the primary checkout
+# (master) runs without Worktrunk; in a worktree the generated mise.local.toml
+# overrides them (mise local config beats project config).
+[env]
+# Repo addresses — which remote project each provider CLI targets.
+NEON_PROJECT_ID = "fragrant-voice-41335135" # Neon "yet-prod" project
+# SENTRY_ORG is the only Sentry env var the tooling needs: the `sentry` CLI
+# reaches projects via the org-form (e.g. `trawler/`, `trawler/api`, `trawler/ui`),
+# and the frontend sourcemap project is hard-coded in ui/vite.config.ts. There is
+# no SENTRY_PROJECT — it was an orphaned default.
+SENTRY_ORG = "trawler"
+# App runtime.
+MIX_ENV = "dev" # default for every task; the `test` task overrides to "test"
+HOST = "yet.localhost"
+POOL_SIZE = "18"
+PRODUCT_NAME = "Yet"
+DEV_LOG_LEVEL = "debug"
+# Ports — defaults for the primary checkout; Worktrunk's mise.local.toml
+# overrides these per worktree to avoid collisions.
+PORT = "3000"
+PORT_SSL = "3443"
+VITE_PORT_UI = "8080"
+# Frontend (Vite) — local defaults; prod asset builds set their own.
+VITE_HOST = "yet.localhost"
+VITE_API_ENV = "dev"
+VITE_SENTRY_DEBUG = "1"
+# Dev debug toggles (belt-and-suspenders on top of APP_SIDE_EFFECTS_ENABLED).
+DEBUG_DISABLE_SMS = "1"
+DEBUG_EMAIL = "1"
+DEBUG_LATENCY = "9001"
+TWILIO_STUB = "true"
+EMAIL_DIGEST_HOUR = "5"
+
+# The app, tests, and provider CLIs run under `infisical run --env=<env>`, which
+# reads web/.infisical.json for the project + your `infisical login` token and
+# injects that env's secrets (plus DATABASE_URL) on top of the [env] defaults
+# above. No .env files at rest.
+
+[tasks.dev]
+description = "Run the Phoenix development server"
+run = "infisical run --env=dev -- scripts/dev.sh"
+
+[tasks.test]
+description = "Run the app test suite (ExUnit)"
+# Elixir's :test is a separate runtime — its own DB (via the SQL sandbox) and its
+# own endpoint host/ports — so these override the dev defaults in [env]. Test
+# DATABASE_URL and secrets come from Infisical's test env via `infisical run`.
+env.MIX_ENV = "test"
+env.HOST = "test.localhost"
+env.PORT = "6000"
+env.PORT_SSL = "6443"
+env.VITE_HOST = "test.localhost"
+env.VITE_PORT_UI = "8081"
+env.VITE_API_ENV = "test"
+env.TEST_LOG_LEVEL = "warning"
+run = "infisical run --env=test -- mix test"
+
+[tasks."test:server"]
+description = "Serve the app in :test env for e2e (PORT_SSL + /sandbox)"
+env.MIX_ENV = "test"
+# HOST carries the port so generated links (config.exs builds scheme://HOST with
+# no separate port) match how the e2e harness reaches the server (127.0.0.1:PORT_SSL).
+env.HOST = "127.0.0.1:6443"
+env.PORT = "6000"
+env.PORT_SSL = "6443"
+env.VITE_HOST = "test.localhost"
+env.VITE_PORT_UI = "8081"
+env.VITE_API_ENV = "test"
+env.TEST_LOG_LEVEL = "warning"
+run = "infisical run --env=test -- mix phx.server"
+
+[tasks."test:e2e"]
+description = "Browser e2e (Mocha + Puppeteer); auto-starts test:server if needed"
+# Knobs are locally tunable — override per run (e.g. BROWSER_SLOWMO=150
+# mise run test:e2e) or in mise.local.toml.
+env.PORT_SSL = "6443" # harness baseURL = https://127.0.0.1:$PORT_SSL
+env.BROWSER_SLOWMO = "0"
+env.BROWSER_TIMEOUT_SECONDS = "20"
+run = "scripts/e2e.sh"
+
+[tasks.build]
+description = "Build the Vite UI assets"
+run = "cd ui && yarn build"
+
+[tasks."db:setup"]
+description = "Create and migrate the local dev database"
+run = "infisical run --env=dev -- mix ecto.setup"
+
+[tasks."deploy:secrets"]
+description = "Sync prod runtime secrets/config from Infisical to Fly (yet-prod)"
+run = "scripts/fly-sync-secrets.sh"
+
+[tasks.deploy]
+description = "Build + deploy to Fly prod (uploads frontend Sentry sourcemaps)"
+run = "scripts/fly-deploy.sh"
+
+[tasks."git:install-hooks"]
+description = "Configure this clone to use the repo's versioned Git hooks"
+run = "scripts/install-git-hooks.sh"
+
+[tasks."wt:doctor"]
+description = "Show Worktrunk config for this repository"
+run = "wt config show"
+
+# Project-scoped provider CLIs. Each runs under `infisical run --env=dev`, so its
+# token is injected from this project's Infisical dev env and it authenticates
+# against the Yet accounts regardless of any global CLI login. raw_args passes
+# everything after `--` straight through, e.g. `mise run fly -- status`.
+
+[tasks.fly]
+description = "Fly CLI (FLY_API_TOKEN; app auto-detected from fly.toml)"
+raw_args = true
+run = "infisical run --env=dev -- flyctl"
+
+[tasks.neon]
+description = "Neon CLI (NEON_API_KEY; control plane for Postgres)"
+raw_args = true
+run = "infisical run --env=dev -- neonctl"
+
+[tasks.db]
+# Read-only by default: the session defaults to read-only transactions, so
+# accidental writes fail ("cannot execute ... in a read-only transaction"). A
+# soft guard, not a dedicated read-only role.
+description = "Read-only psql to Neon yet-prod, e.g. mise run db -- -c 'select 1'"
+raw_args = true
+run = "infisical run --env=dev -- scripts/db.sh"
+
+[tasks.sentry]
+description = "Sentry CLI; e.g. mise run sentry -- issues trawler/ (both projects)"
+env.SENTRY_FORCE_ENV_TOKEN = "1" # env token wins over any ~/.sentryclirc login
+raw_args = true
+run = "infisical run --env=dev -- sentry"
+
+[tasks.linear]
+description = "Linear CLI (uses keyring + .linear.toml; scopes to Yet workspace)"
+raw_args = true
+run = "linear"

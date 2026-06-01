@@ -17,22 +17,28 @@ defmodule App.Application do
       {Phoenix.PubSub, name: App.PubSub},
       # Start the Endpoint (http/https)
       AppWeb.Endpoint,
-      # Start a worker by calling: App.Worker.start_link(arg)
-      # {App.Worker, arg}
-      {Segment, System.get_env("SEGMENT_WRITE_KEY")},
       {Absinthe.Subscription, AppWeb.Endpoint},
 
       # https://dockyard.com/blog/2016/05/02/phoenix-tips-and-tricks
-      {Task.Supervisor, name: App.TaskSupervisor},
-
-      App.Scheduler
+      {Task.Supervisor, name: App.TaskSupervisor}
     ]
+
+    children =
+      children
+      |> maybe_add_child(
+        App.SideEffects.enabled?(:segment),
+        {Segment, System.get_env("SEGMENT_WRITE_KEY")}
+      )
+      |> maybe_add_child(App.SideEffects.enabled?(:email_digest), App.Scheduler)
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: App.Supervisor]
     Supervisor.start_link(children, opts)
   end
+
+  defp maybe_add_child(children, true, child), do: children ++ [child]
+  defp maybe_add_child(children, false, _child), do: children
 
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.

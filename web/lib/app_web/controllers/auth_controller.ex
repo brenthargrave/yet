@@ -1,5 +1,6 @@
 defmodule AppWeb.AuthController do
   use AppWeb, :controller
+  plug(:halt_oauth_side_effects when action in [:request, :callback])
   plug(Ueberauth)
   use Brex.Result
 
@@ -50,5 +51,15 @@ defmodule AppWeb.AuthController do
 
   defp oauth_path(query) do
     "/oauth?#{URI.encode_query(query, :rfc3986)}"
+  end
+
+  defp halt_oauth_side_effects(conn, _opts) do
+    if App.SideEffects.enabled?(:oauth) do
+      conn
+    else
+      conn
+      |> redirect(to: oauth_path(%{status: "error", description: "OAuth disabled"}))
+      |> halt()
+    end
   end
 end

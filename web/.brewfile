@@ -1,6 +1,22 @@
-brew 'asdf'
+brew "mise"
 brew 'mkcert'
 brew 'yarn'
+
+# Secrets manager. `infisical run -- <cmd>` injects per-environment secrets into
+# the process env at call time (no plaintext .env files at rest). The mise tasks
+# wrap the app and provider CLIs in it.
+tap "infisical/get-cli"
+brew "infisical/get-cli/infisical"
+
+# Agent-facing provider CLIs. Each targets the Yet accounts via secrets injected
+# by `infisical run` (or, for Linear, the keyring + .linear.toml pin) so agents
+# never depend on global login state. The dev keyset lives in Infisical's dev env.
+brew "flyctl"   # Fly.io: app status, logs, deploys, secrets
+brew "neonctl"  # Neon: Postgres project/branch/compute control plane
+tap "getsentry/tools"
+brew "getsentry/tools/sentry"  # NEW Sentry CLI (cli.sentry.dev), not legacy sentry-cli
+tap "schpet/tap"
+brew "schpet/tap/linear"       # Linear issues/projects from the CLI
 
 # erlang-specific deps
 # https://github.com/asdf-vm/asdf-erlang/tree/267f6bb4f4b7c47ad4d99d832063f7f888901870#osx

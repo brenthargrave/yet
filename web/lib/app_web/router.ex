@@ -50,14 +50,17 @@ defmodule AppWeb.Router do
     )
   end
 
+  # GraphiQL IDE — dev/test only; never expose the interactive explorer in prod.
   # https://goo.gl/4Q9MEx
-  forward(
-    "/graphiql",
-    Absinthe.Plug.GraphiQL,
-    schema: AppWeb.Graph.Schema,
-    socket: AppWeb.UserSocket,
-    interface: :advanced
-  )
+  if Mix.env() in [:dev, :test] do
+    forward(
+      "/graphiql",
+      Absinthe.Plug.GraphiQL,
+      schema: AppWeb.Graph.Schema,
+      socket: AppWeb.UserSocket,
+      interface: :advanced
+    )
+  end
 
   # https://github.com/swoosh/swoosh#mailbox-preview-in-the-browser
   if Mix.env() in [:dev, :test] do

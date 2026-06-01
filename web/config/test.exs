@@ -16,6 +16,6 @@ config :app, App.Repo,
   pool: Ecto.Adapters.SQL.Sandbox,
   sql_sandbox: true
 
-config :logger, :console, level: String.to_atom(System.get_env("TEST_LOG_LEVEL") || "warn")
+config :logger, :console, level: String.to_atom(System.get_env("TEST_LOG_LEVEL") || "warning")
 
 config :segment, send_to_http: false
